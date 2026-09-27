@@ -30,9 +30,11 @@ GUIDE = """
 
 1. **مقاله‌ها:** فایل‌های PDF را بکشید و رها کنید (یا شناسه‌ی arXiv بدهید) و «افزودن و پردازش» را بزنید.
    هر مقاله فقط یک بار پردازش می‌شود. مشخصات مقاله (عنوان، نویسندگان، سال) خودکار از arXiv/Crossref گرفته می‌شود.
-2. **پرسش و پاسخ:** سؤال را بنویسید (انگلیسی بهتر جست‌وجو می‌شود؛ زبان جواب را جدا انتخاب کنید).
-   گزینه‌ی «مقایسه با حالت بدون RAG» جواب همان مدل را بدون منابع هم نشان می‌دهد.
-3. **بسته‌ی منابع:** فایلی می‌سازد که می‌توانید در چت Gemini یا هر هوش مصنوعی دیگری آپلود کنید (بدون مصرف API).
+2. **پرسش و پاسخ:** سؤال را به فارسی یا انگلیسی بنویسید. سؤال فارسی اول به انگلیسی ترجمه می‌شود (مقاله‌ها
+   انگلیسی‌اند) و ترجمه بالای جواب نشان داده می‌شود. گزینه‌ی «مقایسه با حالت بدون RAG» جواب همان مدل را بدون
+   منابع هم نشان می‌دهد. در بخش «نمایش منبع» صفحه‌ی مقاله با بخش استفاده‌شده‌ی رنگی دیده می‌شود.
+3. **بسته‌ی منابع:** فایلی می‌سازد که می‌توانید در چت Gemini یا هر هوش مصنوعی دیگری آپلود کنید (سؤال
+   انگلیسی بدون هیچ مصرف مدل؛ سؤال فارسی فقط یک درخواست برای ترجمه).
 4. **استخراج خواص:** نام خاصیت‌ها را بنویسید؛ جدول مقدارها با منبع و صفحه ساخته می‌شود.
    ستون `value_in_source` نشان می‌دهد عدد واقعاً در متن مقاله هست یا نه؛ ستون `plausible` نشان می‌دهد
    مقدار در بازه‌ی فیزیکی معقول آن خاصیت هست یا نه (بازه‌ها در `data/<corpus>/profile.yml` قابل تغییرند).
@@ -167,17 +169,33 @@ def ask(corpus, question, provider, language, mode, top_k, doc_ids, compare, pro
         progress(0.6, desc="جواب بدون RAG...")
         baseline = _auto_dir(ws.ask_without_rag(question, provider, lang).text)
     header = f"*{ws.llm_name(provider)} · {mode} · top {int(top_k)}*\n\n"
-    return _auto_dir(header + answer.text), baseline, sources
+    if answer.search_query:
+        header += f"🔎 جست‌وجو در مقاله‌ها با ترجمه‌ی انگلیسی: *{answer.search_query}*\n\n"
+    choices = [(f"[{i}] {format_source_label(n)}", n.node.node_id) for i, n in enumerate(answer.sources, start=1)]
+    first = choices[0][1] if choices else None
+    return (_auto_dir(header + answer.text), baseline, sources,
+            gr.update(choices=choices, value=first), show_source(corpus, first))
+
+
+def show_source(corpus: str, node_id: str | None):
+    """The source page with the chunk highlighted (None if unavailable)."""
+    if not node_id:
+        return None
+    try:
+        return _ws(corpus).source_image(node_id)
+    except Exception as e:  # e.g. a non-PDF source or a removed file
+        gr.Warning(f"صفحه‌ی منبع قابل نمایش نیست: {e}")
+        return None
 
 
 # --- context pack tab ---
 
-def make_pack(corpus, question, language, mode, top_k, doc_ids):
+def make_pack(corpus, question, language, mode, top_k, doc_ids, provider):
     if not (question or "").strip():
         raise gr.Error("سؤال خالی است.")
     ws = _ws(corpus)
     try:
-        text = ws.pack(question, LANGUAGES.get(language), RetrievalMode(mode), int(top_k), doc_ids or None)
+        text = ws.pack(question, LANGUAGES.get(language), RetrievalMode(mode), int(top_k), doc_ids or None, provider)
     except ValueError as e:
         raise gr.Error(str(e))
     path = _results_path(ws, "packs", slugify(question, 40), ".md")
@@ -208,7 +226,10 @@ def run_extract(corpus, properties, provider, exhaustive, mode, top_k, doc_ids, 
                f"**{implausible}** مقدار خارج از بازه‌ی فیزیکی معقول بود. مدل: `{ws.llm_name(provider)}`")
     shown = df[EXTRACT_COLUMNS].copy()
     shown["evidence"] = shown["evidence"].str.slice(0, 120)  # full text is in the CSV
-    return summary, shown, str(path)
+    choices = [(f"{i}. {r['material']} · {r['property'][:40]} = {r['value_text']} ({r['citation']}, p. {r['pages']})",
+                r["node_id"]) for i, r in enumerate(rows, start=1)]
+    first = choices[0][1] if choices else None
+    return summary, shown, str(path), gr.update(choices=choices, value=first), show_source(corpus, first)
 
 
 # --- spectrum tab ---
@@ -312,8 +333,7 @@ def build_app() -> gr.Blocks:
 
         with gr.Tab("❓ پرسش و پاسخ"):
             question = gr.Textbox(label="سؤال", lines=2,
-                                  value="How much larger are water-vapor-broadened half-widths of CO2 lines "
-                                        "compared to air-broadened ones?")
+                                  value="ضریب پهن‌شدگی خطوط CO2 با بخار آب چند برابر پهن‌شدگی با هواست؟")
             with gr.Row():
                 language = gr.Dropdown(list(LANGUAGES), value="فارسی", label="زبان جواب")
                 mode = gr.Dropdown([m.value for m in RetrievalMode], value="hybrid", label="روش بازیابی")
@@ -329,6 +349,9 @@ def build_app() -> gr.Blocks:
                     gr.Markdown("#### ⚪ بدون RAG (فقط حافظه‌ی مدل)", elem_classes="rtl")
                     baseline = gr.Markdown()
             sources = gr.Dataframe(label="منابع بازیابی‌شده", interactive=False, wrap=True)
+            with gr.Accordion("🔍 نمایش منبع در مقاله‌ی اصلی", open=True):
+                ask_source = gr.Dropdown([], label="منبع", interactive=True)
+                ask_page = gr.Image(label="صفحه‌ی مقاله (بخش استفاده‌شده رنگی شده)", type="pil", height=900)
 
         with gr.Tab("📄 بسته‌ی منابع برای چت"):
             gr.Markdown("فایلی می‌سازد شامل دستورالعمل، منابع شماره‌دار و سؤال؛ آن را در چت Gemini یا هر "
@@ -355,6 +378,9 @@ def build_app() -> gr.Blocks:
             ex_summary = gr.Markdown(elem_classes="rtl")
             ex_table = gr.Dataframe(interactive=False, wrap=True, max_height=600)
             ex_file = gr.File(label="دانلود CSV")
+            with gr.Accordion("🔍 نمایش مقدار در مقاله‌ی اصلی", open=True):
+                ex_source = gr.Dropdown([], label="ردیف جدول", interactive=True)
+                ex_page = gr.Image(label="صفحه‌ی مقاله (بخشی که مقدار از آن آمده رنگی شده)", type="pil", height=900)
 
         with gr.Tab("📈 طیف (HITRAN)"):
             gr.Markdown("طیف جذبی (پروفایل Voigt) از خطوط HITRAN با کتابخانه‌ی HAPI محاسبه می‌شود. اگر فایل CSV "
@@ -383,11 +409,13 @@ def build_app() -> gr.Blocks:
         folder_btn.click(ingest_folder, [corpus], [ingest_log, *paper_outputs])
         remove_btn.click(remove_paper, [corpus, to_remove], [ingest_log, *paper_outputs])
         ask_btn.click(ask, [corpus, question, provider, language, mode, top_k, ask_docs, compare],
-                      [answer, baseline, sources])
-        pack_btn.click(make_pack, [corpus, pack_question, pack_language, pack_mode, pack_top_k, pack_docs],
+                      [answer, baseline, sources, ask_source, ask_page])
+        ask_source.input(show_source, [corpus, ask_source], ask_page)
+        pack_btn.click(make_pack, [corpus, pack_question, pack_language, pack_mode, pack_top_k, pack_docs, provider],
                        [pack_text, pack_file])
         ex_btn.click(run_extract, [corpus, properties, provider, exhaustive, ex_mode, ex_top_k, ex_docs],
-                     [ex_summary, ex_table, ex_file]).then(lambda f: f, ex_file, sp_file)
+                     [ex_summary, ex_table, ex_file, ex_source, ex_page]).then(lambda f: f, ex_file, sp_file)
+        ex_source.input(show_source, [corpus, ex_source], ex_page)
         sp_btn.click(run_spectrum, [sp_molecule, sp_iso, sp_min, sp_max, sp_t, sp_p, sp_file],
                      [sp_plot, sp_note, sp_table])
 

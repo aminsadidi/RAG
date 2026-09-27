@@ -6,6 +6,7 @@ experiments. ``answer_without_rag`` is the baseline: the same model
 answering from its own memory, with no retrieved context.
 """
 
+import re
 from dataclasses import dataclass, field
 
 from llama_index.core.base.base_retriever import BaseRetriever
@@ -40,11 +41,61 @@ Question: {question}
 Answer:"""
 
 
+# Persian physics terms whose literal translation is easy to get wrong
+# (e.g. عدد موج is wavenumber, not wavelength).
+PERSIAN_GLOSSARY = {
+    "عدد موج": "wavenumber", "طول موج": "wavelength", "بسامد": "frequency", "فرکانس": "frequency",
+    "پهن‌شدگی": "broadening", "پهن‌شدگی فشاری": "pressure broadening", "پهن‌شدگی خودی": "self-broadening",
+    "نیم‌پهنا": "half-width", "ضریب پهن‌شدگی": "broadening coefficient", "جابه‌جایی فشاری": "pressure shift",
+    "نمای دمایی": "temperature exponent", "شدت خط": "line intensity", "مکان خط": "line position",
+    "خط طیفی": "spectral line", "باند": "band", "شاخه": "branch", "گذار": "transition",
+    "ضریب شکست": "refractive index", "ضریب خاموشی": "extinction coefficient", "ضریب جذب": "absorption coefficient",
+    "ضریب گرمانوری": "thermo-optic coefficient", "گاف انرژی": "band gap", "لایه‌ی نازک": "thin film",
+    "بخار آب": "water vapor", "هوا": "air", "مقطع جذب": "absorption cross-section", "عدم‌قطعیت": "uncertainty",
+}
+
+TRANSLATE_PROMPT = """\
+Translate this question into English so it can be used to search physics and
+materials-science papers.
+
+Rules:
+- Use the standard physics term; for these Persian terms use exactly:
+{glossary}
+- Keep formulas, symbols, numbers, units and labels exactly as written in the question.
+- Do not add any symbol, value or term that is not in the question.
+- Reply with the English question only.
+
+Question: {question}
+English:"""
+
+_PERSIAN = re.compile(r"[\u0600-\u06FF]")
+
+
+def is_persian(text: str) -> bool:
+    """True if the text contains Persian/Arabic script."""
+    return bool(_PERSIAN.search(text or ""))
+
+
+def translate_query(question: str, llm: LLM) -> str:
+    """English version of a question for retrieval (the papers are in English)."""
+    glossary = "\n".join(f"  {fa} = {en}" for fa, en in PERSIAN_GLOSSARY.items())
+    text = llm.complete(TRANSLATE_PROMPT.format(glossary=glossary, question=question)).text.strip()
+    text = text.splitlines()[0].strip().strip('"') if text else ""
+    return text or question
+
+
 @dataclass
 class Answer:
     question: str
     text: str
     sources: list[NodeWithScore] = field(default_factory=list)
+    search_query: str | None = None  # English translation used for retrieval, if any
+
+
+def _question_text(question: str, search_query: str | None) -> str:
+    if search_query and search_query != question:
+        return f"{question}\n(English translation: {search_query})"
+    return question
 
 
 def format_source_label(node: NodeWithScore) -> str:
@@ -76,16 +127,19 @@ def _language_rules(language: str | None) -> list[str]:
     return [f"Write the answer in {language}; keep symbols, units and numbers as in the sources."]
 
 
-def answer_with_rag(question: str, retriever: BaseRetriever, llm: LLM, language: str | None = None) -> Answer:
-    nodes = retriever.retrieve(question)
+def answer_with_rag(question: str, retriever: BaseRetriever, llm: LLM, language: str | None = None,
+                    search_query: str | None = None) -> Answer:
+    """``search_query`` (e.g. an English translation) is used for retrieval instead of the question."""
+    nodes = retriever.retrieve(search_query or question)
     if not nodes:
-        return Answer(question, NOT_FOUND)
-    prompt = build_rag_prompt(question, nodes, _language_rules(language))
-    return Answer(question, llm.complete(prompt).text.strip(), nodes)
+        return Answer(question, NOT_FOUND, search_query=search_query)
+    prompt = build_rag_prompt(_question_text(question, search_query), nodes, _language_rules(language))
+    return Answer(question, llm.complete(prompt).text.strip(), nodes, search_query)
 
 
 def build_context_pack(
-    question: str, nodes: list[NodeWithScore], about: dict[str, str], language: str | None = None
+    question: str, nodes: list[NodeWithScore], about: dict[str, str], language: str | None = None,
+    search_query: str | None = None,
 ) -> str:
     """A self-contained prompt file to upload to any chat assistant.
 
@@ -101,7 +155,7 @@ def build_context_pack(
     references = dict.fromkeys(n.metadata.get("reference") or n.metadata.get("doc_id", "?") for n in nodes)
     reference_lines = "\n".join(f"- {ref}" for ref in references)
     return (
-        build_rag_prompt(question, nodes, rules)
+        build_rag_prompt(_question_text(question, search_query), nodes, rules)
         + "\n\n---\nAbout this file (for the reader; not part of the sources):\n"
         + about_lines
         + "\n\nPapers the sources come from:\n"
@@ -110,8 +164,9 @@ def build_context_pack(
     )
 
 
-def answer_without_rag(question: str, llm: LLM, language: str | None = None) -> Answer:
-    prompt = NO_RAG_PROMPT.format(not_found=NOT_FOUND, question=question)
+def answer_without_rag(question: str, llm: LLM, language: str | None = None,
+                       search_query: str | None = None) -> Answer:
+    prompt = NO_RAG_PROMPT.format(not_found=NOT_FOUND, question=_question_text(question, search_query))
     if language:
         prompt = prompt.replace("\nQuestion:", f"Write the answer in {language}.\n\nQuestion:", 1)
     return Answer(question, llm.complete(prompt).text.strip())

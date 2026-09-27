@@ -9,6 +9,7 @@ row is repeated in every piece, which matters because most property values
 in papers are reported in tables.
 """
 
+import json
 from pathlib import Path
 
 from docling.chunking import HybridChunker
@@ -27,7 +28,7 @@ SUPPORTED_SUFFIXES = {".pdf", ".md", ".html", ".docx"}
 
 # Bump when chunking or text cleaning changes: papers indexed with an older
 # version are re-indexed automatically on the next ingest.
-INGEST_VERSION = 3
+INGEST_VERSION = 4
 
 
 def make_converter(settings: Settings) -> DocumentConverter:
@@ -80,6 +81,8 @@ def chunk_document(
         has_table = any(item.label == DocItemLabel.TABLE for item in items)
         metadata = {
             "doc_id": doc_id,
+            # Where the chunk sits on its pages, for highlighting the source in the PDF.
+            "boxes": json.dumps(chunk_boxes(doc, items)),
             "source_file": doc.origin.filename if doc.origin else doc_id,
             "headings": clean_text(" > ".join(chunk.meta.headings or [])),
             "pages": ",".join(map(str, pages)),
@@ -103,6 +106,21 @@ def chunk_document(
         node.relationships[NodeRelationship.SOURCE] = RelatedNodeInfo(node_id=doc_id)
         nodes.append(node)
     return nodes
+
+
+def chunk_boxes(doc: DoclingDocument, items) -> list[list[float]]:
+    """[[page, x0, y0, x1, y1], ...] with coordinates as fractions of the page size,
+    measured from the top-left corner (independent of the rendering resolution)."""
+    boxes = []
+    for item in items:
+        for prov in item.prov:
+            page = doc.pages.get(prov.page_no)
+            if page is None or not page.size.width or not page.size.height:
+                continue
+            w, h = page.size.width, page.size.height
+            box = prov.bbox.to_top_left_origin(page_height=h)
+            boxes.append([prov.page_no, *(round(v, 4) for v in (box.l / w, box.t / h, box.r / w, box.b / h))])
+    return boxes
 
 
 def find_papers(folder: Path) -> list[Path]:

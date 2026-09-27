@@ -3,7 +3,8 @@
 Two gold files per corpus, in ``data/<corpus>/gold/``:
 
 ``questions.csv`` -- for retrieval and question answering
-    id, question, doc_id, pages, expected
+    id, question, [question_fa], doc_id, pages, expected
+    - question_fa: optional Persian version (``--persian`` evaluates it via translation)
     - pages:    pages holding the answer, e.g. "5" or "5;6"
     - expected: strings the answer must contain, separated by ";";
                 alternatives separated by "|", e.g. "1.36" or "323;367" or "twice|two times".
@@ -42,6 +43,7 @@ from matrag.schema import ExtractedRecord
 class GoldQuestion(BaseModel):
     id: str
     question: str
+    question_fa: str = ""  # optional Persian version, for the translation experiment
     doc_id: str
     pages: list[int]
     expected: list[list[str]]  # all groups required; any alternative within a group
@@ -65,7 +67,8 @@ def load_questions(path: Path) -> list[GoldQuestion]:
     with path.open(encoding="utf-8") as f:
         return [
             GoldQuestion(
-                id=row["id"], question=row["question"], doc_id=row.get("doc_id") or "",
+                id=row["id"], question=row["question"], question_fa=row.get("question_fa") or "",
+                doc_id=row.get("doc_id") or "",
                 pages=[int(p) for p in re.split(r"[;, ]+", row.get("pages") or "") if p.strip()],
                 expected=[[alt.strip() for alt in group.split("|") if alt.strip()]
                           for group in row.get("expected", "").split(";") if group.strip()],
@@ -112,9 +115,12 @@ class RetrievalReport:
                 "MRR": round(self.mrr, 3)}
 
 
-def evaluate_retrieval(items: list[GoldQuestion], retriever, mode: str, ks=(1, 3, 5, 10)) -> RetrievalReport:
-    """``retriever`` must return at least max(ks) hits."""
-    ranks = {it.id: first_relevant_rank(it, retriever.retrieve(it.question)) for it in items if it.answerable}
+def evaluate_retrieval(items: list[GoldQuestion], retriever, mode: str, ks=(1, 3, 5, 10),
+                       query_fn: Callable[[GoldQuestion], str] | None = None) -> RetrievalReport:
+    """``retriever`` must return at least max(ks) hits; ``query_fn`` picks the query text
+    (default: the English question; e.g. the translated Persian question)."""
+    query_fn = query_fn or (lambda it: it.question)
+    ranks = {it.id: first_relevant_rank(it, retriever.retrieve(query_fn(it))) for it in items if it.answerable}
     return RetrievalReport(mode, ranks, ks)
 
 
