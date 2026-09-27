@@ -56,7 +56,10 @@ def ingest(
         typer.echo(f"No papers found in {settings.raw_pdf_dir}", err=True)
         raise typer.Exit(1)
 
+    from matrag.metadata import Library, resolve
+
     kb = _knowledge_base()
+    library = Library(settings.library_path)
     versions = kb.doc_versions()
     converter, chunker = make_converter(settings), make_chunker(settings)
     for i, path in enumerate(paths, start=1):
@@ -65,18 +68,29 @@ def ingest(
             typer.echo("    already indexed (use --force to rebuild)")
             continue
         doc = convert(path, converter, settings.processed_dir)
-        nodes = chunk_document(doc, doc_id=path.stem, chunker=chunker)
+        # Metadata is looked up once; later edits to papers.json are kept.
+        paper = library.papers.get(path.stem)
+        if paper is None:
+            paper = resolve(doc, path.stem, path.name, online=settings.fetch_metadata)
+            library.put(paper)
+        nodes = chunk_document(doc, doc_id=path.stem, chunker=chunker, paper=paper)
         kb.add_document(path.stem, nodes)
-        typer.echo(f"    {len(nodes)} chunks")
+        typer.echo(f"    {paper.short_citation()}: {len(nodes)} chunks")
 
 
 @app.command()
 def info() -> None:
     """List the papers in the knowledge base."""
+    from matrag.metadata import Library
+
     kb = _knowledge_base()
+    library = Library(get_settings().library_path)
     doc_ids = kb.doc_ids()
     for doc_id in doc_ids:
-        typer.echo(f"{doc_id}: {len(kb.nodes([doc_id]))} chunks")
+        paper = library.get(doc_id)
+        typer.echo(f"{doc_id}: {paper.short_citation()}, {len(kb.nodes([doc_id]))} chunks")
+        if paper.title:
+            typer.echo(f"    {paper.title}")
     typer.echo(f"Total: {len(doc_ids)} papers")
 
 

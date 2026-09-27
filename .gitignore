@@ -12,6 +12,7 @@ data/*/pdfs/
 
 # Generated artifacts (can be rebuilt from the PDFs)
 data/*/processed/
+data/*/papers.json
 storage/
 
 # Reference databases (downloaded, e.g. refractiveindex.info)

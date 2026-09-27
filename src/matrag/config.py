@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     # --- Document conversion (Docling) ---
     # OCR is only needed for scanned PDFs and is slow on CPU.
     do_ocr: bool = False
+    # Look up title/authors/year via arXiv and Crossref (needs internet).
+    fetch_metadata: bool = True
 
     # --- Chunking & embeddings ---
     embed_model: str = "BAAI/bge-base-en-v1.5"
@@ -79,6 +81,10 @@ class Settings(BaseSettings):
     @property
     def processed_dir(self) -> Path:
         return self.data_dir / self.corpus / "processed"
+
+    @property
+    def library_path(self) -> Path:
+        return self.data_dir / self.corpus / "papers.json"
 
     @property
     def chroma_dir(self) -> Path:
