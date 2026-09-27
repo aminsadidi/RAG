@@ -1,7 +1,10 @@
-"""The language model (Gemini through LlamaIndex).
+"""The language model.
 
-Going through LlamaIndex's LLM interface keeps the rest of the code
-provider-independent, so other models can be swapped in for comparison.
+Two providers behind LlamaIndex's common LLM interface, so the rest of the
+code does not change when switching between them:
+
+- Ollama: an open-source model running locally (free, unlimited, slower).
+- Gemini: Google's hosted model (stronger, limited free quota).
 """
 
 import time
@@ -12,15 +15,26 @@ from matrag.config import Settings
 
 
 def make_llm(settings: Settings) -> LLM:
+    if settings.llm_provider == "ollama":
+        from llama_index.llms.ollama import Ollama
+
+        return Ollama(
+            model=settings.ollama_model,
+            base_url=settings.ollama_base_url,
+            temperature=settings.llm_temperature,
+            request_timeout=settings.ollama_timeout_s,
+            context_window=settings.ollama_context_window,
+        )
+
     from llama_index.llms.google_genai import GoogleGenAI
 
     if settings.google_api_key is None:
-        raise RuntimeError("No Gemini API key: set MATRAG_GOOGLE_API_KEY in the .env file.")
+        raise RuntimeError("No Gemini API key: set MATRAG_GOOGLE_API_KEY.")
     return GoogleGenAI(
-        model=settings.llm_model,
+        model=settings.gemini_model,
         api_key=settings.google_api_key.get_secret_value(),
         temperature=settings.llm_temperature,
-        max_retries=settings.llm_max_retries,
+        max_retries=settings.gemini_max_retries,
     )
 
 

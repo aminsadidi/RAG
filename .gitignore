@@ -8,9 +8,11 @@ __pycache__/
 .env
 
 # Papers are copyrighted: never commit them
-data/raw_pdfs/*
-!data/raw_pdfs/.gitkeep
+data/*/pdfs/
 
 # Generated artifacts (can be rebuilt from the PDFs)
-data/processed/
+data/*/processed/
 storage/
+
+# Reference databases (downloaded, e.g. refractiveindex.info)
+data/*/reference/
