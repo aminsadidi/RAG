@@ -87,7 +87,11 @@ def build_context_pack(
     file. The prompt is the same one ``answer_with_rag`` sends, so answers
     obtained either way are comparable.
     """
-    rules = [f"Write the answer in {language}; keep symbols, units and numbers as in the sources."] if language else []
+    # Chat apps turn "[2]" into their own file-citation widget, which hides the
+    # page; asking for plain-text citations keeps them visible.
+    rules = ["Write citations as plain text with the page, e.g. (Source 2, p. 5), not as links or footnotes."]
+    if language:
+        rules.append(f"Write the answer in {language}; keep symbols, units and numbers as in the sources.")
     about_lines = "\n".join(f"- {key}: {value}" for key, value in about.items())
     return (
         build_rag_prompt(question, nodes, rules)
