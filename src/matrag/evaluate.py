@@ -182,10 +182,22 @@ def same_property(a: str, b: str, threshold: float = 0.5) -> bool:
     return property_similarity(a, b) >= threshold
 
 
+_NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
+
+
+def same_position(gold: str, extracted: str) -> bool:
+    """A numeric gold position (e.g. "0.40") matches any equal number in the extracted text
+    ("0.4 µm, 295 K"); other positions (e.g. "R(50)") must appear as text."""
+    if _NUMBER.fullmatch(gold.strip()):
+        return any(abs(float(x) - float(gold)) <= 1e-9 * max(1.0, abs(float(gold)))
+                   for x in _NUMBER.findall(extracted))
+    return normalize(gold) in normalize(extracted)
+
+
 def value_matches(record: ExtractedRecord, gold: GoldValue) -> bool:
     if record.doc_id != gold.doc_id or not same_property(record.property, gold.property):
         return False
-    if gold.spectral_position and normalize(gold.spectral_position) not in normalize(record.spectral_position or ""):
+    if gold.spectral_position and not same_position(gold.spectral_position, record.spectral_position or ""):
         return False
     return abs(record.value - gold.value) <= gold.rel_tol * abs(gold.value) + 1e-12
 
