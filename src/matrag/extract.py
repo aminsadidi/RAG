@@ -35,6 +35,9 @@ Rules:
   recall values from memory.
 - One record per value. A table row with several values gives several records.
 - Values cited from other works still count; set method to "compiled".
+- The value must be the property itself. Do NOT extract counts (e.g. "182 lines"),
+  quantum-number ranges, years, figure/equation numbers or fit-validity limits.
+- "material" is the substance (e.g. "CO2"), never the property name.
 - "evidence" must be copied verbatim from the text.
 - If the text reports none of these properties, return an empty list.
 
