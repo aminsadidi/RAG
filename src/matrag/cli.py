@@ -45,6 +45,7 @@ def _knowledge_base():
 @app.command()
 def ingest(
     paths: Annotated[list[Path] | None, typer.Argument(help="Files to ingest (default: data/<corpus>/pdfs).")] = None,
+    force: Annotated[bool, typer.Option(help="Re-index papers that are already in the database.")] = False,
 ) -> None:
     """Convert papers with Docling, chunk them and add them to the vector database."""
     from matrag.ingest import chunk_document, convert, find_papers, make_chunker, make_converter
@@ -56,9 +57,13 @@ def ingest(
         raise typer.Exit(1)
 
     kb = _knowledge_base()
+    indexed = set(kb.doc_ids())
     converter, chunker = make_converter(settings), make_chunker(settings)
     for i, path in enumerate(paths, start=1):
         typer.echo(f"[{i}/{len(paths)}] {path.name}")
+        if path.stem in indexed and not force:
+            typer.echo("    already indexed (use --force to rebuild)")
+            continue
         doc = convert(path, converter, settings.processed_dir)
         nodes = chunk_document(doc, doc_id=path.stem, chunker=chunker)
         kb.add_document(path.stem, nodes)
