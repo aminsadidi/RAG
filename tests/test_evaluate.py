@@ -79,3 +79,11 @@ def test_extraction_metrics():
 def test_property_name_matching():
     assert same_property("air-broadened Lorentz half-width", "air-broadened half width")
     assert not same_property("line intensity", "air-broadened half-width")
+
+
+def test_numeric_spectral_position():
+    from matrag.evaluate import same_position
+
+    assert same_position("0.40", "0.4 µm, 295 K") and same_position("0.40", "0.40 microns")
+    assert not same_position("0.40", "4.0 µm")
+    assert same_position("R(50)", "R(50) of the 20012-00001 band")

@@ -1,0 +1,13 @@
+doc_id,property,value,unit,material,spectral_position,rel_tol
+arxiv_0805.0096,refractive index,1.44221,,CaF2,0.40,1e-6
+arxiv_0805.0096,refractive index,1.44401,,CaF2,0.40,1e-6
+arxiv_0805.0096,refractive index,1.43392,,CaF2,0.60,1e-6
+arxiv_0805.0096,refractive index,1.43212,,CaF2,0.70,1e-6
+arxiv_0805.0096,refractive index,1.42998,,CaF2,0.90,1e-6
+arxiv_0805.0096,refractive index,1.42662,,CaF2,1.50,1e-6
+arxiv_0805.0096,refractive index,1.42611,,CaF2,2.00,1e-6
+arxiv_0805.0096,refractive index,1.42422,,CaF2,2.00,1e-6
+arxiv_0805.0096,refractive index,1.41821,,CaF2,3.00,1e-6
+arxiv_0805.0096,refractive index,1.41440,,CaF2,3.50,1e-6
+arxiv_0805.0096,refractive index,1.40499,,CaF2,4.50,1e-6
+arxiv_0805.0096,refractive index,1.39301,,CaF2,5.50,1e-6
