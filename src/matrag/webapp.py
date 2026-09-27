@@ -56,9 +56,14 @@ def _ws(corpus: str) -> Workspace:
     return _workspaces[corpus]
 
 
+def _results_root() -> Path:
+    """results/app/, next to the data folder (on Google Drive in Colab)."""
+    return get_settings().data_dir.resolve().parent / "results" / "app"
+
+
 def _results_path(ws: Workspace, kind: str, name: str, suffix: str) -> Path:
-    """results/app/<kind>/<corpus>_<name>_<time><suffix>, next to the data folder (on Drive in Colab)."""
-    folder = ws.settings.data_dir.resolve().parent / "results" / "app" / kind
+    """results/app/<kind>/<corpus>_<name>_<time><suffix>"""
+    folder = _results_root() / kind
     folder.mkdir(parents=True, exist_ok=True)
     return folder / f"{ws.settings.corpus}_{name}_{datetime.now():%Y%m%d-%H%M%S}{suffix}"
 
@@ -372,4 +377,9 @@ def build_app() -> gr.Blocks:
 
 
 def launch(port: int = 7860, share: bool = False, **kwargs) -> None:
-    build_app().queue().launch(server_port=port, share=share, theme=gr.themes.Soft(), css=CSS, **kwargs)
+    results = _results_root()
+    results.mkdir(parents=True, exist_ok=True)
+    # Gradio only serves files from the working and temp folders unless told otherwise;
+    # in Colab the results live on Google Drive.
+    build_app().queue().launch(server_port=port, share=share, theme=gr.themes.Soft(), css=CSS,
+                               allowed_paths=[str(results)], **kwargs)
