@@ -24,6 +24,7 @@ def make_llm(settings: Settings) -> LLM:
             temperature=settings.llm_temperature,
             request_timeout=settings.ollama_timeout_s,
             context_window=settings.ollama_context_window,
+            thinking=settings.ollama_thinking,
         )
 
     from llama_index.llms.google_genai import GoogleGenAI
