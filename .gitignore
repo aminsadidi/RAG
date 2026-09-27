@@ -16,3 +16,6 @@ storage/
 
 # Reference databases (downloaded, e.g. refractiveindex.info)
 data/*/reference/
+
+# Scratch outputs from manual test runs
+results/test_*
