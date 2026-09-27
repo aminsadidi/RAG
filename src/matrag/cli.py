@@ -4,6 +4,7 @@
     matrag info                    # list indexed papers
     matrag ask "question"          # grounded answer with citations
     matrag ask "question" --no-rag # baseline: the LLM alone
+    matrag pack "question"         # prompt file with sources, to upload to any chat AI
     matrag extract -p "line intensity" -p "air-broadened half-width" -o results/x.csv
 
 Global options pick the corpus and the LLM, e.g.:
@@ -103,6 +104,40 @@ def ask(
         typer.echo("\nSources:")
         for i, node in enumerate(answer.sources, start=1):
             typer.echo(f"  [{i}] {format_source_label(node)}  (score {node.score:.3f})")
+
+
+@app.command()
+def pack(
+    question: str,
+    out: Annotated[Path | None, typer.Option("--out", "-o", help="Output file (default: results/packs/<question>.md).")] = None,
+    language: Annotated[str | None, typer.Option(help="Language of the answer, e.g. Persian.")] = None,
+    mode: RetrievalMode = RetrievalMode.hybrid,
+    top_k: Annotated[int | None, typer.Option(help="Chunks to include.")] = None,
+    doc: Annotated[list[str] | None, typer.Option(help="Restrict to these doc ids.")] = None,
+) -> None:
+    """Retrieve sources and write a prompt file to upload to a chat assistant (no LLM call)."""
+    import re
+    from datetime import datetime, timezone
+
+    from matrag.qa import build_context_pack
+    from matrag.retrieve import make_retriever
+
+    settings = get_settings()
+    k = top_k or settings.top_k
+    nodes = make_retriever(_knowledge_base(), mode, k, doc).retrieve(question)
+    about = {
+        "question": question,
+        "corpus": settings.corpus,
+        "retrieval": f"{mode.value}, top {k}",
+        "embedding model": settings.embed_model,
+        "created": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+    }
+    if out is None:
+        slug = re.sub(r"[^\w]+", "_", question.lower()).strip("_")[:60]
+        out = Path("results/packs") / f"{settings.corpus}_{slug}.md"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(build_context_pack(question, nodes, about, language), encoding="utf-8")
+    typer.echo(f"{len(nodes)} sources written to {out}")
 
 
 @app.command()
