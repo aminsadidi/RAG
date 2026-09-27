@@ -20,6 +20,7 @@ def make_llm(settings: Settings) -> LLM:
         model=settings.llm_model,
         api_key=settings.google_api_key.get_secret_value(),
         temperature=settings.llm_temperature,
+        max_retries=settings.llm_max_retries,
     )
 
 
