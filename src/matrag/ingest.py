@@ -20,8 +20,13 @@ from docling_core.types.doc import DocItemLabel, DoclingDocument
 from llama_index.core.schema import NodeRelationship, RelatedNodeInfo, TextNode
 
 from matrag.config import Settings
+from matrag.textfix import clean_text
 
 SUPPORTED_SUFFIXES = {".pdf", ".md", ".html", ".docx"}
+
+# Bump when chunking or text cleaning changes: papers indexed with an older
+# version are re-indexed automatically on the next ingest.
+INGEST_VERSION = 2
 
 
 def make_converter(settings: Settings) -> DocumentConverter:
@@ -73,16 +78,17 @@ def chunk_document(doc: DoclingDocument, doc_id: str, chunker: HybridChunker) ->
         metadata = {
             "doc_id": doc_id,
             "source_file": doc.origin.filename if doc.origin else doc_id,
-            "headings": " > ".join(chunk.meta.headings or []),
+            "headings": clean_text(" > ".join(chunk.meta.headings or [])),
             "pages": ",".join(map(str, pages)),
             "first_page": pages[0] if pages else -1,
             "content_type": "table" if has_table else "text",
+            "ingest_version": INGEST_VERSION,
         }
         node = TextNode(
             id_=f"{doc_id}::{i}",
             # contextualize() prepends the section headings, which gives the
             # embedding model the context a bare table row would lack.
-            text=chunker.contextualize(chunk=chunk),
+            text=clean_text(chunker.contextualize(chunk=chunk)),
             metadata=metadata,
             # The text already carries the headings; don't add metadata twice.
             excluded_embed_metadata_keys=list(metadata),
