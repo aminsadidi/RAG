@@ -21,6 +21,8 @@ dependencies = [
     "pydantic-settings>=2.15",
     "pylatexenc>=2.10",
     "typer>=0.26",
+    "gradio>=6.0",
+    "pandas>=2.0",
 ]
 
 [project.optional-dependencies]
