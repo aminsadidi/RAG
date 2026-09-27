@@ -98,3 +98,55 @@ def compare(records: list[ExtractedRecord], molecule: str, isotopologue: int, nu
             "rel_diff": f"{(r.value - ref) / ref:.3g}" if ref else "",
         })
     return rows
+
+
+# --- absorption spectra -----------------------------------------------------------
+
+OVERRIDABLE = ("nu", "sw", "gamma_air", "gamma_self", "n_air", "delta_air")
+
+
+def overrides_from_records(records: list[ExtractedRecord], lines: list[HitranLine]) -> list[dict]:
+    """Extracted values that can replace a HITRAN parameter of a specific line.
+
+    Values are assumed to be in HITRAN units; check the 'unit' column first.
+    """
+    out = []
+    for r in records:
+        param = hitran_parameter(r.property)
+        line = match_line(r, lines) if param in OVERRIDABLE else None
+        if line is not None:
+            out.append({"index": lines.index(line), "line": line.lower_quanta, "parameter": param,
+                        "hitran": getattr(line, param), "paper": r.value, "source": f"{r.doc_id} p.{r.pages}"})
+    return out
+
+
+def absorption_spectra(molecule: str, isotopologue: int, nu_min: float, nu_max: float,
+                       temperature_K: float = 296.0, pressure_atm: float = 1.0,
+                       overrides: list[dict] | None = None, points: int = 4000,
+                       cache_dir: Path = Path("storage/_hapi")):
+    """Voigt absorption cross-sections (cm2/molecule) from HITRAN, and with the paper's values.
+
+    Returns (wavenumbers, sigma_hitran, sigma_paper or None). The paper curve uses the
+    same HITRAN line list with the overridden parameters substituted.
+    """
+    import hapi
+
+    fetch_lines(molecule, isotopologue, nu_min, nu_max, cache_dir)  # downloads/caches the table
+    table = f"{molecule}_{isotopologue}_{nu_min:g}_{nu_max:g}".replace(".", "p")
+    kwargs = dict(SourceTables=table, HITRAN_units=True, WavenumberRange=[nu_min, nu_max],
+                  WavenumberStep=(nu_max - nu_min) / points,
+                  Environment={"T": temperature_K, "p": pressure_atm})
+    nu, sigma_hitran = hapi.absorptionCoefficient_Voigt(**kwargs)
+    if not overrides:
+        return nu, sigma_hitran, None
+
+    columns = hapi.LOCAL_TABLE_CACHE[table]["data"]
+    saved = [(o["parameter"], o["index"], columns[o["parameter"]][o["index"]]) for o in overrides]
+    try:
+        for o in overrides:
+            columns[o["parameter"]][o["index"]] = o["paper"]
+        _, sigma_paper = hapi.absorptionCoefficient_Voigt(**kwargs)
+    finally:  # keep the cached HITRAN table unchanged
+        for param, index, value in saved:
+            columns[param][index] = value
+    return nu, sigma_hitran, sigma_paper
