@@ -399,6 +399,9 @@ def build_app() -> gr.Blocks:
 
 
 def launch(port: int = 7860, share: bool = False, **kwargs) -> None:
+    # Re-running the launch (e.g. the Colab cell) first stops the previous app,
+    # which would otherwise still hold the port.
+    gr.close_all()
     results = _results_root()
     results.mkdir(parents=True, exist_ok=True)
     # Gradio only serves files from the working and temp folders unless told otherwise;
