@@ -39,6 +39,8 @@ class Settings(BaseSettings):
     llm_model: str = "gemini-3.7-flash"
     # None keeps the model's default; Gemini 3 models may reject a custom temperature.
     llm_temperature: float | None = None
+    # Retries with exponential backoff for transient errors (503 "high demand", 429).
+    llm_max_retries: int = 6
     # Pause between LLM calls to stay within free-tier rate limits.
     llm_min_interval_s: float = 4.0
 

@@ -36,8 +36,10 @@ def make_chunker(settings: Settings, tokenizer: BaseTokenizer | None = None) -> 
     if tokenizer is None:
         from docling_core.transforms.chunker.tokenizer.huggingface import HuggingFaceTokenizer
 
+        # Keep a margin: the embedding model adds special tokens, and chunks
+        # measured by Docling can come out a few tokens longer once serialized.
         tokenizer = HuggingFaceTokenizer.from_pretrained(
-            model_name=settings.embed_model, max_tokens=settings.chunk_max_tokens
+            model_name=settings.embed_model, max_tokens=settings.chunk_max_tokens - 32
         )
     return HybridChunker(tokenizer=tokenizer, merge_peers=True)
 
