@@ -70,3 +70,15 @@ def test_builtin_profiles_load(settings):
     names = [s.name for s in load_profile(settings.model_copy(update={"corpus": "hitran"}))]
     assert "air-broadened half-width" in names
     assert load_profile(settings.model_copy(update={"corpus": "unknown"})) == []
+
+
+def test_spectrum_figure_layout():
+    import numpy as np
+
+    from matrag.webapp import spectrum_figure
+
+    nu = np.linspace(5007.0, 5008.0, 50)
+    base = np.exp(-((nu - 5007.5) / 0.01) ** 2)
+    assert len(spectrum_figure(nu, base, None, "t").data) == 1
+    fig = spectrum_figure(nu, base, base * 1.01, "t")
+    assert [trace.name for trace in fig.data][0] == "HITRAN" and len(fig.data) == 3  # + paper, + difference
