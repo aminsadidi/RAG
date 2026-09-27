@@ -172,7 +172,10 @@ def ask(corpus, question, provider, language, mode, top_k, doc_ids, compare, pro
     if answer.search_query:
         header += f"🔎 جست‌وجو در مقاله‌ها با ترجمه‌ی انگلیسی: *{answer.search_query}*\n\n"
     choices = [(f"[{i}] {format_source_label(n)}", n.node.node_id) for i, n in enumerate(answer.sources, start=1)]
-    first = choices[0][1] if choices else None
+    # Show the first source the answer actually cites, e.g. "[2]" or "(Source 2".
+    cited = [int(m) for m in re.findall(r"\[(\d+)\]|Source (\d+)", answer.text) for m in m if m]
+    cited = [c for c in cited if 1 <= c <= len(choices)]
+    first = choices[cited[0] - 1][1] if cited else (choices[0][1] if choices else None)
     return (_auto_dir(header + answer.text), baseline, sources,
             gr.update(choices=choices, value=first), show_source(corpus, first))
 
