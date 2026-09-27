@@ -65,6 +65,10 @@ class KnowledgeBase:
     def doc_ids(self) -> list[str]:
         return sorted({n.metadata["doc_id"] for n in self.docstore.docs.values()})
 
+    def doc_versions(self) -> dict[str, int]:
+        """Ingest version each paper was indexed with (0 if unknown)."""
+        return {n.metadata["doc_id"]: n.metadata.get("ingest_version", 0) for n in self.docstore.docs.values()}
+
     def _persist(self) -> None:
         self.docstore.persist(str(self.settings.docstore_path))
 
