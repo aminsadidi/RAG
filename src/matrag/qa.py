@@ -49,7 +49,7 @@ class Answer:
 
 def format_source_label(node: NodeWithScore) -> str:
     meta = node.metadata
-    label = f"{meta.get('doc_id', '?')}, p. {meta.get('pages') or '?'}"
+    label = f"{meta.get('citation') or meta.get('doc_id', '?')}, p. {meta.get('pages') or '?'}"
     if meta.get("content_type") == "table":
         label += ", table"
     return label
@@ -93,10 +93,14 @@ def build_context_pack(
     if language:
         rules.append(f"Write the answer in {language}; keep symbols, units and numbers as in the sources.")
     about_lines = "\n".join(f"- {key}: {value}" for key, value in about.items())
+    references = dict.fromkeys(n.metadata.get("reference") or n.metadata.get("doc_id", "?") for n in nodes)
+    reference_lines = "\n".join(f"- {ref}" for ref in references)
     return (
         build_rag_prompt(question, nodes, rules)
         + "\n\n---\nAbout this file (for the reader; not part of the sources):\n"
         + about_lines
+        + "\n\nPapers the sources come from:\n"
+        + reference_lines
         + "\n"
     )
 
