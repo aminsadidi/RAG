@@ -1,0 +1,15 @@
+id,question,doc_id,pages,expected
+o01,Over what temperature range was the absolute refractive index of CaF2 measured with CHARMS?,arxiv_0805.0096,1;2,25;300
+o02,Over what wavelength range was the refractive index of CaF2 measured with CHARMS?,arxiv_0805.0096,1;2,0.4;5.6
+o03,What is the measured absolute refractive index of CaF2 at 0.40 microns and 295 K?,arxiv_0805.0096,3,1.44221
+o04,What is the measured absolute refractive index of CaF2 at 2.00 microns and 30 K?,arxiv_0805.0096,3,1.42611
+o05,Over what wavelength range was the refractive index of Infrasil 301 measured?,arxiv_0805.0096,2,0.40|0.4;3.6
+o06,What model was used to fit the measured refractive index data of CaF2 as a function of wavelength and temperature?,arxiv_0805.0096,1;2,Sellmeier
+o07,What are the unit cell vectors of MoOCl2?,arxiv_2512.06495,3,1.277;0.3759;0.654
+o08,What is the space group of the MoOCl2 crystal?,arxiv_2512.06495,3,C2/m
+o09,What were the thicknesses of the MoOCl2 flakes used for spectroscopic ellipsometry?,arxiv_2512.06495,5,2070;115
+o10,Over what wavelength range was the dielectric tensor of MoOCl2 determined?,arxiv_2512.06495,3,360;1700
+o11,Which dispersion model was used to parameterize the anisotropic optical response of MoOCl2?,arxiv_2512.06495,6,Drude;Tauc-Lorentz
+o12,Over what wavelength range is the absorption of β-barium borate (BBO) presented?,arxiv_2111.01212,1,0.188;6.22
+o13,In which infrared region is the BBO absorption data most reliable?,arxiv_2111.01212,3,1800;2700
+o14,What is the refractive index of germanium at 10.6 µm measured at 77 K?,,,NOT_FOUND
