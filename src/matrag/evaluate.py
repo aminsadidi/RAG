@@ -172,10 +172,14 @@ def _tokens(text: str) -> set[str]:
     return set(re.findall(r"[a-z0-9]+", text.lower().replace("-", " "))) - {"of", "the", "a", "coefficient"}
 
 
-def same_property(a: str, b: str, threshold: float = 0.5) -> bool:
-    """Property names match when their word sets overlap enough (Jaccard index)."""
+def property_similarity(a: str, b: str) -> float:
+    """Overlap of the word sets of two property names (Jaccard index, 0-1)."""
     ta, tb = _tokens(a), _tokens(b)
-    return bool(ta and tb) and len(ta & tb) / len(ta | tb) >= threshold
+    return len(ta & tb) / len(ta | tb) if ta and tb else 0.0
+
+
+def same_property(a: str, b: str, threshold: float = 0.5) -> bool:
+    return property_similarity(a, b) >= threshold
 
 
 def value_matches(record: ExtractedRecord, gold: GoldValue) -> bool:

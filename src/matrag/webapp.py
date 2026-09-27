@@ -20,17 +20,9 @@ from matrag.retrieve import RetrievalMode
 
 LANGUAGES = {"فارسی": "Persian", "English": "English"}
 
-# Starting points for the property box; any property name can be typed.
-PROPERTY_PRESETS = {
-    "hitran": "air-broadened half-width, self-broadened half-width, "
-              "temperature exponent of the air-broadened half-width, pressure shift, line intensity",
-    "optical": "refractive index, extinction coefficient, absorption coefficient, "
-               "Sellmeier coefficients, thermo-optic coefficient dn/dT",
-}
-
 EXTRACT_COLUMNS = ["citation", "pages", "material", "property", "value_text", "unit", "uncertainty",
                    "spectral_position", "temperature_K", "pressure", "broadener", "method",
-                   "value_in_source", "evidence_verified", "evidence"]
+                   "value_in_source", "evidence_verified", "plausible", "evidence"]
 
 GUIDE = """
 ### راهنمای استفاده
@@ -41,7 +33,8 @@ GUIDE = """
    گزینه‌ی «مقایسه با حالت بدون RAG» جواب همان مدل را بدون منابع هم نشان می‌دهد.
 3. **بسته‌ی منابع:** فایلی می‌سازد که می‌توانید در چت Gemini یا هر هوش مصنوعی دیگری آپلود کنید (بدون مصرف API).
 4. **استخراج خواص:** نام خاصیت‌ها را بنویسید؛ جدول مقدارها با منبع و صفحه ساخته می‌شود.
-   ستون `value_in_source` نشان می‌دهد عدد واقعاً در متن مقاله هست یا نه.
+   ستون `value_in_source` نشان می‌دهد عدد واقعاً در متن مقاله هست یا نه؛ ستون `plausible` نشان می‌دهد
+   مقدار در بازه‌ی فیزیکی معقول آن خاصیت هست یا نه (بازه‌ها در `data/<corpus>/profile.yml` قابل تغییرند).
 
 **مجموعه (corpus):** هر موضوع مقاله‌ها و پایگاه داده‌ی جداگانه دارد. برای موضوع جدید، اسم تازه‌ای تایپ کنید.
 """
@@ -186,7 +179,9 @@ def run_extract(corpus, properties, provider, exhaustive, mode, top_k, doc_ids, 
     path = _results_path(ws, "extracted", "values", ".csv")
     df.to_csv(path, index=False)
     ok = int(df["value_in_source"].sum()) if len(df) else 0
-    summary = f"**{len(df)}** مقدار استخراج شد؛ **{ok}** مقدار عیناً در متن منبع پیدا شد. مدل: `{ws.llm_name(provider)}`"
+    implausible = int((df["plausible"] == False).sum()) if len(df) else 0  # noqa: E712 (None = unknown)
+    summary = (f"**{len(df)}** مقدار استخراج شد؛ **{ok}** مقدار عیناً در متن منبع پیدا شد؛ "
+               f"**{implausible}** مقدار خارج از بازه‌ی فیزیکی معقول بود. مدل: `{ws.llm_name(provider)}`")
     shown = df[EXTRACT_COLUMNS].copy()
     shown["evidence"] = shown["evidence"].str.slice(0, 120)  # full text is in the CSV
     return summary, shown, str(path)
@@ -257,7 +252,7 @@ def build_app() -> gr.Blocks:
 
         with gr.Tab("📊 استخراج خواص"):
             properties = gr.Textbox(label="خاصیت‌ها (با کاما جدا کنید)", lines=2,
-                                    value=PROPERTY_PRESETS.get(settings.corpus, ""))
+                                    value=", ".join(_ws(settings.corpus).default_properties()))
             with gr.Row():
                 exhaustive = gr.Checkbox(value=False, label="همه‌ی قطعه‌ها (کامل‌تر ولی خیلی کندتر)")
                 ex_mode = gr.Dropdown([m.value for m in RetrievalMode], value="hybrid", label="روش بازیابی")
@@ -282,7 +277,7 @@ def build_app() -> gr.Blocks:
                      [ex_summary, ex_table, ex_file])
 
         def switch_corpus(name):
-            return (*_refresh_paper_lists(name), PROPERTY_PRESETS.get(name, ""))
+            return (*_refresh_paper_lists(name), ", ".join(_ws(name).default_properties()))
 
         corpus.change(switch_corpus, corpus, [*paper_outputs, properties])
     return demo
