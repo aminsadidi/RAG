@@ -142,7 +142,16 @@ class Workspace:
                 results.append(IngestResult(path.name, doc_id, 0, error=f"{type(e).__name__}: {e}"))
         if on_progress:
             on_progress(len(paths), len(paths), "done")
+        if any(not r.skipped and not r.error for r in results):
+            self.backup()
         return results
+
+    def backup(self) -> None:
+        """Mirror the corpus database to ``storage_backup_dir``, if configured."""
+        backup_dir = self.settings.storage_backup_dir
+        source = self.settings.docstore_path.parent
+        if backup_dir and source.exists():
+            shutil.copytree(source, Path(backup_dir) / self.settings.corpus, dirs_exist_ok=True)
 
     def papers(self) -> list[tuple[PaperInfo, int]]:
         """Indexed papers with their chunk counts."""
@@ -158,6 +167,7 @@ class Workspace:
         self.library.remove(doc_id)
         for f in [*self.settings.raw_pdf_dir.glob(f"{doc_id}.*"), self.settings.processed_dir / f"{doc_id}.json"]:
             f.unlink(missing_ok=True)
+        self.backup()
 
     # --- using the knowledge base ---
 
