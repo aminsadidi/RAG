@@ -16,6 +16,7 @@ import pandas as pd
 from matrag.config import get_settings
 from matrag.pipeline import Workspace, list_corpora, slugify
 from matrag.qa import format_source_label
+from matrag.references.hitran import MOLECULES
 from matrag.retrieve import RetrievalMode
 
 LANGUAGES = {"فارسی": "Persian", "English": "English"}
@@ -33,6 +34,7 @@ GUIDE = """
    گزینه‌ی «مقایسه با حالت بدون RAG» جواب همان مدل را بدون منابع هم نشان می‌دهد.
 3. **بسته‌ی منابع:** فایلی می‌سازد که می‌توانید در چت Gemini یا هر هوش مصنوعی دیگری آپلود کنید (بدون مصرف API).
 4. **استخراج خواص:** نام خاصیت‌ها را بنویسید؛ جدول مقدارها با منبع و صفحه ساخته می‌شود.
+5. **طیف:** طیف جذبی HITRAN را رسم می‌کند و با فایل استخراج، طیف دوم با مقدارهای مقاله را کنارش می‌گذارد.
    ستون `value_in_source` نشان می‌دهد عدد واقعاً در متن مقاله هست یا نه؛ ستون `plausible` نشان می‌دهد
    مقدار در بازه‌ی فیزیکی معقول آن خاصیت هست یا نه (بازه‌ها در `data/<corpus>/profile.yml` قابل تغییرند).
 
@@ -187,6 +189,71 @@ def run_extract(corpus, properties, provider, exhaustive, mode, top_k, doc_ids, 
     return summary, shown, str(path)
 
 
+# --- spectrum tab ---
+
+# Two categorical slots of the validated default palette (blue, orange); the paper
+# curve is also dashed so the series never rely on color alone.
+_SERIES = {"hitran": "#2a78d6", "paper": "#eb6834"}
+
+
+def spectrum_figure(nu, sigma_hitran, sigma_paper, title: str):
+    """Cross-sections on top; when the paper curve exists, their difference below on its own axis."""
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+
+    rows = 2 if sigma_paper is not None else 1
+    fig = make_subplots(rows=rows, cols=1, shared_xaxes=True, vertical_spacing=0.06,
+                        row_heights=[0.7, 0.3] if rows == 2 else [1.0])
+    fig.add_trace(go.Scatter(x=nu, y=sigma_hitran, name="HITRAN", mode="lines",
+                             line=dict(color=_SERIES["hitran"], width=2)), row=1, col=1)
+    if sigma_paper is not None:
+        fig.add_trace(go.Scatter(x=nu, y=sigma_paper, name="HITRAN + مقادیر مقاله", mode="lines",
+                                 line=dict(color=_SERIES["paper"], width=2, dash="dash")), row=1, col=1)
+        fig.add_trace(go.Scatter(x=nu, y=sigma_paper - sigma_hitran, name="اختلاف (مقاله − HITRAN)",
+                                 mode="lines", line=dict(color=_SERIES["paper"], width=2)), row=2, col=1)
+        fig.update_yaxes(title_text="Δσ", row=2, col=1)
+    grid = dict(gridcolor="#e8e7e3", zeroline=False)
+    fig.update_xaxes(**grid, tickformat=".2f")
+    fig.update_xaxes(title_text="wavenumber (cm⁻¹)", row=rows, col=1)
+    fig.update_yaxes(**grid, exponentformat="power")
+    fig.update_yaxes(title_text="σ (cm²/molecule)", row=1, col=1)
+    fig.update_layout(
+        title=title, hovermode="x unified", height=620 if rows == 2 else 480,
+        margin=dict(l=70, r=20, t=60, b=60), plot_bgcolor="#fcfcfb", paper_bgcolor="#fcfcfb",
+        font=dict(color="#0b0b0b"),
+        legend=dict(orientation="h", y=1.02, x=1, xanchor="right", yanchor="bottom"),
+    )
+    return fig
+
+
+def run_spectrum(molecule, isotopologue, nu_min, nu_max, temperature, pressure, records_file):
+    from matrag.evaluate import load_records
+    from matrag.references import hitran
+
+    if not nu_max > nu_min:
+        raise gr.Error("انتهای بازه باید از ابتدای آن بزرگ‌تر باشد.")
+    if nu_max - nu_min > 200:
+        raise gr.Error("بازه‌ی عدد موج حداکثر 200 cm⁻¹ باشد (برای سرعت).")
+    iso = int(isotopologue)
+    try:
+        lines = hitran.fetch_lines(molecule, iso, float(nu_min), float(nu_max))
+    except Exception as e:
+        raise gr.Error(f"دریافت داده از HITRAN ناموفق بود: {e}")
+    if not lines:
+        raise gr.Error("در این بازه خطی در HITRAN نیست.")
+    overrides = []
+    if records_file:
+        overrides = hitran.overrides_from_records(load_records(Path(records_file)), lines)
+    nu, sig_h, sig_p = hitran.absorption_spectra(molecule, iso, float(nu_min), float(nu_max),
+                                                  float(temperature), float(pressure), overrides)
+    title = f"{molecule} (isotopologue {iso}) · T = {temperature:g} K · p = {pressure:g} atm · {len(lines)} lines"
+    table = pd.DataFrame(overrides, columns=["line", "parameter", "hitran", "paper", "source"])
+    note = (f"**{len(overrides)}** پارامتر از مقاله جایگزین مقدار HITRAN شد. "
+            "فرض بر این است که واحدها همان واحدهای HITRAN هستند (cm⁻¹/atm، cm⁻¹/(molecule·cm⁻²))؛ ستون unit جدول استخراج را چک کنید."
+            if overrides else "فقط طیف HITRAN رسم شد (فایل استخراج داده نشده یا خطی از آن با HITRAN تطبیق نیافت).")
+    return spectrum_figure(nu, sig_h, sig_p, title), note, table
+
+
 # --- layout ---
 
 def build_app() -> gr.Blocks:
@@ -263,6 +330,25 @@ def build_app() -> gr.Blocks:
             ex_table = gr.Dataframe(interactive=False, wrap=True, max_height=600)
             ex_file = gr.File(label="دانلود CSV")
 
+        with gr.Tab("📈 طیف (HITRAN)"):
+            gr.Markdown("طیف جذبی (پروفایل Voigt) از خطوط HITRAN با کتابخانه‌ی HAPI محاسبه می‌شود. اگر فایل CSV "
+                        "استخراج خواص را بدهید، طیف دوم با جایگزینی مقدارهای مقاله رسم می‌شود تا اثر فیزیکی "
+                        "اختلاف مقاله و HITRAN دیده شود. خطوط با شاخه و J (مثلاً R(50)) تطبیق داده می‌شوند.",
+                        elem_classes="rtl")
+            with gr.Row():
+                sp_molecule = gr.Dropdown(list(MOLECULES), value="CO2", label="مولکول")
+                sp_iso = gr.Number(1, precision=0, label="ایزوتوپولوگ (1 = فراوان‌ترین)")
+                sp_min = gr.Number(5007.0, label="ابتدای بازه (cm⁻¹)")
+                sp_max = gr.Number(5008.5, label="انتهای بازه (cm⁻¹)")
+                sp_t = gr.Number(296, label="دما (K)")
+                sp_p = gr.Number(0.04, label="فشار (atm)")
+            sp_file = gr.File(label="فایل CSV استخراج خواص (اختیاری؛ بعد از استخراج خودکار پر می‌شود)",
+                              file_types=[".csv"], type="filepath")
+            sp_btn = gr.Button("رسم طیف", variant="primary")
+            sp_plot = gr.Plot()
+            sp_note = gr.Markdown(elem_classes="rtl")
+            sp_table = gr.Dataframe(label="پارامترهای جایگزین‌شده", interactive=False)
+
         with gr.Tab("ℹ️ راهنما"):
             gr.Markdown(GUIDE, elem_classes="rtl")
 
@@ -274,7 +360,9 @@ def build_app() -> gr.Blocks:
         pack_btn.click(make_pack, [corpus, pack_question, pack_language, pack_mode, pack_top_k, pack_docs],
                        [pack_text, pack_file])
         ex_btn.click(run_extract, [corpus, properties, provider, exhaustive, ex_mode, ex_top_k, ex_docs],
-                     [ex_summary, ex_table, ex_file])
+                     [ex_summary, ex_table, ex_file]).then(lambda f: f, ex_file, sp_file)
+        sp_btn.click(run_spectrum, [sp_molecule, sp_iso, sp_min, sp_max, sp_t, sp_p, sp_file],
+                     [sp_plot, sp_note, sp_table])
 
         def switch_corpus(name):
             return (*_refresh_paper_lists(name), ", ".join(_ws(name).default_properties()))
