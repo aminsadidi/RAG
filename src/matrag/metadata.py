@@ -65,14 +65,28 @@ class PaperInfo(BaseModel):
         return ". ".join(p for p in parts if p) or self.doc_id
 
 
-def find_identifiers(doc: DoclingDocument, file_name: str) -> tuple[str | None, str | None]:
+def _raw_first_page(pdf_path: Path | None) -> str:
+    """Text layer of page 1, including margins and stamps that Docling may drop."""
+    if pdf_path is None or pdf_path.suffix.lower() != ".pdf":
+        return ""
+    try:
+        import pypdfium2
+
+        return pypdfium2.PdfDocument(str(pdf_path))[0].get_textpage().get_text_range()
+    except Exception:
+        return ""
+
+
+def find_identifiers(
+    doc: DoclingDocument, file_name: str, pdf_path: Path | None = None
+) -> tuple[str | None, str | None]:
     """(doi, arxiv_id) from the file name or the first page.
 
     Only page 1 is searched: DOIs further on usually belong to cited works.
     """
     first_page = " ".join(
         item.text for item in doc.texts if item.prov and item.prov[0].page_no == 1
-    )
+    ) + " " + _raw_first_page(pdf_path)
     arxiv = _ARXIV_RE.search(file_name) or _ARXIV_RE.search(first_page)
     doi = _DOI_RE.search(first_page)
     return (doi.group(1).rstrip(".)]") if doi else None, arxiv.group(1) if arxiv else None)
@@ -88,7 +102,11 @@ def _strip_markup(text: str) -> str:
     """Plain text from Crossref JATS/HTML markup or arXiv LaTeX."""
     # Crossref pretty-prints markup: whitespace spanning a line break next to
     # a tag is layout, not content ("CO\n <sub>2</sub>\n , N" -> "CO2, N").
-    text = re.sub(r"\s*\n\s*(?=<|[,.;:)])|(?<=>)\s*\n\s*", "", text)
+    text = re.sub(r"\s*\n\s*(?=<|[,.;:)])", "", text)
+    # After a sub/superscript, a line break continues a formula ("N<sub>2</sub>\n O"
+    # -> "N2O") before a capital letter not followed by lowercase; else it is a space.
+    text = re.sub(r"(?<=>)\s*\n\s*(?=(.))",
+                  lambda m: "" if re.match(r"[A-Z](?![a-z])", text[m.end():m.end() + 2]) else " ", text)
     text = re.sub(r"\s*<su([bp])>\s*(.*?)\s*</su\1>", r"\2", text)  # "CO <sub>2</sub>" -> "CO2"
     text = html.unescape(re.sub(r"<[^>]+>", "", text))
     if "$" in text or "\\" in text:
@@ -122,18 +140,44 @@ def fetch_crossref(doi: str) -> dict:
     }
 
 
-def docling_title(doc: DoclingDocument) -> str | None:
-    for item in doc.texts:
-        if item.label == DocItemLabel.TITLE:
-            return clean_text(item.text)
+def search_crossref(title: str, min_similarity: float = 0.9) -> dict | None:
+    """Look a paper up by title; accept only a near-identical title."""
+    from difflib import SequenceMatcher
+
+    query = urllib.parse.urlencode({"query.bibliographic": title, "rows": 3})
+    items = json.loads(_get(f"https://api.crossref.org/works?{query}"))["message"]["items"]
+    key = lambda t: re.sub(r"[^a-z0-9]", "", t.lower())  # noqa: E731  ("CaF 2" == "CaF2")
+    for item in items:
+        if item.get("title") and SequenceMatcher(None, key(title), key(item["title"][0])).ratio() >= min_similarity:
+            return fetch_crossref(item["DOI"])
     return None
 
 
-def resolve(doc: DoclingDocument, doc_id: str, file_name: str, online: bool = True) -> PaperInfo:
-    doi, arxiv_id = find_identifiers(doc, file_name)
+def docling_title(doc: DoclingDocument) -> str | None:
+    """The title item, else the first substantial heading on page 1."""
+    first_heading = None
+    for item in doc.texts:
+        if item.label == DocItemLabel.TITLE:
+            return clean_text(item.text)
+        if (first_heading is None and item.label == DocItemLabel.SECTION_HEADER
+                and item.prov and item.prov[0].page_no == 1 and len(item.text) >= 15):
+            first_heading = clean_text(item.text)
+    return first_heading
+
+
+def resolve(doc: DoclingDocument, doc_id: str, file_name: str, online: bool = True,
+            pdf_path: Path | None = None) -> PaperInfo:
+    doi, arxiv_id = find_identifiers(doc, file_name, pdf_path)
     info = PaperInfo(doc_id=doc_id, doi=doi, arxiv_id=arxiv_id, title=docling_title(doc), source="docling")
     if not online:
         return info
+    if not (doi or arxiv_id) and info.title:
+        try:
+            found = search_crossref(info.title)
+        except Exception:
+            found = None
+        if found:
+            return info.model_copy(update={k: v for k, v in found.items() if v} | {"source": "crossref-search"})
     # arXiv first (it also reports the journal DOI), then Crossref, whose
     # published-version metadata takes precedence.
     steps = [(fetch_arxiv, lambda: info.arxiv_id), (fetch_crossref, lambda: info.doi)]
