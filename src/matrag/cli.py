@@ -139,7 +139,7 @@ def pack(
     from matrag.pipeline import slugify
 
     ws = _workspace()
-    text = ws.pack(question, language, mode, top_k, doc)
+    text = ws.pack(question, language, mode, top_k, doc)  # a Persian question is translated first
     out = out or Path("results/packs") / f"{ws.settings.corpus}_{slugify(question)}.md"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(text, encoding="utf-8")
@@ -191,17 +191,29 @@ def _print_table(rows: list[dict]) -> None:
 def evaluate_retrieval(
     modes: Annotated[list[RetrievalMode] | None, typer.Option("--mode", help="Modes to compare (default: all).")] = None,
     k: Annotated[int, typer.Option(help="Chunks retrieved per question.")] = 10,
+    persian: Annotated[bool, typer.Option(help="Use the Persian questions (question_fa), translated by the LLM.")] = False,
 ) -> None:
-    """Recall@k and MRR of each retrieval mode (no LLM needed)."""
+    """Recall@k and MRR of each retrieval mode (no LLM needed, except with --persian)."""
     from matrag.evaluate import evaluate_retrieval as run, load_questions, write_rows
 
     ws = _workspace()
     items = load_questions(_gold("questions.csv"))
-    reports = [run(items, ws.retriever(m, k), m.value, ks=tuple(x for x in (1, 3, 5, 10) if x <= k))
+    query_fn = None
+    if persian:
+        items = [it for it in items if it.question_fa]
+        translations = {it.id: ws.search_query(it.question_fa) or it.question_fa for it in items}
+        query_fn = lambda it: translations[it.id]  # noqa: E731
+    ks = tuple(x for x in (1, 3, 5, 10) if x <= k)
+    reports = [run(items, ws.retriever(m, k), m.value + (" (fa→en)" if persian else ""), ks, query_fn)
                for m in modes or list(RetrievalMode)]
     rows = [r.summary() for r in reports]
     _print_table(rows)
-    out = Path("results/eval") / f"{ws.settings.corpus}_retrieval.csv"
+    suffix = "_retrieval_fa" if persian else "_retrieval"
+    out = Path("results/eval") / f"{ws.settings.corpus}{suffix}.csv"
+    if persian:
+        write_rows(out.with_name(out.stem + "_translations.csv"),
+                   [{"id": it.id, "question_fa": it.question_fa, "translation": translations[it.id],
+                     "original_en": it.question} for it in items])
     write_rows(out, rows)
     write_rows(out.with_name(out.stem + "_ranks.csv"),
                [{"id": i, **{r.mode: r.ranks[i] for r in reports}} for i in reports[0].ranks])

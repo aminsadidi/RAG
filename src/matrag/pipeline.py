@@ -19,7 +19,7 @@ from llama_index.core.llms import LLM
 from matrag.config import Settings, get_settings
 from matrag.index import KnowledgeBase, make_embed_model
 from matrag.metadata import Library, PaperInfo, resolve
-from matrag.qa import Answer, answer_with_rag, answer_without_rag, build_context_pack
+from matrag.qa import Answer, answer_with_rag, answer_without_rag, build_context_pack, is_persian, translate_query
 from matrag.retrieve import RetrievalMode, make_retriever
 from matrag.schema import ExtractedRecord
 
@@ -56,6 +56,7 @@ class Workspace:
             settings = settings.model_copy(update={"corpus": corpus})
         self.settings = settings
         settings.raw_pdf_dir.mkdir(parents=True, exist_ok=True)
+        self._translations: dict[str, str] = {}
 
     # --- components (created on first use) ---
 
@@ -176,31 +177,72 @@ class Workspace:
             f.unlink(missing_ok=True)
         self.backup()
 
+    def source_image(self, node_id: str):
+        """Page image(s) of a chunk with its region highlighted (stacked if it spans pages)."""
+        from PIL import Image
+
+        from matrag.pdfview import render_highlight, source_pages
+
+        node = self.kb.docstore.get_node(node_id)
+        pdf = self.settings.raw_pdf_dir / node.metadata.get("source_file", "")
+        if pdf.suffix.lower() != ".pdf" or not pdf.exists():
+            raise FileNotFoundError(f"PDF not found for {node_id}: {pdf}")
+        images = [render_highlight(pdf, node.metadata, page) for page in source_pages(node.metadata)[:3]]
+        if len(images) == 1:
+            return images[0]
+        stacked = Image.new("RGB", (max(i.width for i in images), sum(i.height for i in images) + 12 * len(images)),
+                            "#e8e7e3")
+        y = 0
+        for image in images:
+            stacked.paste(image, (0, y))
+            y += image.height + 12
+        return stacked
+
     # --- using the knowledge base ---
 
     def retriever(self, mode: RetrievalMode = RetrievalMode.hybrid, top_k: int | None = None,
                   doc_ids: list[str] | None = None):
         return make_retriever(self.kb, mode, top_k or self.settings.top_k, doc_ids or None)
 
+    def search_query(self, text: str, provider: str | None = None) -> str | None:
+        """English translation of a Persian question or property name (None if already English).
+
+        The papers are in English, so Persian text is translated before retrieval;
+        translations are cached so repeating a question costs no extra LLM call.
+        """
+        if not is_persian(text):
+            return None
+        if text not in self._translations:
+            self._translations[text] = translate_query(text, self.llm(provider))
+        return self._translations[text]
+
     def ask(self, question: str, provider: str | None = None, mode: RetrievalMode = RetrievalMode.hybrid,
             top_k: int | None = None, doc_ids: list[str] | None = None, language: str | None = None) -> Answer:
-        return answer_with_rag(question, self.retriever(mode, top_k, doc_ids), self.llm(provider), language)
+        query = self.search_query(question, provider)
+        language = language or ("Persian" if query else None)
+        return answer_with_rag(question, self.retriever(mode, top_k, doc_ids), self.llm(provider), language, query)
 
     def ask_without_rag(self, question: str, provider: str | None = None, language: str | None = None) -> Answer:
-        return answer_without_rag(question, self.llm(provider), language)
+        query = self.search_query(question, provider)
+        language = language or ("Persian" if query else None)
+        return answer_without_rag(question, self.llm(provider), language, query)
 
     def pack(self, question: str, language: str | None = None, mode: RetrievalMode = RetrievalMode.hybrid,
-             top_k: int | None = None, doc_ids: list[str] | None = None) -> str:
+             top_k: int | None = None, doc_ids: list[str] | None = None, provider: str | None = None) -> str:
+        """Prompt file for a chat assistant. Only a Persian question needs the LLM (to translate it)."""
         k = top_k or self.settings.top_k
-        nodes = self.retriever(mode, k, doc_ids).retrieve(question)
+        query = self.search_query(question, provider)
+        language = language or ("Persian" if query else None)
+        nodes = self.retriever(mode, k, doc_ids).retrieve(query or question)
         about = {
             "question": question,
+            **({"search query (English)": query} if query else {}),
             "corpus": self.settings.corpus,
             "retrieval": f"{mode.value}, top {k}",
             "embedding model": self.settings.embed_model,
             "created": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         }
-        return build_context_pack(question, nodes, about, language)
+        return build_context_pack(question, nodes, about, language, query)
 
     def extract(self, properties: list[str], provider: str | None = None, exhaustive: bool = False,
                 mode: RetrievalMode = RetrievalMode.hybrid, top_k: int | None = None,
@@ -209,6 +251,8 @@ class Workspace:
 
         s = self._settings_for(provider)
         llm = self.llm(provider)
+        # Property names typed in Persian are translated like questions.
+        properties = [self.search_query(p, provider) or p for p in properties]
         if exhaustive:
             records = extract(properties, llm, nodes=self.kb.nodes(doc_ids or None), min_interval_s=s.llm_min_interval_s)
         else:

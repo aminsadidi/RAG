@@ -60,3 +60,17 @@ def test_doc_filter(kb):
         make_retriever(kb, doc_ids=["unknown_paper"])
     hits = make_retriever(kb, top_k=2, doc_ids=["sample_paper"]).retrieve("broadening")
     assert all(h.node.metadata["doc_id"] == "sample_paper" for h in hits)
+
+
+def test_chunk_boxes_are_normalized(settings, tokenizer):
+    """Boxes are fractions of the page from the top-left, whatever the PDF's coordinate origin."""
+    from docling_core.types.doc import BoundingBox, CoordOrigin, DocItemLabel, DoclingDocument, ProvenanceItem, Size
+
+    from matrag.ingest import chunk_boxes
+
+    doc = DoclingDocument(name="x")
+    doc.add_page(page_no=1, size=Size(width=600, height=800))
+    item = doc.add_text(label=DocItemLabel.TEXT, text="hello", prov=ProvenanceItem(
+        page_no=1, charspan=(0, 5),
+        bbox=BoundingBox(l=60, t=720, r=300, b=640, coord_origin=CoordOrigin.BOTTOMLEFT)))
+    assert chunk_boxes(doc, [item]) == [[1, 0.1, 0.1, 0.5, 0.2]]
