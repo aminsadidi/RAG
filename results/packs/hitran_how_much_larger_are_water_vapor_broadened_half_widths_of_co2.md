@@ -7,6 +7,7 @@ Rules:
   and measurement conditions (temperature, pressure, broadening gas, spectral band).
 - Distinguish experimental from theoretical/computed values when the source does.
 - If the sources do not contain the answer, reply exactly: "Not found in the provided sources."
+- Write citations as plain text with the page, e.g. (Source 2, p. 5), not as links or footnotes.
 - Write the answer in Persian; keep symbols, units and numbers as in the sources.
 
 Sources:
@@ -42,4 +43,4 @@ About this file (for the reader; not part of the sources):
 - corpus: hitran
 - retrieval: hybrid, top 5
 - embedding model: BAAI/bge-base-en-v1.5
-- created: 2026-09-27 14:54 UTC
+- created: 2026-09-27 14:57 UTC
