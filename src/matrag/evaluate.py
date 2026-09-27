@@ -230,11 +230,13 @@ def evaluate_extraction(records: Iterable[ExtractedRecord], gold: list[GoldValue
 def load_records(path: Path) -> list[ExtractedRecord]:
     with path.open(encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+    fields = ExtractedRecord.model_fields
     out = []
     for row in rows:
-        clean = {k: v for k, v in row.items() if v not in ("", None)}
+        # Empty CSV cells: None for optional fields, "" for required text fields.
+        clean = {k: v for k, v in row.items() if k in fields and (v != "" or fields[k].is_required())}
         for flag in ("evidence_verified", "value_in_source"):
-            clean[flag] = str(clean.get(flag, "")).lower() == "true"
+            clean[flag] = str(row.get(flag, "")).lower() == "true"
         out.append(ExtractedRecord(**clean))
     return out
 

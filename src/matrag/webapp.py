@@ -7,7 +7,7 @@ Run with ``matrag app`` (local) or from the Colab notebook.
 """
 
 import re
-import tempfile
+from datetime import datetime
 from pathlib import Path
 
 import gradio as gr
@@ -59,6 +59,13 @@ def _ws(corpus: str) -> Workspace:
     if corpus not in _workspaces:
         _workspaces[corpus] = Workspace(corpus=corpus)
     return _workspaces[corpus]
+
+
+def _results_path(ws: Workspace, kind: str, name: str, suffix: str) -> Path:
+    """results/app/<kind>/<corpus>_<name>_<time><suffix>, next to the data folder (on Drive in Colab)."""
+    folder = ws.settings.data_dir.resolve().parent / "results" / "app" / kind
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder / f"{ws.settings.corpus}_{name}_{datetime.now():%Y%m%d-%H%M%S}{suffix}"
 
 
 def _auto_dir(text: str) -> str:
@@ -156,7 +163,7 @@ def make_pack(corpus, question, language, mode, top_k, doc_ids):
         text = ws.pack(question, LANGUAGES.get(language), RetrievalMode(mode), int(top_k), doc_ids or None)
     except ValueError as e:
         raise gr.Error(str(e))
-    path = Path(tempfile.mkdtemp()) / f"{ws.settings.corpus}_{slugify(question, 40)}.md"
+    path = _results_path(ws, "packs", slugify(question, 40), ".md")
     path.write_text(text, encoding="utf-8")
     return text, str(path)
 
@@ -176,11 +183,13 @@ def run_extract(corpus, properties, provider, exhaustive, mode, top_k, doc_ids, 
     library = ws.library
     rows = [r.model_dump() | {"citation": library.get(r.doc_id).short_citation()} for r in records]
     df = pd.DataFrame(rows, columns=EXTRACT_COLUMNS + ["doc_id", "node_id", "llm"])
-    path = Path(tempfile.mkdtemp()) / f"{ws.settings.corpus}_extracted.csv"
+    path = _results_path(ws, "extracted", "values", ".csv")
     df.to_csv(path, index=False)
     ok = int(df["value_in_source"].sum()) if len(df) else 0
     summary = f"**{len(df)}** مقدار استخراج شد؛ **{ok}** مقدار عیناً در متن منبع پیدا شد. مدل: `{ws.llm_name(provider)}`"
-    return summary, df[EXTRACT_COLUMNS], str(path)
+    shown = df[EXTRACT_COLUMNS].copy()
+    shown["evidence"] = shown["evidence"].str.slice(0, 120)  # full text is in the CSV
+    return summary, shown, str(path)
 
 
 # --- layout ---
@@ -256,7 +265,7 @@ def build_app() -> gr.Blocks:
             ex_docs = gr.Dropdown(initial_choices, multiselect=True, label="فقط در این مقاله‌ها (اختیاری)")
             ex_btn = gr.Button("استخراج", variant="primary")
             ex_summary = gr.Markdown(elem_classes="rtl")
-            ex_table = gr.Dataframe(interactive=False, wrap=True)
+            ex_table = gr.Dataframe(interactive=False, wrap=True, max_height=600)
             ex_file = gr.File(label="دانلود CSV")
 
         with gr.Tab("ℹ️ راهنما"):

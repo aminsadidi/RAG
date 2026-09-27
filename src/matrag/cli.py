@@ -250,6 +250,56 @@ def evaluate_extraction(
     typer.echo(f"saved {out}")
 
 
+reference_app = typer.Typer(help="Reference databases: HITRAN and refractiveindex.info.", no_args_is_help=True)
+app.add_typer(reference_app, name="reference")
+
+
+@reference_app.command("hitran")
+def reference_hitran(
+    records: Annotated[Path, typer.Argument(help="CSV written by 'matrag extract'.")],
+    molecule: Annotated[str, typer.Option(help="Molecule formula, e.g. CO2.")],
+    nu_min: Annotated[float, typer.Option(help="Wavenumber window start (cm-1); selects the band.")],
+    nu_max: Annotated[float, typer.Option(help="Wavenumber window end (cm-1).")],
+    isotopologue: Annotated[int, typer.Option(help="HITRAN isotopologue number (1 = most abundant).")] = 1,
+    out: Annotated[Path | None, typer.Option("--out", "-o")] = None,
+) -> None:
+    """Compare extracted line parameters with HITRAN (downloaded with HAPI)."""
+    from matrag.evaluate import load_records, write_rows
+    from matrag.references.hitran import compare
+
+    rows = compare(load_records(records), molecule, isotopologue, nu_min, nu_max)
+    matched = [r for r in rows if r["hitran_value"] != ""]
+    if matched:
+        _print_table([{k: r[k] for k in ("spectral_position", "property", "value", "hitran_value", "abs_diff", "rel_diff")}
+                      for r in matched])
+    out = out or records.with_name(records.stem + "_vs_hitran.csv")
+    if rows:
+        write_rows(out, rows)
+    typer.echo(f"{len(matched)}/{len(rows)} values matched to HITRAN lines; saved {out}")
+
+
+@reference_app.command("optical-candidates")
+def reference_optical_candidates(
+    database: Annotated[Path, typer.Option(help="refractiveindex.info-database/database folder.")] =
+        Path("data/optical/reference/database"),
+    out: Annotated[Path, typer.Option("--out", "-o")] = Path("data/optical/candidates.csv"),
+) -> None:
+    """List the source papers of refractiveindex.info with open-access status (Crossref)."""
+    from matrag.evaluate import write_rows
+    from matrag.references.refractiveindex import open_access_candidates
+
+    if not database.exists():
+        typer.echo("Clone it first: git clone --depth 1 https://github.com/polyanskiy/refractiveindex.info-database "
+                   "data/optical/reference", err=True)
+        raise typer.Exit(1)
+    rows = open_access_candidates(database)
+    rows.sort(key=lambda r: (not r.get("open_access"), -(r.get("year") or 0)))
+    cols = ["open_access", "year", "authors", "title", "journal", "doi", "arxiv_id", "materials",
+            "data_types", "wavelength_um", "citations", "license", "entries"]
+    write_rows(out, [{c: r.get(c, "") for c in cols} for r in rows])
+    typer.echo(f"{len(rows)} papers ({sum(bool(r.get('open_access')) for r in rows)} open access); saved {out}")
+
+
 @app.command(name="app")
 def run_app(
     port: int = 7860,
