@@ -398,13 +398,26 @@ def build_app() -> gr.Blocks:
     return demo
 
 
-def launch(port: int = 7860, share: bool = False, **kwargs) -> None:
-    # Re-running the launch (e.g. the Colab cell) first stops the previous app,
-    # which would otherwise still hold the port.
+def _free_port(preferred: int, tries: int = 20) -> int:
+    import socket
+
+    for port in range(preferred, preferred + tries):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            if sock.connect_ex(("127.0.0.1", port)) != 0:
+                return port
+    raise OSError(f"No free port in {preferred}-{preferred + tries - 1}")
+
+
+def launch(port: int = 7860, share: bool = False, **kwargs) -> int:
+    """Start the app and return the port it runs on."""
+    # Re-running the launch (e.g. the Colab cell) first stops the previous app;
+    # if something else still holds the port, the next free one is used.
     gr.close_all()
+    port = _free_port(port)
     results = _results_root()
     results.mkdir(parents=True, exist_ok=True)
     # Gradio only serves files from the working and temp folders unless told otherwise;
     # in Colab the results live on Google Drive.
     build_app().queue().launch(server_port=port, share=share, theme=gr.themes.Soft(), css=CSS,
                                allowed_paths=[str(results)], **kwargs)
+    return port
