@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "matrag"
 version = "0.1.0"
 description = "RAG system for retrieving and extracting physical properties of materials from scientific papers"
-readme = "ROADMAP.md"
+readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "docling>=2.130",
@@ -35,6 +35,9 @@ matrag = "matrag.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+matrag = ["profiles/*.yml"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

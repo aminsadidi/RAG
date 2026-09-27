@@ -42,3 +42,5 @@ class ExtractedRecord(PropertyRecord):
     # Anti-hallucination checks against the source chunk text:
     evidence_verified: bool  # the evidence quote is present
     value_in_source: bool  # the value as written is present
+    # Within the physically plausible range of the corpus profile (None: no range known).
+    plausible: bool | None = None

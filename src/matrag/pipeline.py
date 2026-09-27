@@ -207,9 +207,18 @@ class Workspace:
         else:
             records = extract(properties, llm, retriever=self.retriever(mode, top_k, doc_ids),
                               min_interval_s=s.llm_min_interval_s)
+        from matrag.profiles import load_profile, plausibility
+
+        specs = load_profile(s)
         for r in records:
             r.llm = s.llm_name
+            r.plausible = plausibility(r.property, r.value, specs)
         return records
+
+    def default_properties(self) -> list[str]:
+        from matrag.profiles import load_profile
+
+        return [spec.name for spec in load_profile(self.settings)]
 
 
 def _safe_name(name: str) -> str:
