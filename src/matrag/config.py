@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     corpus: str = "hitran"
     data_dir: Path = Path("data")
     storage_dir: Path = Path("storage")
+    # Optional copy of storage/<corpus> kept up to date after every change
+    # (Colab: the database runs on local disk and is mirrored to Google Drive).
+    storage_backup_dir: Path | None = None
 
     # --- Document conversion (Docling) ---
     # OCR is only needed for scanned PDFs and is slow on CPU.

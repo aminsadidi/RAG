@@ -20,3 +20,6 @@ data/*/reference/
 
 # Scratch outputs from manual test runs
 results/test_*
+
+# Outputs saved by the web app
+results/app/
