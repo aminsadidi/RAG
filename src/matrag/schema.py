@@ -38,6 +38,7 @@ class ExtractedRecord(PropertyRecord):
     doc_id: str
     node_id: str
     pages: str
+    llm: str = ""  # provider:model that produced the record
     # Anti-hallucination checks against the source chunk text:
     evidence_verified: bool  # the evidence quote is present
     value_in_source: bool  # the value as written is present

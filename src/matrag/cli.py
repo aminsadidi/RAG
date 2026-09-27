@@ -1,12 +1,16 @@
 """Command-line interface.
 
-    matrag ingest                  # convert + index every paper in data/raw_pdfs
+    matrag ingest                  # convert + index every paper in data/<corpus>/pdfs
     matrag info                    # list indexed papers
     matrag ask "question"          # grounded answer with citations
     matrag ask "question" --no-rag # baseline: the LLM alone
     matrag extract -p "line intensity" -p "air-broadened half-width" -o results/x.csv
+
+Global options pick the corpus and the LLM, e.g.:
+    matrag --corpus optical --llm gemini ask "..."
 """
 
+import os
 from pathlib import Path
 from typing import Annotated
 
@@ -18,6 +22,18 @@ from matrag.retrieve import RetrievalMode
 app = typer.Typer(help="RAG over scientific papers for material properties.", no_args_is_help=True)
 
 
+@app.callback()
+def main(
+    corpus: Annotated[str | None, typer.Option(help="Corpus name (default: MATRAG_CORPUS or 'hitran').")] = None,
+    llm: Annotated[str | None, typer.Option(help="LLM provider: ollama or gemini.")] = None,
+) -> None:
+    # Passed on through the environment so get_settings() sees them everywhere.
+    if corpus:
+        os.environ["MATRAG_CORPUS"] = corpus
+    if llm:
+        os.environ["MATRAG_LLM_PROVIDER"] = llm
+
+
 def _knowledge_base():
     from matrag.index import KnowledgeBase, make_embed_model
 
@@ -27,7 +43,7 @@ def _knowledge_base():
 
 @app.command()
 def ingest(
-    paths: Annotated[list[Path] | None, typer.Argument(help="Files to ingest (default: data/raw_pdfs).")] = None,
+    paths: Annotated[list[Path] | None, typer.Argument(help="Files to ingest (default: data/<corpus>/pdfs).")] = None,
 ) -> None:
     """Convert papers with Docling, chunk them and add them to the vector database."""
     from matrag.ingest import chunk_document, convert, find_papers, make_chunker, make_converter
@@ -73,6 +89,7 @@ def ask(
 
     settings = get_settings()
     llm = make_llm(settings)
+    typer.echo(f"[{settings.corpus} | {settings.llm_name}]", err=True)
     if no_rag:
         typer.echo(answer_without_rag(question, llm).text)
         return
@@ -106,12 +123,15 @@ def extract(
     settings = get_settings()
     kb = _knowledge_base()
     llm = make_llm(settings)
+    typer.echo(f"[{settings.corpus} | {settings.llm_name}]", err=True)
     if exhaustive:
         records = run_extract(prop, llm, nodes=kb.nodes(doc), min_interval_s=settings.llm_min_interval_s)
     else:
         retriever = make_retriever(kb, mode, top_k or settings.top_k, doc)
         records = run_extract(prop, llm, retriever=retriever, min_interval_s=settings.llm_min_interval_s)
 
+    for r in records:
+        r.llm = settings.llm_name
     save_records(records, out)
     unverified = sum(not r.value_in_source for r in records)
     typer.echo(f"{len(records)} values saved to {out} ({unverified} not found verbatim in their source)")

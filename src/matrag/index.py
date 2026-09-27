@@ -28,7 +28,7 @@ def make_embed_model(settings: Settings) -> BaseEmbedding:
 class KnowledgeBase:
     def __init__(self, settings: Settings, embed_model: BaseEmbedding):
         self.settings = settings
-        settings.storage_dir.mkdir(parents=True, exist_ok=True)
+        settings.docstore_path.parent.mkdir(parents=True, exist_ok=True)
 
         client = chromadb.PersistentClient(path=str(settings.chroma_dir))
         # Cosine distance is the standard choice for normalized sentence embeddings.
