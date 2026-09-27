@@ -70,11 +70,17 @@ def build_rag_prompt(question: str, nodes: list[NodeWithScore], extra_rules: lis
     )
 
 
-def answer_with_rag(question: str, retriever: BaseRetriever, llm: LLM) -> Answer:
+def _language_rules(language: str | None) -> list[str]:
+    if not language:
+        return []
+    return [f"Write the answer in {language}; keep symbols, units and numbers as in the sources."]
+
+
+def answer_with_rag(question: str, retriever: BaseRetriever, llm: LLM, language: str | None = None) -> Answer:
     nodes = retriever.retrieve(question)
     if not nodes:
         return Answer(question, NOT_FOUND)
-    prompt = build_rag_prompt(question, nodes)
+    prompt = build_rag_prompt(question, nodes, _language_rules(language))
     return Answer(question, llm.complete(prompt).text.strip(), nodes)
 
 
@@ -90,8 +96,7 @@ def build_context_pack(
     # Chat apps turn "[2]" into their own file-citation widget, which hides the
     # page; asking for plain-text citations keeps them visible.
     rules = ["Write citations as plain text with the page, e.g. (Source 2, p. 5), not as links or footnotes."]
-    if language:
-        rules.append(f"Write the answer in {language}; keep symbols, units and numbers as in the sources.")
+    rules += _language_rules(language)
     about_lines = "\n".join(f"- {key}: {value}" for key, value in about.items())
     references = dict.fromkeys(n.metadata.get("reference") or n.metadata.get("doc_id", "?") for n in nodes)
     reference_lines = "\n".join(f"- {ref}" for ref in references)
@@ -105,6 +110,8 @@ def build_context_pack(
     )
 
 
-def answer_without_rag(question: str, llm: LLM) -> Answer:
+def answer_without_rag(question: str, llm: LLM, language: str | None = None) -> Answer:
     prompt = NO_RAG_PROMPT.format(not_found=NOT_FOUND, question=question)
+    if language:
+        prompt = prompt.replace("\nQuestion:", f"Write the answer in {language}.\n\nQuestion:", 1)
     return Answer(question, llm.complete(prompt).text.strip())

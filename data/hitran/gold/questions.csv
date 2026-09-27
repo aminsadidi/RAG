@@ -1,0 +1,17 @@
+id,question,doc_id,pages,expected
+h01,"According to theoretical calculations, how large can water-vapor-broadened half-widths of CO2 lines become compared to air-broadened ones?",arxiv_1906.01475,5,twice|two times|2 times|دو برابر
+h02,What scaling factor was applied to the air-broadening parameters of CH4 to obtain its water-vapor broadening coefficients?,arxiv_1906.01475,10,1.36
+h03,What scaling factor was used for the temperature-dependence exponents of water-vapor broadening of CH4?,arxiv_1906.01475,10,1.26
+h04,At which temperatures did Delahaye et al. determine Lorentz half widths of CO2 transitions broadened by water vapor?,arxiv_1906.01475,5,323;367
+h05,How many 12CO2 lines with water-vapor broadening half widths were reported by Sung et al.?,arxiv_1906.01475,5,182
+h06,Which CO2 line and band were studied with comb-locked cavity ring-down spectroscopy at 2 µm?,arxiv_2602.23812,1,R(50);20012
+h07,What is the wavenumber of the R(50) line of the CO2 20012-00001 band measured with comb-locked cavity ring-down spectroscopy?,arxiv_2602.23812,5;6,5007.787078
+h08,Over what pressure range were the CO2 R(50) cavity ring-down spectra recorded?,arxiv_2602.23812,5,667;4000
+h09,What 1-σ fluctuation of the line-center frequency was found for the comb-locked cavity ring-down spectrometer?,arxiv_2602.23812,7,180
+h10,What is the empty-cavity ring-down time of the high-finesse optical resonator used for CO2 at 2 µm?,arxiv_2602.23812,4,18
+h11,What scaling factor does HITRAN use to obtain H2-broadening coefficients of CO2 lines from air-broadening coefficients?,arxiv_2605.11761,2,1.5767
+h12,For how many CO2 lines were H2 pressure-broadening and shift coefficients measured in the 4.3 µm region?,arxiv_2605.11761,2,61
+h13,What range of H2 broadening coefficients did Padmanabhan et al. measure for CO2 lines in the 30012←00001 band?,arxiv_2605.11761,1;2,0.095;0.121
+h14,What spectral resolution was used for the Fourier transform spectra of CO2 diluted in H2?,arxiv_2605.11761,2,0.01
+h15,What calibration factor was obtained for the wavenumber scale of the CO2-H2 Fourier transform spectra?,arxiv_2605.11761,3,1.000000467
+h16,What is the self-broadening coefficient of the NH3 line at 1.2 µm measured at 150 K?,,,NOT_FOUND

@@ -12,6 +12,9 @@ def test_short_citation_forms():
 
 def test_strip_crossref_and_latex_markup():
     assert _strip_markup("Part I—CO\n    <sub>2</sub>\n    , N\n <sub>2</sub>\n O") == "Part I—CO2, N2O"
+    assert _strip_markup("of H\n <sub>2</sub>\n pressure-broadening of CO\n <sub>2</sub>\n absorption") == \
+        "of H2 pressure-broadening of CO2 absorption"
+    assert _strip_markup("CH\n <sub>4</sub>\n , and H\n <sub>2</sub>\n S") == "CH4, and H2S"
     assert _strip_markup("Astronomy &amp; Astrophysics") == "Astronomy & Astrophysics"
     assert _strip_markup(r"$\beta$-BBO in the 0.188-6.22 $\mu$m range") == "β-BBO in the 0.188-6.22 μm range"
 
