@@ -1,0 +1,20 @@
+# Properties for the HITRAN (molecular spectroscopy) corpus.
+# range: plausible values in the given unit (HITRAN conventions); values outside it
+# are flagged, which catches both wrong extractions and unit mismatches.
+# Copy this file to data/hitran/profile.yml to change it.
+properties:
+  - name: air-broadened half-width
+    unit: cm-1 atm-1
+    range: [0.001, 0.5]
+  - name: self-broadened half-width
+    unit: cm-1 atm-1
+    range: [0.001, 1.5]
+  - name: temperature exponent of the air-broadened half-width
+    unit: dimensionless
+    range: [-0.5, 1.5]
+  - name: pressure shift
+    unit: cm-1 atm-1
+    range: [-0.1, 0.1]
+  - name: line intensity
+    unit: cm-1/(molecule cm-2)
+    range: [1.0e-35, 1.0e-17]

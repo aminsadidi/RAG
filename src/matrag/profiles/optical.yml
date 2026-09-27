@@ -1,0 +1,16 @@
+# Properties for the optical-constants corpus (see hitran.yml for the format).
+properties:
+  - name: refractive index
+    unit: dimensionless
+    range: [1.0, 6.0]
+  - name: extinction coefficient
+    unit: dimensionless
+    range: [0.0, 20.0]
+  - name: absorption coefficient
+    unit: cm-1
+    range: [0.0, 1.0e7]
+  - name: Sellmeier coefficients
+    unit: ""
+  - name: thermo-optic coefficient dn/dT
+    unit: K-1
+    range: [-1.0e-3, 1.0e-3]

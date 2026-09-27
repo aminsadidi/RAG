@@ -49,3 +49,24 @@ DATA:
     assert (e.material, e.page, e.doi, e.data_types, e.wavelength_um) == \
         ("CaF2", "Daimon-20", "10.1364/AO.41.005275", "formula 2", "0.138-2.326")
     assert "Daimon" in e.reference and "<" not in e.reference
+
+
+def test_plausibility_ranges():
+    from matrag.profiles import PropertySpec, plausibility
+
+    specs = [PropertySpec("air-broadened half-width", "cm-1 atm-1", (0.001, 0.5)),
+             PropertySpec("temperature exponent of the air-broadened half-width", "", (-0.5, 1.5)),
+             PropertySpec("Sellmeier coefficients")]
+    assert plausibility("air-broadened Lorentz half-width", 0.0712, specs) is True
+    assert plausibility("air-broadened half-width", 182, specs) is False  # a line count, not a width
+    assert plausibility("air-broadened half-width", 71.2, specs) is False  # 10^-3 units
+    assert plausibility("temperature exponent n_air", 0.74, specs) is True
+    assert plausibility("line intensity", 1e-22, specs) is None  # no spec
+
+
+def test_builtin_profiles_load(settings):
+    from matrag.profiles import load_profile
+
+    names = [s.name for s in load_profile(settings.model_copy(update={"corpus": "hitran"}))]
+    assert "air-broadened half-width" in names
+    assert load_profile(settings.model_copy(update={"corpus": "unknown"})) == []
