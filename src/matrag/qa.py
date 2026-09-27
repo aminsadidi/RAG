@@ -24,7 +24,7 @@ Rules:
   and measurement conditions (temperature, pressure, broadening gas, spectral band).
 - Distinguish experimental from theoretical/computed values when the source does.
 - If the sources do not contain the answer, reply exactly: "{not_found}"
-
+{extra_rules}
 Sources:
 {context}
 
@@ -61,12 +61,40 @@ def format_context(nodes: list[NodeWithScore]) -> str:
     )
 
 
+def build_rag_prompt(question: str, nodes: list[NodeWithScore], extra_rules: list[str] = ()) -> str:
+    return RAG_PROMPT.format(
+        not_found=NOT_FOUND,
+        extra_rules="".join(f"- {rule}\n" for rule in extra_rules),
+        context=format_context(nodes),
+        question=question,
+    )
+
+
 def answer_with_rag(question: str, retriever: BaseRetriever, llm: LLM) -> Answer:
     nodes = retriever.retrieve(question)
     if not nodes:
         return Answer(question, NOT_FOUND)
-    prompt = RAG_PROMPT.format(not_found=NOT_FOUND, context=format_context(nodes), question=question)
+    prompt = build_rag_prompt(question, nodes)
     return Answer(question, llm.complete(prompt).text.strip(), nodes)
+
+
+def build_context_pack(
+    question: str, nodes: list[NodeWithScore], about: dict[str, str], language: str | None = None
+) -> str:
+    """A self-contained prompt file to upload to any chat assistant.
+
+    Retrieval is done by this system; generation by whatever model reads the
+    file. The prompt is the same one ``answer_with_rag`` sends, so answers
+    obtained either way are comparable.
+    """
+    rules = [f"Write the answer in {language}; keep symbols, units and numbers as in the sources."] if language else []
+    about_lines = "\n".join(f"- {key}: {value}" for key, value in about.items())
+    return (
+        build_rag_prompt(question, nodes, rules)
+        + "\n\n---\nAbout this file (for the reader; not part of the sources):\n"
+        + about_lines
+        + "\n"
+    )
 
 
 def answer_without_rag(question: str, llm: LLM) -> Answer:
