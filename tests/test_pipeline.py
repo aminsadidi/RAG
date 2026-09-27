@@ -52,11 +52,7 @@ def test_retrieval_modes(kb, mode):
     query = "Fourier transform spectrometer pressure"
     hits = make_retriever(kb, mode, top_k=3).retrieve(query)
     assert 0 < len(hits) <= 3
-    # Mock embeddings carry no meaning, so only keyword relevance can be checked.
-    if mode == RetrievalMode.bm25:
-        assert "spectrometer" in hits[0].node.get_content()
-    if mode == RetrievalMode.hybrid:
-        assert any("spectrometer" in h.node.get_content() for h in hits)
+    assert "spectrometer" in hits[0].node.get_content()
 
 
 def test_doc_filter(kb):
