@@ -20,13 +20,14 @@ from docling_core.types.doc import DocItemLabel, DoclingDocument
 from llama_index.core.schema import NodeRelationship, RelatedNodeInfo, TextNode
 
 from matrag.config import Settings
+from matrag.metadata import PaperInfo
 from matrag.textfix import clean_text
 
 SUPPORTED_SUFFIXES = {".pdf", ".md", ".html", ".docx"}
 
 # Bump when chunking or text cleaning changes: papers indexed with an older
 # version are re-indexed automatically on the next ingest.
-INGEST_VERSION = 2
+INGEST_VERSION = 3
 
 
 def make_converter(settings: Settings) -> DocumentConverter:
@@ -64,7 +65,9 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path) -> Doclin
     return doc
 
 
-def chunk_document(doc: DoclingDocument, doc_id: str, chunker: HybridChunker) -> list[TextNode]:
+def chunk_document(
+    doc: DoclingDocument, doc_id: str, chunker: HybridChunker, paper: PaperInfo | None = None
+) -> list[TextNode]:
     """Split a document into nodes carrying provenance metadata.
 
     Node ids are deterministic (``<doc_id>::<n>``) so evaluation sets can
@@ -83,6 +86,9 @@ def chunk_document(doc: DoclingDocument, doc_id: str, chunker: HybridChunker) ->
             "first_page": pages[0] if pages else -1,
             "content_type": "table" if has_table else "text",
             "ingest_version": INGEST_VERSION,
+            # Bibliographic labels, e.g. "Tan et al. (2019)" and the full reference.
+            "citation": paper.short_citation() if paper else doc_id,
+            "reference": paper.reference() if paper else doc_id,
         }
         node = TextNode(
             id_=f"{doc_id}::{i}",
