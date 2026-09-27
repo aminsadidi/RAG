@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+
+# Secrets
+.env
+
+# Papers are copyrighted: never commit them
+data/raw_pdfs/*
+!data/raw_pdfs/.gitkeep
+
+# Generated artifacts (can be rebuilt from the PDFs)
+data/processed/
+storage/
