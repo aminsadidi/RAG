@@ -1,7 +1,7 @@
 """Web interface (Gradio).
 
-Tabs: papers (upload / arXiv / list / remove), question answering,
-context pack for chat assistants, and property extraction.
+Tabs: papers (upload / arXiv / folder / list / remove), question answering,
+context pack for chat assistants, property extraction and HITRAN spectra.
 
 Run with ``matrag app`` (local) or from the Colab notebook.
 """
@@ -34,9 +34,9 @@ GUIDE = """
    گزینه‌ی «مقایسه با حالت بدون RAG» جواب همان مدل را بدون منابع هم نشان می‌دهد.
 3. **بسته‌ی منابع:** فایلی می‌سازد که می‌توانید در چت Gemini یا هر هوش مصنوعی دیگری آپلود کنید (بدون مصرف API).
 4. **استخراج خواص:** نام خاصیت‌ها را بنویسید؛ جدول مقدارها با منبع و صفحه ساخته می‌شود.
-5. **طیف:** طیف جذبی HITRAN را رسم می‌کند و با فایل استخراج، طیف دوم با مقدارهای مقاله را کنارش می‌گذارد.
    ستون `value_in_source` نشان می‌دهد عدد واقعاً در متن مقاله هست یا نه؛ ستون `plausible` نشان می‌دهد
    مقدار در بازه‌ی فیزیکی معقول آن خاصیت هست یا نه (بازه‌ها در `data/<corpus>/profile.yml` قابل تغییرند).
+5. **طیف:** طیف جذبی HITRAN را رسم می‌کند و با فایل استخراج، طیف دوم با مقدارهای مقاله را کنارش می‌گذارد.
 
 **مجموعه (corpus):** هر موضوع مقاله‌ها و پایگاه داده‌ی جداگانه دارد. برای موضوع جدید، اسم تازه‌ای تایپ کنید.
 """

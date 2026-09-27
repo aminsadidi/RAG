@@ -86,9 +86,16 @@ class Workspace:
     def add_files(self, files: list[Path]) -> list[Path]:
         """Copy papers into the corpus folder; returns their new paths."""
         added = []
-        for f in files:
-            target = self.settings.raw_pdf_dir / _safe_name(Path(f).name)
-            if Path(f).resolve() != target.resolve():
+        for f in map(Path, files):
+            name = Path(_safe_name(f.name))
+            target = self.settings.raw_pdf_dir / name
+            if f.resolve() != target.resolve():
+                # A different paper under an existing name gets a new name (paper_2.pdf, ...)
+                # instead of silently replacing the indexed one.
+                n = 2
+                while target.exists() and not _same_file(f, target):
+                    target = target.with_name(f"{name.stem}_{n}{name.suffix}")
+                    n += 1
                 shutil.copyfile(f, target)
             added.append(target)
         return added
@@ -219,6 +226,12 @@ class Workspace:
         from matrag.profiles import load_profile
 
         return [spec.name for spec in load_profile(self.settings)]
+
+
+def _same_file(a: Path, b: Path) -> bool:
+    import filecmp
+
+    return filecmp.cmp(a, b, shallow=False)
 
 
 def _safe_name(name: str) -> str:

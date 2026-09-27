@@ -32,3 +32,16 @@ def test_ingest_list_pack_and_remove(settings, embed_model, tokenizer, sample_pa
 
     ws.remove_paper("sample_paper")
     assert ws.papers() == [] and not path.exists()
+
+
+def test_add_files_never_overwrites_a_different_paper(settings, tmp_path):
+    ws = Workspace(settings, corpus="dup")
+    a, b = tmp_path / "a" / "paper.pdf", tmp_path / "b" / "paper.pdf"
+    for f, text in ((a, "first"), (b, "second")):
+        f.parent.mkdir()
+        f.write_text(text)
+    [first] = ws.add_files([a])
+    [same] = ws.add_files([a])  # same content again: same file
+    [second] = ws.add_files([b])  # different content, same name
+    assert first == same and first.name == "paper.pdf" and second.name == "paper_2.pdf"
+    assert first.read_text() == "first" and second.read_text() == "second"
