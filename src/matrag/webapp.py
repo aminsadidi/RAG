@@ -121,6 +121,23 @@ def ingest_uploads(corpus: str, files: list[str] | None, arxiv_ids: str, progres
     return ("\n".join(lines), *_refresh_paper_lists(corpus))
 
 
+def ingest_folder(corpus: str, progress=gr.Progress()):
+    """Index every paper in the corpus folder that is not indexed yet (e.g. PDFs copied into Drive)."""
+    ws = _ws(corpus)
+
+    def report(i, n, name):
+        progress(i / max(n, 1), desc=f"{i}/{n}: {name}")
+
+    results = ws.ingest(on_progress=report)
+    new = [r for r in results if not r.skipped]
+    if not results:
+        lines = [f"پوشه‌ی `{ws.settings.raw_pdf_dir}` خالی است."]
+    else:
+        lines = [f"- ❌ `{r.file}`: {r.error}" if r.error else f"- ✅ `{r.file}` → **{r.citation}**، {r.chunks} قطعه"
+                 for r in new] or ["همه‌ی مقاله‌های پوشه از قبل پردازش شده بودند."]
+    return ("\n".join(lines), *_refresh_paper_lists(corpus))
+
+
 def remove_paper(corpus: str, doc_id: str | None):
     if not doc_id:
         raise gr.Error("مقاله‌ای برای حذف انتخاب نشده است.")
@@ -282,6 +299,10 @@ def build_app() -> gr.Blocks:
                     arxiv_ids = gr.Textbox(label="یا شناسه‌های arXiv (با فاصله یا کاما)",
                                            placeholder="1906.01475, 2111.01212")
                     add_btn = gr.Button("افزودن و پردازش", variant="primary")
+                    folder_btn = gr.Button("پردازش همه‌ی مقاله‌های پوشه")
+                    gr.Markdown("برای افزودن تعداد زیاد مقاله، PDFها را مستقیم در پوشه‌ی "
+                                "`data/<corpus>/pdfs` (در کولب: `matrag_data/data/<corpus>/pdfs` در Drive) "
+                                "بگذارید و این دکمه را بزنید.", elem_classes="rtl")
             ingest_log = gr.Markdown(elem_classes="rtl")
             table = gr.Dataframe(papers_table(settings.corpus), label="مقاله‌های پایگاه داده",
                                  interactive=False, wrap=True)
@@ -359,6 +380,7 @@ def build_app() -> gr.Blocks:
 
         paper_outputs = [table, to_remove, ask_docs, pack_docs, ex_docs]
         add_btn.click(ingest_uploads, [corpus, files, arxiv_ids], [ingest_log, *paper_outputs])
+        folder_btn.click(ingest_folder, [corpus], [ingest_log, *paper_outputs])
         remove_btn.click(remove_paper, [corpus, to_remove], [ingest_log, *paper_outputs])
         ask_btn.click(ask, [corpus, question, provider, language, mode, top_k, ask_docs, compare],
                       [answer, baseline, sources])
