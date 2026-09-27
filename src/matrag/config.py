@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     # Local models on a laptop CPU are slow; allow long generations.
     ollama_timeout_s: float = 900.0
     ollama_context_window: int = 8192
+    # Qwen3 hybrid models "think" before answering by default; turning it off
+    # makes them much faster. None leaves the model's default (needed for
+    # models without a thinking mode).
+    ollama_thinking: bool | None = None
 
     google_api_key: SecretStr | None = None
     gemini_model: str = "gemini-3.7-flash"
