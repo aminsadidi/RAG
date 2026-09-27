@@ -1,6 +1,6 @@
 from llama_index.core.schema import NodeWithScore, TextNode
 
-from matrag.qa import NOT_FOUND, answer_with_rag, format_context
+from matrag.qa import NOT_FOUND, answer_with_rag, build_context_pack, format_context
 
 
 class FakeRetriever:
@@ -37,3 +37,11 @@ def test_no_sources_short_circuits():
     llm = FakeLLM()
     assert answer_with_rag("q", FakeRetriever([]), llm).text == NOT_FOUND
     assert llm.prompt is None
+
+
+def test_context_pack_is_the_rag_prompt_plus_notes():
+    node = NodeWithScore(node=TextNode(text="γ_air = 0.0712", metadata={"doc_id": "p", "pages": "3"}), score=1.0)
+    text = build_context_pack("γ_air?", [node], {"corpus": "hitran"}, language="Persian")
+    assert "[1] (p, p. 3)\nγ_air = 0.0712" in text
+    assert "Write the answer in Persian" in text
+    assert text.index("Question: γ_air?") < text.index("- corpus: hitran")
