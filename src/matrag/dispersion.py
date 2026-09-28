@@ -94,6 +94,8 @@ class DispersionFormula(BaseModel):
 def check_formula(formula: DispersionFormula, n_min: float = 1.0, n_max: float = 5.0,
                   max_slope_per_um: float = 1.0) -> list[str]:
     """Physical sanity problems of a formula over its validity range (empty list: looks fine)."""
+    if not formula.pole_terms and not formula.power_terms:
+        return ["no wavelength-dependent terms (only a constant)"]
     lo, hi = formula.valid_range_um()
     lam = np.linspace(lo, hi, 400)
     try:

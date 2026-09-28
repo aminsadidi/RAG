@@ -70,3 +70,22 @@ def test_deduplicate_keeps_best_supported_copy():
     c = FormulaRecord(formula=bbo_e(axis="o"), doc_id="p", pages="10", source="matlab", numbers_in_source=1.0)
     out = deduplicate_formulas([a, b, c])
     assert len(out) == 2 and {r.source for r in out} == {"scilab", "matlab"}
+
+
+def test_repair_pole_written_as_squared_constant():
+    from matrag.formulas import repair_pole_flags
+
+    wrong = bbo_e()
+    for t in wrong.pole_terms:
+        t.pole_is_wavelength = True  # the local model's misreading
+    fixed = repair_pole_flags(wrong)
+    assert not any(t.pole_is_wavelength for t in fixed.pole_terms)
+    leviton_style = DispersionFormula(material="CaF2", constant=1.0, equation_text="n² − 1 = Σ S_i λ²/(λ² − λ_i²)",
+                                      pole_terms=[PoleTerm(coefficient=1.04, pole=0.079, pole_is_wavelength=True)])
+    assert repair_pole_flags(leviton_style).pole_terms[0].pole_is_wavelength  # a real resonance wavelength stays
+
+
+def test_constant_only_formula_is_flagged():
+    from matrag.dispersion import check_formula
+
+    assert check_formula(DispersionFormula(material="x", constant=1.04834, equation_text=""))
