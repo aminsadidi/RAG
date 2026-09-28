@@ -202,15 +202,16 @@ class Library:
     def get(self, doc_id: str) -> PaperInfo:
         return self.papers.get(doc_id) or PaperInfo(doc_id=doc_id)
 
-    def put(self, info: PaperInfo) -> None:
+    def put(self, info: PaperInfo, save: bool = True) -> None:
         self.papers[info.doc_id] = info
-        self._save()
+        if save:
+            self.save()
 
     def remove(self, doc_id: str) -> None:
         if self.papers.pop(doc_id, None) is not None:
-            self._save()
+            self.save()
 
-    def _save(self) -> None:
+    def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
         data = {k: v.model_dump() for k, v in sorted(self.papers.items())}
         self.path.write_text(json.dumps(data, ensure_ascii=False, indent=2), "utf-8")

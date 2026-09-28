@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     # Optional copy of storage/<corpus> kept up to date after every change
     # (Colab: the database runs on local disk and is mirrored to Google Drive).
     storage_backup_dir: Path | None = None
+    # refractiveindex.info database shared by all corpora (default: data/<corpus>/reference/database).
+    reference_dir: Path | None = None
 
     # --- Document conversion (Docling) ---
     # OCR is only needed for scanned PDFs and is slow on CPU.
@@ -33,6 +35,10 @@ class Settings(BaseSettings):
     do_formula_enrichment: bool = False
     # Look up title/authors/year via arXiv and Crossref (needs internet).
     fetch_metadata: bool = True
+    # Long documents (theses, books) are converted up to this page only.
+    max_pages: int = 60
+    # A conversion taking longer than this keeps only the pages done so far.
+    convert_timeout_s: float = 900.0
 
     # --- Chunking & embeddings ---
     embed_model: str = "BAAI/bge-base-en-v1.5"
@@ -81,19 +87,30 @@ class Settings(BaseSettings):
         return self.gemini_min_interval_s if self.llm_provider == "gemini" else 0.0
 
     @property
+    def corpus_root(self) -> Path | None:
+        """External paper collection linked to this corpus (see ``matrag link``), e.g. a Drive folder.
+
+        Its PDFs (in any sub-folder) and master index replace data/<corpus>/pdfs.
+        """
+        link = self.data_dir / self.corpus / "corpus_root.txt"
+        return Path(link.read_text("utf-8").strip()) if link.exists() else None
+
+    @property
     def raw_pdf_dir(self) -> Path:
-        return self.data_dir / self.corpus / "pdfs"
+        return self.corpus_root or self.data_dir / self.corpus / "pdfs"
 
     @property
     def processed_dir(self) -> Path:
         # Conversions with decoded equations are cached separately.
         suffix = "-equations" if self.do_formula_enrichment else ""
+        if self.corpus_root:  # next to the papers, so parallel workers share it
+            return self.corpus_root / "_RAG_processed" / f"docling{suffix}"
         return self.data_dir / self.corpus / f"processed{suffix}"
 
     @property
     def reference_db(self) -> Path:
         """Local clone of the refractiveindex.info database (its 'database' folder)."""
-        return self.data_dir / self.corpus / "reference" / "database"
+        return self.reference_dir or self.data_dir / self.corpus / "reference" / "database"
 
     @property
     def library_path(self) -> Path:

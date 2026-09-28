@@ -43,23 +43,52 @@ class KnowledgeBase:
         else:
             self.docstore = SimpleDocumentStore()
 
-    def add_document(self, doc_id: str, nodes: list[BaseNode]) -> None:
-        """Add (or replace) all chunks of one paper."""
-        self.remove_document(doc_id)
-        self.index.insert_nodes(nodes, show_progress=len(nodes) > 50)
-        self.docstore.add_documents(nodes)
-        self._persist()
+        # Bumped on every change, so callers can cache things built from the chunks (BM25).
+        self.revision = 0
 
-    def remove_document(self, doc_id: str) -> None:
+    def add_document(self, doc_id: str, nodes: list[BaseNode], persist: bool = True) -> None:
+        """Add (or replace) all chunks of one paper."""
+        self.add_documents({doc_id: nodes}, persist)
+
+    def add_documents(self, docs: dict[str, list[BaseNode]], persist: bool = True) -> None:
+        """Add (or replace) several papers at once (one embedding batch).
+
+        With ``persist=False`` the chunk store is only written by a later
+        ``persist()``: rewriting it after each of thousands of papers would
+        make a large ingest quadratic.
+        """
+        indexed = self._doc_node_ids()
+        for doc_id in docs:
+            if doc_id in indexed:
+                self.remove_document(doc_id, persist=False, _node_ids=indexed[doc_id])
+        nodes = [n for doc_nodes in docs.values() for n in doc_nodes]
+        if nodes:
+            self.index.insert_nodes(nodes, show_progress=len(nodes) > 50)
+            self.docstore.add_documents(nodes)
+        self.revision += 1
+        if persist:
+            self.persist()
+
+    def remove_document(self, doc_id: str, persist: bool = True, _node_ids: list[str] | None = None) -> None:
         self.vector_store.delete(ref_doc_id=doc_id)
-        for node in self.nodes(doc_ids=[doc_id]):
-            self.docstore.delete_document(node.node_id)
-        self._persist()
+        node_ids = _node_ids if _node_ids is not None else self._doc_node_ids().get(doc_id, [])
+        for node_id in node_ids:
+            self.docstore.delete_document(node_id, raise_error=False)
+        self.revision += 1
+        if persist:
+            self.persist()
+
+    def _doc_node_ids(self) -> dict[str, list[str]]:
+        found: dict[str, list[str]] = {}
+        for node_id, node in self.docstore.docs.items():
+            found.setdefault(node.metadata.get("doc_id"), []).append(node_id)
+        return found
 
     def nodes(self, doc_ids: list[str] | None = None) -> list[BaseNode]:
         nodes = list(self.docstore.docs.values())
         if doc_ids is not None:
-            nodes = [n for n in nodes if n.metadata.get("doc_id") in doc_ids]
+            wanted = set(doc_ids)
+            nodes = [n for n in nodes if n.metadata.get("doc_id") in wanted]
         return sorted(nodes, key=_node_order)
 
     def doc_ids(self) -> list[str]:
@@ -69,7 +98,16 @@ class KnowledgeBase:
         """Ingest version each paper was indexed with (0 if unknown)."""
         return {n.metadata["doc_id"]: n.metadata.get("ingest_version", 0) for n in self.docstore.docs.values()}
 
-    def _persist(self) -> None:
+    def doc_source_types(self) -> dict[str, str]:
+        """What each paper was indexed from: full text, abstract or metadata only."""
+        return {n.metadata["doc_id"]: n.metadata.get("source_type", "full_text_pdf")
+                for n in self.docstore.docs.values()}
+
+    def doc_source_files(self) -> dict[str, str]:
+        """The file each paper was indexed from (relative to the corpus folder)."""
+        return {n.metadata["doc_id"]: n.metadata.get("source_file", "") for n in self.docstore.docs.values()}
+
+    def persist(self) -> None:
         self.docstore.persist(str(self.settings.docstore_path))
 
 
