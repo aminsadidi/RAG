@@ -91,7 +91,8 @@ class DispersionFormula(BaseModel):
         return (self.wavelength_min_um or default[0], self.wavelength_max_um or default[1])
 
 
-def check_formula(formula: DispersionFormula, n_min: float = 1.0, n_max: float = 5.0) -> list[str]:
+def check_formula(formula: DispersionFormula, n_min: float = 1.0, n_max: float = 5.0,
+                  max_slope_per_um: float = 1.0) -> list[str]:
     """Physical sanity problems of a formula over its validity range (empty list: looks fine)."""
     lo, hi = formula.valid_range_um()
     lam = np.linspace(lo, hi, 400)
@@ -105,6 +106,13 @@ def check_formula(formula: DispersionFormula, n_min: float = 1.0, n_max: float =
     finite = n[np.isfinite(n)]
     if finite.size and (finite.min() < n_min or finite.max() > n_max):
         problems.append(f"n outside [{n_min}, {n_max}]: {finite.min():.3f}–{finite.max():.3f}")
+    # Away from absorption edges n changes slowly with λ (|dn/dλ| is typically < 0.3 µm⁻¹ in the
+    # visible and infrared); a much steeper curve usually means a misread formula.
+    visible_ir = lam >= max(lo, 0.4)
+    if visible_ir.sum() > 2 and np.isfinite(n[visible_ir]).all():
+        slope = np.abs(np.gradient(n[visible_ir], lam[visible_ir])).max()
+        if slope > max_slope_per_um:
+            problems.append(f"unusually steep dispersion: |dn/dλ| up to {slope:.2f} µm⁻¹")
     scale = 1000.0 if formula.wavelength_unit == "nm" else 1.0
     for t in formula.pole_terms:
         _, pole = t.values_at(formula.temperature_K)
