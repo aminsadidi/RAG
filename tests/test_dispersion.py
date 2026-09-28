@@ -72,3 +72,12 @@ def test_temperature_dependent_sellmeier_reproduces_the_papers_table():
     assert abs(caf2.refractive_index(2.00, 30) - 1.42611) < 2e-5
     assert check_formula(caf2)  # no temperature given -> reported, not crashing
     assert check_formula(caf2.model_copy(update={"temperature_K": 295})) == []
+
+
+def test_misread_numerator_is_flagged():
+    # The local model once dropped λ² from the numerators of the BBO formula.
+    wrong = bbo_e_from_paper().model_copy(deep=True)
+    for t in wrong.pole_terms:
+        t.numerator_power = 0
+    assert any("steep" in p for p in check_formula(wrong))
+    assert check_formula(bbo_e_from_paper()) == []
