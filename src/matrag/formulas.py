@@ -49,6 +49,22 @@ How to map common forms:
   put the values for T^0, T^1, T^2, ... in coefficient_T / pole_T, and the T^0 value also in coefficient / pole.
 - Different axes or polarizations (o, e, x, y, z) and different materials are separate formulas.
 
+Example 1. Text: "no = sqrt(1 + x.^2*0.90291./(x.^2-0.003926) + x.^2*0.83155./(x.^2-0.018786))"
+-> material "BBO", axis "o", constant 1, pole_terms [
+   {{coefficient 0.90291, numerator_power 2, pole 0.003926}},
+   {{coefficient 0.83155, numerator_power 2, pole 0.018786}}]
+   (x.^2 times the coefficient is λ² in the numerator, so numerator_power is 2; names like n_o/no/RefracInd_o
+   give axis "o", n_e/ne/RefracInd_e give axis "e".)
+
+Example 2. Text: "n² = 2.7359 + 0.01878/(λ² − 0.01822) − 0.01354 λ²"
+-> constant 2.7359, pole_terms [{{coefficient 0.01878, numerator_power 0, pole 0.01822}}],
+   power_terms [{{coefficient -0.01354, power 2}}]
+
+Example 3. A table for "n² − 1 = Σ S_i λ²/(λ² − λ_i²)" with rows "constant term", "T term", "T² term" and columns
+S1, λ1: column S1 = [1.04, -2.2E-04, -6.7E-06] and λ1 = [0.079, -2.2E-04, 2.1E-06]
+-> constant 1, pole_terms [{{coefficient 1.04, coefficient_T [1.04, -2.2E-04, -6.7E-06], numerator_power 2,
+   pole 0.079, pole_T [0.079, -2.2E-04, 2.1E-06], pole_is_wavelength true}}] (one pole term per S_i, λ_i pair)
+
 Rules:
 - Only use numbers written in the text. Never fill in coefficients from memory.
 - Keep the wavelength unit of the formula (um or nm); give the stated validity range in µm.
