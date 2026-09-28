@@ -187,12 +187,26 @@ def numbers_in_source(formula: DispersionFormula, source_text: str) -> float:
     return ok / len(values)
 
 
+def repair_pole_flags(formula: DispersionFormula) -> DispersionFormula:
+    """Undo a common misreading: a pole written as "(λ² − 0.007142)" is C itself, not a resonance
+    wavelength; if the verbatim equation shows the number right after "λ² −", unset pole_is_wavelength."""
+    text = clean_text(formula.equation_text).replace("−", "-")
+    for t in formula.pole_terms:
+        if not t.pole_is_wavelength or t.pole_T:
+            continue
+        for m in re.finditer(r"(?:\^\s*2|²)\s*\)?\s*-\s*(\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)", text):
+            if abs(float(m.group(1)) - abs(t.pole)) <= 1e-9 * max(1.0, abs(t.pole)):
+                t.pole_is_wavelength = False
+                break
+    return formula
+
+
 def extract_from_candidate(candidate: Candidate, context: str, llm: LLM) -> list[FormulaRecord]:
     result = llm.structured_predict(FormulaResult, FORMULA_PROMPT, context=context,
                                     source=f"{candidate.doc_id}, {candidate.source}, p. {candidate.pages}",
                                     text=candidate.text)
     return [
-        FormulaRecord(formula=f, doc_id=candidate.doc_id, pages=candidate.pages, source=candidate.source,
+        FormulaRecord(formula=repair_pole_flags(f), doc_id=candidate.doc_id, pages=candidate.pages, source=candidate.source,
                       boxes=candidate.boxes, numbers_in_source=round(numbers_in_source(f, candidate.text), 3),
                       problems=check_formula(f))
         for f in result.formulas
