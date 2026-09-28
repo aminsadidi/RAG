@@ -9,7 +9,10 @@ row is repeated in every piece, which matters because most property values
 in papers are reported in tables.
 """
 
+import gzip
 import json
+import os
+import sys
 from pathlib import Path
 
 from docling.chunking import HybridChunker
@@ -33,7 +36,8 @@ INGEST_VERSION = 4
 
 def make_converter(settings: Settings) -> DocumentConverter:
     pdf_options = PdfPipelineOptions(do_ocr=settings.do_ocr, do_table_structure=True,
-                                     do_formula_enrichment=settings.do_formula_enrichment)
+                                     do_formula_enrichment=settings.do_formula_enrichment,
+                                     document_timeout=settings.convert_timeout_s)
     return DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
     )
@@ -52,28 +56,54 @@ def make_chunker(settings: Settings, tokenizer: BaseTokenizer | None = None) -> 
     return HybridChunker(tokenizer=tokenizer, merge_peers=True)
 
 
-def convert(path: Path, converter: DocumentConverter, cache_dir: Path) -> DoclingDocument:
-    """Convert a paper, caching the result as JSON.
+def cached_document(cache_dir: Path, name: str) -> DoclingDocument | None:
+    """A cached conversion (compressed, or plain JSON from older versions), if there is one."""
+    packed = cache_dir / f"{name}.json.gz"
+    if packed.exists():
+        with gzip.open(packed, "rt", encoding="utf-8") as f:
+            return DoclingDocument.model_validate_json(f.read())
+    plain = cache_dir / f"{name}.json"
+    return DoclingDocument.load_from_json(plain) if plain.exists() else None
 
-    Conversion is the slowest step on a laptop CPU, so each paper is
-    converted only once.
+
+def is_cached(cache_dir: Path, name: str) -> bool:
+    return (cache_dir / f"{name}.json.gz").exists() or (cache_dir / f"{name}.json").exists()
+
+
+def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str | None = None,
+            max_pages: int | None = None) -> DoclingDocument:
+    """Convert a paper, caching the result as compressed JSON under ``name`` (default: file name).
+
+    Conversion is the slowest step, so each paper is converted only once. The
+    cache file is written in one step (via a temporary file), so a conversion
+    interrupted by a disconnect is never mistaken for a finished one; this also
+    lets several workers fill the same cache folder in parallel.
     """
-    cache_file = cache_dir / f"{path.stem}.json"
-    if cache_file.exists():
-        return DoclingDocument.load_from_json(cache_file)
-    doc = converter.convert(path).document
+    name = name or path.stem
+    doc = cached_document(cache_dir, name)
+    if doc is not None:
+        return doc
+    page_range = (1, max_pages) if max_pages else (1, sys.maxsize)
+    doc = converter.convert(path, page_range=page_range).document
     cache_dir.mkdir(parents=True, exist_ok=True)
-    doc.save_as_json(cache_file)
+    target = cache_dir / f"{name}.json.gz"
+    tmp = target.with_name(f".{target.name}.{os.getpid()}.tmp")
+    with gzip.open(tmp, "wt", encoding="utf-8") as f:
+        json.dump(doc.export_to_dict(), f)
+    os.replace(tmp, target)
     return doc
 
 
 def chunk_document(
-    doc: DoclingDocument, doc_id: str, chunker: HybridChunker, paper: PaperInfo | None = None
+    doc: DoclingDocument, doc_id: str, chunker: HybridChunker, paper: PaperInfo | None = None,
+    source_file: str | None = None, extra: dict | None = None,
 ) -> list[TextNode]:
     """Split a document into nodes carrying provenance metadata.
 
     Node ids are deterministic (``<doc_id>::<n>``) so evaluation sets can
-    refer to exact chunks across rebuilds.
+    refer to exact chunks across rebuilds. ``source_file`` is the PDF's path
+    relative to the corpus folder (default: its file name); ``extra`` holds
+    more metadata, e.g. the paper's category in a collection.
     """
     nodes = []
     for i, chunk in enumerate(chunker.chunk(dl_doc=doc)):
@@ -84,7 +114,8 @@ def chunk_document(
             "doc_id": doc_id,
             # Where the chunk sits on its pages, for highlighting the source in the PDF.
             "boxes": json.dumps(chunk_boxes(doc, items)),
-            "source_file": doc.origin.filename if doc.origin else doc_id,
+            "source_file": source_file or (doc.origin.filename if doc.origin else doc_id),
+            "source_type": "full_text_pdf",
             "headings": clean_text(" > ".join(chunk.meta.headings or [])),
             "pages": ",".join(map(str, pages)),
             "first_page": pages[0] if pages else -1,
@@ -93,6 +124,7 @@ def chunk_document(
             # Bibliographic labels, e.g. "Tan et al. (2019)" and the full reference.
             "citation": paper.short_citation() if paper else doc_id,
             "reference": paper.reference() if paper else doc_id,
+            **(extra or {}),
         }
         node = TextNode(
             id_=f"{doc_id}::{i}",
@@ -107,6 +139,28 @@ def chunk_document(
         node.relationships[NodeRelationship.SOURCE] = RelatedNodeInfo(node_id=doc_id)
         nodes.append(node)
     return nodes
+
+
+def summary_node(doc_id: str, text: str, paper: PaperInfo, source_type: str,
+                 extra: dict | None = None) -> TextNode:
+    """A single node for a paper known only from its index entry (abstract, or just its title).
+
+    It lets the paper be found and cited as a lead, while ``source_type`` makes
+    clear that no full text stood behind it.
+    """
+    metadata = {
+        "doc_id": doc_id, "boxes": "[]", "source_file": "", "source_type": source_type,
+        "headings": "Abstract" if source_type == "abstract" else "",
+        "pages": "", "first_page": -1,
+        "content_type": source_type,  # "abstract" or "metadata_only"
+        "ingest_version": INGEST_VERSION,
+        "citation": paper.short_citation(), "reference": paper.reference(),
+        **(extra or {}),
+    }
+    node = TextNode(id_=f"{doc_id}::0", text=clean_text(text), metadata=metadata,
+                    excluded_embed_metadata_keys=list(metadata), excluded_llm_metadata_keys=list(metadata))
+    node.relationships[NodeRelationship.SOURCE] = RelatedNodeInfo(node_id=doc_id)
+    return node
 
 
 def chunk_boxes(doc: DoclingDocument, items) -> list[list[float]]:

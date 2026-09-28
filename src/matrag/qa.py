@@ -100,7 +100,13 @@ def _question_text(question: str, search_query: str | None) -> str:
 
 def format_source_label(node: NodeWithScore) -> str:
     meta = node.metadata
-    label = f"{meta.get('citation') or meta.get('doc_id', '?')}, p. {meta.get('pages') or '?'}"
+    citation = meta.get("citation") or meta.get("doc_id", "?")
+    # Papers without a PDF in the collection: say so, so no one mistakes them for full text.
+    if meta.get("source_type") == "abstract":
+        return f"{citation}, abstract only"
+    if meta.get("source_type") == "metadata_only":
+        return f"{citation}, title only"
+    label = f"{citation}, p. {meta.get('pages') or '?'}"
     if meta.get("content_type") == "table":
         label += ", table"
     return label

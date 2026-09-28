@@ -1,6 +1,10 @@
 """Command-line interface.
 
     matrag ingest                  # convert + index every paper in data/<corpus>/pdfs
+    matrag link /path/RAG-Optics   # read the corpus from a folder with a master index (e.g. on Drive)
+    matrag organize --move         # sort a linked collection's PDFs into category folders
+    matrag convert --shard 0 --shards 4   # parallel workers: convert PDFs only
+    matrag status                  # papers with PDF / abstract / title, converted, indexed
     matrag add 2111.01212 x.pdf    # add papers (arXiv ids or files) and index them
     matrag info                    # list indexed papers
     matrag ask "question"          # grounded answer with citations
@@ -61,20 +65,101 @@ def _print_ingest(results) -> None:
 def ingest(
     paths: Annotated[list[Path] | None, typer.Argument(help="Files to ingest (default: data/<corpus>/pdfs).")] = None,
     force: Annotated[bool, typer.Option(help="Re-index papers that are already in the database.")] = False,
+    prune: Annotated[bool, typer.Option(help="Remove indexed papers that are no longer in the corpus.")] = False,
+    quiet: Annotated[bool, typer.Option(help="Print only errors and a summary.")] = False,
 ) -> None:
     """Convert papers with Docling, chunk them and add them to the vector database."""
     ws = _workspace()
     if paths:
         paths = ws.add_files(paths)
-    elif not any(ws.settings.raw_pdf_dir.iterdir()):
+    elif not ws.settings.corpus_root and not any(ws.settings.raw_pdf_dir.iterdir()):
         typer.echo(f"No papers found in {ws.settings.raw_pdf_dir}", err=True)
         raise typer.Exit(1)
-    _print_ingest(ws.ingest(paths, force, on_progress=_echo_progress))
+    results = ws.ingest(paths, force, on_progress=None if quiet else _echo_progress, prune=prune)
+    # A whole collection: list only the problems, not thousands of lines.
+    _print_ingest([r for r in results if r.error] if quiet or len(results) > 100 else results)
+    new = [r for r in results if not r.skipped and not r.error]
+    typer.echo(f"Indexed {len(new)} papers ({sum(r.chunks for r in new)} chunks); "
+               f"{sum(r.skipped for r in results)} unchanged; {sum(bool(r.error) for r in results)} errors.")
+
+
+@app.command()
+def link(
+    folder: Annotated[Path, typer.Argument(help="Folder with the papers, e.g. /content/drive/MyDrive/RAG-Optics.")],
+) -> None:
+    """Make the corpus read its papers from a folder (any sub-folder) with a master index."""
+    from matrag.config import get_settings
+    from matrag.pipeline import link_collection
+
+    corpus = get_settings().corpus
+    link_collection(corpus, folder)
+    typer.echo(f"Corpus '{corpus}' now reads its papers from {folder}")
+    status()
+
+
+@app.command()
+def organize(
+    move: Annotated[bool, typer.Option(help="Really move the files (default: only show what would happen).")] = False,
+) -> None:
+    """Sort the collection's PDFs into 01_Papers_by_Category/<category>/<material>/ (nothing is deleted)."""
+    from collections import Counter
+
+    rows = _workspace().organize(move)
+    moved = [r for r in rows if r["moved_from"]]
+    verb = "moved" if move else "would move"
+    for r in moved[:20]:
+        typer.echo(f"  {r['moved_from']} -> {r['file']}")
+    if len(moved) > 20:
+        typer.echo(f"  ... and {len(moved) - 20} more")
+    kinds = Counter(r["kind"] for r in rows)
+    typer.echo(f"{len(rows)} PDFs: {kinds['indexed']} in the master index, {kinds['not_in_index']} not in it, "
+               f"{kinds['duplicate']} duplicate copies; {verb} {len(moved)}; "
+               f"{sum(r['in_refractiveindex'] for r in rows)} are data sources of refractiveindex.info.")
+    if move:
+        typer.echo("Report: 02_Master_Index/pdf_inventory.csv")
+
+
+@app.command()
+def convert(
+    shard: Annotated[int, typer.Option(help="This worker's number: 0, 1, ..., shards-1.")] = 0,
+    shards: Annotated[int, typer.Option(help="Number of workers running in parallel.")] = 1,
+    retry_failed: Annotated[bool, typer.Option(help="Try again papers whose conversion failed before.")] = False,
+) -> None:
+    """Convert PDFs with Docling only (no database, no LLM); run in several sessions with --shard/--shards."""
+    ws = _workspace()
+    typer.echo(f"Worker {shard} of {shards}: converting into {ws.settings.processed_dir}")
+    counts = ws.convert_shard(shard, shards, retry_failed, on_progress=_echo_progress)
+    typer.echo(", ".join(f"{k.replace('_', ' ')}: {v}" for k, v in counts.items()))
+
+
+@app.command()
+def status() -> None:
+    """How many papers there are (full text / abstract / title only), converted and indexed."""
+    ws = _workspace()
+    labels = {"full_text_pdf": "papers with PDF", "abstract": "papers with abstract only",
+              "metadata_only": "papers with title only", "pdfs_converted": "PDFs converted",
+              "pdfs_failed": "PDFs that failed to convert", "duplicate_pdfs": "duplicate PDFs (ignored)",
+              "indexed_papers": "papers in the database"}
+    for key, value in ws.status().items():
+        typer.echo(f"{labels.get(key, key)}: {value}")
+
+
+_started: list[float] = []
 
 
 def _echo_progress(i: int, n: int, name: str) -> None:
-    if i < n:
-        typer.echo(f"[{i + 1}/{n}] {name}")
+    """Every item for small batches; for large ones every 25th, with the time left."""
+    import time
+
+    if i == 0:
+        _started[:] = [time.monotonic()]
+    if i >= n or (n > 100 and i % 25):
+        return
+    line = f"[{i + 1}/{n}] {name}"
+    if n > 100 and i:
+        left = (time.monotonic() - _started[0]) / i * (n - i)
+        line += f"   (about {left / 60:.0f} min left)"
+    typer.echo(line, err=False)
 
 
 @app.command()

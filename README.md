@@ -13,9 +13,41 @@
 1. نوت‌بوک را باز کنید:
    [colab_demo.ipynb در کولب](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_demo.ipynb)
 2. منوی **Runtime → Change runtime type → T4 GPU**
-3. سلول‌های ۱ تا ۵ را به ترتیب اجرا کنید. بعد از سلول ۵ برنامه باز می‌شود.
+3. سلول‌ها را به ترتیب اجرا کنید. بعد از سلول ۷ برنامه باز می‌شود.
 
 همه‌ی داده‌ها در Google Drive، پوشه‌ی `matrag_data`، ذخیره می‌شوند و با بسته شدن کولب از بین نمی‌روند.
+
+### مجموعه‌ی بزرگ مقاله‌ها در Drive (پوشه‌ی `RAG-Optics`)
+
+برنامه مقاله‌ها را مستقیم از پوشه‌ی `RAG-Optics` در Drive می‌خواند (مجموعه‌ی `rag-optics`):
+
+| پوشه | محتوا |
+|---|---|
+| `01_Papers_by_Category/<دسته>/<بلور>/` | PDFها (هر جای دیگری از پوشه هم باشند پیدا می‌شوند) |
+| `02_Master_Index/` | فهرست اصلی همه‌ی مقاله‌ها با DOI، دسته، بلور و چکیده؛ و گزارش `pdf_inventory.csv` |
+| `04_Dispersion_Formulas_Data/` | داده‌ی مرجع refractiveindex.info؛ **عمداً وارد جست‌وجو نمی‌شود** (کلید ارزیابی است) |
+| `_RAG_processed/` | خروجی برنامه (PDFهای تبدیل‌شده)؛ دست نزنید |
+
+- هر PDF با **DOI در نام فایل** (مثل `10.1364-josab.6.000616.pdf`؛ `/` به `-` یا `_`) یا با مسیر ثبت‌شده در فهرست،
+  به مقاله‌ی خودش وصل می‌شود؛ دسته، بلور و مشخصات از فهرست می‌آید (بدون جست‌وجوی Crossref).
+- مقاله‌های **بدون PDF** با چکیده‌شان وارد می‌شوند و در جواب‌ها با برچسب «abstract only» مشخص‌اند.
+- سلول ۴ PDFها را در پوشه‌ی بلور خودشان مرتب می‌کند (`matrag organize --move`؛ هیچ فایلی پاک نمی‌شود).
+- تبدیل PDF کُندترین مرحله است: نوت‌بوک‌های `colab_worker_1` تا `colab_worker_4` را هم‌زمان اجرا کنید تا
+  هر کدام بخشی از PDFها را تبدیل کند ([کارگر ۱](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_worker_1.ipynb)،
+  [۲](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_worker_2.ipynb)،
+  [۳](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_worker_3.ipynb)،
+  [۴](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_worker_4.ipynb))؛
+  سپس سلول ۵ نوت‌بوک اصلی باقی‌مانده را انجام می‌دهد و پایگاه داده را می‌سازد.
+
+```
+matrag --corpus rag-optics link /content/drive/MyDrive/RAG-Optics
+matrag --corpus rag-optics organize --move        # مرتب‌سازی PDFها + گزارش
+matrag --corpus rag-optics convert --shard 0 --shards 4   # کارگر ۱ از ۴ (فقط تبدیل)
+matrag --corpus rag-optics ingest --prune         # ساخت پایگاه داده
+matrag --corpus rag-optics status                 # چند مقاله: متن کامل / فقط چکیده / تبدیل‌شده / در پایگاه
+```
+
+نوت‌بوک‌ها از `notebooks/build_notebooks.py` ساخته می‌شوند؛ برای تغییر، همان فایل را ویرایش و اجرا کنید.
 
 ## کار با برنامه
 
