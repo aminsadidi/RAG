@@ -7,6 +7,8 @@
     matrag ask "question" --no-rag # baseline: the LLM alone
     matrag pack "question"         # prompt file with sources, to upload to any chat AI
     matrag extract -p "line intensity" -p "air-broadened half-width" -o results/x.csv
+    matrag formulas                # dispersion formulas (Sellmeier, ...) vs refractiveindex.info
+    matrag formula-table f.jsonl   # a formula as a table of n(λ)
     matrag app                     # web interface
 
 Global options pick the corpus and the LLM, e.g.:
@@ -164,6 +166,53 @@ def extract(
     save_records(records, out)
     unverified = sum(not r.value_in_source for r in records)
     typer.echo(f"{len(records)} values saved to {out} ({unverified} not found verbatim in their source)")
+
+
+@app.command()
+def formulas(
+    doc: DocOption = None,
+    out: Annotated[Path, typer.Option("--out", "-o", help="Output .jsonl file.")] = Path("results/formulas.jsonl"),
+) -> None:
+    """Extract dispersion formulas (Sellmeier, Cauchy, ...) and compare them with refractiveindex.info."""
+    from matrag.formulas import save_formulas
+
+    ws = _workspace()
+    typer.echo(f"[{ws.settings.corpus} | {ws.llm_name()}]", err=True)
+    records = ws.extract_formulas(doc, on_progress=_echo_progress)
+    save_formulas(records, out)
+    if records:
+        _print_table([{"#": i, "paper": r.doc_id, "material": r.formula.material, "axis": r.formula.axis,
+                       "range_um": "%s-%s" % r.formula.valid_range_um(), "T_K": r.formula.temperature_K or "",
+                       "in_source": r.numbers_in_source, "problems": "; ".join(r.problems) or "-",
+                       "max_dn_vs_ref": r.reference_max_dn if r.reference_max_dn is not None else "-"}
+                      for i, r in enumerate(records)])
+    typer.echo(f"{len(records)} formulas saved to {out}")
+
+
+@app.command("formula-table")
+def formula_table(
+    formulas_file: Annotated[Path, typer.Argument(help="File written by 'matrag formulas'.")],
+    index: Annotated[int, typer.Option(help="Which formula (the # column).")] = 0,
+    start: Annotated[float, typer.Option("--from", help="First wavelength, µm (default: start of validity range).")] = 0.0,
+    stop: Annotated[float, typer.Option("--to", help="Last wavelength, µm (default: end of validity range).")] = 0.0,
+    step: Annotated[float, typer.Option(help="Wavelength step, µm.")] = 0.05,
+    temperature: Annotated[float | None, typer.Option(help="Temperature in K (temperature-dependent formulas).")] = None,
+    out: Annotated[Path | None, typer.Option("--out", "-o")] = None,
+) -> None:
+    """Turn an extracted formula into a table of n(λ)."""
+    import numpy as np
+
+    from matrag.dispersion import table
+    from matrag.evaluate import write_rows
+    from matrag.formulas import load_formulas
+
+    record = load_formulas(formulas_file)[index]
+    lo, hi = record.formula.valid_range_um()
+    lam = np.arange(start or lo, (stop or hi) + step / 2, step)
+    rows = table(lambda x: record.formula.refractive_index(x, temperature), lam)
+    out = out or formulas_file.with_name(f"{record.doc_id}_{record.formula.material}_{record.formula.axis or 'n'}.csv")
+    write_rows(out, rows)
+    typer.echo(f"{len(rows)} wavelengths written to {out}")
 
 
 evaluate_app = typer.Typer(help="Evaluate against gold data in data/<corpus>/gold/.", no_args_is_help=True)

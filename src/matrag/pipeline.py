@@ -177,6 +177,13 @@ class Workspace:
             f.unlink(missing_ok=True)
         self.backup()
 
+    def pdf_path(self, doc_id: str) -> Path | None:
+        nodes = self.kb.nodes([doc_id])
+        if not nodes:
+            return None
+        path = self.settings.raw_pdf_dir / nodes[0].metadata.get("source_file", "")
+        return path if path.suffix.lower() == ".pdf" and path.exists() else None
+
     def source_image(self, node_id: str):
         """Page image(s) of a chunk with its region highlighted (stacked if it spans pages)."""
         from PIL import Image
@@ -264,6 +271,37 @@ class Workspace:
         for r in records:
             r.llm = s.llm_name
             r.plausible = plausibility(r.property, r.value, specs)
+        return records
+
+    def extract_formulas(self, doc_ids: list[str] | None = None, provider: str | None = None,
+                         on_progress: Callable[[int, int, str], None] | None = None):
+        """Dispersion formulas of the given papers (default: all), checked against refractiveindex.info."""
+        from docling_core.types.doc import DoclingDocument
+
+        from matrag.formulas import compare_with_reference, extract_formulas
+        from matrag.references.refractiveindex import find_entries
+
+        s = self._settings_for(provider)
+        llm = self.llm(provider)
+        library = self.library
+        doc_ids = doc_ids or self.kb.doc_ids()
+        records = []
+        for i, doc_id in enumerate(doc_ids):
+            if on_progress:
+                on_progress(i, len(doc_ids), doc_id)
+            cached = s.processed_dir / f"{doc_id}.json"
+            doc = DoclingDocument.load_from_json(cached) if cached.exists() else None
+            found = extract_formulas(doc, self.kb.nodes([doc_id]), llm, s.llm_min_interval_s)
+            paper = library.get(doc_id)
+            entries = (find_entries(s.reference_db, doi=paper.doi, arxiv_id=paper.arxiv_id)
+                       if s.reference_db.exists() else [])
+            for record in found:
+                record.llm = s.llm_name
+                if entries:
+                    compare_with_reference(record, entries)
+            records += found
+        if on_progress:
+            on_progress(len(doc_ids), len(doc_ids), "done")
         return records
 
     def default_properties(self) -> list[str]:
