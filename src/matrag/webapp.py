@@ -77,17 +77,29 @@ def _auto_dir(text: str) -> str:
 
 # --- papers tab ---
 
+SOURCE_LABELS = {"full_text_pdf": "متن کامل", "abstract": "فقط چکیده", "metadata_only": "فقط عنوان"}
+
+
 def papers_table(corpus: str) -> pd.DataFrame:
+    ws = _ws(corpus)
+    sources = ws.kb.doc_source_types()
     rows = [
         {"doc_id": p.doc_id, "citation": p.short_citation(), "title": p.title or "", "year": p.year,
-         "journal": p.journal or "", "doi": p.doi or "", "chunks": n}
-        for p, n in _ws(corpus).papers()
+         "journal": p.journal or "", "doi": p.doi or "",
+         "source": SOURCE_LABELS.get(sources.get(p.doc_id, ""), ""), "chunks": n}
+        for p, n in ws.papers()
     ]
-    return pd.DataFrame(rows, columns=["doc_id", "citation", "title", "year", "journal", "doi", "chunks"])
+    columns = ["doc_id", "citation", "title", "year", "journal", "doi", "source", "chunks"]
+    # Full texts first: they are what the formula and extraction tools work on.
+    return pd.DataFrame(rows, columns=columns).sort_values("source", key=lambda s: s != "متن کامل", kind="stable")
 
 
 def paper_choices(corpus: str) -> list[tuple[str, str]]:
-    return [(f"{p.short_citation()} — {(p.title or p.doc_id)[:70]}", p.doc_id) for p, _ in _ws(corpus).papers()]
+    """Papers to pick in the filters: the full texts (abstract-only papers would make the lists thousands long)."""
+    ws = _ws(corpus)
+    sources = ws.kb.doc_source_types()
+    return [(f"{p.short_citation()} — {(p.title or p.doc_id)[:70]}", p.doc_id) for p, _ in ws.papers()
+            if sources.get(p.doc_id, "full_text_pdf") == "full_text_pdf"]
 
 
 def _refresh_paper_lists(corpus: str):
@@ -134,6 +146,11 @@ def ingest_folder(corpus: str, progress=gr.Progress()):
     new = [r for r in results if not r.skipped]
     if not results:
         lines = [f"پوشه‌ی `{ws.settings.raw_pdf_dir}` خالی است."]
+    elif len(new) > 40:  # a whole collection: a summary instead of thousands of lines
+        errors = [r for r in new if r.error]
+        lines = [f"✅ {len(new) - len(errors)} مقاله‌ی تازه پردازش شد "
+                 f"({sum(r.chunks for r in new)} قطعه)؛ {len(results) - len(new)} مقاله از قبل آماده بود."]
+        lines += [f"- ❌ `{r.file}`: {r.error}" for r in errors[:50]]
     else:
         lines = [f"- ❌ `{r.file}`: {r.error}" if r.error else f"- ✅ `{r.file}` → **{r.citation}**، {r.chunks} قطعه"
                  for r in new] or ["همه‌ی مقاله‌های پوشه از قبل پردازش شده بودند."]

@@ -17,8 +17,12 @@ def kb(settings, embed_model, tokenizer, sample_paper):
 
 
 def test_conversion_is_cached(settings, sample_paper):
-    convert(sample_paper, make_converter(settings), settings.processed_dir)
-    assert (settings.processed_dir / "sample_paper.json").exists()
+    from matrag.ingest import cached_document
+
+    doc = convert(sample_paper, make_converter(settings), settings.processed_dir)
+    assert (settings.processed_dir / "sample_paper.json.gz").exists()
+    assert not list(settings.processed_dir.glob(".*.tmp"))  # written atomically
+    assert cached_document(settings.processed_dir, "sample_paper").export_to_markdown() == doc.export_to_markdown()
 
 
 def test_chunks_carry_provenance(kb):
