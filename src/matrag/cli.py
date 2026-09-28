@@ -93,6 +93,9 @@ def link(
 
     corpus = get_settings().corpus
     link_collection(corpus, folder)
+    # Create the shared output folder now: workers starting at the same moment could
+    # otherwise each create one, and Drive allows two folders with the same name.
+    (_workspace().settings.processed_dir / "_status").mkdir(parents=True, exist_ok=True)
     typer.echo(f"Corpus '{corpus}' now reads its papers from {folder}")
     status()
 
