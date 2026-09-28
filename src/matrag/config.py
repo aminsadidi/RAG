@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     # --- Document conversion (Docling) ---
     # OCR is only needed for scanned PDFs and is slow on CPU.
     do_ocr: bool = False
+    # Decode equations to LaTeX with Docling's CodeFormula model (slow without a GPU;
+    # useful for papers that state dispersion formulas as displayed equations).
+    do_formula_enrichment: bool = False
     # Look up title/authors/year via arXiv and Crossref (needs internet).
     fetch_metadata: bool = True
 
@@ -83,7 +86,14 @@ class Settings(BaseSettings):
 
     @property
     def processed_dir(self) -> Path:
-        return self.data_dir / self.corpus / "processed"
+        # Conversions with decoded equations are cached separately.
+        suffix = "-equations" if self.do_formula_enrichment else ""
+        return self.data_dir / self.corpus / f"processed{suffix}"
+
+    @property
+    def reference_db(self) -> Path:
+        """Local clone of the refractiveindex.info database (its 'database' folder)."""
+        return self.data_dir / self.corpus / "reference" / "database"
 
     @property
     def library_path(self) -> Path:

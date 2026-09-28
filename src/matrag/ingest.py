@@ -32,7 +32,8 @@ INGEST_VERSION = 4
 
 
 def make_converter(settings: Settings) -> DocumentConverter:
-    pdf_options = PdfPipelineOptions(do_ocr=settings.do_ocr, do_table_structure=True)
+    pdf_options = PdfPipelineOptions(do_ocr=settings.do_ocr, do_table_structure=True,
+                                     do_formula_enrichment=settings.do_formula_enrichment)
     return DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
     )

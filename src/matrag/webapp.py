@@ -91,9 +91,9 @@ def paper_choices(corpus: str) -> list[tuple[str, str]]:
 
 
 def _refresh_paper_lists(corpus: str):
-    """New values for: papers table, remove dropdown, and the three paper filters."""
+    """New values for: papers table, remove dropdown, and the four paper filters."""
     choices = paper_choices(corpus)
-    filters = [gr.update(choices=choices, value=[]) for _ in range(3)]
+    filters = [gr.update(choices=choices, value=[]) for _ in range(4)]
     return (papers_table(corpus), gr.update(choices=choices, value=None), *filters)
 
 
@@ -300,6 +300,108 @@ def run_spectrum(molecule, isotopologue, nu_min, nu_max, temperature, pressure, 
     return spectrum_figure(nu, sig_h, sig_p, title), note, table
 
 
+# --- formula tab ---
+
+FORMULA_COLUMNS = ["#", "paper", "material", "axis", "range (µm)", "T (K)", "source", "pages",
+                   "coefficients in source", "problems", "max |Δn| vs refractiveindex.info"]
+
+
+def run_formulas(corpus, provider, doc_ids, progress=gr.Progress()):
+    from matrag.formulas import save_formulas
+
+    ws = _ws(corpus)
+    records = ws.extract_formulas(doc_ids or None, provider,
+                                  on_progress=lambda i, n, name: progress(i / max(n, 1), desc=f"{i}/{n}: {name}"))
+    library = ws.library
+    rows = [{"#": i, "paper": library.get(r.doc_id).short_citation(), "material": r.formula.material,
+             "axis": r.formula.axis or "-", "range (µm)": "%g–%g" % r.formula.valid_range_um(),
+             "T (K)": r.formula.temperature_K or ("T-dependent" if r.formula.temperature_dependent else "-"),
+             "source": r.source, "pages": r.pages, "coefficients in source": f"{r.numbers_in_source:.0%}",
+             "problems": "; ".join(r.problems) or "✓",
+             "max |Δn| vs refractiveindex.info": "-" if r.reference_max_dn is None else f"{r.reference_max_dn:.2e}"}
+            for i, r in enumerate(records)]
+    path = _results_path(ws, "formulas", "formulas", ".jsonl")
+    save_formulas(records, path)
+    matched = sum(r.reference_max_dn is not None for r in records)
+    summary = (f"**{len(records)}** فرمول پیدا شد؛ **{matched}** فرمول با مدخل همان مقاله در refractiveindex.info "
+               f"مقایسه شد. مدل: `{ws.llm_name(provider)}`")
+    choices = [(f"{i}. {r.formula.material} {r.formula.axis} — {library.get(r.doc_id).short_citation()} ({r.source})", i)
+               for i, r in enumerate(records)]
+    state = [r.model_dump(mode="json") for r in records]
+    return (summary, pd.DataFrame(rows, columns=FORMULA_COLUMNS), str(path), state,
+            gr.update(choices=choices, value=choices[0][1] if choices else None))
+
+
+def formula_figure(lam, n_paper, n_ref, title: str, ref_label: str):
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+
+    rows = 2 if n_ref is not None else 1
+    fig = make_subplots(rows=rows, cols=1, shared_xaxes=True, vertical_spacing=0.06,
+                        row_heights=[0.7, 0.3] if rows == 2 else [1.0])
+    if n_ref is not None:
+        fig.add_trace(go.Scatter(x=lam, y=n_ref, name=ref_label, mode="lines",
+                                 line=dict(color=_SERIES["hitran"], width=2)), row=1, col=1)
+    fig.add_trace(go.Scatter(x=lam, y=n_paper, name="فرمول استخراج‌شده از مقاله", mode="lines",
+                             line=dict(color=_SERIES["paper"], width=2, dash="dash" if n_ref is not None else "solid")),
+                  row=1, col=1)
+    if n_ref is not None:
+        fig.add_trace(go.Scatter(x=lam, y=n_paper - n_ref, name="اختلاف (مقاله − مرجع)", mode="lines",
+                                 line=dict(color=_SERIES["paper"], width=2)), row=2, col=1)
+        fig.update_yaxes(title_text="Δn", exponentformat="power", row=2, col=1)
+    grid = dict(gridcolor="#e8e7e3", zeroline=False)
+    fig.update_xaxes(**grid)
+    fig.update_xaxes(title_text="wavelength (µm)", row=rows, col=1)
+    fig.update_yaxes(**grid)
+    fig.update_yaxes(title_text="refractive index n", row=1, col=1)
+    fig.update_layout(title=title, hovermode="x unified", height=560 if rows == 2 else 440,
+                      margin=dict(l=70, r=20, t=60, b=60), plot_bgcolor="#fcfcfb", paper_bgcolor="#fcfcfb",
+                      font=dict(color="#0b0b0b"),
+                      legend=dict(orientation="h", y=1.02, x=1, xanchor="right", yanchor="bottom"))
+    return fig
+
+
+def formula_to_table(corpus, state, index, start, stop, step, temperature):
+    import numpy as np
+
+    from matrag.formulas import FormulaRecord
+    from matrag.references.refractiveindex import load_entry
+
+    if not state or index is None:
+        raise gr.Error("اول فرمول‌ها را استخراج کنید و یکی را انتخاب کنید.")
+    ws = _ws(corpus)
+    record = FormulaRecord.model_validate(state[int(index)])
+    f = record.formula
+    lo, hi = f.valid_range_um()
+    start, stop = float(start or lo), float(stop or hi)
+    if not stop > start or float(step) <= 0:
+        raise gr.Error("بازه‌ی طول موج یا گام نادرست است.")
+    lam = np.arange(start, stop + float(step) / 2, float(step))
+    temperature = float(temperature) if temperature else (f.temperature_K or (295.0 if f.temperature_dependent else None))
+    n_paper = f.refractive_index(lam, temperature)
+    n_ref, ref_label = None, ""
+    if record.reference_entry and ws.settings.reference_db.exists():
+        entry = load_entry(ws.settings.reference_db / "data" / record.reference_entry, ws.settings.reference_db / "data")
+        n_ref, ref_label = entry.refractive_index(lam), f"refractiveindex.info ({record.reference_entry})"
+    df = pd.DataFrame({"wavelength (µm)": np.round(lam, 6), "n (paper formula)": np.round(n_paper, 6)})
+    if n_ref is not None:
+        df["n (refractiveindex.info)"] = np.round(n_ref, 6)
+        df["Δn"] = np.round(n_paper - n_ref, 8)
+    path = _results_path(ws, "formulas", f"{f.material}_{f.axis or 'n'}_table", ".csv")
+    df.to_csv(path, index=False)
+    t_text = f" · T = {temperature:g} K" if temperature else ""
+    title = f"{f.material} {f.axis}{t_text} — {ws.library.get(record.doc_id).short_citation()}"
+    image = None
+    pdf = ws.pdf_path(record.doc_id)
+    if pdf is not None:
+        from matrag.pdfview import render_highlight
+        try:
+            image = render_highlight(pdf, {"boxes": record.boxes, "pages": record.pages})
+        except Exception:
+            image = None
+    return formula_figure(lam, n_paper, n_ref, title, ref_label), df, str(path), f.equation_text, image
+
+
 # --- layout ---
 
 def build_app() -> gr.Blocks:
@@ -404,10 +506,37 @@ def build_app() -> gr.Blocks:
             sp_note = gr.Markdown(elem_classes="rtl")
             sp_table = gr.Dataframe(label="پارامترهای جایگزین‌شده", interactive=False)
 
+        with gr.Tab("🧮 فرمول ← جدول"):
+            gr.Markdown("فرمول‌های پاشندگی (مثل سلمایر) که مقاله‌ها گزارش کرده‌اند استخراج می‌شوند و از روی آن‌ها جدول "
+                        "ضریب شکست در هر طول موج دلخواه ساخته می‌شود؛ به‌جای خواندن عدد از روی نمودار. اگر همان مقاله "
+                        "در refractiveindex.info باشد، نتیجه با آن مقایسه می‌شود.", elem_classes="rtl")
+            with gr.Row():
+                fm_docs = gr.Dropdown(initial_choices, multiselect=True, label="مقاله‌ها (خالی = همه)", scale=3)
+                fm_btn = gr.Button("استخراج فرمول‌ها", variant="primary", scale=1)
+            fm_summary = gr.Markdown(elem_classes="rtl")
+            fm_table = gr.Dataframe(interactive=False, wrap=True)
+            fm_file = gr.File(label="دانلود فرمول‌ها (JSONL)")
+            fm_state = gr.State([])
+            with gr.Row():
+                fm_pick = gr.Dropdown([], label="فرمول", scale=3)
+                fm_start = gr.Number(None, label="از طول موج (µm)")
+                fm_stop = gr.Number(None, label="تا طول موج (µm)")
+                fm_step = gr.Number(0.05, label="گام (µm)")
+                fm_temp = gr.Number(None, label="دما (K، برای فرمول‌های وابسته به دما)")
+            fm_go = gr.Button("ساخت جدول و نمودار", variant="primary")
+            fm_plot = gr.Plot()
+            fm_equation = gr.Textbox(label="فرمول همان‌طور که در مقاله آمده", lines=3)
+            fm_values = gr.Dataframe(label="جدول ضریب شکست", interactive=False, max_height=400)
+            fm_csv = gr.File(label="دانلود جدول (CSV)")
+            fm_page = gr.Image(label="محل فرمول در مقاله", type="pil", height=800)
+
         with gr.Tab("ℹ️ راهنما"):
             gr.Markdown(GUIDE, elem_classes="rtl")
 
-        paper_outputs = [table, to_remove, ask_docs, pack_docs, ex_docs]
+        paper_outputs = [table, to_remove, ask_docs, pack_docs, ex_docs, fm_docs]
+        fm_btn.click(run_formulas, [corpus, provider, fm_docs], [fm_summary, fm_table, fm_file, fm_state, fm_pick])
+        fm_go.click(formula_to_table, [corpus, fm_state, fm_pick, fm_start, fm_stop, fm_step, fm_temp],
+                    [fm_plot, fm_values, fm_csv, fm_equation, fm_page])
         add_btn.click(ingest_uploads, [corpus, files, arxiv_ids], [ingest_log, *paper_outputs])
         folder_btn.click(ingest_folder, [corpus], [ingest_log, *paper_outputs])
         remove_btn.click(remove_paper, [corpus, to_remove], [ingest_log, *paper_outputs])
