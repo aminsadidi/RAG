@@ -109,3 +109,76 @@ def open_access_candidates(database_dir: Path, workers: int = 6) -> list[dict]:
             "arxiv_id": next((e.arxiv_id for e in group if e.arxiv_id), ""),
         })
     return rows
+
+
+# --- evaluating entries --------------------------------------------------------
+
+
+@dataclass
+class EntryData:
+    entry: Entry
+    direction: str  # "o", "e", "x", ... from CONDITIONS or the page name; "" if isotropic
+    wavelength_um: tuple[float, float]
+    formula_type: int | None
+    coefficients: list[float]
+    tabulated_n: list[tuple[float, float]]
+
+    def refractive_index(self, wavelength_um):
+        """n(λ) from the entry's formula, else by interpolating its tabulated n (NaN outside the range)."""
+        import numpy as np
+
+        from matrag.dispersion import refractiveindex_info
+
+        lam = np.asarray(wavelength_um, dtype=float)
+        if self.formula_type is not None:
+            n = refractiveindex_info(self.formula_type, self.coefficients, lam)
+        elif self.tabulated_n:
+            x, y = zip(*self.tabulated_n)
+            n = np.interp(lam, x, y, left=np.nan, right=np.nan)
+        else:
+            raise ValueError(f"No refractive index data in {self.entry.path}")
+        lo, hi = self.wavelength_um
+        return np.where((lam >= lo - 1e-9) & (lam <= hi + 1e-9), n, np.nan)
+
+
+_DIRECTION_FROM_PAGE = re.compile(r"-(o|e|x|y|z|alpha|beta|gamma)$", re.IGNORECASE)
+
+
+def load_entry(path: Path, data_root: Path) -> EntryData:
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    entry = read_entry(path, data_root)
+    direction = str((doc.get("CONDITIONS") or {}).get("direction", "") or "")
+    if not direction and (m := _DIRECTION_FROM_PAGE.search(path.stem)):
+        direction = m.group(1).lower()
+    formula_type, coefficients, tabulated, ranges = None, [], [], []
+    for block in doc.get("DATA", []) or []:
+        kind = block.get("type", "")
+        if kind.startswith("formula") and formula_type is None:
+            formula_type = int(kind.split()[1])
+            coefficients = [float(x) for x in str(block["coefficients"]).split()]
+            ranges.append(tuple(float(x) for x in str(block["wavelength_range"]).split()))
+        elif kind in ("tabulated n", "tabulated nk") and not tabulated:
+            rows = [r.split() for r in str(block["data"]).strip().splitlines() if r.strip()]
+            tabulated = [(float(r[0]), float(r[1])) for r in rows]
+            ranges.append((tabulated[0][0], tabulated[-1][0]))
+    wl = ranges[0] if ranges else (0.0, 0.0)
+    return EntryData(entry, direction, wl, formula_type, coefficients, tabulated)
+
+
+def find_entries(database_dir: Path, doi: str | None = None, arxiv_id: str | None = None,
+                 shelves: tuple[str, ...] = ("main",)) -> list[EntryData]:
+    """Entries whose references cite the given DOI or arXiv id (a paper may appear under both)."""
+    data_root = database_dir / "data"
+    wanted = [s.lower() for s in (doi, arxiv_id) if s]
+    if not wanted:
+        return []
+    found = []
+    for shelf in shelves:
+        for path in sorted((data_root / shelf).rglob("*.yml")):
+            text = path.read_text(encoding="utf-8", errors="replace").lower()
+            if any(w in text for w in wanted):
+                try:
+                    found.append(load_entry(path, data_root))
+                except Exception:
+                    continue
+    return found
