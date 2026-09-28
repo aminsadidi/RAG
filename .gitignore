@@ -12,6 +12,7 @@ data/*/pdfs/
 
 # Generated artifacts (can be rebuilt from the PDFs)
 data/*/processed/
+data/*/processed-equations/
 data/*/papers.json
 storage/
 
