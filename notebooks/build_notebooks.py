@@ -94,17 +94,17 @@ os.environ['MATRAG_DATA_DIR'] = f'{WORK}/data'
 # the app copies it back to Drive after every change.
 os.environ['MATRAG_STORAGE_DIR'] = '/content/storage'
 os.environ['MATRAG_STORAGE_BACKUP_DIR'] = f'{WORK}/storage'
-# refractiveindex.info database (downloaded in cell 3), shared by all corpora.
-os.environ['MATRAG_REFERENCE_DIR'] = f'{WORK}/data/optical/reference/database'
+# refractiveindex.info database (downloaded in cell 3), shared by all corpora. It lives on
+# Colab's local disk: reading its thousands of small files from Drive takes many minutes.
+os.environ['MATRAG_REFERENCE_DIR'] = '/content/refractiveindex/database'
 !mkdir -p "{WORK}/storage" /content/storage && cp -rT "{WORK}/storage" /content/storage
 print('✅ Data folder:', WORK)
 """),
     code("#@title ۳. نصب برنامه از GitHub\n" + INSTALL + """
 # refractiveindex.info database (CC0), used to check formulas extracted from optical papers;
-# downloaded once into Drive.
-REF_DB = f"{WORK}/data/optical/reference"
-if not os.path.isdir(f"{REF_DB}/database"):
-    !git clone -q --depth 1 https://github.com/polyanskiy/refractiveindex.info-database.git "{REF_DB}" && echo "refractiveindex.info database saved to Drive"
+# downloaded to the local disk in each session (a few seconds).
+if not os.path.isdir('/content/refractiveindex/database'):
+    !git clone -q --depth 1 https://github.com/polyanskiy/refractiveindex.info-database.git /content/refractiveindex && echo "refractiveindex.info database downloaded"
 !git log --oneline -1
 !matrag --help > /dev/null && echo '✅ Installed (red "dependency conflict" warnings from pip can be ignored)' || echo '❌ Installation failed: run this cell again and send the output'
 """),
@@ -118,10 +118,12 @@ COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {type:"string"}
 #@markdown گزارش کامل: `02_Master_Index/pdf_inventory.csv`
 ORGANIZE = True  #@param {type:"boolean"}
 os.environ['MATRAG_CORPUS'] = 'rag-optics'
-!matrag link "{COLLECTION}" > /dev/null
+print('1/3 Linking the folder...')
+!matrag link "{COLLECTION}" 2>&1 | grep -vE "Warning"
 if ORGANIZE:
-    !matrag organize --move 2>&1 | grep -vE "Warning" | tail -4
-print()
+    print('2/3 Sorting the PDFs (a few minutes the first time)...')
+    !matrag organize --move 2>&1 | grep -vE "Warning"
+print('3/3 Status:')
 !matrag status 2>&1 | grep -vE "Warning"
 """),
     code("""
