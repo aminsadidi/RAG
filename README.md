@@ -89,7 +89,18 @@ matrag reference hitran results.csv --molecule CO2 --nu-min 5007.7 --nu-max 5007
 matrag reference optical-candidates           # فهرست مقاله‌های منبع refractiveindex.info و وضعیت دسترسی آزاد
 ```
 
-نتیجه‌ها در `results/eval/` ذخیره می‌شوند. در کولب، سلول‌های ۶ و ۷ همین کار را انجام می‌دهند.
+نتیجه‌ها در `results/eval/` ذخیره می‌شوند. در کولب، سلول‌های ۸ تا ۱۰ همین کار را انجام می‌دهند.
+
+**ارزیابی خودکار با refractiveindex.info** (بدون برچسب‌گذاری دستی؛ برای مجموعه‌ی `rag-optics`):
+
+```
+matrag --corpus rag-optics evaluate build-gold    # سؤال «فرمول پاشندگی ماده‌ی X» برای هر ماده‌ای که فرمولش از مقاله‌ای در مجموعه آمده
+matrag --corpus rag-optics evaluate retrieval     # آیا یکی از همان مقاله‌ها بازیابی می‌شود؟
+matrag --corpus rag-optics evaluate formulas --limit 20   # استخراج فرمول و مقایسه‌ی n(λ) با پایگاه: سهم مقاله‌ها با |Δn| ≤ 1e-4، 1e-3، 1e-2
+```
+
+ارزیابی فرمول‌ها ادامه‌پذیر است: هر اجرا مقاله‌های تازه را پردازش می‌کند و نتیجه‌ی هر مقاله بلافاصله در
+`results/eval/rag-optics_formula_benchmark.jsonl` ذخیره می‌شود.
 
 ### نتایج اولیه روی مقاله‌های آزمایشی (۳ مقاله در هر حوزه)
 

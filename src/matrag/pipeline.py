@@ -586,8 +586,50 @@ class Workspace:
             r.plausible = plausibility(r.property, r.value, specs)
         return records
 
+    def formula_references(self) -> dict:
+        """refractiveindex.info formula entries per full-text paper of the corpus (the benchmark set)."""
+        from matrag.benchmark import formula_references
+
+        if not self.settings.reference_db.exists():
+            raise FileNotFoundError(f"refractiveindex.info database not found: {self.settings.reference_db}")
+        full_text = {d for d, t in self.kb.doc_source_types().items() if t == "full_text_pdf"}
+        return formula_references(self.settings.reference_db, full_text)
+
+    def formula_benchmark(self, out: Path, limit: int | None = None, provider: str | None = None,
+                          on_progress: Callable[[int, int, str], None] | None = None) -> list[dict]:
+        """Extract the formulas of every benchmark paper and compare them with refractiveindex.info.
+
+        One row per paper is appended to ``out`` (JSON lines) as soon as it is done,
+        with the extracted formulas in ``<out>_formulas.jsonl``; papers already in
+        ``out`` are skipped, so a run cut off by a disconnect continues where it stopped.
+        """
+        from matrag.benchmark import paper_row
+        from matrag.formulas import save_formulas
+
+        references = self.formula_references()
+        rows = [json.loads(line) for line in out.read_text("utf-8").splitlines()] if out.exists() else []
+        done = {r["doc_id"] for r in rows}
+        todo = [d for d in sorted(references) if d not in done][:limit]
+        out.parent.mkdir(parents=True, exist_ok=True)
+        formulas_out = out.with_name(out.stem + "_formulas.jsonl")
+        library = self.library
+        for i, doc_id in enumerate(todo):
+            if on_progress:
+                on_progress(i, len(todo), f"{doc_id} ({library.get(doc_id).short_citation()})")
+            records = self.extract_formulas([doc_id], provider, references={doc_id: references[doc_id]})
+            row = paper_row(doc_id, library.get(doc_id).short_citation(), references[doc_id], records)
+            with out.open("a", encoding="utf-8") as f:
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+            if records:
+                save_formulas(records, formulas_out, append=True)
+            rows.append(row)
+        if on_progress:
+            on_progress(len(todo), len(todo), "done")
+        return rows
+
     def extract_formulas(self, doc_ids: list[str] | None = None, provider: str | None = None,
-                         on_progress: Callable[[int, int, str], None] | None = None):
+                         on_progress: Callable[[int, int, str], None] | None = None,
+                         references: dict | None = None):
         """Dispersion formulas of the given papers (default: all), checked against refractiveindex.info."""
         from matrag.formulas import compare_with_reference, extract_formulas
         from matrag.ingest import cached_document
@@ -606,8 +648,11 @@ class Workspace:
             doc = cached_document(s.processed_dir, doc_id)
             found = extract_formulas(doc, self.kb.nodes([doc_id]), llm, s.llm_min_interval_s)
             paper = library.get(doc_id)
-            entries = (find_entries(s.reference_db, doi=paper.doi, arxiv_id=paper.arxiv_id)
-                       if s.reference_db.exists() else [])
+            if references is not None:
+                entries = references.get(doc_id, [])
+            else:
+                entries = (find_entries(s.reference_db, doi=paper.doi, arxiv_id=paper.arxiv_id)
+                           if s.reference_db.exists() else [])
             for record in found:
                 record.llm = s.llm_name
                 if entries:

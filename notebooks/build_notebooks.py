@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 10
+VERSION = 11
 WORKERS = 4
 
 
@@ -205,16 +205,32 @@ if not PUBLIC_LINK:
 """),
     code("""
 #@title ۸. ارزیابی بازیابی (بدون مصرف مدل زبانی)
-!mkdir -p "{WORK}/data/{CORPUS}/gold" && cp -n /content/RAG/data/{CORPUS}/gold/*.csv "{WORK}/data/{CORPUS}/gold/" 2>/dev/null; true
+#@markdown برای `rag-optics` سؤال‌ها خودکار از refractiveindex.info ساخته می‌شوند: «فرمول پاشندگی ماده‌ی X»
+#@markdown باید یکی از مقاله‌هایی را پیدا کند که پایگاه برای آن ماده به آن ارجاع داده است.
 %cd {WORK}
-!matrag evaluate retrieval 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+if CORPUS == 'rag-optics':
+    !matrag --corpus rag-optics evaluate build-gold 2>&1 | grep -vE "Warning|Loading"
+else:
+    !mkdir -p "{WORK}/data/{CORPUS}/gold" && cp -n /content/RAG/data/{CORPUS}/gold/*.csv "{WORK}/data/{CORPUS}/gold/" 2>/dev/null; true
+!matrag --corpus {CORPUS} evaluate retrieval 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
 """),
     code("""
-#@title ۹. ارزیابی پاسخ‌ها: RAG در برابر مدل بدون منبع
+#@title ۹. ارزیابی پاسخ‌ها: RAG در برابر مدل بدون منبع (برای hitran و optical)
+#@markdown سؤال‌های خودکارِ `rag-optics` جواب مرجع ندارند و این‌جا رد می‌شوند؛ ارزیابی اصلی آن سلول ۱۰ است.
 LIMIT = 16  #@param {type:"integer"}
 %cd {WORK}
-!matrag evaluate answers --limit {LIMIT} 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+!matrag --corpus {CORPUS} evaluate answers --limit {LIMIT} 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+%cd /content/RAG
+"""),
+    code("""
+#@title ۱۰. ارزیابی اصلی: استخراج فرمول ← مقایسه با refractiveindex.info
+#@markdown برای هر مقاله‌ای که refractiveindex.info فرمولش را از آن برداشته: فرمول پاشندگی از متن مقاله استخراج و
+#@markdown ضریب شکست حاصل با پایگاه مقایسه می‌شود (بیشینه‌ی |Δn|). به مدل زبانی (سلول ۶) نیاز دارد و برای هر مقاله
+#@markdown چند دقیقه طول می‌کشد؛ هر بار **LIMIT** مقاله‌ی تازه پردازش می‌شود و اجرای بعدی از همان‌جا ادامه می‌دهد.
+LIMIT = 20  #@param {type:"integer"}
+%cd {WORK}
+!matrag --corpus rag-optics evaluate formulas --limit {LIMIT} 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
 """),
 ]

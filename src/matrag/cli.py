@@ -366,7 +366,11 @@ def evaluate_answers(
     from matrag.evaluate import evaluate_answers as run, load_questions, write_rows
 
     ws = _workspace()
-    items = load_questions(_gold("questions.csv"))[:limit]
+    # Retrieval-only questions (e.g. those built by 'evaluate build-gold') have no expected answer.
+    items = [it for it in load_questions(_gold("questions.csv")) if it.gradable][:limit]
+    if not items:
+        typer.echo("No questions with expected answers in the gold file (retrieval-only questions are skipped).")
+        raise typer.Exit(0)
     name = ws.llm_name()
     progress = lambda i: typer.echo(f"  {i}", err=True)  # noqa: E731
     systems = [(f"RAG + {name}", lambda q: ws.ask(q, top_k=top_k).text)]
@@ -381,6 +385,49 @@ def evaluate_answers(
                  **{f"{r.system} correct": r.correct[it.id] for r in reports},
                  **{f"{r.system} answer": r.answers[it.id] for r in reports}} for it in items])
     typer.echo(f"saved {out}")
+
+
+@evaluate_app.command("build-gold")
+def evaluate_build_gold(
+    overwrite: Annotated[bool, typer.Option(help="Replace an existing questions.csv.")] = False,
+) -> None:
+    """Retrieval questions built from refractiveindex.info: 'the dispersion formula of <material>'
+    must retrieve one of the corpus papers the database cites for that material."""
+    from matrag.benchmark import retrieval_questions
+    from matrag.config import get_settings
+    from matrag.evaluate import write_rows
+
+    ws = _workspace()
+    path = get_settings().data_dir / get_settings().corpus / "gold" / "questions.csv"
+    if path.exists() and not overwrite:
+        typer.echo(f"{path} exists (use --overwrite to replace it)")
+        return
+    references = ws.formula_references()
+    questions = retrieval_questions(references)
+    write_rows(path, [{"id": q.id, "question": q.question, "doc_id": q.doc_id, "pages": "", "expected": ""}
+                      for q in questions])
+    typer.echo(f"{len(questions)} questions ({len(references)} papers with a refractiveindex.info formula); "
+               f"saved {path}")
+
+
+@evaluate_app.command("formulas")
+def evaluate_formulas(
+    limit: Annotated[int | None, typer.Option(help="Process at most N more papers in this run.")] = None,
+) -> None:
+    """Formula benchmark: extract the dispersion formulas of every paper refractiveindex.info
+    takes a formula from, and compare n(λ) with the database (resumes where it stopped)."""
+    from matrag.benchmark import summarize
+    from matrag.evaluate import write_rows
+
+    ws = _workspace()
+    out = Path("results/eval") / f"{ws.settings.corpus}_formula_benchmark.jsonl"
+    typer.echo(f"[{ws.settings.corpus} | {ws.llm_name()}]", err=True)
+    rows = ws.formula_benchmark(out, limit, on_progress=_echo_progress)
+    summary = summarize(rows)
+    _print_table([summary])
+    write_rows(out.with_suffix(".csv"), rows)
+    write_rows(out.with_name(out.stem + "_summary.csv"), [summary])
+    typer.echo(f"saved {out.with_suffix('.csv')} (one row per paper) and {out.stem}_summary.csv")
 
 
 @evaluate_app.command("extraction")

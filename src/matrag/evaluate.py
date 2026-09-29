@@ -52,6 +52,11 @@ class GoldQuestion(BaseModel):
     def answerable(self) -> bool:
         return self.expected != [["NOT_FOUND"]]
 
+    @property
+    def gradable(self) -> bool:
+        """Has expected answer strings (retrieval-only questions have none)."""
+        return bool(self.expected)
+
 
 class GoldValue(BaseModel):
     doc_id: str
@@ -90,9 +95,14 @@ def _pages(node) -> set[int]:
 
 
 def first_relevant_rank(item: GoldQuestion, hits) -> int | None:
-    """1-based rank of the first chunk from the gold paper and a gold page."""
+    """1-based rank of the first chunk from the gold paper and a gold page.
+
+    ``doc_id`` may list several papers ("a;b": any of them is relevant), and no
+    pages means any page of those papers.
+    """
+    docs = set(item.doc_id.split(";"))
     for rank, hit in enumerate(hits, start=1):
-        if hit.node.metadata.get("doc_id") == item.doc_id and _pages(hit.node) & set(item.pages):
+        if hit.node.metadata.get("doc_id") in docs and (not item.pages or _pages(hit.node) & set(item.pages)):
             return rank
     return None
 
@@ -264,6 +274,8 @@ def load_records(path: Path) -> list[ExtractedRecord]:
 
 
 def write_rows(path: Path, rows: list[dict]) -> None:
+    if not rows:
+        return
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=list(rows[0]))
