@@ -382,7 +382,7 @@ def formula_to_table(corpus, state, index, start, stop, step, temperature):
     import numpy as np
 
     from matrag.formulas import FormulaRecord
-    from matrag.references.refractiveindex import load_entry
+    from matrag.references.refractiveindex import load_entry, shelves_root
 
     if not state or index is None:
         raise gr.Error("اول فرمول‌ها را استخراج کنید و یکی را انتخاب کنید.")
@@ -398,7 +398,8 @@ def formula_to_table(corpus, state, index, start, stop, step, temperature):
     n_paper = f.refractive_index(lam, temperature)
     n_ref, ref_label = None, ""
     if record.reference_entry and ws.settings.reference_db.exists():
-        entry = load_entry(ws.settings.reference_db / "data" / record.reference_entry, ws.settings.reference_db / "data")
+        root = shelves_root(ws.settings.reference_db)
+        entry = load_entry(root / record.reference_entry, root)
         n_ref, ref_label = entry.refractive_index(lam), f"refractiveindex.info ({record.reference_entry})"
     df = pd.DataFrame({"wavelength (µm)": np.round(lam, 6), "n (paper formula)": np.round(n_paper, 6)})
     if n_ref is not None:

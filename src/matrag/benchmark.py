@@ -20,7 +20,7 @@ from statistics import median
 
 from matrag.catalog import doi_key
 from matrag.evaluate import GoldQuestion
-from matrag.references.refractiveindex import EntryData, iter_entries, load_entry
+from matrag.references.refractiveindex import EntryData, iter_entries, load_entry, shelves_root
 
 TOLERANCES = (1e-4, 1e-3, 1e-2)
 
@@ -31,7 +31,7 @@ def formula_references(database_dir: Path, doc_ids: set[str]) -> dict[str, list[
     Papers are matched by DOI (corpus doc ids are DOIs in file-name form) or by
     arXiv id (doc ids like ``arxiv_2111.01212``).
     """
-    data_root = database_dir / "data"
+    data_root = shelves_root(database_dir)
     found: dict[str, list[EntryData]] = defaultdict(list)
     for entry in iter_entries(database_dir):
         if "formula" not in entry.data_types:

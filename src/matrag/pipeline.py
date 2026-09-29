@@ -387,8 +387,9 @@ class Workspace:
         # Reading the database's thousands of small files is slow on a Drive mount:
         # the DOIs are read once and kept next to the corpus settings.
         cache = self.settings.data_dir / self.settings.corpus / "reference_dois.json"
-        if cache.exists():
-            dois |= set(json.loads(cache.read_text("utf-8")))
+        cached = json.loads(cache.read_text("utf-8")) if cache.exists() else []
+        if cached:  # an empty list came from a database layout this program did not read yet
+            dois |= set(cached)
         elif self.settings.reference_db.exists():
             from matrag.references.refractiveindex import iter_entries
 
