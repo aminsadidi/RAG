@@ -243,7 +243,7 @@ class Workspace:
         are recorded in ``_status/`` and skipped unless ``retry_failed``.
         """
         from matrag.catalog import shard_of
-        from matrag.ingest import convert, is_cached, make_converter
+        from matrag.ingest import cached_names, convert, make_converter
 
         s = self.settings
         if not 0 <= shard < shards:
@@ -252,7 +252,8 @@ class Workspace:
         status_dir.mkdir(parents=True, exist_ok=True)
         failed = set() if retry_failed else _failed_ids(status_dir)
         mine = [it for it in self.plan().items if it.pdf is not None and shard_of(it.doc_id, shards) == shard]
-        todo = [it for it in mine if not is_cached(s.processed_dir, it.doc_id) and it.doc_id not in failed]
+        done = cached_names(s.processed_dir)
+        todo = [it for it in mine if it.doc_id not in done and it.doc_id not in failed]
         counts = {"assigned": len(mine), "already_done": len(mine) - len(todo), "converted": 0, "failed": 0}
         log = status_dir / f"shard_{shard}_of_{shards}.jsonl"
         converter = make_converter(s) if todo else None
@@ -278,10 +279,18 @@ class Workspace:
     def reference_dois(self) -> set[str]:
         """DOIs of the papers refractiveindex.info takes its data from (their answers are known)."""
         dois = set()
-        if self.settings.reference_db.exists():
+        # Reading the database's thousands of small files is slow on a Drive mount:
+        # the DOIs are read once and kept next to the corpus settings.
+        cache = self.settings.data_dir / self.settings.corpus / "reference_dois.json"
+        if cache.exists():
+            dois |= set(json.loads(cache.read_text("utf-8")))
+        elif self.settings.reference_db.exists():
             from matrag.references.refractiveindex import iter_entries
 
-            dois |= {e.doi for e in iter_entries(self.settings.reference_db) if e.doi}
+            found = sorted({e.doi for e in iter_entries(self.settings.reference_db) if e.doi})
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_text(json.dumps(found, indent=0), "utf-8")
+            dois |= set(found)
         root = self.settings.corpus_root
         listed = root / "04_Dispersion_Formulas_Data" / "refractiveindex_reference_dois.txt" if root else None
         if listed and listed.exists():
@@ -298,14 +307,14 @@ class Workspace:
 
     def status(self) -> dict[str, int]:
         """Counts of the corpus: papers by source type, conversions done, and indexed papers."""
-        from matrag.ingest import is_cached
+        from matrag.ingest import cached_names
 
         plan = self.plan()
         counts: dict[str, int] = {}
         for item in plan.items:
             counts[item.source_type] = counts.get(item.source_type, 0) + 1
-        pdfs = [it for it in plan.items if it.pdf is not None]
-        counts["pdfs_converted"] = sum(is_cached(self.settings.processed_dir, it.doc_id) for it in pdfs)
+        done = cached_names(self.settings.processed_dir)
+        counts["pdfs_converted"] = sum(it.doc_id in done for it in plan.items if it.pdf is not None)
         status_dir = self.settings.processed_dir / "_status"
         counts["pdfs_failed"] = len(_failed_ids(status_dir)) if status_dir.exists() else 0
         counts["duplicate_pdfs"] = len(plan.duplicates)

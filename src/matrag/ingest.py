@@ -70,6 +70,21 @@ def is_cached(cache_dir: Path, name: str) -> bool:
     return (cache_dir / f"{name}.json.gz").exists() or (cache_dir / f"{name}.json").exists()
 
 
+def cached_names(cache_dir: Path) -> set[str]:
+    """Names of all cached conversions, from one folder listing (fast on a network drive)."""
+    if not cache_dir.exists():
+        return set()
+    names = set()
+    for f in os.listdir(cache_dir):
+        if f.startswith("."):
+            continue  # unfinished temporary files
+        if f.endswith(".json.gz"):
+            names.add(f[: -len(".json.gz")])
+        elif f.endswith(".json"):
+            names.add(f[: -len(".json")])
+    return names
+
+
 def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str | None = None,
             max_pages: int | None = None) -> DoclingDocument:
     """Convert a paper, caching the result as compressed JSON under ``name`` (default: file name).
