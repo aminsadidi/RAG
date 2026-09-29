@@ -22,6 +22,7 @@ def make_embed_model(settings: Settings) -> BaseEmbedding:
         model_name=settings.embed_model,
         query_instruction=settings.embed_query_instruction or None,
         max_length=settings.chunk_max_tokens,
+        embed_batch_size=settings.embed_batch_size,
     )
 
 

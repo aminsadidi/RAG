@@ -167,6 +167,29 @@ def test_organize_sorts_downloads_into_category_folders(collection, sample_paper
     assert not [r for r in organize(collection, move=True) if r["moved_from"]]
 
 
+def test_parallel_chunking_gives_the_same_chunks(collection, settings, embed_model, monkeypatch):
+    """Worker processes produce exactly the chunks and metadata of the sequential path."""
+    pytest.importorskip("transformers")
+    try:  # the real tokenizer, from the local cache (no download in tests)
+        from transformers import AutoTokenizer
+
+        AutoTokenizer.from_pretrained(settings.embed_model, local_files_only=True)
+    except Exception:
+        pytest.skip("embedding model's tokenizer not cached locally")
+    monkeypatch.setenv("HF_HUB_OFFLINE", "1")
+    monkeypatch.setattr(pipeline, "_embed_model", lambda *a: embed_model)
+    monkeypatch.setattr(pipeline, "PARALLEL_MIN_PAPERS", 1)
+    settings = settings.model_copy(update={"fetch_metadata": False})
+    indexed = {}
+    for corpus, workers in (("sequential", 1), ("parallel", 2)):
+        link_collection(corpus, collection, settings)
+        ws = Workspace(settings.model_copy(update={"ingest_workers": workers}), corpus=corpus)
+        ws.convert_shard(0, 1)
+        assert not [r for r in ws.ingest() if r.error]
+        indexed[corpus] = [(n.node_id, n.get_content(), n.metadata) for n in ws.kb.nodes()]
+    assert indexed["parallel"] == indexed["sequential"] and len(indexed["parallel"]) > 5
+
+
 def test_failed_conversions_are_skipped_until_retried(collection, settings, monkeypatch):
     import matrag.ingest
 

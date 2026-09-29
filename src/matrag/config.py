@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     # Recommended query prefix for BGE v1.5 models (empty string disables it).
     embed_query_instruction: str = "Represent this sentence for searching relevant passages: "
     chunk_max_tokens: int = 512
+    # Chunks embedded per model call; larger batches only make a GPU faster (same vectors).
+    embed_batch_size: int = 64
+    # Processes that chunk papers in parallel during ingest (0: one per CPU core).
+    ingest_workers: int = 0
 
     # --- Vector store ---
     collection_name: str = "papers"

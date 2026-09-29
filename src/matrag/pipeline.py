@@ -6,6 +6,7 @@ add papers -> ingest -> ask / pack / extract.
 """
 
 import json
+import os
 import re
 import shutil
 import time
@@ -26,12 +27,16 @@ from matrag.retrieve import RetrievalMode, make_retriever
 from matrag.schema import ExtractedRecord
 
 
+# Below this many papers, chunking runs in this process (starting workers costs seconds).
+PARALLEL_MIN_PAPERS = 8
+
+
 @cache
-def _embed_model(name: str, query_instruction: str, max_length: int):
+def _embed_model(name: str, query_instruction: str, max_length: int, batch_size: int = 64):
     # Loading the embedding model takes seconds; share it across corpora.
     return make_embed_model(
         Settings(embed_model=name, embed_query_instruction=query_instruction,
-                 chunk_max_tokens=max_length, _env_file=None)
+                 chunk_max_tokens=max_length, embed_batch_size=batch_size, _env_file=None)
     )
 
 
@@ -78,7 +83,8 @@ class Workspace:
     @cached_property
     def kb(self) -> KnowledgeBase:
         s = self.settings
-        return KnowledgeBase(s, _embed_model(s.embed_model, s.embed_query_instruction, s.chunk_max_tokens))
+        return KnowledgeBase(s, _embed_model(s.embed_model, s.embed_query_instruction, s.chunk_max_tokens,
+                                             s.embed_batch_size))
 
     @property
     def library(self) -> Library:
@@ -154,7 +160,8 @@ class Workspace:
         papers that are no longer in the corpus.
         """
         from matrag.catalog import FULL_TEXT, Item
-        from matrag.ingest import INGEST_VERSION, chunk_document, convert, make_chunker, make_converter, summary_node
+        from matrag.ingest import (INGEST_VERSION, cached_names, chunk_document, convert, make_chunker,
+                                   make_converter, summary_node)
 
         s = self.settings
         if paths:
@@ -166,33 +173,57 @@ class Workspace:
         converter = chunker = None
         results: list[IngestResult] = []
         pending: dict[str, list] = {}  # summary nodes, embedded in batches
-        last_save = time.monotonic()
+        last_save = last_backup = time.monotonic()
 
         def flush(final: bool = False):
-            nonlocal last_save
+            nonlocal last_save, last_backup
             if pending:
                 self.kb.add_documents(dict(pending), persist=False)
                 pending.clear()
-            # Save regularly, so a Colab disconnect loses at most a few minutes of work.
+            # Save regularly, so a Colab disconnect loses little work. Saving to the local
+            # disk is quick; the copy to Drive (about 1 GB for a large collection) is not,
+            # so it is made less often.
             if final or time.monotonic() - last_save > 600:
                 self.kb.persist()
                 library.save()
-                if not final:
-                    self.backup()
                 last_save = time.monotonic()
+                if not final and time.monotonic() - last_backup > 1800:
+                    self.backup()
+                    last_backup = time.monotonic()
 
-        for i, item in enumerate(items):
-            name = self._display_name(item)
+        def known_paper(item):
+            """Metadata looked up before (later edits to papers.json are kept), or from the index."""
+            paper = library.papers.get(item.doc_id)
+            if item.entry and (paper is None or paper.source != "catalog"):
+                paper = item.entry.paper_info(item.doc_id)
+            return paper
+
+        # Converted PDFs can be chunked in parallel worker processes.
+        converted = cached_names(s.processed_dir)
+        parallel: list = []
+        progress = 0
+
+        def report(name: str):
+            nonlocal progress
             if on_progress:
-                on_progress(i, len(items), name)
+                on_progress(progress, len(items), name)
+            progress += 1
+
+        for item in items:
+            name = self._display_name(item)
             # A PDF moved to another folder is re-chunked from its cached conversion,
             # so the source viewer finds it again.
             up_to_date = (versions.get(item.doc_id) == INGEST_VERSION
                           and sources.get(item.doc_id, FULL_TEXT) == item.source_type
                           and (item.pdf is None or files.get(item.doc_id) in (self._relative(item.pdf), item.pdf.name)))
             if up_to_date and not force:
+                report(name)
                 results.append(IngestResult(name, library.get(item.doc_id).short_citation(), 0, skipped=True))
                 continue
+            if item.pdf is not None and item.doc_id in converted:
+                parallel.append(item)
+                continue
+            report(name)
             try:
                 extra = self._extra_metadata(item)
                 if item.pdf is None:
@@ -207,12 +238,9 @@ class Workspace:
                 if converter is None:  # Docling models load lazily, only if needed
                     converter, chunker = make_converter(s), make_chunker(s)
                 doc = convert(item.pdf, converter, s.processed_dir, item.doc_id, s.max_pages)
-                # Metadata is looked up once; later edits to papers.json are kept.
-                paper = library.papers.get(item.doc_id)
-                if paper is None or (item.entry and paper.source != "catalog"):
-                    paper = (item.entry.paper_info(item.doc_id) if item.entry else
-                             resolve(doc, item.doc_id, item.pdf.name, online=s.fetch_metadata, pdf_path=item.pdf))
-                    library.put(paper, save=False)
+                paper = known_paper(item) or resolve(doc, item.doc_id, item.pdf.name, online=s.fetch_metadata,
+                                                     pdf_path=item.pdf)
+                library.put(paper, save=False)
                 nodes = chunk_document(doc, doc_id=item.doc_id, chunker=chunker, paper=paper,
                                        source_file=self._relative(item.pdf), extra=extra)
                 self.kb.add_document(item.doc_id, nodes, persist=False)
@@ -220,6 +248,33 @@ class Workspace:
                 flush()
             except Exception as e:  # one broken PDF must not stop the batch
                 results.append(IngestResult(name, item.doc_id, 0, error=f"{type(e).__name__}: {e}"))
+
+        if parallel:
+            jobs = [{"doc_id": it.doc_id, "cache_dir": s.processed_dir, "paper": known_paper(it), "pdf": it.pdf,
+                     "online": s.fetch_metadata, "source_file": self._relative(it.pdf),
+                     "extra": self._extra_metadata(it)} for it in parallel]
+            names = {it.doc_id: self._display_name(it) for it in parallel}
+            batch: dict[str, list] = {}
+
+            def add(doc_id, nodes, paper):
+                library.put(paper, save=False)
+                batch[doc_id] = nodes
+                results.append(IngestResult(names[doc_id], paper.short_citation(), len(nodes)))
+                # Embedding many papers' chunks together keeps the GPU busy.
+                if sum(map(len, batch.values())) >= 512:
+                    self.kb.add_documents(dict(batch), persist=False)
+                    batch.clear()
+                    flush()
+
+            for doc_id, outcome in self._chunk_in_parallel(jobs):
+                report(names[doc_id])
+                if isinstance(outcome, Exception):
+                    results.append(IngestResult(names[doc_id], doc_id, 0,
+                                                error=f"{type(outcome).__name__}: {outcome}"))
+                else:
+                    add(doc_id, *outcome)
+            if batch:
+                self.kb.add_documents(dict(batch), persist=False)
         if prune and not paths:
             wanted = {item.doc_id for item in items}
             for doc_id in set(versions) - wanted:
@@ -231,6 +286,56 @@ class Workspace:
         if any(not r.skipped for r in results) or prune:
             self.backup()
         return results
+
+    def _chunk_in_parallel(self, jobs: list[dict]):
+        """Yield (doc_id, (nodes, paper) or the exception) for each job, as they finish.
+
+        Worker processes chunk the papers; with few papers or a single CPU, or if
+        worker processes cannot start, the same code runs in this process.
+        """
+        from matrag.ingest import chunk_cached, init_chunk_worker
+
+        workers = self.settings.ingest_workers or (os.cpu_count() or 1)
+        if workers > 1 and len(jobs) >= PARALLEL_MIN_PAPERS:
+            import multiprocessing
+            from concurrent.futures import ProcessPoolExecutor, as_completed
+
+            try:
+                # "spawn": the workers must not inherit the parent's GPU (CUDA) state.
+                pool = ProcessPoolExecutor(max_workers=min(workers, len(jobs)),
+                                           mp_context=multiprocessing.get_context("spawn"),
+                                           initializer=init_chunk_worker, initargs=(self.settings,))
+            except (OSError, RuntimeError):
+                pool = None
+            if pool is not None:
+                from concurrent.futures.process import BrokenProcessPool
+
+                done = set()
+                with pool:
+                    futures = {pool.submit(chunk_cached, job): job["doc_id"] for job in jobs}
+                    try:
+                        for future in as_completed(futures):
+                            try:
+                                _, nodes, paper = future.result()
+                                result = (nodes, paper)
+                            except BrokenProcessPool:
+                                raise
+                            except Exception as e:  # a problem with this paper only
+                                result = e
+                            done.add(futures[future])
+                            yield futures[future], result
+                    except BrokenProcessPool:  # the workers died: finish in this process
+                        pool.shutdown(cancel_futures=True)
+                jobs = [job for job in jobs if job["doc_id"] not in done]
+                if not jobs:
+                    return
+        init_chunk_worker(self.settings)
+        for job in jobs:
+            try:
+                _, nodes, paper = chunk_cached(job)
+                yield job["doc_id"], (nodes, paper)
+            except Exception as e:
+                yield job["doc_id"], e
 
     def convert_shard(self, shard: int, shards: int, retry_failed: bool = False,
                       on_progress: Callable[[int, int, str], None] | None = None) -> dict[str, int]:
