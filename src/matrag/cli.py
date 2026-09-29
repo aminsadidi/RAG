@@ -402,7 +402,11 @@ def evaluate_build_gold(
     if path.exists() and not overwrite:
         typer.echo(f"{path} exists (use --overwrite to replace it)")
         return
-    references = ws.formula_references()
+    try:
+        references = ws.formula_references()
+    except (ValueError, FileNotFoundError) as e:
+        typer.echo(str(e), err=True)
+        raise typer.Exit(1)
     questions = retrieval_questions(references)
     write_rows(path, [{"id": q.id, "question": q.question, "doc_id": q.doc_id, "pages": "", "expected": ""}
                       for q in questions])
@@ -422,7 +426,11 @@ def evaluate_formulas(
     ws = _workspace()
     out = Path("results/eval") / f"{ws.settings.corpus}_formula_benchmark.jsonl"
     typer.echo(f"[{ws.settings.corpus} | {ws.llm_name()}]", err=True)
-    rows = ws.formula_benchmark(out, limit, on_progress=_echo_progress)
+    try:
+        rows = ws.formula_benchmark(out, limit, on_progress=_echo_progress)
+    except (ValueError, FileNotFoundError) as e:
+        typer.echo(str(e), err=True)
+        raise typer.Exit(1)
     summary = summarize(rows)
     _print_table([summary])
     write_rows(out.with_suffix(".csv"), rows)

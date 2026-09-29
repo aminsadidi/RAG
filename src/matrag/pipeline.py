@@ -593,8 +593,18 @@ class Workspace:
 
         if not self.settings.reference_db.exists():
             raise FileNotFoundError(f"refractiveindex.info database not found: {self.settings.reference_db}")
-        full_text = {d for d, t in self.kb.doc_source_types().items() if t == "full_text_pdf"}
-        return formula_references(self.settings.reference_db, full_text)
+        from matrag.references.refractiveindex import iter_entries, shelves_root
+
+        sources = self.kb.doc_source_types()
+        full_text = {d for d, t in sources.items() if t == "full_text_pdf"}
+        found = formula_references(self.settings.reference_db, full_text)
+        if not found:  # say which side is empty, instead of silently evaluating nothing
+            formulas = sum("formula" in e.data_types for e in iter_entries(self.settings.reference_db))
+            raise ValueError(
+                f"No benchmark papers. Database of '{self.settings.corpus}': {len(sources)} papers, "
+                f"{len(full_text)} with full text (storage: {self.settings.docstore_path}). "
+                f"refractiveindex.info: {formulas} formula entries in {shelves_root(self.settings.reference_db)}.")
+        return found
 
     def formula_benchmark(self, out: Path, limit: int | None = None, provider: str | None = None,
                           on_progress: Callable[[int, int, str], None] | None = None) -> list[dict]:
