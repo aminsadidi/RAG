@@ -19,6 +19,7 @@ file name (``10.1364/JOSAB.6.000616`` -> ``10.1364_josab.6.000616.pdf``).
 import csv
 import hashlib
 import json
+import os
 import re
 import shutil
 from dataclasses import dataclass
@@ -181,12 +182,12 @@ def find_pdfs(root: Path) -> list[Path]:
     """All PDFs under the collection folder, except in the index/processed folders and hidden or
     '_'-prefixed folders (caches, cards)."""
     found = []
-    for path in root.rglob("*"):
-        rel = path.relative_to(root).parts
-        if any(p.startswith((".", "_")) for p in rel[:-1]) or rel[0] in _SKIP_DIRS:
-            continue
-        if path.suffix.lower() in PAPER_SUFFIXES and path.is_file():
-            found.append(path)
+    # os.walk with pruning: skipped folders (e.g. thousands of conversions) are never
+    # listed, which matters on a Google Drive mount where every listing is a network call.
+    for folder, dirs, files in os.walk(root):
+        top = Path(folder) == root
+        dirs[:] = [d for d in dirs if not d.startswith((".", "_")) and not (top and d in _SKIP_DIRS)]
+        found += [Path(folder) / f for f in files if Path(f).suffix.lower() in PAPER_SUFFIXES]
     return sorted(found)
 
 
