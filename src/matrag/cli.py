@@ -97,7 +97,6 @@ def link(
     # otherwise each create one, and Drive allows two folders with the same name.
     (_workspace().settings.processed_dir / "_status").mkdir(parents=True, exist_ok=True)
     typer.echo(f"Corpus '{corpus}' now reads its papers from {folder}")
-    status()
 
 
 @app.command()
