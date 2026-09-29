@@ -156,6 +156,38 @@ def chunk_document(
     return nodes
 
 
+# --- parallel chunking -----------------------------------------------------------
+# Chunking (tokenizing every piece of text) is CPU-bound and runs one paper at a time;
+# with papers already converted, it is what an ingest waits for. Worker processes
+# chunk several papers at once while the main process embeds the finished ones on the
+# GPU. The chunks are exactly those of the sequential path: same chunker, same code.
+
+_worker_chunker: HybridChunker | None = None
+
+
+def init_chunk_worker(settings: Settings) -> None:
+    global _worker_chunker
+    os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")  # one thread per process
+    _worker_chunker = make_chunker(settings)
+
+
+def chunk_cached(job: dict) -> tuple[str, list[TextNode], PaperInfo]:
+    """Chunk one converted paper in a worker process (see ``init_chunk_worker``).
+
+    ``job`` holds the paper's doc_id, cache folder, known metadata (or None, then it
+    is resolved here from the document), relative source file and extra metadata.
+    """
+    from matrag.metadata import resolve
+
+    doc = cached_document(job["cache_dir"], job["doc_id"])
+    if doc is None:
+        raise FileNotFoundError(f"No cached conversion for {job['doc_id']}")
+    paper = job["paper"] or resolve(doc, job["doc_id"], job["pdf"].name, online=job["online"], pdf_path=job["pdf"])
+    nodes = chunk_document(doc, doc_id=job["doc_id"], chunker=_worker_chunker, paper=paper,
+                           source_file=job["source_file"], extra=job["extra"])
+    return job["doc_id"], nodes, paper
+
+
 def summary_node(doc_id: str, text: str, paper: PaperInfo, source_type: str,
                  extra: dict | None = None) -> TextNode:
     """A single node for a paper known only from its index entry (abstract, or just its title).
