@@ -267,10 +267,11 @@ def deduplicate_formulas(records: list[FormulaRecord]) -> list[FormulaRecord]:
     return list(best.values())
 
 
-def save_formulas(records: list[FormulaRecord], path: Path) -> None:
+def save_formulas(records: list[FormulaRecord], path: Path, append: bool = False) -> None:
     """JSON Lines, one formula per line (nested coefficients kept intact)."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(r.model_dump_json() + "\n" for r in records), encoding="utf-8")
+    with path.open("a" if append else "w", encoding="utf-8") as f:
+        f.writelines(r.model_dump_json() + "\n" for r in records)
 
 
 def load_formulas(path: Path) -> list[FormulaRecord]:
