@@ -58,12 +58,19 @@ def read_entry(path: Path, data_root: Path) -> Entry:
     )
 
 
+def shelves_root(database_dir: Path) -> Path:
+    """Folder holding the shelves (main/, glass/, ...): ``database/data`` in older versions of the
+    database, ``database`` itself since 2026."""
+    old = database_dir / "data"
+    return old if (old / "main").is_dir() else database_dir
+
+
 def iter_entries(database_dir: Path, shelves: tuple[str, ...] = ("main",)):
-    data_root = database_dir / "data"
+    root = shelves_root(database_dir)
     for shelf in shelves:
-        for path in sorted((data_root / shelf).rglob("*.yml")):
+        for path in sorted((root / shelf).rglob("*.yml")):
             try:
-                yield read_entry(path, data_root)
+                yield read_entry(path, root)
             except Exception:  # a malformed file must not stop the scan
                 continue
 
@@ -168,17 +175,17 @@ def load_entry(path: Path, data_root: Path) -> EntryData:
 def find_entries(database_dir: Path, doi: str | None = None, arxiv_id: str | None = None,
                  shelves: tuple[str, ...] = ("main",)) -> list[EntryData]:
     """Entries whose references cite the given DOI or arXiv id (a paper may appear under both)."""
-    data_root = database_dir / "data"
+    root = shelves_root(database_dir)
     wanted = [s.lower() for s in (doi, arxiv_id) if s]
     if not wanted:
         return []
     found = []
     for shelf in shelves:
-        for path in sorted((data_root / shelf).rglob("*.yml")):
+        for path in sorted((root / shelf).rglob("*.yml")):
             text = path.read_text(encoding="utf-8", errors="replace").lower()
             if any(w in text for w in wanted):
                 try:
-                    found.append(load_entry(path, data_root))
+                    found.append(load_entry(path, root))
                 except Exception:
                     continue
     return found
