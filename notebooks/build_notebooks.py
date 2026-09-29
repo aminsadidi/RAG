@@ -119,12 +119,12 @@ COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {type:"string"}
 ORGANIZE = True  #@param {type:"boolean"}
 os.environ['MATRAG_CORPUS'] = 'rag-optics'
 print('1/3 Linking the folder...')
-!matrag link "{COLLECTION}" 2>&1 | grep -vE "Warning"
+!matrag --corpus rag-optics link "{COLLECTION}" 2>&1 | grep -vE "Warning"
 if ORGANIZE:
     print('2/3 Sorting the PDFs (a few minutes the first time)...')
-    !matrag organize --move 2>&1 | grep -vE "Warning"
+    !matrag --corpus rag-optics organize --move 2>&1 | grep -vE "Warning"
 print('3/3 Status:')
-!matrag status 2>&1 | grep -vE "Warning"
+!matrag --corpus rag-optics status 2>&1 | grep -vE "Warning"
 """),
     code("""
 #@title ۵. پردازش مقاله‌ها و ساخت پایگاه داده
@@ -133,9 +133,9 @@ print('3/3 Status:')
 #@markdown (یا همین حالا؛ فقط ممکن است چند مقاله دو بار تبدیل شود). مقاله‌های بدون PDF با چکیده‌شان وارد
 #@markdown می‌شوند. اگر کولب قطع شد، دوباره اجرا کنید: کار از همان‌جا ادامه پیدا می‌کند.
 %cd {WORK}
-!matrag ingest --prune 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/ingest.log"
+!matrag --corpus rag-optics ingest --prune 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/ingest.log"
 %cd /content/RAG
-!matrag status 2>&1 | grep -vE "Warning"
+!matrag --corpus rag-optics status 2>&1 | grep -vE "Warning"
 """),
     code("""
 #@title ۶. راه‌اندازی مدل زبانی
