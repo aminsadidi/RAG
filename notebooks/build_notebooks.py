@@ -207,6 +207,7 @@ if not PUBLIC_LINK:
 #@title ۸. ارزیابی بازیابی (بدون مصرف مدل زبانی)
 #@markdown برای `rag-optics` سؤال‌ها خودکار از refractiveindex.info ساخته می‌شوند: «فرمول پاشندگی ماده‌ی X»
 #@markdown باید یکی از مقاله‌هایی را پیدا کند که پایگاه برای آن ماده به آن ارجاع داده است.
+CORPUS = globals().get('CORPUS', 'rag-optics')  # set by cell 7; rag-optics if it was skipped
 %cd {WORK}
 if CORPUS == 'rag-optics':
     !matrag --corpus rag-optics evaluate build-gold 2>&1 | grep -vE "Warning|Loading"
@@ -219,6 +220,7 @@ else:
 #@title ۹. ارزیابی پاسخ‌ها: RAG در برابر مدل بدون منبع (برای hitran و optical)
 #@markdown سؤال‌های خودکارِ `rag-optics` جواب مرجع ندارند و این‌جا رد می‌شوند؛ ارزیابی اصلی آن سلول ۱۰ است.
 LIMIT = 16  #@param {type:"integer"}
+CORPUS = globals().get('CORPUS', 'rag-optics')  # set by cell 7
 %cd {WORK}
 !matrag --corpus {CORPUS} evaluate answers --limit {LIMIT} 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
