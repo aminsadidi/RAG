@@ -146,6 +146,13 @@ async function handle(request, env) {
     return url.pathname.startsWith("/api/") ? json({ error: "login required" }, 401) : html(LOGIN);
   }
   if (url.pathname === "/") return html(PAGE);
+  if (url.pathname.startsWith("/pdf/") && env.PDFS) {
+    const path = url.pathname.slice("/pdf".length);
+    const response = await env.PDFS.fetch(new Request(`https://pdfs${path}`));
+    if (!response.ok || !(response.headers.get("content-type") || "").includes("pdf")) return json({ error: "no pdf" }, 404);
+    return new Response(response.body, { headers: {
+      "content-type": "application/pdf", "cache-control": "private, max-age=86400", "x-robots-tag": "noindex" } });
+  }
   try {
     if (url.pathname === "/api/search" && request.method === "POST") return json(await search(env, await request.json()));
     if (url.pathname === "/api/pack" && request.method === "POST") {
