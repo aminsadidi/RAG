@@ -189,3 +189,27 @@ def find_entries(database_dir: Path, doi: str | None = None, arxiv_id: str | Non
                 except Exception:
                     continue
     return found
+
+
+def formula_catalog(database_dir: Path, shelves: tuple[str, ...] = ("main",)) -> list[dict]:
+    """Every dispersion-formula entry of the database, for the site's refractive index tab."""
+    from matrag.catalog import doi_key
+
+    root = shelves_root(database_dir)
+    out = []
+    for shelf in shelves:
+        for path in sorted((root / shelf).rglob("*.yml")):
+            try:
+                data = load_entry(path, root)
+            except (ValueError, KeyError, TypeError, yaml.YAMLError):
+                continue
+            if data.formula_type is None:
+                continue
+            e = data.entry
+            out.append({
+                "material": e.material, "page": e.page, "direction": data.direction,
+                "type": data.formula_type, "coefficients": data.coefficients,
+                "range_um": list(data.wavelength_um), "reference": e.reference, "doi": e.doi,
+                "doc_id": doi_key(e.doi) if e.doi else None, "path": e.path,
+            })
+    return out

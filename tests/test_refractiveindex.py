@@ -30,3 +30,11 @@ def test_both_layouts_are_read(database):
     assert data.formula_type == 4 and data.refractive_index([1.064])[0] == pytest.approx(1.56478, abs=1e-4)
     refs = formula_references(database, {"10.1364_josab.6.000616", "other"})
     assert list(refs) == ["10.1364_josab.6.000616"]
+
+
+def test_formula_catalog(database):
+    from matrag.references.refractiveindex import formula_catalog
+
+    [e] = formula_catalog(database)
+    assert e["material"] == "LiB3O5" and e["page"] == "Chen-alpha" and e["type"] == 4
+    assert e["doc_id"] == "10.1364_josab.6.000616" and e["range_um"] == [0.3, 1.6]
