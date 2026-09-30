@@ -4,6 +4,8 @@
 import { cleanTranslation, contextPack, expandQuery, isPersian, shared, sourceLabel, translatePrompt } from "./text.js";
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
+import DISPERSION_JS from "./dispersion.client.js";
+import FORMULAS from "./formulas.json";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id"];
 const MODES = ["hybrid", "vector", "bm25"];
@@ -103,6 +105,22 @@ async function facets(env) {
   return out;
 }
 
+// Which formulas' source papers are in the collection ("full" text or "abstract" only); cached per isolate.
+let collectionCache = null;
+async function inCollection(env) {
+  if (collectionCache && Date.now() - collectionCache.at < 3600e3) return collectionCache.value;
+  const ids = [...new Set(FORMULAS.map((e) => e.doc_id).filter(Boolean))];
+  const facet = (extra) => qdrant(env, `/collections/${env.COLLECTION}/facet`, {
+    key: "doc_id", limit: ids.length, exact: true,
+    filter: { must: [{ key: "doc_id", match: { any: ids } }, ...extra] },
+  }).then((r) => r.hits.map((h) => h.value));
+  const value = {};
+  for (const id of await facet([])) value[id] = "abstract";
+  for (const id of await facet([{ key: "source_type", match: { value: "full_text_pdf" } }])) value[id] = "full";
+  collectionCache = { at: Date.now(), value };
+  return value;
+}
+
 async function paper(env, docId) {
   const result = await qdrant(env, `/collections/${env.COLLECTION}/points/scroll`, {
     filter: { must: [{ key: "doc_id", match: { value: docId } }] }, limit: 400, with_payload: PAYLOAD,
@@ -146,6 +164,9 @@ async function handle(request, env) {
     return url.pathname.startsWith("/api/") ? json({ error: "login required" }, 401) : html(LOGIN);
   }
   if (url.pathname === "/") return html(PAGE);
+  if (url.pathname === "/dispersion.js") {
+    return new Response(DISPERSION_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
+  }
   if (url.pathname.startsWith("/pdf/") && env.PDFS) {
     const path = url.pathname.slice("/pdf".length);
     const response = await env.PDFS.fetch(new Request(`https://pdfs${path}`));
@@ -162,6 +183,7 @@ async function handle(request, env) {
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
     if (url.pathname === "/api/facets") return json(await facets(env));
+    if (url.pathname === "/api/formulas") return json({ entries: FORMULAS, in_collection: await inCollection(env) });
     if (url.pathname === "/api/paper") return json(await paper(env, url.searchParams.get("doc_id") || ""));
   } catch (error) {
     return json({ error: String(error.message || error) }, 500);

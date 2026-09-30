@@ -322,6 +322,21 @@ def export_qdrant(
     typer.echo(f"uploaded {n} chunks; collection '{name}' now holds {info.points_count} points")
 
 
+@app.command("export-formulas")
+def export_formulas(
+    out: Annotated[Path, typer.Argument(help="JSON file to write.")] = Path("web/src/formulas.json"),
+) -> None:
+    """Write the refractiveindex.info dispersion formulas to a JSON file, for the site's refractive index tab."""
+    import json
+
+    from matrag.config import Settings
+    from matrag.references.refractiveindex import formula_catalog
+
+    entries = formula_catalog(Settings().reference_db)
+    out.write_text(json.dumps(entries, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    typer.echo(f"{len(entries)} formulas ({len({e['material'] for e in entries})} materials) written to {out}")
+
+
 @app.command("export-pdfs")
 def export_pdfs(dest: Annotated[Path, typer.Argument(help="Folder to copy the PDFs into (web-pdfs/pdfs).")]) -> None:
     """Copy the PDFs of the full-text papers into a folder, for the site's PDF Worker (web-pdfs/)."""
