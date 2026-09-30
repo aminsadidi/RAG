@@ -132,9 +132,10 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 <section id="tab-index" hidden class="viz-root">
   <div class="card">
     <h2>ضریب شکست از فرمول‌های پاشندگی</h2>
-    <p class="hint">فرمول‌های پاشندگی (سلمایر و …) پایگاه refractiveindex.info برای هر ماده؛ هر منحنی از یک مقاله است. اگر آن مقاله در مجموعه‌ی شما باشد، با یک کلیک متن و صفحه‌اش باز می‌شود.</p>
+    <p class="hint">همه‌ی داده‌های ضریب شکست پایگاه refractiveindex.info (۲٬۲۴۶ ماده: بلورها، بلورهای آلاییده و آمیخته، آلیاژهای نیم‌رسانا، مواد آلی و شیشه‌های نوری تجاری)؛ فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده. هر منحنی از یک مقاله است؛ اگر آن مقاله در مجموعه‌ی شما باشد، با یک کلیک متن و صفحه‌اش باز می‌شود.</p>
     <div class="row">
-      <label>ماده <select id="rimat"></select></label>
+      <label>ماده <input id="rimat" list="rimats" placeholder="مثلاً LiB3O5، BaB2O4، N-BK7" style="width:240px;direction:ltr" autocomplete="off"><datalist id="rimats"></datalist></label>
+      <span id="riinfo" class="hint"></span>
       <label>از λ <input id="rilo" type="number" step="0.01" style="width:84px"> تا <input id="rihi" type="number" step="0.01" style="width:84px"> µm</label>
       <label>n در λ = <input id="riprobe" type="number" step="0.001" value="1.064" style="width:90px"> µm</label>
     </div>
@@ -491,40 +492,55 @@ loadFacets().then(() => { if (saved?.material) $("material").value = saved.mater
 <script type="module">
 import { entryIndex } from "/dispersion.js";
 // ---------- refractive index tab: n(λ) of every refractiveindex.info formula for a material
-const RI = { entries: [], byMat: new Map(), inColl: {}, shown: new Set(), mat: null };
+const RI = { entries: [], byMat: new Map(), inColl: {}, shown: new Set(), slots: new Map(), mat: null };
 const MAX_SERIES = 8; // categorical slots; more entries are listed but not all drawn at once
 const color = (slot) => `var(--series-${slot + 1})`;
 const dirName = (d) => (d ? { o: "ordinary (o)", e: "extraordinary (e)", x: "x", y: "y", z: "z", alpha: "α", beta: "β", gamma: "γ" }[d] || d : "");
 const label = (e) => (e.direction && !e.page.toLowerCase().endsWith(e.direction.toLowerCase()) ? `${e.page} · ${e.direction}` : e.page);
 
+const GROUP_FA = { main: "", "doped crystals": "بلور آلاییده", "mixed crystals": "بلور آمیخته", "semiconductor alloys": "آلیاژ نیم‌رسانا",
+  alloys: "آلیاژ", perovskite: "پروسکایت", "liquid crystals": "بلور مایع", organic: "آلی", "commercial polymers": "پلیمر" };
+const matName = (m) => (m.shelf === "main" ? m.material : `${m.material} — ${m.group}`);
 let loaded = null;
 window.loadFormulas = () => {
-  loaded ||= api("/api/formulas").then((r) => r.json()).then((d) => {
-    RI.entries = d.entries; RI.inColl = d.in_collection;
-    for (const e of RI.entries) (RI.byMat.get(e.material) || RI.byMat.set(e.material, []).get(e.material)).push(e);
-    const mats = [...RI.byMat.keys()].sort((a, b) => a.localeCompare(b));
-    $("rimat").innerHTML = mats.map((m) => `<option value="${esc(m)}">${esc(m)} (${RI.byMat.get(m).length})</option>`).join("");
-    const saved = store.get("rimat");
-    selectMaterial(saved && RI.byMat.has(saved) ? saved : (RI.byMat.has("LiB3O5") ? "LiB3O5" : mats[0]));
+  loaded ||= fetch("/ri/index.json").then((r) => r.json()).then((index) => {
+    RI.index = index; RI.byName = new Map(index.map((m) => [matName(m), m]));
+    $("rimats").innerHTML = index.map((m) => `<option value="${esc(matName(m))}">${m.n} (${m.formulas} formula)</option>`).join("");
+    const saved = store.get("rimat2");
+    selectMaterial(saved && RI.byName.has(saved) ? saved : "LiB3O5");
   }).catch((err) => { loaded = null; $("rientries").innerHTML = `<p class="err">خطا: ${esc(err.message)}</p>`; });
   return loaded;
 };
 
-function selectMaterial(m) {
-  RI.mat = m; $("rimat").value = m; store.set("rimat", m);
-  const list = RI.byMat.get(m);
-  RI.shown = new Set(list.slice(0, MAX_SERIES).map((_, i) => i));
+async function selectMaterial(name) {
+  const m = RI.byName.get(name); if (!m) return;
+  $("rimat").value = name; store.set("rimat2", name);
+  $("riinfo").textContent = `${fa(m.n)} منبع (${fa(m.formulas)} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
+  $("rientries").innerHTML = '<p class="hint">در حال خواندن…</p>';
+  const list = await (await fetch(`/ri/m/${m.i}.json`)).json();
+  const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
+  RI.inColl = ids.length ? await (await api("/api/incollection", { ids })).json().catch(() => ({})) : {};
+  RI.mat = name; RI.byMat.set(name, list);
+  RI.shown = new Set(); RI.slots = new Map();
+  list.slice(0, MAX_SERIES).forEach((_, i) => showEntry(i, true));
   const lo = Math.min(...list.map((e) => e.range_um[0])), hi = Math.max(...list.map((e) => e.range_um[1]));
-  $("rilo").value = +Math.max(lo, 0.2).toFixed(3); $("rihi").value = +Math.min(hi, Math.max(lo, 0.2) + 5).toFixed(3);
+  const a = Math.max(lo, 0.2), b = Math.min(hi, Math.max(a * 1.01, a + 5));
+  $("rilo").value = +a.toPrecision(4); $("rihi").value = +b.toPrecision(4);
   const probe = +$("riprobe").value;
-  if (!(probe >= lo && probe <= hi)) $("riprobe").value = +((+$("rilo").value + +$("rihi").value) / 2).toFixed(3);
+  if (!(probe >= a && probe <= b)) $("riprobe").value = +((a + b) / 2).toPrecision(4);
   render();
 }
-$("rimat").onchange = (e) => selectMaterial(e.target.value);
+$("rimat").addEventListener("input", (e) => { if (RI.byName?.has(e.target.value)) selectMaterial(e.target.value); });
 for (const id of ["rilo", "rihi", "riprobe"]) $(id).addEventListener("change", render);
 
-// Slots follow the entry (its position in the material's list), never its rank among those shown.
-const slotOf = (i) => i % MAX_SERIES;
+// A shown entry keeps its color slot while shown; a newly shown one takes the lowest free slot.
+const slotOf = (i) => RI.slots.get(i) ?? 0;
+function showEntry(i, on) {
+  if (!on) { RI.shown.delete(i); RI.slots.delete(i); return; }
+  const used = new Set(RI.slots.values());
+  let k = 0; while (used.has(k)) k++;
+  RI.shown.add(i); RI.slots.set(i, k);
+}
 
 function render() {
   const list = RI.byMat.get(RI.mat) || [];
@@ -540,8 +556,8 @@ function render() {
     const coll = e.doc_id && RI.inColl[e.doc_id];
     return `<div class="entry" data-i="${i}">
       <input type="checkbox" ${RI.shown.has(i) ? "checked" : ""} ${!RI.shown.has(i) && RI.shown.size >= MAX_SERIES ? "disabled" : ""} aria-label="show">
-      <div class="meta"><b><span class="sw" style="background:${color(slotOf(i))}"></span>${esc(label(e))}</b>
-        <span class="hint"> ${esc(dirName(e.direction))} · formula ${e.type} · ${e.range_um[0]}–${e.range_um[1]} µm</span><br>
+      <div class="meta"><b><span class="sw" style="background:${RI.shown.has(i) ? color(slotOf(i)) : "var(--line)"}"></span>${esc(label(e))}</b>
+        <span class="hint"> ${esc(dirName(e.direction))} · ${e.type === "tab" ? "measured data" : "formula " + e.type} · ${+e.range_um[0].toPrecision(4)}–${+e.range_um[1].toPrecision(4)} µm</span><br>
         ${esc(e.reference)}
         <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
         ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}</div></div>
@@ -556,7 +572,7 @@ function render() {
 $("rientries").addEventListener("click", (ev) => {
   const row = ev.target.closest(".entry"); if (!row) return;
   const i = +row.dataset.i, e = RI.byMat.get(RI.mat)[i];
-  if (ev.target.type === "checkbox") { ev.target.checked ? RI.shown.add(i) : RI.shown.delete(i); render(); }
+  if (ev.target.type === "checkbox") { showEntry(i, ev.target.checked); render(); }
   if (ev.target.dataset.act === "paper") openPaper(e.doc_id, null);
 });
 

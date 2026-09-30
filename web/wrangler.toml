@@ -7,6 +7,10 @@ workers_dev = true
 binding = "AI"
 
 # The PDFs (web-pdfs/): served under /pdf/<source_file> after the password check.
+# Public static data (CC0): refractiveindex.info entries for the refractive index tab (matrag export-formulas).
+[assets]
+directory = "./public"
+
 [[services]]
 binding = "PDFS"
 service = "matrag-pdfs"

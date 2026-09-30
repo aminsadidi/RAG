@@ -36,5 +36,5 @@ def test_formula_catalog(database):
     from matrag.references.refractiveindex import formula_catalog
 
     [e] = formula_catalog(database)
-    assert e["material"] == "LiB3O5" and e["page"] == "Chen-alpha" and e["type"] == 4
+    assert (e["shelf"], e["group"], e["material"], e["page"], e["type"]) == ("main", "main", "LiB3O5", "Chen-alpha", 4)
     assert e["doc_id"] == "10.1364_josab.6.000616" and e["range_um"] == [0.3, 1.6]

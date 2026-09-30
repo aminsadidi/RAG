@@ -324,17 +324,31 @@ def export_qdrant(
 
 @app.command("export-formulas")
 def export_formulas(
-    out: Annotated[Path, typer.Argument(help="JSON file to write.")] = Path("web/src/formulas.json"),
+    out: Annotated[Path, typer.Argument(help="Folder to write (the site's static files).")] = Path("web/public/ri"),
 ) -> None:
-    """Write the refractiveindex.info dispersion formulas to a JSON file, for the site's refractive index tab."""
+    """Write the refractiveindex.info n(λ) entries for the site's refractive index tab: index.json (the
+    materials) and m/<i>.json (the entries of material i), served as static files."""
     import json
+    import shutil
 
     from matrag.config import Settings
     from matrag.references.refractiveindex import formula_catalog
 
     entries = formula_catalog(Settings().reference_db)
-    out.write_text(json.dumps(entries, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
-    typer.echo(f"{len(entries)} formulas ({len({e['material'] for e in entries})} materials) written to {out}")
+    groups: dict[tuple[str, str, str], list[dict]] = {}
+    for e in entries:
+        groups.setdefault((e["shelf"], e["group"], e["material"]), []).append(e)
+    shutil.rmtree(out / "m", ignore_errors=True)
+    (out / "m").mkdir(parents=True)
+    index = []
+    for i, ((shelf, group, material), items) in enumerate(sorted(groups.items(), key=lambda kv: (kv[0][0] != "main", kv[0]))):
+        (out / "m" / f"{i}.json").write_text(json.dumps(items, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        index.append({"i": i, "shelf": shelf, "group": group, "material": material, "n": len(items),
+                      "formulas": sum(e["type"] != "tab" for e in items),
+                      "range_um": [min(e["range_um"][0] for e in items), max(e["range_um"][1] for e in items)]})
+    (out / "index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    typer.echo(f"{len(entries)} entries ({sum(e['type'] != 'tab' for e in entries)} formulas) for "
+               f"{len(index)} materials written to {out}")
 
 
 @app.command("export-pdfs")

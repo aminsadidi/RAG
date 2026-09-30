@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { refractiveIndex } from "../src/dispersion.client.js";
+import { interpolate, refractiveIndex } from "../src/dispersion.client.js";
 
 const cases = JSON.parse(readFileSync(new URL("./dispersion_cases.json", import.meta.url)));
 
@@ -15,4 +15,11 @@ test("n(λ) matches Python for all formula entries", () => {
     checked++;
   }
   assert.ok(checked > 1000);
+});
+
+test("tabulated points are interpolated linearly, NaN outside", () => {
+  const pts = [[0.5, 1.5], [1.0, 1.45], [2.0, 1.40]];
+  assert.equal(interpolate(pts, 0.75), 1.475);
+  assert.equal(interpolate(pts, 2.0), 1.40);
+  assert.ok(Number.isNaN(interpolate(pts, 2.1)));
 });
