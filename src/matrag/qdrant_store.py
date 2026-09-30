@@ -203,5 +203,28 @@ def search(qc, name: str, query: str, query_vector: list[float], top_k: int = 8,
     ).points
 
 
+MAX_ASSET_BYTES = 25 * 1024 * 1024  # Cloudflare's limit per static asset
+
+
+def copy_pdfs(kb, root: str, dest: str) -> tuple[int, list[str]]:
+    """Copy the PDF of every full-text paper in ``kb`` from ``root`` to ``dest`` (same relative paths),
+    for the site's PDF Worker. Returns the number copied and the files skipped (missing or too large)."""
+    import shutil
+
+    files = sorted({n.metadata.get("source_file") for n in kb.nodes()
+                    if n.metadata.get("source_type") == "full_text_pdf" and n.metadata.get("source_file")})
+    copied, skipped = 0, []
+    for rel in files:
+        src, dst = os.path.join(root, rel), os.path.join(dest, rel)
+        if not os.path.isfile(src) or os.path.getsize(src) > MAX_ASSET_BYTES:
+            skipped.append(rel)
+            continue
+        if not (os.path.exists(dst) and os.path.getsize(dst) == os.path.getsize(src)):
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copyfile(src, dst)
+        copied += 1
+    return copied, skipped
+
+
 def collection_name(settings: Settings) -> str:
     return settings.corpus
