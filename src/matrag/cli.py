@@ -316,7 +316,7 @@ def export_qdrant(
     ws = _workspace()
     name = collection or ws.settings.corpus
     qc = qdrant_store.client()
-    n = qdrant_store.export(ws.kb, qc, name, recreate=recreate,
+    n = qdrant_store.export(ws.kb, qc, name, recreate=recreate, root=str(ws.settings.corpus_root or "") or None,
                             on_progress=lambda i, total: typer.echo(f"  {i}/{total}") if i % 2048 < 64 or i == total else None)
     info = qc.get_collection(name)
     typer.echo(f"uploaded {n} chunks; collection '{name}' now holds {info.points_count} points")

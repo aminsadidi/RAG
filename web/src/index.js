@@ -5,7 +5,7 @@ import { cleanTranslation, contextPack, expandQuery, isPersian, shared, sourceLa
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
 
-const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text"];
+const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id"];
 const MODES = ["hybrid", "vector", "bm25"];
 
 const json = (data, status = 200) =>
