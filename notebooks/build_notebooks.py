@@ -59,15 +59,17 @@ if '/content/RAG/src' not in sys.path:
 """
 
 QDRANT_KEYS = """
-# The Qdrant address and key: matrag_data/qdrant.env on Drive (KEY=value lines), else Colab Secrets.
+# Keys: matrag_data/qdrant.env (Qdrant) and matrag_data/cloudflare.env (the site's PDFs) on Drive,
+# as KEY=value lines; the Qdrant ones can also come from Colab Secrets.
 import os
 KEYS_FILE = f'{WORK}/qdrant.env'
-if os.path.exists(KEYS_FILE):
-    for line in open(KEYS_FILE, encoding='utf-8'):
-        key, sep, value = line.strip().partition('=')
-        if sep and not key.startswith('#'):
-            os.environ[key.strip()] = value.strip().strip('"')
-else:
+for keys_file in (KEYS_FILE, f'{WORK}/cloudflare.env'):
+    if os.path.exists(keys_file):
+        for line in open(keys_file, encoding='utf-8'):
+            key, sep, value = line.strip().partition('=')
+            if sep and not key.startswith('#'):
+                os.environ[key.strip()] = value.strip().strip('"')
+if not os.environ.get('QDRANT_API_KEY'):
     from google.colab import userdata
     for key in ('QDRANT_URL', 'QDRANT_API_KEY'):
         try:
@@ -287,8 +289,9 @@ def site() -> dict:
 # بارگذاری پایگاه داده در سایت (نسخه‌ی {VERSION})
 
 فقط یک سلول: روی ▶️ بزنید و اجازه‌ی دسترسی به Google Drive را بدهید. کارت گرافیک لازم نیست.
-پایگاه داده‌ای که نوت‌بوک اصلی (سلول ۵) در `matrag_data` ساخته، با همان بردارها در Qdrant بارگذاری می‌شود
-و بعد جست‌وجوی سایت با همان سؤال‌های ارزیابی سنجیده می‌شود. اگر قطع شد دوباره اجرا کنید؛ از همان‌جا ادامه می‌دهد.
+۱) PDF مقاله‌ها برای نمایش صفحه روی سایت (پشت رمز) بارگذاری می‌شوند؛ ۲) پایگاه داده‌ای که نوت‌بوک اصلی
+(سلول ۵) در `matrag_data` ساخته، با همان بردارها در Qdrant بارگذاری می‌شود؛ ۳) جست‌وجوی سایت با همان سؤال‌های
+ارزیابی سنجیده می‌شود. حدود یک ساعت. اگر قطع شد دوباره اجرا کنید؛ از همان‌جا ادامه می‌دهد.
 """),
         code("#@title ▶️ بارگذاری در سایت\n" + ENV + """
 WORK = '/content/drive/MyDrive/matrag_data'
@@ -299,6 +302,18 @@ print('Copying the database from Drive...')
 !mkdir -p /content/storage && cp -rT "{WORK}/storage" /content/storage
 """ + INSTALL + QDRANT_KEYS + """
 %cd {WORK}
+if os.environ.get('CLOUDFLARE_API_TOKEN'):
+    # 1. The PDFs, for the page view: copied from Drive, then deployed to the site's private PDF Worker
+    print('Copying the PDFs from Drive (10-20 minutes)...')
+    !matrag --corpus rag-optics export-pdfs /content/RAG/web-pdfs/pdfs 2>&1 | grep -vE "Warning|Loading"
+    if not os.path.exists('/content/node/bin/node'):  # wrangler needs Node.js 20 or newer
+        !curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C /content && mv /content/node-v22.12.0-linux-x64 /content/node
+    os.environ['PATH'] = '/content/node/bin:' + os.environ['PATH']
+    print('Uploading the PDFs to the site...')
+    !cd /content/RAG/web-pdfs && npx --yes wrangler@4 deploy 2>&1 | grep -vE "telemetry|^$" | tail -4
+else:
+    print('ℹ️ No matrag_data/cloudflare.env: PDFs not uploaded (the page view needs them)')
+# 2. The chunks and their vectors, for the search
 !matrag --corpus rag-optics export-qdrant 2>&1 | grep -vE "Warning|Loading"
 if os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
     !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
