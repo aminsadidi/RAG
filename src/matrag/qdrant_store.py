@@ -122,10 +122,11 @@ def chroma_embeddings(kb, ids: list[str]) -> dict[str, list[float]]:
 
 
 def export(kb, qc, name: str, recreate: bool = False, batch: int = 64, skip_existing: bool = True,
-           on_progress: Callable[[int, int], None] | None = None) -> int:
+           prune: bool = True, on_progress: Callable[[int, int], None] | None = None) -> int:
     """Upload every chunk of ``kb`` to the Qdrant collection ``name``; returns the number uploaded.
 
-    Resumable: with ``skip_existing`` chunks already in the collection are not sent again.
+    Resumable: with ``skip_existing`` chunks already in the collection are not sent again; with
+    ``prune`` points of chunks no longer in ``kb`` are deleted, so the collection mirrors it.
     """
     nodes = kb.nodes()
     if not nodes:
@@ -140,6 +141,13 @@ def export(kb, qc, name: str, recreate: bool = False, batch: int = 64, skip_exis
             existing |= {str(p.id) for p in points}
             if offset is None:
                 break
+    wanted = {point_id(n.node_id) for n in nodes}
+    stale = sorted(existing - wanted)
+    if prune and stale:
+        from qdrant_client import models
+
+        for start in range(0, len(stale), 1000):
+            qc.delete(name, points_selector=models.PointIdsList(points=stale[start:start + 1000]), wait=True)
     todo = [n for n in nodes if point_id(n.node_id) not in existing]
     sent = 0
     for start in range(0, len(todo), batch):

@@ -58,6 +58,26 @@ if '/content/RAG/src' not in sys.path:
     sys.path.insert(0, '/content/RAG/src')
 """
 
+QDRANT_KEYS = """
+# The Qdrant address and key: matrag_data/qdrant.env on Drive (KEY=value lines), else Colab Secrets.
+import os
+KEYS_FILE = f'{WORK}/qdrant.env'
+if os.path.exists(KEYS_FILE):
+    for line in open(KEYS_FILE, encoding='utf-8'):
+        key, sep, value = line.strip().partition('=')
+        if sep and not key.startswith('#'):
+            os.environ[key.strip()] = value.strip().strip('"')
+else:
+    from google.colab import userdata
+    for key in ('QDRANT_URL', 'QDRANT_API_KEY'):
+        try:
+            os.environ[key] = userdata.get(key)
+        except Exception:
+            pass
+assert os.environ.get('QDRANT_URL') and os.environ.get('QDRANT_API_KEY'), f'Qdrant key not found ({KEYS_FILE})'
+"""
+
+
 MAIN = [
     md(f"""
 # سیستم RAG برای استخراج خواص فیزیکی مواد از مقالات
@@ -244,24 +264,48 @@ LIMIT = 20  #@param {type:"integer"}
 """),
     code("""
 #@title ۱۱. بارگذاری پایگاه داده در سایت (Qdrant Cloud)
-#@markdown یک بار: در Secrets کولب (آیکون 🔑 سمت چپ) دو مقدار `QDRANT_URL` و `QDRANT_API_KEY` را بسازید
-#@markdown (از صفحه‌ی کلاستر در cloud.qdrant.io) و دسترسی نوت‌بوک را روشن کنید.
+#@markdown کلید Qdrant خودکار از فایل `matrag_data/qdrant.env` در Drive خوانده می‌شود (یا از Secrets کولب).
 #@markdown بردارها دوباره ساخته نمی‌شوند؛ همان بردارهای پایگاه (و ارزیابی‌ها) فرستاده می‌شوند. اگر قطع شد دوباره
 #@markdown اجرا کنید: بخش‌های فرستاده‌شده رد می‌شوند. **RECREATE** مجموعه را پاک و از نو می‌سازد.
 RECREATE = False  #@param {type:"boolean"}
 #@markdown **EVALUATE**: بعد از بارگذاری، ارزیابی سلول ۸ روی جست‌وجوی سایت هم اجرا شود (برای مقایسه).
 EVALUATE = True  #@param {type:"boolean"}
-import os
-from google.colab import userdata
-os.environ['QDRANT_URL'] = userdata.get('QDRANT_URL')
-os.environ['QDRANT_API_KEY'] = userdata.get('QDRANT_API_KEY')
+""" + QDRANT_KEYS + """
 %cd {WORK}
 !matrag --corpus rag-optics export-qdrant {'--recreate' if RECREATE else ''} 2>&1 | grep -vE "Warning|Loading"
-if EVALUATE:
+if EVALUATE and os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
     !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
 """),
 ]
+
+
+def site() -> dict:
+    """One click, CPU only: upload the database made by colab_demo to the website's Qdrant collection."""
+    return notebook([
+        md(f"""
+# بارگذاری پایگاه داده در سایت (نسخه‌ی {VERSION})
+
+فقط یک سلول: روی ▶️ بزنید و اجازه‌ی دسترسی به Google Drive را بدهید. کارت گرافیک لازم نیست.
+پایگاه داده‌ای که نوت‌بوک اصلی (سلول ۵) در `matrag_data` ساخته، با همان بردارها در Qdrant بارگذاری می‌شود
+و بعد جست‌وجوی سایت با همان سؤال‌های ارزیابی سنجیده می‌شود. اگر قطع شد دوباره اجرا کنید؛ از همان‌جا ادامه می‌دهد.
+"""),
+        code("#@title ▶️ بارگذاری در سایت\n" + ENV + """
+WORK = '/content/drive/MyDrive/matrag_data'
+os.environ['MATRAG_DATA_DIR'] = f'{WORK}/data'
+os.environ['MATRAG_STORAGE_DIR'] = '/content/storage'
+os.environ['MATRAG_CORPUS'] = 'rag-optics'
+print('Copying the database from Drive...')
+!mkdir -p /content/storage && cp -rT "{WORK}/storage" /content/storage
+""" + INSTALL + QDRANT_KEYS + """
+%cd {WORK}
+!matrag --corpus rag-optics export-qdrant 2>&1 | grep -vE "Warning|Loading"
+if os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
+    !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+%cd /content/RAG
+print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+"""),
+    ], gpu=False)
 
 
 def worker(n: int) -> dict:
@@ -300,4 +344,5 @@ if __name__ == "__main__":
     for n in range(1, WORKERS + 1):
         (HERE / f"colab_worker_{n}.ipynb").write_text(json.dumps(worker(n), ensure_ascii=False, indent=1) + "\n",
                                                       "utf-8")
+    (HERE / "colab_site.ipynb").write_text(json.dumps(site(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     print("written")

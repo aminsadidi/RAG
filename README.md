@@ -214,6 +214,8 @@ matrag formula-table results/formulas.jsonl --index 0 --from 0.4 --to 2 --step 0
   می‌شود و صفحه با pdf.js در مرورگر باز می‌شود، با بخشِ پیداشده به رنگ زرد. بدون پوشه، نقشه‌ی محل بخش روی صفحه نمایش داده می‌شود.
 - متن‌های مشترک (پرامپت‌ها، واژه‌نامه، قاعده‌ی فرمول‌ها) از پایتون در `web/src/shared.json` نوشته می‌شوند
   (`python -m matrag.web_shared`) و تست‌ها یکسان بودن دو طرف را بررسی می‌کنند.
+- **بارگذاری با یک کلیک (بدون GPU):** [colab_site.ipynb](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_site.ipynb)؛ کلید Qdrant از `matrag_data/qdrant.env` در Drive خوانده می‌شود.
+- **ورود:** `/?key=<رمز>` مرورگر را یک سال به خاطر می‌سپارد.
 - **استقرار:** `cd web && npm install && npx wrangler deploy`؛ رازها با `npx wrangler secret put`:
   `QDRANT_URL`، `QDRANT_API_KEY`، `SITE_PASSWORD`. یک cron روزانه کلاستر رایگان Qdrant را بیدار نگه می‌دارد.
 
