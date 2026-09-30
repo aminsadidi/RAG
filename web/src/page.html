@@ -128,6 +128,7 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
       <p class="hint">برای دیدن صفحه‌ی اصلی مقاله با بخشِ پیداشده‌ی رنگی، پوشه‌ی <b>RAG-Optics</b> (یا <b>01_Papers_by_Category</b>) را انتخاب کنید. فایل‌ها فقط در مرورگر خودتان باز می‌شوند و به هیچ سروری فرستاده نمی‌شوند.</p>
       <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
       <input type="file" id="dirinput" webkitdirectory multiple hidden>
+      <input type="file" id="fileinput" accept="application/pdf,.pdf" hidden>
     </div>
   </div>
   <div class="card" style="margin-top:14px"><h2>ماده‌ها</h2><table id="materials" class="bars"></table></div>
@@ -330,15 +331,22 @@ async function useDir(handle) {
   await walk(handle); dirHandle = handle;
   $("dirstate").textContent = `${fa(pdfFiles.size)} فایل PDF آماده`;
 }
-$("pickdir").onclick = async () => {
+let afterPick = null; // re-open the viewer once the folder (or file) is chosen
+async function pickFolder() {
   if (window.showDirectoryPicker) {
-    try { const h = await showDirectoryPicker({ id: "matrag-pdfs" }); await idb("readwrite", (s) => s.put(h, "dir")); await useDir(h); }
+    try { const h = await showDirectoryPicker({ id: "matrag-pdfs" }); await idb("readwrite", (s) => s.put(h, "dir")); await useDir(h); afterPick?.(); }
     catch (e) { if (e.name !== "AbortError") $("dirstate").textContent = "خطا: " + e.message; }
   } else $("dirinput").click();
-};
+}
+$("pickdir").onclick = pickFolder;
 $("dirinput").onchange = (e) => {
   pdfFiles.clear(); for (const f of e.target.files) if (f.name.toLowerCase().endsWith(".pdf")) pdfFiles.set(f.name.toLowerCase(), f);
   $("dirstate").textContent = `${fa(pdfFiles.size)} فایل PDF آماده`;
+  afterPick?.();
+};
+$("fileinput").onchange = (e) => {
+  const f = e.target.files[0]; if (f && V.hit) { pdfFiles.set(baseName(V.hit.source_file), f); afterPick?.(); }
+  e.target.value = "";
 };
 async function restoreDir() {
   const h = await idb("readonly", (s) => s.get("dir")); if (!h) return false;
@@ -386,8 +394,18 @@ function drawSchema() {
   $("vpage").textContent = "صفحه‌ی " + fa(V.page);
   $("vbody").innerHTML = '<div id="schema">' + boxes.map(([, l, t, r, b]) =>
     `<div class="box" style="left:${l * 100}%;top:${t * 100}%;width:${(r - l) * 100}%;height:${(b - t) * 100}%"></div>`).join("") + "</div>";
-  $("vnote").innerHTML = "نقشه‌ی صفحه: محل بخش پیداشده روی صفحه. برای دیدن خودِ صفحه‌ی مقاله، در زبانه‌ی «مجموعه» پوشه‌ی PDFها را انتخاب کنید." +
-    (V.hit.source_file ? ` <span style="direction:ltr;display:inline-block">(${esc(V.hit.source_file)})</span>` : "");
+  const hit = V.hit, drive = hit.drive_id ? `https://drive.google.com/file/d/${encodeURIComponent(hit.drive_id)}/view` : null;
+  $("vnote").innerHTML = `<div>این فقط نقشه‌ی محل بخش روی صفحه است. برای دیدن خودِ صفحه با بخشِ رنگی، PDFها را یک بار به سایت نشان دهید
+      (فایل‌ها از رایانه‌ی شما بیرون نمی‌روند؛ Chrome یا Edge پوشه را به خاطر می‌سپارد):</div>
+    <div class="row" style="margin-top:6px">
+      <button class="main" id="vpickdir">انتخاب پوشه‌ی RAG-Optics</button>
+      <button class="alt" id="vpickfile">فقط همین یک PDF</button>
+      ${drive ? `<a class="alt" style="padding:8px 16px;border:1px solid var(--accent);border-radius:9px;text-decoration:none" href="${drive}" target="_blank" rel="noopener">باز کردن در Google Drive (صفحه‌ی ${fa(V.page)})</a>` : ""}
+    </div>` +
+    (hit.source_file ? `<div style="direction:ltr;text-align:left;margin-top:4px">${esc(hit.source_file)}</div>` : "");
+  afterPick = () => { afterPick = null; openViewer(hit); };
+  $("vpickdir").onclick = pickFolder;
+  $("vpickfile").onclick = () => $("fileinput").click();
 }
 async function drawPage() {
   const page = await V.doc.getPage(V.page);

@@ -55,6 +55,8 @@ PERSIAN_GLOSSARY = {
     "بلور": "crystal", "سلمایر": "Sellmeier", "معادله سلمایر": "Sellmeier equation", "پاشندگی": "dispersion",
     "دوشکستی": "birefringence", "ضریب غیرخطی": "nonlinear coefficient", "تطبیق فاز": "phase matching",
     "لیتیوم نیوبات": "lithium niobate (LiNbO3)", "بتا باریم بورات": "beta-barium borate (BBO)",
+    "غیرعادی": "extraordinary", "ضریب شکست غیرعادی": "extraordinary refractive index",
+    "عادی": "ordinary", "ضریب شکست عادی": "ordinary refractive index", "تک‌محوری": "uniaxial", "دومحوری": "biaxial",
 }
 
 TRANSLATE_PROMPT = """\

@@ -16,6 +16,7 @@ The hybrid query (both lists fused with Reciprocal Rank Fusion) runs inside
 Qdrant, so a search is a single request.
 """
 
+import hashlib
 import os
 import re
 import uuid
@@ -64,6 +65,10 @@ def point_id(node_id: str) -> str:
     return str(uuid.uuid5(uuid.NAMESPACE_URL, f"matrag:{node_id}"))
 
 
+def text_hash(text: str) -> str:
+    return hashlib.sha1(text.encode("utf-8")).hexdigest()[:16]
+
+
 PAYLOAD_KEYS = ("doc_id", "citation", "reference", "pages", "first_page", "boxes", "source_file", "source_type",
                 "content_type", "headings", "category", "material", "year", "doi")
 
@@ -95,7 +100,15 @@ def create_collection(qc, name: str, dim: int, recreate: bool = False) -> None:
         qc.create_payload_index(name, key, field_schema=kind)
 
 
-def iter_points(nodes, embeddings: dict[str, list[float]]):
+def drive_id(path: str) -> str | None:
+    """Google Drive file id of a file on Colab's mounted Drive (exposed as an extended attribute), if any."""
+    try:
+        return os.getxattr(path, "user.drive.id").decode() or None
+    except (OSError, AttributeError):
+        return None
+
+
+def iter_points(nodes, embeddings: dict[str, list[float]], root: str | None = None):
     from qdrant_client import models
 
     for node in nodes:
@@ -106,6 +119,11 @@ def iter_points(nodes, embeddings: dict[str, list[float]]):
         payload = {k: meta[k] for k in PAYLOAD_KEYS if k in meta and meta[k] not in (None, "")}
         payload["node_id"] = node.node_id
         payload["text"] = node.get_content()
+        payload["text_hash"] = text_hash(payload["text"])
+        if root and payload.get("source_file"):
+            file_id = drive_id(os.path.join(root, payload["source_file"]))
+            if file_id:
+                payload["drive_id"] = file_id  # the site links the PDF on Drive
         yield models.PointStruct(
             id=point_id(node.node_id),
             vector={DENSE: list(vector),
@@ -122,38 +140,40 @@ def chroma_embeddings(kb, ids: list[str]) -> dict[str, list[float]]:
 
 
 def export(kb, qc, name: str, recreate: bool = False, batch: int = 64, skip_existing: bool = True,
-           prune: bool = True, on_progress: Callable[[int, int], None] | None = None) -> int:
+           prune: bool = True, root: str | None = None,
+           on_progress: Callable[[int, int], None] | None = None) -> int:
     """Upload every chunk of ``kb`` to the Qdrant collection ``name``; returns the number uploaded.
 
-    Resumable: with ``skip_existing`` chunks already in the collection are not sent again; with
-    ``prune`` points of chunks no longer in ``kb`` are deleted, so the collection mirrors it.
+    Resumable: with ``skip_existing`` chunks already in the collection with the same text are not
+    sent again (a chunk whose text changed is); with ``prune`` points of chunks no longer in ``kb``
+    are deleted, so the collection mirrors it.
     """
     nodes = kb.nodes()
     if not nodes:
         return 0
     first = chroma_embeddings(kb, [nodes[0].node_id])
     create_collection(qc, name, len(next(iter(first.values()))), recreate)
-    existing: set[str] = set()
+    existing: dict[str, str | None] = {}  # point id -> text hash
     if skip_existing and not recreate:
         offset = None
         while True:
-            points, offset = qc.scroll(name, limit=1000, offset=offset, with_payload=False, with_vectors=False)
-            existing |= {str(p.id) for p in points}
+            points, offset = qc.scroll(name, limit=1000, offset=offset, with_payload=["text_hash"], with_vectors=False)
+            existing |= {str(p.id): (p.payload or {}).get("text_hash") for p in points}
             if offset is None:
                 break
     wanted = {point_id(n.node_id) for n in nodes}
-    stale = sorted(existing - wanted)
+    stale = sorted(set(existing) - wanted)
     if prune and stale:
         from qdrant_client import models
 
         for start in range(0, len(stale), 1000):
             qc.delete(name, points_selector=models.PointIdsList(points=stale[start:start + 1000]), wait=True)
-    todo = [n for n in nodes if point_id(n.node_id) not in existing]
+    todo = [n for n in nodes if existing.get(point_id(n.node_id)) != text_hash(n.get_content())]
     sent = 0
     for start in range(0, len(todo), batch):
         part = todo[start:start + batch]
         embeddings = chroma_embeddings(kb, [n.node_id for n in part])
-        qc.upsert(name, points=list(iter_points(part, embeddings)), wait=True)
+        qc.upsert(name, points=list(iter_points(part, embeddings, root)), wait=True)
         sent += len(part)
         if on_progress:
             on_progress(sent, len(todo))
