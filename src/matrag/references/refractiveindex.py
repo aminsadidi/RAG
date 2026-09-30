@@ -191,25 +191,55 @@ def find_entries(database_dir: Path, doi: str | None = None, arxiv_id: str | Non
     return found
 
 
-def formula_catalog(database_dir: Path, shelves: tuple[str, ...] = ("main",)) -> list[dict]:
-    """Every dispersion-formula entry of the database, for the site's refractive index tab."""
+SHELVES = ("main", "other", "organic", "glass", "specs")
+
+
+def _book(rel: Path) -> tuple[str, str]:
+    """(group, material) of an entry path: main/LiB3O5/nk/Chen.yml -> ("main", "LiB3O5"),
+    other/doped crystals/MgO-LiNbO3/nk/X.yml -> ("doped crystals", "MgO-LiNbO3"),
+    specs/schott/optical/N-BK7.yml -> ("schott", "N-BK7")."""
+    parts = rel.parts
+    if parts[0] == "specs":
+        return parts[1], rel.stem
+    if "nk" in parts:
+        k = parts.index("nk")
+        return (parts[0] if k == 2 else parts[1]), parts[k - 1]
+    return parts[0], parts[1]
+
+
+def formula_catalog(database_dir: Path, shelves: tuple[str, ...] = SHELVES, max_points: int = 80) -> list[dict]:
+    """Every n(λ) entry of the database (dispersion formula, else tabulated n thinned to ``max_points``),
+    for the site's refractive index tab. Nonlinear-index (n2) entries are left out."""
     from matrag.catalog import doi_key
 
     root = shelves_root(database_dir)
     out = []
     for shelf in shelves:
+        if not (root / shelf).is_dir():
+            continue
         for path in sorted((root / shelf).rglob("*.yml")):
+            rel = path.relative_to(root)
+            if path.name == "about.yml" or "n2" in rel.parts:
+                continue
             try:
                 data = load_entry(path, root)
-            except (ValueError, KeyError, TypeError, yaml.YAMLError):
+            except (ValueError, KeyError, TypeError, IndexError, yaml.YAMLError):
                 continue
-            if data.formula_type is None:
+            if data.formula_type is None and not data.tabulated_n:
                 continue
             e = data.entry
-            out.append({
-                "material": e.material, "page": e.page, "direction": data.direction,
-                "type": data.formula_type, "coefficients": data.coefficients,
-                "range_um": list(data.wavelength_um), "reference": e.reference, "doi": e.doi,
-                "doc_id": doi_key(e.doi) if e.doi else None, "path": e.path,
-            })
+            group, material = _book(rel)
+            item = {
+                "shelf": shelf, "group": group, "material": material, "page": e.page,
+                "direction": data.direction, "range_um": list(data.wavelength_um), "reference": e.reference,
+                "doi": e.doi, "doc_id": doi_key(e.doi) if e.doi else None, "path": e.path,
+            }
+            if data.formula_type is not None:
+                item |= {"type": data.formula_type, "coefficients": data.coefficients}
+            else:
+                pts = data.tabulated_n
+                step = max(1, -(-len(pts) // max_points))
+                thinned = pts[::step] if pts[::step][-1] == pts[-1] else pts[::step] + [pts[-1]]
+                item |= {"type": "tab", "points": [[round(x, 6), round(n, 6)] for x, n in thinned]}
+            out.append(item)
     return out
