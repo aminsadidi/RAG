@@ -80,7 +80,7 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 @media (prefers-color-scheme:dark){.viz-root{--series-1:#3987e5;--series-2:#d95926;--series-3:#199e70;--series-4:#c98500;--series-5:#d55181;--series-6:#008300;--series-7:#9085e9;--series-8:#e66767;--grid:#2a3542}}
 #chart{position:relative;direction:ltr}
 #chart svg{display:block;width:100%}
-#chart .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:var(--shadow);white-space:nowrap;display:none;direction:ltr;text-align:left}
+.tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:var(--shadow);white-space:nowrap;display:none;direction:ltr;text-align:left}
 .sw{display:inline-block;width:12px;height:3px;border-radius:2px;vertical-align:middle;margin-inline-end:6px}
 .entry{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
 .entry .meta{flex:1;direction:ltr;text-align:left;font-size:13px}
@@ -97,6 +97,11 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 @media (max-width:760px){main table{display:block;overflow-x:auto;white-space:nowrap}.seg{flex-wrap:wrap;direction:ltr}}
 body{overflow-x:hidden}
 #evchart{position:relative;direction:ltr}#evchart svg{display:block;width:100%}
+
+.prow{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+.prow .meta{flex:1;direction:ltr;text-align:left;font-size:13px}
+.prow .meta b{font-size:14px}
+.prow .yr{flex:none;width:44px;color:var(--muted);font-size:13px}
 </style>
 </head>
 <body>
@@ -188,18 +193,32 @@ body{overflow-x:hidden}
   <div class="grid2">
     <div class="card">
       <h2>مجموعه‌ی داده</h2>
-      <div id="stats" class="hint">در حال خواندن…</div>
+      <div id="plsum" style="font-weight:600"></div><div id="stats" class="hint">در حال خواندن…</div>
       <h3>نوع منبع</h3><table id="types"></table>
     </div>
-    <div class="card">
-      <h2>پوشه‌ی PDFها روی این رایانه</h2>
-      <p class="hint">برای دیدن صفحه‌ی اصلی مقاله با بخشِ پیداشده‌ی رنگی، پوشه‌ی <b>RAG-Optics</b> (یا <b>01_Papers_by_Category</b>) را انتخاب کنید. فایل‌ها فقط در مرورگر خودتان باز می‌شوند و به هیچ سروری فرستاده نمی‌شوند.</p>
-      <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
-      <input type="file" id="dirinput" webkitdirectory multiple hidden>
-      <input type="file" id="fileinput" accept="application/pdf,.pdf" hidden>
-    </div>
+    <div class="card viz-root"><h2>مقاله‌ها بر اساس سال انتشار</h2><div id="yrchart" style="position:relative;direction:ltr"><svg id="yrsvg" role="img" aria-label="papers per 5 years" style="display:block;width:100%"></svg><div class="tip" id="yrtip" style="position:absolute;display:none"></div></div>
+      <div id="yrlegend" class="chips" style="direction:ltr"></div></div>
   </div>
-  <div class="card" style="margin-top:14px"><h2>ماده‌ها</h2><table id="materials" class="bars"></table></div>
+  <div class="card" style="margin-top:14px"><h2>دسته‌ها</h2><table id="cats" class="bars"></table></div>
+  <div class="card" style="margin-top:14px">
+    <h2>فهرست مقاله‌ها</h2>
+    <div class="row" style="margin-top:0">
+      <input id="plq" placeholder="جست‌وجو در عنوان، نویسنده، DOI…" style="flex:1;min-width:200px;direction:ltr">
+      <select id="plcat"><option value="">همه‌ی دسته‌ها</option></select>
+      <label><input id="plfull" type="checkbox"> فقط متن کامل</label>
+      <span id="plcount" class="hint"></span>
+    </div>
+    <div id="pllist"></div>
+    <div class="row"><button class="alt" id="plmore" hidden>بیشتر</button></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h2>ماده‌ها (تعداد بخش)</h2><table id="materials" class="bars"></table></div>
+  <div class="card" style="margin-top:14px">
+    <h2>(اختیاری) PDFها از روی این رایانه</h2>
+    <p class="hint">PDF مقاله‌ها روی خود سایت هست. فقط برای مقاله‌ای که آن‌جا نیست: برای دیدن صفحه‌ی اصلی مقاله با بخشِ پیداشده‌ی رنگی، پوشه‌ی <b>RAG-Optics</b> (یا <b>01_Papers_by_Category</b>) را انتخاب کنید. فایل‌ها فقط در مرورگر خودتان باز می‌شوند و به هیچ سروری فرستاده نمی‌شوند.</p>
+    <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
+    <input type="file" id="dirinput" webkitdirectory multiple hidden>
+    <input type="file" id="fileinput" accept="application/pdf,.pdf" hidden>
+  </div>
 </section>
 
 <section id="tab-about" hidden>
@@ -247,7 +266,7 @@ const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده
 function showTab(name) {
   for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === name);
   for (const s of document.querySelectorAll("main > section")) s.hidden = s.id !== "tab-" + name;
-  if (name === "library") loadFacets();
+  if (name === "library") { loadFacets(); loadPapers(); }
   if (name === "index") loadFormulas();
   if (name === "eval") loadEval();
 }
@@ -704,6 +723,76 @@ function drawEval() {
   $("evlegend").innerHTML = SYS.map(([, name], j) => `<span class="chip"><span class="sw" style="background:var(--series-${j + 1});height:8px"></span>${name}</span>`).join("");
 }
 new ResizeObserver(() => { if (EV && !$("tab-eval").hidden) drawEval(); }).observe($("evchart"));
+</script>
+<script type="module">
+// ---------- collection browser
+const catName = (c) => (c ? c.replace(/^\d+_/, "").replaceAll("_", " ") : "—");
+let PL = null, plShown = 50;
+window.loadPapers = async () => {
+  if (!PL) {
+    PL = await (await api("/api/papers")).json();
+    const cats = [...new Set(PL.map((p) => p.category).filter(Boolean))].sort();
+    $("plcat").innerHTML = '<option value="">همه‌ی دسته‌ها</option>' + cats.map((c) => `<option value="${esc(c)}">${esc(catName(c))}</option>`).join("");
+    const byCat = cats.map((c) => [c, PL.filter((p) => p.category === c)]).sort((a, b) => b[1].length - a[1].length);
+    const max = Math.max(...byCat.map(([, l]) => l.length));
+    $("cats").innerHTML = byCat.map(([c, l]) => `<tr><td class="ltr">${esc(catName(c))}</td><td style="width:45%"><div class="barfill" style="width:${l.length / max * 100}%"></div></td><td>${fa(l.length)}</td><td class="hint">${fa(l.filter((p) => p.source_type === "full_text_pdf").length)} متن کامل</td></tr>`).join("");
+  }
+  const full = PL.filter((p) => p.source_type === "full_text_pdf").length;
+  $("plsum").textContent = `${fa(PL.length)} مقاله: ${fa(full)} با متن کامل، ${fa(PL.length - full)} فقط چکیده یا عنوان.`;
+  drawYears(); renderList();
+};
+
+function filtered() {
+  const q = $("plq").value.trim().toLowerCase(), cat = $("plcat").value, full = $("plfull").checked;
+  return PL.filter((p) => (!cat || p.category === cat) && (!full || p.source_type === "full_text_pdf") &&
+    (!q || `${p.reference} ${p.doi} ${p.material}`.toLowerCase().includes(q)));
+}
+function renderList() {
+  const list = filtered();
+  $("plcount").textContent = `${fa(list.length)} مقاله`;
+  $("pllist").innerHTML = list.slice(0, plShown).map((p) => `<div class="prow" data-doc="${esc(p.doc_id)}">
+    <div class="yr">${p.year || "—"}</div>
+    <div class="meta"><b>${esc(p.citation || p.doc_id)}</b> <span class="hint">${esc(p.material || "")}</span><br>${esc(p.reference || "")}
+      <div class="chips"><span class="chip ${p.source_type === "full_text_pdf" ? "full" : "abs"}">${TYPE_FA[p.source_type] || ""}</span>
+      <span class="chip">${fa(p.chunks)} بخش</span>
+      <button class="chip" data-act="open" style="border:0;cursor:pointer;color:var(--accent)">کل مقاله</button>
+      ${p.doi ? `<a class="chip" href="https://doi.org/${esc(p.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}</div></div></div>`).join("");
+  $("plmore").hidden = list.length <= plShown;
+}
+for (const id of ["plq", "plcat", "plfull"]) $(id).addEventListener("input", () => { plShown = 50; renderList(); });
+$("plmore").onclick = () => { plShown += 100; renderList(); };
+$("pllist").onclick = (e) => { const row = e.target.closest(".prow"); if (row && e.target.dataset.act === "open") openPaper(row.dataset.doc, null); };
+
+function drawYears() {
+  const years = PL.map((p) => p.year).filter(Boolean), lo = Math.floor(Math.min(...years) / 5) * 5, hi = Math.floor(Math.max(...years) / 5) * 5;
+  const bins = []; for (let y = lo; y <= hi; y += 5) bins.push({ y, full: 0, other: 0 });
+  for (const p of PL) if (p.year) bins[Math.floor((p.year - lo) / 5)][p.source_type === "full_text_pdf" ? "full" : "other"]++;
+  const svg = $("yrsvg"), W = Math.round($("yrchart").clientWidth) || 500, H = 240, m = { l: 40, r: 8, t: 10, b: 30 };
+  const max = Math.max(...bins.map((b) => b.full + b.other)), bw = (W - m.l - m.r) / bins.length;
+  const Y = (v) => H - m.b - v / max * (H - m.t - m.b);
+  const step = max > 400 ? 200 : max > 200 ? 100 : 50;
+  let out = "";
+  for (let v = 0; v <= max; v += step) out += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${v}</text>`;
+  bins.forEach((b, i) => {
+    const x = m.l + i * bw + 2, w = Math.max(2, bw - 4);
+    const yf = Y(b.full), yo = Y(b.full + b.other);
+    if (b.full) out += `<rect x="${x}" y="${yf}" width="${w}" height="${H - m.b - yf}" rx="3" fill="var(--series-1)"/>`;
+    if (b.other) out += `<rect x="${x}" y="${yo}" width="${w}" height="${Math.max(0, yf - yo - 2)}" rx="3" fill="var(--series-3)"/>`;
+    out += `<rect x="${x - 2}" y="${m.t}" width="${bw}" height="${H - m.t - m.b}" fill="transparent" data-i="${i}"/>`;
+    if (i % (W < 500 ? 3 : 2) === 0) out += `<text x="${x + w / 2}" y="${H - 10}" text-anchor="middle" font-size="11" fill="var(--muted)">${b.y}</text>`;
+  });
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.style.height = H + "px"; svg.innerHTML = out;
+  $("yrlegend").innerHTML = `<span class="chip"><span class="sw" style="background:var(--series-1);height:8px"></span>full text</span><span class="chip"><span class="sw" style="background:var(--series-3);height:8px"></span>abstract / title only</span>`;
+  const tip = $("yrtip");
+  svg.onmousemove = (e) => {
+    const i = e.target.dataset?.i; if (i === undefined) { tip.style.display = "none"; return; }
+    const b = bins[+i], box = svg.getBoundingClientRect();
+    tip.innerHTML = `<b>${b.y}–${b.y + 4}</b><br>full text: ${b.full}<br>abstract/title: ${b.other}`;
+    tip.style.display = "block"; tip.style.left = Math.min(e.clientX - box.left + 12, box.width - 150) + "px"; tip.style.top = (e.clientY - box.top - 10) + "px";
+  };
+  svg.onmouseleave = () => { tip.style.display = "none"; };
+}
+new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).observe($("yrchart"));
 </script>
 </body>
 </html>

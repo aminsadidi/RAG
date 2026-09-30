@@ -5,6 +5,7 @@ import { cleanTranslation, contextPack, expandQuery, isPersian, shared, sourceLa
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
+import PAPERS from "./papers.json";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id"];
 const MODES = ["hybrid", "vector", "bm25"];
@@ -180,6 +181,7 @@ async function handle(request, env) {
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
     if (url.pathname === "/api/facets") return json(await facets(env));
+    if (url.pathname === "/api/papers") return json(PAPERS);
     if (url.pathname === "/api/incollection" && request.method === "POST") {
       return json(await inCollection(env, (await request.json()).ids));
     }
