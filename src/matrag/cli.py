@@ -322,6 +322,21 @@ def export_qdrant(
     typer.echo(f"uploaded {n} chunks; collection '{name}' now holds {info.points_count} points")
 
 
+@app.command("export-pdfs")
+def export_pdfs(dest: Annotated[Path, typer.Argument(help="Folder to copy the PDFs into (web-pdfs/pdfs).")]) -> None:
+    """Copy the PDFs of the full-text papers into a folder, for the site's PDF Worker (web-pdfs/)."""
+    from matrag import qdrant_store
+
+    ws = _workspace()
+    root = ws.settings.corpus_root
+    if root is None:
+        raise typer.BadParameter("no collection linked (matrag link)")
+    copied, skipped = qdrant_store.copy_pdfs(ws.kb, str(root), str(dest))
+    typer.echo(f"{copied} PDFs in {dest}; skipped {len(skipped)} (missing or over 25 MB)")
+    for rel in skipped[:20]:
+        typer.echo(f"  skipped: {rel}")
+
+
 evaluate_app = typer.Typer(help="Evaluate against gold data in data/<corpus>/gold/.", no_args_is_help=True)
 app.add_typer(evaluate_app, name="evaluate")
 

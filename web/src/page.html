@@ -355,7 +355,15 @@ async function restoreDir() {
     await useDir(h); return true;
   } catch { return false; }
 }
+// The PDF from the site itself (papers uploaded by the Colab notebook), else from the chosen folder.
+async function serverPdf(hit) {
+  if (!hit.source_file) return null;
+  const r = await fetch("/pdf/" + hit.source_file.split("/").map(encodeURIComponent).join("/"));
+  return r.ok ? r.blob() : null;
+}
 async function pdfFor(hit) {
+  const remote = await serverPdf(hit).catch(() => null);
+  if (remote) return remote;
   let f = pdfFiles.get(baseName(hit.source_file));
   if (!f && !pdfFiles.size && (await restoreDir())) f = pdfFiles.get(baseName(hit.source_file));
   if (!f) return null;
@@ -383,7 +391,7 @@ async function openViewer(hit) {
       const key = baseName(hit.source_file);
       if (!V.cache.has(key)) V.cache.set(key, await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise);
       V.doc = V.cache.get(key); await drawPage();
-      $("vnote").textContent = "بخش پیداشده با رنگ زرد مشخص شده است. PDF از رایانه‌ی خودتان خوانده شد.";
+      $("vnote").textContent = "بخش پیداشده با رنگ زرد مشخص شده است.";
       return;
     } catch (err) { $("vnote").textContent = "PDF باز نشد: " + err.message; }
   }

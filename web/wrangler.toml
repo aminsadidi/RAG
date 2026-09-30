@@ -6,6 +6,11 @@ workers_dev = true
 [ai]
 binding = "AI"
 
+# The PDFs (web-pdfs/): served under /pdf/<source_file> after the password check.
+[[services]]
+binding = "PDFS"
+service = "matrag-pdfs"
+
 [vars]
 COLLECTION = "rag-optics"
 TRANSLATE_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
