@@ -11,7 +11,7 @@ const MODES = ["hybrid", "vector", "bm25"];
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8" } });
 const html = (body, status = 200) =>
-  new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+  new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow" } });
 
 async function sha256(text) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -127,12 +127,14 @@ function packFile(found) {
 
 async function handle(request, env) {
   const url = new URL(request.url);
-  if (url.pathname === "/login" && request.method === "POST") {
-    const form = await request.formData();
-    if (env.SITE_PASSWORD && form.get("password") === env.SITE_PASSWORD) {
+  // The password in a form or in the link (/?key=...): the browser is then remembered for a year.
+  const given = url.searchParams.get("key") ??
+    (url.pathname === "/login" && request.method === "POST" ? (await request.formData()).get("password") : null);
+  if (given !== null) {
+    if (env.SITE_PASSWORD && given === env.SITE_PASSWORD) {
       const token = await sessionToken(env);
       return new Response(null, { status: 303, headers: {
-        location: "/", "set-cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000` } });
+        location: "/", "set-cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=31536000` } });
     }
     await new Promise((r) => setTimeout(r, 800));
     return html(LOGIN.replace("<!--error-->", '<p class="err">رمز درست نیست.</p>'), 401);
