@@ -15,8 +15,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:Vazirmatn,Tahoma
 header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line)}
 .bar{max-width:1100px;margin:auto;padding:10px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .brand{font-weight:700;font-size:17px}.brand small{font-weight:400;color:var(--muted);font-size:13px;margin-inline-start:6px}
-nav{display:flex;gap:4px;margin-inline-start:auto}
-nav button{border:0;background:transparent;color:var(--muted);padding:6px 12px;border-radius:8px;font:inherit;cursor:pointer}
+nav{display:flex;gap:4px;margin-inline-start:auto;overflow-x:auto;max-width:100%}
+nav button{white-space:nowrap;border:0;background:transparent;color:var(--muted);padding:6px 12px;border-radius:8px;font:inherit;cursor:pointer}
 nav button.on{background:var(--soft);color:var(--ink);font-weight:600}
 a{color:var(--accent)}
 main{max-width:1100px;margin:auto;padding:18px 16px 60px}
@@ -74,6 +74,18 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 .paperchunk{border-top:1px solid var(--line);padding:10px 0}
 .paperchunk.sel .text{outline:2px solid var(--hl-line)}
 .pill{font-size:12px;color:var(--muted)}
+
+/* refractive index tab */
+.viz-root{--series-1:#2a78d6;--series-2:#eb6834;--series-3:#1baf7a;--series-4:#eda100;--series-5:#e87ba4;--series-6:#008300;--series-7:#4a3aa7;--series-8:#e34948;--grid:#e6e9ee}
+@media (prefers-color-scheme:dark){.viz-root{--series-1:#3987e5;--series-2:#d95926;--series-3:#199e70;--series-4:#c98500;--series-5:#d55181;--series-6:#008300;--series-7:#9085e9;--series-8:#e66767;--grid:#2a3542}}
+#chart{position:relative;direction:ltr}
+#chart svg{display:block;width:100%}
+#chart .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:var(--shadow);white-space:nowrap;display:none;direction:ltr;text-align:left}
+.sw{display:inline-block;width:12px;height:3px;border-radius:2px;vertical-align:middle;margin-inline-end:6px}
+.entry{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+.entry .meta{flex:1;direction:ltr;text-align:left;font-size:13px}
+.entry .meta b{font-size:14px}
+.chip.coll{color:var(--ok)}
 </style>
 </head>
 <body>
@@ -82,6 +94,7 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
   <nav>
     <button data-tab="search" class="on">جست‌وجو</button>
     <button data-tab="paper">مقاله</button>
+    <button data-tab="index">ضریب شکست</button>
     <button data-tab="library">مجموعه</button>
     <button data-tab="about">راهنما</button>
   </nav>
@@ -114,6 +127,27 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 <section id="tab-paper" hidden>
   <div class="card" id="paperhead"><p class="hint">روی «کل مقاله» در نتیجه‌ی یک جست‌وجو بزنید تا همه‌ی بخش‌های آن مقاله این‌جا بیاید.</p></div>
   <div id="paperbody"></div>
+</section>
+
+<section id="tab-index" hidden class="viz-root">
+  <div class="card">
+    <h2>ضریب شکست از فرمول‌های پاشندگی</h2>
+    <p class="hint">فرمول‌های پاشندگی (سلمایر و …) پایگاه refractiveindex.info برای هر ماده؛ هر منحنی از یک مقاله است. اگر آن مقاله در مجموعه‌ی شما باشد، با یک کلیک متن و صفحه‌اش باز می‌شود.</p>
+    <div class="row">
+      <label>ماده <select id="rimat"></select></label>
+      <label>از λ <input id="rilo" type="number" step="0.01" style="width:84px"> تا <input id="rihi" type="number" step="0.01" style="width:84px"> µm</label>
+      <label>n در λ = <input id="riprobe" type="number" step="0.001" value="1.064" style="width:90px"> µm</label>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div id="chart"><svg id="risvg" role="img" aria-label="refractive index versus wavelength"></svg><div class="tip" id="ritip"></div></div>
+    <div id="rilegend" class="chips" style="direction:ltr"></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>منابع و مقدار n در طول موج انتخاب‌شده</h2>
+    <div id="rientries"></div>
+    <div id="rispread" class="hint" style="margin-top:8px"></div>
+  </div>
 </section>
 
 <section id="tab-library" hidden>
@@ -180,6 +214,7 @@ function showTab(name) {
   for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === name);
   for (const s of document.querySelectorAll("main > section")) s.hidden = s.id !== "tab-" + name;
   if (name === "library") loadFacets();
+  if (name === "index") loadFormulas();
 }
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => showTab(b.dataset.tab);
 
@@ -452,6 +487,126 @@ function loadFacets() {
 const saved = store.get("opts");
 if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; }
 loadFacets().then(() => { if (saved?.material) $("material").value = saved.material; });
+</script>
+<script type="module">
+import { entryIndex } from "/dispersion.js";
+// ---------- refractive index tab: n(λ) of every refractiveindex.info formula for a material
+const RI = { entries: [], byMat: new Map(), inColl: {}, shown: new Set(), mat: null };
+const MAX_SERIES = 8; // categorical slots; more entries are listed but not all drawn at once
+const color = (slot) => `var(--series-${slot + 1})`;
+const dirName = (d) => (d ? { o: "ordinary (o)", e: "extraordinary (e)", x: "x", y: "y", z: "z", alpha: "α", beta: "β", gamma: "γ" }[d] || d : "");
+const label = (e) => (e.direction && !e.page.toLowerCase().endsWith(e.direction.toLowerCase()) ? `${e.page} · ${e.direction}` : e.page);
+
+let loaded = null;
+window.loadFormulas = () => {
+  loaded ||= api("/api/formulas").then((r) => r.json()).then((d) => {
+    RI.entries = d.entries; RI.inColl = d.in_collection;
+    for (const e of RI.entries) (RI.byMat.get(e.material) || RI.byMat.set(e.material, []).get(e.material)).push(e);
+    const mats = [...RI.byMat.keys()].sort((a, b) => a.localeCompare(b));
+    $("rimat").innerHTML = mats.map((m) => `<option value="${esc(m)}">${esc(m)} (${RI.byMat.get(m).length})</option>`).join("");
+    const saved = store.get("rimat");
+    selectMaterial(saved && RI.byMat.has(saved) ? saved : (RI.byMat.has("LiB3O5") ? "LiB3O5" : mats[0]));
+  }).catch((err) => { loaded = null; $("rientries").innerHTML = `<p class="err">خطا: ${esc(err.message)}</p>`; });
+  return loaded;
+};
+
+function selectMaterial(m) {
+  RI.mat = m; $("rimat").value = m; store.set("rimat", m);
+  const list = RI.byMat.get(m);
+  RI.shown = new Set(list.slice(0, MAX_SERIES).map((_, i) => i));
+  const lo = Math.min(...list.map((e) => e.range_um[0])), hi = Math.max(...list.map((e) => e.range_um[1]));
+  $("rilo").value = +Math.max(lo, 0.2).toFixed(3); $("rihi").value = +Math.min(hi, Math.max(lo, 0.2) + 5).toFixed(3);
+  const probe = +$("riprobe").value;
+  if (!(probe >= lo && probe <= hi)) $("riprobe").value = +((+$("rilo").value + +$("rihi").value) / 2).toFixed(3);
+  render();
+}
+$("rimat").onchange = (e) => selectMaterial(e.target.value);
+for (const id of ["rilo", "rihi", "riprobe"]) $(id).addEventListener("change", render);
+
+// Slots follow the entry (its position in the material's list), never its rank among those shown.
+const slotOf = (i) => i % MAX_SERIES;
+
+function render() {
+  const list = RI.byMat.get(RI.mat) || [];
+  let lo = +$("rilo").value, hi = +$("rihi").value;
+  if (!(hi > lo)) [lo, hi] = [Math.min(lo, hi) || 0.3, Math.max(lo, hi) || 2];
+  const probe = +$("riprobe").value;
+  drawChart(list, lo, hi, probe);
+  // entries with n at the probe wavelength
+  const values = [];
+  $("rientries").innerHTML = list.map((e, i) => {
+    const n = entryIndex(e, probe);
+    if (Number.isFinite(n)) values.push(n);
+    const coll = e.doc_id && RI.inColl[e.doc_id];
+    return `<div class="entry" data-i="${i}">
+      <input type="checkbox" ${RI.shown.has(i) ? "checked" : ""} ${!RI.shown.has(i) && RI.shown.size >= MAX_SERIES ? "disabled" : ""} aria-label="show">
+      <div class="meta"><b><span class="sw" style="background:${color(slotOf(i))}"></span>${esc(label(e))}</b>
+        <span class="hint"> ${esc(dirName(e.direction))} · formula ${e.type} · ${e.range_um[0]}–${e.range_um[1]} µm</span><br>
+        ${esc(e.reference)}
+        <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
+        ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}</div></div>
+      <div style="direction:ltr;font-family:'JetBrains Mono',monospace;min-width:90px;text-align:right">${Number.isFinite(n) ? n.toFixed(5) : "—"}</div>
+    </div>`;
+  }).join("") || '<p class="hint">فرمولی برای این ماده نیست.</p>';
+  $("rispread").textContent = values.length > 1
+    ? `در λ = ${probe} µm: کمترین n = ${Math.min(...values).toFixed(5)}، بیشترین = ${Math.max(...values).toFixed(5)} (همه‌ی جهت‌ها با هم؛ مقایسه‌ی منصفانه فقط بین منابع هم‌جهت است).`
+    : values.length ? "" : `هیچ فرمولی λ = ${probe} µm را پوشش نمی‌دهد.`;
+}
+
+$("rientries").addEventListener("click", (ev) => {
+  const row = ev.target.closest(".entry"); if (!row) return;
+  const i = +row.dataset.i, e = RI.byMat.get(RI.mat)[i];
+  if (ev.target.type === "checkbox") { ev.target.checked ? RI.shown.add(i) : RI.shown.delete(i); render(); }
+  if (ev.target.dataset.act === "paper") openPaper(e.doc_id, null);
+});
+
+function niceTicks(a, b, count) {
+  const step0 = (b - a) / count, mag = 10 ** Math.floor(Math.log10(step0)), r = step0 / mag;
+  const step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag;
+  const out = []; for (let v = Math.ceil(a / step) * step; v <= b + step * 1e-9; v += step) out.push(+v.toPrecision(10));
+  return out;
+}
+
+function drawChart(list, lo, hi, probe) {
+  const svg = $("risvg"), W = Math.round($("chart").clientWidth) || 800, H = Math.round(Math.min(340, Math.max(240, W * 0.7)));
+  const m = { l: W < 500 ? 52 : 62, r: 12, t: 14, b: 40 };
+  svg.style.height = H + "px";
+  const N = 240, xs = Array.from({ length: N + 1 }, (_, k) => lo + (hi - lo) * k / N);
+  const series = [...RI.shown].sort((a, b) => a - b).map((i) => ({ i, e: list[i], ys: xs.map((x) => entryIndex(list[i], x)) }));
+  const all = series.flatMap((s) => s.ys.filter(Number.isFinite));
+  $("rilegend").innerHTML = series.map((s) => `<span class="chip"><span class="sw" style="background:${color(slotOf(s.i))}"></span>${esc(label(s.e))}</span>`).join("");
+  if (!all.length) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">No formula covers ${lo}–${hi} µm</text>`; return; }
+  let y0 = Math.min(...all), y1 = Math.max(...all); const pad = (y1 - y0) * 0.08 || 0.01; y0 -= pad; y1 += pad;
+  const X = (x) => m.l + (x - lo) / (hi - lo) * (W - m.l - m.r), Y = (y) => H - m.b - (y - y0) / (y1 - y0) * (H - m.t - m.b);
+  const gx = niceTicks(lo, hi, W < 500 ? 4 : 7), gy = niceTicks(y0, y1, 5);
+  let out = gy.map((v) => `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${v.toFixed(3)}</text>`).join("");
+  out += gx.map((v) => `<text x="${X(v)}" y="${H - m.b + 18}" text-anchor="middle" font-size="11" fill="var(--muted)">${v}</text>`).join("");
+  out += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="var(--line)"/>`;
+  out += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle" font-size="12" fill="var(--muted)">wavelength λ (µm)</text>`;
+  out += `<text transform="translate(14 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="var(--muted)">refractive index n</text>`;
+  if (probe >= lo && probe <= hi) out += `<line x1="${X(probe)}" x2="${X(probe)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--muted)" stroke-dasharray="4 4"/>`;
+  for (const s of series) {
+    let d = "", pen = false;
+    s.ys.forEach((y, k) => { if (Number.isFinite(y)) { d += `${pen ? "L" : "M"}${X(xs[k]).toFixed(1)},${Y(y).toFixed(1)}`; pen = true; } else pen = false; });
+    out += `<path d="${d}" fill="none" stroke="${color(slotOf(s.i))}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+  out += `<line id="rix" y1="${m.t}" y2="${H - m.b}" stroke="var(--ink)" stroke-opacity=".35" visibility="hidden"/><rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" id="rihit"/>`;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = out;
+  const tip = $("ritip"), hit = $("rihit"), cross = $("rix");
+  hit.onmousemove = (ev) => {
+    const box = svg.getBoundingClientRect(), px = (ev.clientX - box.left) * (W / box.width);
+    const lam = lo + (px - m.l) / (W - m.l - m.r) * (hi - lo);
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("visibility", "visible");
+    const rows = series.map((s) => [s, entryIndex(s.e, lam)]).filter(([, n]) => Number.isFinite(n));
+    tip.innerHTML = `<b>λ = ${lam.toFixed(4)} µm</b><br>` + (rows.map(([s, n]) => `<span class="sw" style="background:${color(slotOf(s.i))}"></span>${esc(label(s.e))}: ${n.toFixed(5)}`).join("<br>") || "—");
+    tip.style.display = "block";
+    const left = ev.clientX - box.left + 14; tip.style.left = (left + tip.offsetWidth > box.width ? left - tip.offsetWidth - 28 : left) + "px";
+    tip.style.top = (ev.clientY - box.top + 10) + "px";
+  };
+  hit.onmouseleave = () => { tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); };
+}
+let lastW = 0;
+new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w && w !== lastW && RI.mat) { lastW = w; render(); } }).observe($("chart"));
 </script>
 </body>
 </html>
