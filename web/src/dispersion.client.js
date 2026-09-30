@@ -44,8 +44,19 @@ export function refractiveIndex(type, coefficients, lam) {
   }
 }
 
-// NaN outside the entry's wavelength range, as EntryData.refractive_index does.
+// Linear interpolation in tabulated [λ, n] points (sorted by λ), as numpy.interp.
+export function interpolate(points, lam) {
+  let a = 0, b = points.length - 1;
+  if (!(b >= 0) || lam < points[0][0] || lam > points[b][0]) return NaN;
+  while (b - a > 1) { const m = (a + b) >> 1; if (points[m][0] <= lam) a = m; else b = m; }
+  const [x0, y0] = points[a], [x1, y1] = points[b];
+  return x1 === x0 ? y0 : y0 + (y1 - y0) * (lam - x0) / (x1 - x0);
+}
+
+// n(λ) of an entry (formula, or tabulated points when type is "tab"); NaN outside its wavelength
+// range, as EntryData.refractive_index does.
 export function entryIndex(entry, lam) {
   const [lo, hi] = entry.range_um;
-  return lam >= lo - 1e-9 && lam <= hi + 1e-9 ? refractiveIndex(entry.type, entry.coefficients, lam) : NaN;
+  if (!(lam >= lo - 1e-9 && lam <= hi + 1e-9)) return NaN;
+  return entry.type === "tab" ? interpolate(entry.points, lam) : refractiveIndex(entry.type, entry.coefficients, lam);
 }
