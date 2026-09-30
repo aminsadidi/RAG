@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 11
+VERSION = 12
 WORKERS = 4
 
 
@@ -233,6 +233,32 @@ CORPUS = globals().get('CORPUS', 'rag-optics')  # set by cell 7
 LIMIT = 20  #@param {type:"integer"}
 %cd {WORK}
 !matrag --corpus rag-optics evaluate formulas --limit {LIMIT} 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/eval.log"
+%cd /content/RAG
+"""),
+    md("""
+---
+### انتقال به سایت
+
+سایت (Cloudflare) از روی یک کپی از پایگاه داده در Qdrant Cloud جست‌وجو می‌کند. بعد از سلول ۵ (و هر بار که
+مقاله‌ی تازه اضافه شد) این سلول را اجرا کنید. به کارت گرافیک و مدل زبانی نیاز ندارد.
+"""),
+    code("""
+#@title ۱۱. بارگذاری پایگاه داده در سایت (Qdrant Cloud)
+#@markdown یک بار: در Secrets کولب (آیکون 🔑 سمت چپ) دو مقدار `QDRANT_URL` و `QDRANT_API_KEY` را بسازید
+#@markdown (از صفحه‌ی کلاستر در cloud.qdrant.io) و دسترسی نوت‌بوک را روشن کنید.
+#@markdown بردارها دوباره ساخته نمی‌شوند؛ همان بردارهای پایگاه (و ارزیابی‌ها) فرستاده می‌شوند. اگر قطع شد دوباره
+#@markdown اجرا کنید: بخش‌های فرستاده‌شده رد می‌شوند. **RECREATE** مجموعه را پاک و از نو می‌سازد.
+RECREATE = False  #@param {type:"boolean"}
+#@markdown **EVALUATE**: بعد از بارگذاری، ارزیابی سلول ۸ روی جست‌وجوی سایت هم اجرا شود (برای مقایسه).
+EVALUATE = True  #@param {type:"boolean"}
+import os
+from google.colab import userdata
+os.environ['QDRANT_URL'] = userdata.get('QDRANT_URL')
+os.environ['QDRANT_API_KEY'] = userdata.get('QDRANT_API_KEY')
+%cd {WORK}
+!matrag --corpus rag-optics export-qdrant {'--recreate' if RECREATE else ''} 2>&1 | grep -vE "Warning|Loading"
+if EVALUATE:
+    !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
 """),
 ]

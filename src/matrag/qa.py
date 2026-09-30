@@ -52,6 +52,9 @@ PERSIAN_GLOSSARY = {
     "ضریب شکست": "refractive index", "ضریب خاموشی": "extinction coefficient", "ضریب جذب": "absorption coefficient",
     "ضریب گرمانوری": "thermo-optic coefficient", "گاف انرژی": "band gap", "لایه‌ی نازک": "thin film",
     "بخار آب": "water vapor", "هوا": "air", "مقطع جذب": "absorption cross-section", "عدم‌قطعیت": "uncertainty",
+    "بلور": "crystal", "سلمایر": "Sellmeier", "معادله سلمایر": "Sellmeier equation", "پاشندگی": "dispersion",
+    "دوشکستی": "birefringence", "ضریب غیرخطی": "nonlinear coefficient", "تطبیق فاز": "phase matching",
+    "لیتیوم نیوبات": "lithium niobate (LiNbO3)", "بتا باریم بورات": "beta-barium borate (BBO)",
 }
 
 TRANSLATE_PROMPT = """\
