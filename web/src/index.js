@@ -87,9 +87,13 @@ async function search(env, opts) {
         query: { fusion: "rrf" }, limit: topK,
       };
   }
-  const result = await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD });
-  const hits = result.points.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
-  return { question, searchQuery, mode, topK, hits, ms: Date.now() - started };
+  // perPaper: the best passage of each paper (Qdrant groups by doc_id), so one paper cannot fill the list.
+  const points = opts.perPaper
+    ? (await qdrant(env, `/collections/${env.COLLECTION}/points/query/groups`,
+      { ...body, group_by: "doc_id", group_size: 1, with_payload: PAYLOAD })).groups.map((g) => g.hits[0])
+    : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
+  const hits = points.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
+  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), hits, ms: Date.now() - started };
 }
 
 async function facets(env) {
@@ -134,7 +138,7 @@ function packFile(found) {
     question: found.question,
     ...(found.searchQuery ? { "search query (English)": found.searchQuery } : {}),
     corpus: "rag-optics",
-    retrieval: `${found.mode}${found.mode === "hybrid" ? " (dense + BM25, RRF in Qdrant)" : ""}, top ${found.topK}`,
+    retrieval: `${found.mode}${found.mode === "hybrid" ? " (dense + BM25, RRF in Qdrant)" : ""}, top ${found.topK}${found.perPaper ? ", one passage per paper" : ""}`,
     "embedding model": shared.EMBED_MODEL,
     created: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC",
   };

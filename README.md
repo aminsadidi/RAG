@@ -212,6 +212,13 @@ matrag formula-table results/formulas.jsonl --index 0 --from 0.4 --to 2 --step 0
   می‌کند؛ `matrag evaluate retrieval --backend qdrant` همان ارزیابی را روی جست‌وجوی سایت اجرا می‌کند.
 - **نمایش صفحه:** PDFها روی سرور نیستند (حق نشر). در زبانه‌ی «مجموعه» پوشه‌ی مقاله‌ها روی رایانه‌ی خودتان انتخاب
   می‌شود و صفحه با pdf.js در مرورگر باز می‌شود، با بخشِ پیداشده به رنگ زرد. بدون پوشه، نقشه‌ی محل بخش روی صفحه نمایش داده می‌شود.
+- **ضریب شکست:** n(λ) از همه‌ی داده‌های refractiveindex.info (۳٬۴۶۱ داده برای ۲٬۲۴۶ ماده: فرمول‌های پاشندگی و داده‌های
+  اندازه‌گیری‌شده) با پیوند به مقاله‌ی منبع در مجموعه؛ `matrag export-formulas` فایل‌های `web/public/ri` را می‌سازد و فرمول‌های
+  JS (`web/src/dispersion.client.js`) با موتور پایتون روی ۶٬۸۶۷ نقطه مقایسه می‌شوند.
+- **مجموعه و ارزیابی:** `matrag export-papers` فهرست مقاله‌های Qdrant را برای زبانه‌ی «مجموعه» می‌نویسد؛ زبانه‌ی «ارزیابی»
+  نتیجه‌های بازیابی (کولب در برابر سایت) و استخراج فرمول را از `web/public/eval.json` نشان می‌دهد.
+- **PDFها:** `web-pdfs/` یک Worker بدون آدرس عمومی است که PDFها را نگه می‌دارد؛ سایت بعد از رمز از راه service binding
+  آن‌ها را در `/pdf/<مسیر>` می‌دهد (نوت‌بوک `colab_site` آن‌ها را با `matrag export-pdfs` بارگذاری می‌کند).
 - متن‌های مشترک (پرامپت‌ها، واژه‌نامه، قاعده‌ی فرمول‌ها) از پایتون در `web/src/shared.json` نوشته می‌شوند
   (`python -m matrag.web_shared`) و تست‌ها یکسان بودن دو طرف را بررسی می‌کنند.
 - **بارگذاری با یک کلیک (بدون GPU):** [colab_site.ipynb](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_site.ipynb)؛ کلید Qdrant از `matrag_data/qdrant.env` در Drive خوانده می‌شود.
