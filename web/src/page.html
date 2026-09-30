@@ -130,6 +130,7 @@ body{overflow-x:hidden}
       <label>تعداد منبع <input id="topk" type="number" min="1" max="30" value="8" style="width:72px"></label>
       <label>ماده <select id="material"><option value="">همه</option></select></label>
       <label><input id="fulltext" type="checkbox"> فقط متن کامل مقاله‌ها</label>
+      <label title="بهترین بخش هر مقاله؛ یک مقاله نمی‌تواند همه‌ی نتیجه‌ها را بگیرد"><input id="perpaper" type="checkbox"> هر مقاله یک بار</label>
     </div>
     <div class="row">
       <button class="main" id="go">جست‌وجو</button>
@@ -153,6 +154,7 @@ body{overflow-x:hidden}
     <div class="row">
       <label>ماده <input id="rimat" list="rimats" placeholder="مثلاً LiB3O5، BaB2O4، N-BK7" style="width:240px;direction:ltr" autocomplete="off"><datalist id="rimats"></datalist></label>
       <span id="riinfo" class="hint"></span>
+      <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button>
       <label>از λ <input id="rilo" type="number" step="0.01" style="width:84px"> تا <input id="rihi" type="number" step="0.01" style="width:84px"> µm</label>
       <label>n در λ = <input id="riprobe" type="number" step="0.001" value="1.064" style="width:90px"> µm</label>
     </div>
@@ -232,6 +234,14 @@ body{overflow-x:hidden}
       <li>دو جست‌وجو در Qdrant: شباهت برداری (معنایی) و BM25 (کلیدواژه؛ فرمول‌های شیمیایی مثل «LiB 3 O 5» یکسان‌سازی و نام‌های رایج مثل BBO به فرمول گسترش داده می‌شوند).</li>
       <li>دو فهرست با Reciprocal Rank Fusion ترکیب می‌شوند.</li>
     </ol>
+    <h3>بخش‌های سایت</h3>
+    <ul class="steps">
+      <li><b>جست‌وجو:</b> منابع با نام مقاله، صفحه و محل روی صفحه؛ «نمایش روی صفحه‌ی مقاله» خود صفحه‌ی PDF را با بخشِ پیداشده‌ی زرد نشان می‌دهد؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
+      <li><b>مقاله:</b> همه‌ی بخش‌های یک مقاله، صفحه به صفحه.</li>
+      <li><b>ضریب شکست:</b> n(λ) از همه‌ی داده‌های refractiveindex.info (فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده، ۲٬۲۴۶ ماده) با پیوند به مقاله‌ی منبع در همین مجموعه.</li>
+      <li><b>مجموعه:</b> مقاله‌ها بر اساس سال و دسته، و فهرست قابل‌جست‌وجوی همه‌ی مقاله‌ها.</li>
+      <li><b>ارزیابی:</b> نتیجه‌ی ارزیابی خودکار بازیابی (کولب در برابر سایت) و استخراج فرمول.</li>
+    </ul>
     <h3>پردازش مقاله‌ها</h3>
     <p>تبدیل PDFها (Docling)، تکه‌تکه‌کردن، ساخت بردارها، ارزیابی و استخراج فرمول پاشندگی در Google Colab انجام می‌شود و نتیجه در این پایگاه بارگذاری می‌شود (<code>matrag export-qdrant</code>). بردارهای این‌جا همان بردارهای ارزیابی‌شده‌اند.</p>
     <p class="hint">مقاله‌ها حق نشر دارند؛ این صفحه خصوصی و فقط برای پروژه است.</p>
@@ -280,7 +290,7 @@ for (const b of $("examples").children) b.onclick = () => { $("q").value = b.tex
 
 function options() {
   return { q: $("q").value, mode: $("mode").value, topK: $("topk").value, material: $("material").value,
-    fullTextOnly: $("fulltext").checked };
+    fullTextOnly: $("fulltext").checked, perPaper: $("perpaper").checked };
 }
 function setBusy(busy) { for (const id of ["go", "pack"]) $(id).disabled = busy; }
 function status(text, error) { $("status").textContent = text; $("status").className = error ? "err" : ""; }
@@ -539,7 +549,7 @@ function loadFacets() {
 }
 
 const saved = store.get("opts");
-if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; }
+if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; $("perpaper").checked = !!saved.perPaper; }
 loadFacets().then(() => { if (saved?.material) $("material").value = saved.material; });
 </script>
 <script type="module">
@@ -583,6 +593,10 @@ async function selectMaterial(name) {
   if (!(probe >= a && probe <= b)) $("riprobe").value = +((a + b) / 2).toPrecision(4);
   render();
 }
+$("risearch").onclick = () => {
+  const m = RI.byName?.get(RI.mat); if (!m) return;
+  $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
+};
 $("rimat").addEventListener("input", (e) => { if (RI.byName?.has(e.target.value)) selectMaterial(e.target.value); });
 for (const id of ["rilo", "rihi", "riprobe"]) $(id).addEventListener("change", render);
 
