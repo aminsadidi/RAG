@@ -226,5 +226,26 @@ def copy_pdfs(kb, root: str, dest: str) -> tuple[int, list[str]]:
     return copied, skipped
 
 
+def paper_list(qc, name: str) -> list[dict]:
+    """One row per paper in the collection (for the site's collection browser), from the chunks' payloads."""
+    keys = ["doc_id", "citation", "reference", "year", "material", "category", "source_type", "doi"]
+    papers: dict[str, dict] = {}
+    offset = None
+    while True:
+        points, offset = qc.scroll(name, limit=2000, offset=offset, with_payload=keys, with_vectors=False)
+        for pt in points:
+            meta = pt.payload or {}
+            doc = meta.get("doc_id")
+            if not doc:
+                continue
+            row = papers.setdefault(doc, {k: meta.get(k) for k in keys} | {"chunks": 0})
+            row["chunks"] += 1
+            if meta.get("source_type") == "full_text_pdf":
+                row["source_type"] = "full_text_pdf"
+        if offset is None:
+            break
+    return sorted(papers.values(), key=lambda r: (-(r.get("year") or 0), r["doc_id"]))
+
+
 def collection_name(settings: Settings) -> str:
     return settings.corpus

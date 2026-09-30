@@ -351,6 +351,22 @@ def export_formulas(
                f"{len(index)} materials written to {out}")
 
 
+@app.command("export-papers")
+def export_papers(
+    out: Annotated[Path, typer.Argument(help="JSON file to write.")] = Path("web/src/papers.json"),
+    collection: Annotated[str | None, typer.Option(help="Collection name (default: the corpus name).")] = None,
+) -> None:
+    """Write the list of papers in the Qdrant collection, for the site's collection browser."""
+    import json
+
+    from matrag import qdrant_store
+    from matrag.config import Settings
+
+    rows = qdrant_store.paper_list(qdrant_store.client(), collection or Settings().corpus)
+    out.write_text(json.dumps(rows, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    typer.echo(f"{len(rows)} papers written to {out}")
+
+
 @app.command("export-pdfs")
 def export_pdfs(dest: Annotated[Path, typer.Argument(help="Folder to copy the PDFs into (web-pdfs/pdfs).")]) -> None:
     """Copy the PDFs of the full-text papers into a folder, for the site's PDF Worker (web-pdfs/)."""
