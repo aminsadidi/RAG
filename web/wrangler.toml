@@ -1,0 +1,23 @@
+name = "matrag"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+workers_dev = true
+
+[ai]
+binding = "AI"
+
+[vars]
+COLLECTION = "rag-optics"
+TRANSLATE_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+EMBED_MODEL = "@cf/baai/bge-base-en-v1.5"
+
+# Secrets (npx wrangler secret put NAME): QDRANT_URL, QDRANT_API_KEY, SITE_PASSWORD
+
+# Qdrant Cloud suspends a free cluster after a week without requests: one request a day keeps it up.
+[triggers]
+crons = ["17 6 * * *"]
+
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+fallthrough = true

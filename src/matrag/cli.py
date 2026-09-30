@@ -302,6 +302,26 @@ def formula_table(
     typer.echo(f"{len(rows)} wavelengths written to {out}")
 
 
+@app.command("export-qdrant")
+def export_qdrant(
+    recreate: Annotated[bool, typer.Option(help="Delete and rebuild the collection.")] = False,
+    collection: Annotated[str | None, typer.Option(help="Collection name (default: the corpus name).")] = None,
+) -> None:
+    """Upload the knowledge base (chunks, their stored embeddings, BM25) to Qdrant for the web app.
+
+    Needs QDRANT_URL and QDRANT_API_KEY; resumable (chunks already uploaded are skipped).
+    """
+    from matrag import qdrant_store
+
+    ws = _workspace()
+    name = collection or ws.settings.corpus
+    qc = qdrant_store.client()
+    n = qdrant_store.export(ws.kb, qc, name, recreate=recreate,
+                            on_progress=lambda i, total: typer.echo(f"  {i}/{total}") if i % 2048 < 64 or i == total else None)
+    info = qc.get_collection(name)
+    typer.echo(f"uploaded {n} chunks; collection '{name}' now holds {info.points_count} points")
+
+
 evaluate_app = typer.Typer(help="Evaluate against gold data in data/<corpus>/gold/.", no_args_is_help=True)
 app.add_typer(evaluate_app, name="evaluate")
 
@@ -328,11 +348,14 @@ def evaluate_retrieval(
     modes: Annotated[list[RetrievalMode] | None, typer.Option("--mode", help="Modes to compare (default: all).")] = None,
     k: Annotated[int, typer.Option(help="Chunks retrieved per question.")] = 10,
     persian: Annotated[bool, typer.Option(help="Use the Persian questions (question_fa), translated by the LLM.")] = False,
+    backend: Annotated[str, typer.Option(help="'local' (this database) or 'qdrant' (the web app's search).")] = "local",
 ) -> None:
     """Recall@k and MRR of each retrieval mode (no LLM needed, except with --persian)."""
     from matrag.evaluate import evaluate_retrieval as run, load_questions, write_rows
 
     ws = _workspace()
+    if backend == "qdrant":
+        return _evaluate_retrieval_qdrant(ws, modes, k)
     items = load_questions(_gold("questions.csv"))
     query_fn = None
     if persian:
@@ -350,6 +373,38 @@ def evaluate_retrieval(
         write_rows(out.with_name(out.stem + "_translations.csv"),
                    [{"id": it.id, "question_fa": it.question_fa, "translation": translations[it.id],
                      "original_en": it.question} for it in items])
+    write_rows(out, rows)
+    write_rows(out.with_name(out.stem + "_ranks.csv"),
+               [{"id": i, **{r.mode: r.ranks[i] for r in reports}} for i in reports[0].ranks])
+    typer.echo(f"saved {out}")
+
+
+def _evaluate_retrieval_qdrant(ws, modes, k: int) -> None:
+    """The same metrics for the web app's search (Qdrant: stored vectors, server-side BM25, RRF)."""
+    from types import SimpleNamespace
+
+    from matrag import qdrant_store
+    from matrag.evaluate import evaluate_retrieval as run, load_questions, write_rows
+
+    items = load_questions(_gold("questions.csv"))
+    qc = qdrant_store.client()
+    embed = ws.kb.index._embed_model
+    vectors = {it.id: embed.get_query_embedding(it.question) for it in items}
+
+    class QdrantRetriever:
+        def __init__(self, mode):
+            self.mode, self.current = mode, None
+
+        def retrieve(self, query):
+            item = next(it for it in items if it.question == query)
+            points = qdrant_store.search(qc, ws.settings.corpus, query, vectors[item.id], k, self.mode)
+            return [SimpleNamespace(node=SimpleNamespace(metadata=p.payload)) for p in points]
+
+    ks = tuple(x for x in (1, 3, 5, 10) if x <= k)
+    reports = [run(items, QdrantRetriever(m.value), m.value + " (qdrant)", ks) for m in modes or list(RetrievalMode)]
+    rows = [r.summary() for r in reports]
+    _print_table(rows)
+    out = Path("results/eval") / f"{ws.settings.corpus}_retrieval_qdrant.csv"
     write_rows(out, rows)
     write_rows(out.with_name(out.stem + "_ranks.csv"),
                [{"id": i, **{r.mode: r.ranks[i] for r in reports}} for i in reports[0].ranks])

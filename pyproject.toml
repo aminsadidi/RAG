@@ -26,6 +26,7 @@ dependencies = [
     "hitran-api>=1.2",
     "plotly>=5.0",
     "pyyaml>=6.0",
+    "qdrant-client>=1.15",
 ]
 
 [project.optional-dependencies]
