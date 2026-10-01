@@ -179,6 +179,7 @@ body{overflow-x:hidden}
   <div class="card" style="margin-top:14px">
     <div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0">بازیابی: برنامه‌ی کولب در برابر سایت</h2>
       <div class="seg" id="evmetric"></div></div>
+    <p class="hint">«سایت بعد از OCR»: متن ۴۵ مقاله‌ی اسکن‌شده با OCR (RapidOCR) دوباره خوانده شد و ۶ مقاله که PDF آن‌ها در مجموعه مقاله‌ی دیگری بود فقط با چکیده نمایه شدند.</p>
     <p class="hint">MRR: میانگین ۱/رتبه‌ی اولین مقاله‌ی درست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
     <div id="evchart"><svg id="evsvg" role="img" aria-label="retrieval comparison"></svg></div>
     <div id="evlegend" class="chips" style="direction:ltr"></div>
@@ -695,14 +696,14 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 <script type="module">
 // ---------- evaluation tab
 const MODE_FA = { hybrid: "ترکیبی", bm25: "کلیدواژه (BM25)", vector: "برداری" };
-const SYS = [["local", "برنامه‌ی کولب (ChromaDB + bm25s)"], ["site", "سایت (Qdrant)"]];
+const SYS = [["local", "برنامه‌ی کولب (ChromaDB + bm25s)"], ["site", "سایت (Qdrant)"], ["site_ocr", "سایت بعد از OCR"]];
 let EV = null, evMetric = "MRR";
 window.loadEval = async () => {
   if (!EV) EV = await (await fetch("/eval.json")).json();
   const r = EV.retrieval, mi = r.metrics.indexOf("MRR");
   const facets = await api("/api/facets").then((x) => x.json()).catch(() => ({}));
   const tiles = [[fa(r.questions), "سؤال ارزیابی"], [facets.points ? fa(facets.points) : "—", "بخش در پایگاه"],
-    [r.site.bm25[mi].toFixed(3), "بهترین MRR سایت"], [`+${Math.round((r.site.hybrid[mi] / r.local.hybrid[mi] - 1) * 100)}%`, "بهبود روش ترکیبی"]];
+    [r.site_ocr.bm25[mi].toFixed(3), "بهترین MRR سایت"], [`+${Math.round((r.site_ocr.hybrid[mi] / r.local.hybrid[mi] - 1) * 100)}%`, "بهبود روش ترکیبی نسبت به کولب"]];
   $("evtiles").innerHTML = tiles.map(([v, t]) => `<div class="tile"><b>${v}</b><span>${t}</span></div>`).join("");
   $("evmetric").innerHTML = r.metrics.map((m) => `<button data-m="${m}" class="${m === evMetric ? "on" : ""}">${m}</button>`).join("");
   $("evmetric").onclick = (e) => { if (e.target.dataset.m) { evMetric = e.target.dataset.m; loadEval(); } };
@@ -719,15 +720,15 @@ window.loadEval = async () => {
 function drawEval() {
   const r = EV.retrieval, k = r.metrics.indexOf(evMetric), modes = ["hybrid", "bm25", "vector"];
   const svg = $("evsvg"), W = Math.round($("evchart").clientWidth) || 800, rowH = 30, gap = 18;
-  const m = { l: W < 500 ? 96 : 130, r: 48, t: 8, b: 26 }, H = m.t + m.b + modes.length * (2 * rowH + gap) - gap;
+  const n = SYS.length, m = { l: W < 500 ? 96 : 130, r: 48, t: 8, b: 26 }, H = m.t + m.b + modes.length * (n * rowH + gap) - gap;
   const max = Math.max(...modes.flatMap((md) => SYS.map(([s]) => r[s][md][k])), 0.05) * 1.1;
   const X = (v) => m.l + v / max * (W - m.l - m.r);
   let out = "";
   const ticks = [0, 0.1, 0.2, 0.3, 0.4, 0.5].filter((t) => t <= max);
   out += ticks.map((t) => `<line x1="${X(t)}" x2="${X(t)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--grid)"/><text x="${X(t)}" y="${H - 8}" text-anchor="middle" font-size="11" fill="var(--muted)">${t}</text>`).join("");
   modes.forEach((md, g) => {
-    const y0 = m.t + g * (2 * rowH + gap);
-    out += `<text x="${m.l - 10}" y="${y0 + rowH + 4}" text-anchor="end" font-size="12" fill="var(--ink)">${{ hybrid: "hybrid", bm25: "BM25", vector: "vector" }[md]}</text>`;
+    const y0 = m.t + g * (n * rowH + gap);
+    out += `<text x="${m.l - 10}" y="${y0 + n * rowH / 2 + 4}" text-anchor="end" font-size="12" fill="var(--ink)">${{ hybrid: "hybrid", bm25: "BM25", vector: "vector" }[md]}</text>`;
     SYS.forEach(([s], j) => {
       const v = r[s][md][k], y = y0 + j * rowH + 3, h = rowH - 5;
       out += `<rect x="${m.l}" y="${y}" width="${Math.max(2, X(v) - m.l)}" height="${h}" rx="4" fill="var(--series-${j + 1})"><title>${md} · ${s}: ${v.toFixed(3)}</title></rect>`;
