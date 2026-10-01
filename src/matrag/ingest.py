@@ -35,9 +35,13 @@ INGEST_VERSION = 4
 
 
 def make_converter(settings: Settings) -> DocumentConverter:
-    pdf_options = PdfPipelineOptions(do_ocr=settings.do_ocr, do_table_structure=True,
+    pdf_options = PdfPipelineOptions(do_ocr=settings.do_ocr or settings.force_ocr, do_table_structure=True,
                                      do_formula_enrichment=settings.do_formula_enrichment,
                                      document_timeout=settings.convert_timeout_s)
+    if settings.force_ocr:
+        from docling.datamodel.pipeline_options import RapidOcrOptions
+
+        pdf_options.ocr_options = RapidOcrOptions(force_full_page_ocr=True, lang=[settings.ocr_lang])
     return DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
     )
