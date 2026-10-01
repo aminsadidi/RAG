@@ -104,6 +104,10 @@ class KnowledgeBase:
         return {n.metadata["doc_id"]: n.metadata.get("source_type", "full_text_pdf")
                 for n in self.docstore.docs.values()}
 
+    def doc_conversions(self) -> dict[str, str]:
+        """How each paper's PDF was converted ("" default, "ocr", "formulas", "ocr+formulas")."""
+        return {n.metadata["doc_id"]: n.metadata.get("conversion", "") for n in self.docstore.docs.values()}
+
     def doc_source_files(self) -> dict[str, str]:
         """The file each paper was indexed from (relative to the corpus folder)."""
         return {n.metadata["doc_id"]: n.metadata.get("source_file", "") for n in self.docstore.docs.values()}

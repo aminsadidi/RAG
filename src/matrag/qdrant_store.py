@@ -70,7 +70,7 @@ def text_hash(text: str) -> str:
 
 
 PAYLOAD_KEYS = ("doc_id", "citation", "reference", "pages", "first_page", "boxes", "source_file", "source_type",
-                "content_type", "headings", "category", "material", "year", "doi")
+                "content_type", "headings", "category", "material", "year", "doi", "conversion", "pdf_mismatch")
 
 
 def client(url: str | None = None, api_key: str | None = None):

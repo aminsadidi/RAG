@@ -140,7 +140,12 @@ class Workspace:
         from matrag.ingest import find_papers
 
         if self.settings.corpus_root:
-            return plan(self.settings.corpus_root)
+            result = plan(self.settings.corpus_root)
+            # A PDF found to hold another paper is ignored: the paper is indexed from its index entry.
+            mismatch = self.paper_list("pdf_mismatch")
+            result.items = [Item(it.doc_id, None, it.entry) if it.doc_id in mismatch and it.entry else it
+                            for it in result.items]
+            return result
         from matrag.catalog import Plan
 
         return Plan([Item(p.stem, p, None) for p in find_papers(self.settings.raw_pdf_dir)], [])
@@ -170,7 +175,9 @@ class Workspace:
             items = self.plan().items
         library, versions, sources = self.library, self.kb.doc_versions(), self.kb.doc_source_types()
         files = self.kb.doc_source_files()
+        conversions = self.kb.doc_conversions()
         converter = chunker = None
+        special: dict[str, object] = {}  # converters for OCR / equation decoding, made when needed
         results: list[IngestResult] = []
         pending: dict[str, list] = {}  # summary nodes, embedded in batches
         last_save = last_backup = time.monotonic()
@@ -215,12 +222,14 @@ class Workspace:
             # so the source viewer finds it again.
             up_to_date = (versions.get(item.doc_id) == INGEST_VERSION
                           and sources.get(item.doc_id, FULL_TEXT) == item.source_type
-                          and (item.pdf is None or files.get(item.doc_id) in (self._relative(item.pdf), item.pdf.name)))
+                          and (item.pdf is None or files.get(item.doc_id) in (self._relative(item.pdf), item.pdf.name))
+                          and conversions.get(item.doc_id, "") == (self.conversion_of(item.doc_id) if item.pdf else ""))
             if up_to_date and not force:
                 report(name)
                 results.append(IngestResult(name, library.get(item.doc_id).short_citation(), 0, skipped=True))
                 continue
-            if item.pdf is not None and item.doc_id in converted:
+            how = self.conversion_of(item.doc_id) if item.pdf is not None else ""
+            if item.pdf is not None and item.doc_id in converted and not how:
                 parallel.append(item)
                 continue
             report(name)
@@ -229,6 +238,8 @@ class Workspace:
                 if item.pdf is None:
                     paper = item.entry.paper_info(item.doc_id)
                     library.put(paper, save=False)
+                    if item.doc_id in self.paper_list("pdf_mismatch"):
+                        extra = {**extra, "pdf_mismatch": True}
                     pending[item.doc_id] = [summary_node(item.doc_id, item.entry.summary_text(), paper,
                                                          item.source_type, extra)]
                     if len(pending) >= 256:
@@ -237,7 +248,16 @@ class Workspace:
                     continue
                 if converter is None:  # Docling models load lazily, only if needed
                     converter, chunker = make_converter(s), make_chunker(s)
-                doc = convert(item.pdf, converter, s.processed_dir, item.doc_id, s.max_pages)
+                if how:
+                    if how not in special:
+                        special[how] = make_converter(s.model_copy(update={
+                            "force_ocr": "ocr" in how, "do_formula_enrichment": "formulas" in how}))
+                    # Kept apart from the default conversions, which stay as they are.
+                    doc = convert(item.pdf, special[how], s.processed_dir.parent / f"docling_{how.replace('+', '_')}",
+                                  item.doc_id, s.max_pages)
+                    extra = {**extra, "conversion": how}
+                else:
+                    doc = convert(item.pdf, converter, s.processed_dir, item.doc_id, s.max_pages)
                 paper = known_paper(item) or resolve(doc, item.doc_id, item.pdf.name, online=s.fetch_metadata,
                                                      pdf_path=item.pdf)
                 library.put(paper, save=False)
@@ -437,6 +457,23 @@ class Workspace:
         from llama_index.core.storage.docstore import SimpleDocumentStore
 
         return {n.metadata.get("doc_id") for n in SimpleDocumentStore.from_persist_path(str(path)).docs.values()}
+
+    def paper_list(self, name: str) -> set[str]:
+        """doc_ids listed in data/<corpus>/<name>.txt (one per line, # comments): ``ocr_papers`` are
+        converted with full-page OCR, ``formula_papers`` with equation decoding, ``pdf_mismatch``
+        are papers whose PDF holds another paper."""
+        cache = self.__dict__.setdefault("_paper_lists", {})
+        if name not in cache:
+            path = self.settings.data_dir / self.settings.corpus / f"{name}.txt"
+            lines = path.read_text("utf-8").splitlines() if path.exists() else []
+            cache[name] = {line.split("#")[0].strip() for line in lines} - {""}
+        return cache[name]
+
+    def conversion_of(self, doc_id: str) -> str:
+        """How a paper's PDF is converted: "" (default), "ocr", "formulas" or "ocr+formulas"."""
+        tags = [t for t, name in (("ocr", "ocr_papers"), ("formulas", "formula_papers"))
+                if doc_id in self.paper_list(name)]
+        return "+".join(tags)
 
     def _relative(self, pdf: Path) -> str:
         try:

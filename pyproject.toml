@@ -31,6 +31,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8"]
+# Full-page OCR of scanned papers (MATRAG_FORCE_OCR, data/<corpus>/ocr_papers.txt).
+ocr = ["rapidocr>=3", "onnxruntime>=1.18"]
 
 [project.scripts]
 matrag = "matrag.cli:app"
