@@ -7,7 +7,7 @@ import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
 import PAPERS from "./papers.json";
 
-const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id"];
+const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
 const MODES = ["hybrid", "vector", "bm25"];
 
 const json = (data, status = 200) =>
