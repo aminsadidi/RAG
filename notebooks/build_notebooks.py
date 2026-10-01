@@ -323,6 +323,88 @@ print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
     ], gpu=False)
 
 
+def gpu_update() -> dict:
+    """GPU run: OCR / equation decoding for the listed papers, wrong PDFs dropped, then the site updated."""
+    return notebook([
+        md(f"""
+# به‌روزرسانی با GPU: OCR، معادله‌ها و سایت (نسخه‌ی {VERSION})
+
+**سلول ۱** (حدود ۱ تا ۲ ساعت؛ Runtime → Change runtime type → T4 GPU):
+- متن OCR‌شده‌ی ۴۵ مقاله‌ی اسکن‌شده (همان که روی سایت است) وارد پایگاه کولب می‌شود؛ ۹ مقاله‌ای که PDFشان هیچ متنی ندارد OCR می‌شوند؛
+- برای ۴۶ مقاله‌ی ارزیابی فرمول، معادله‌ها با مدل CodeFormula از تصویر صفحه به LaTeX خوانده می‌شوند (GPU)؛
+- ۶ مقاله که PDFشان مقاله‌ی دیگری است فقط با چکیده نمایه می‌شوند؛
+- پایگاه در Drive ذخیره، PDFها و بخش‌ها در سایت به‌روز و جست‌وجوی سایت دوباره ارزیابی می‌شود.
+
+فهرست مقاله‌ها در `data/rag-optics/*.txt` مخزن است. اگر قطع شد دوباره اجرا کنید؛ از همان‌جا ادامه می‌دهد.
+
+**سلول ۲** (اختیاری، حدود ۱ تا ۲ ساعت): ارزیابی دوباره‌ی استخراج فرمول با مدل qwen3:8b روی همین متن‌های تازه.
+"""),
+        code("#@title ▶️ ۱. OCR، معادله‌ها، پایگاه و سایت\n" + ENV + """
+WORK = '/content/drive/MyDrive/matrag_data'
+os.environ['MATRAG_DATA_DIR'] = f'{WORK}/data'
+os.environ['MATRAG_STORAGE_DIR'] = '/content/storage'
+os.environ['MATRAG_STORAGE_BACKUP_DIR'] = f'{WORK}/storage'
+os.environ['MATRAG_CORPUS'] = 'rag-optics'
+os.environ['MATRAG_CONVERT_TIMEOUT_S'] = '3600'  # equation decoding is slow on long papers
+!nvidia-smi --query-gpu=name --format=csv,noheader || echo "⚠️ No GPU: Runtime → Change runtime type → T4 GPU"
+print('Copying the database from Drive...')
+!mkdir -p /content/storage && cp -rT "{WORK}/storage" /content/storage
+""" + INSTALL + """
+!pip install -q "rapidocr>=3" onnxruntime 2>&1 | grep -iE "^error" || true
+!cp /content/RAG/data/rag-optics/ocr_papers.txt /content/RAG/data/rag-optics/formula_papers.txt /content/RAG/data/rag-optics/pdf_mismatch.txt "{WORK}/data/rag-optics/"
+""" + QDRANT_KEYS + """
+# The OCR conversions made for the site (same text on both sides), kept in Qdrant.
+import base64, pathlib
+from matrag import qdrant_store
+root = pathlib.Path(open(f'{WORK}/data/rag-optics/corpus_root.txt').read().strip())
+qc, offset, got = qdrant_store.client(), None, 0
+while True:
+    points, offset = qc.scroll('matrag_files', limit=16, offset=offset, with_payload=True)
+    for p in points:
+        dst = root / '_RAG_processed' / p.payload['path']
+        if not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(base64.b64decode(p.payload['data'])); got += 1
+    if offset is None:
+        break
+print(f'{got} OCR conversions copied')
+%cd {WORK}
+!matrag --corpus rag-optics ingest 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/ingest.log"
+if os.environ.get('CLOUDFLARE_API_TOKEN'):
+    !matrag --corpus rag-optics export-pdfs /content/RAG/web-pdfs/pdfs 2>&1 | grep -vE "Warning|Loading"
+    if not os.path.exists('/content/node/bin/node'):
+        !curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C /content && mv /content/node-v22.12.0-linux-x64 /content/node
+    os.environ['PATH'] = '/content/node/bin:' + os.environ['PATH']
+    !cd /content/RAG/web-pdfs && npx --yes wrangler@4 deploy 2>&1 | grep -vE "telemetry|^$" | tail -4
+!matrag --corpus rag-optics export-qdrant 2>&1 | grep -vE "Warning|Loading"
+if os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
+    !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+%cd /content/RAG
+print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+"""),
+        code("""
+#@title ۲. (اختیاری) ارزیابی دوباره‌ی استخراج فرمول با qwen3:8b
+#@markdown نتیجه جدا از ارزیابی قبلی در `results/eval/rag-optics_formula_benchmark_ocr_formulas.jsonl` ذخیره می‌شود.
+LIMIT = 80  #@param {type:"integer"}
+import subprocess, time
+if not os.path.isdir('/content/refractiveindex'):
+    !git clone -q --depth 1 https://github.com/polyanskiy/refractiveindex.info-database.git /content/refractiveindex
+os.environ['MATRAG_REFERENCE_DIR'] = '/content/refractiveindex/database'
+os.environ.update({'MATRAG_LLM_PROVIDER': 'ollama', 'MATRAG_OLLAMA_MODEL': 'qwen3:8b', 'MATRAG_OLLAMA_THINKING': 'false',
+                   'OLLAMA_MODELS': '/content/ollama_models'})
+if subprocess.run('which ollama', shell=True, capture_output=True).returncode != 0:
+    !apt-get install -y -qq zstd > /dev/null
+    !curl -fsSL https://ollama.com/install.sh | sh > /dev/null
+subprocess.Popen('ollama serve > /content/ollama.log 2>&1', shell=True)
+time.sleep(5)
+!ollama pull qwen3:8b 2>&1 | tail -1
+%cd {WORK}
+!matrag --corpus rag-optics evaluate formulas --run ocr_formulas --limit {LIMIT} 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/eval.log"
+%cd /content/RAG
+"""),
+    ], gpu=True)
+
+
 def worker(n: int) -> dict:
     return notebook([
         md(f"""
@@ -359,5 +441,6 @@ if __name__ == "__main__":
     for n in range(1, WORKERS + 1):
         (HERE / f"colab_worker_{n}.ipynb").write_text(json.dumps(worker(n), ensure_ascii=False, indent=1) + "\n",
                                                       "utf-8")
+    (HERE / "colab_gpu_update.ipynb").write_text(json.dumps(gpu_update(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     (HERE / "colab_site.ipynb").write_text(json.dumps(site(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     print("written")

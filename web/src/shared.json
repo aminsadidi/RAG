@@ -92,7 +92,9 @@
   "category",
   "material",
   "year",
-  "doi"
+  "doi",
+  "conversion",
+  "pdf_mismatch"
  ],
  "BM25_MODEL": "qdrant/bm25",
  "DENSE": "dense",
