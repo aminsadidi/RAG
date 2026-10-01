@@ -532,6 +532,7 @@ def evaluate_build_gold(
 @evaluate_app.command("formulas")
 def evaluate_formulas(
     limit: Annotated[int | None, typer.Option(help="Process at most N more papers in this run.")] = None,
+    run: Annotated[str, typer.Option(help="Name of the run: results go to <corpus>_formula_benchmark[_<run>].jsonl.")] = "",
 ) -> None:
     """Formula benchmark: extract the dispersion formulas of every paper refractiveindex.info
     takes a formula from, and compare n(λ) with the database (resumes where it stopped)."""
@@ -539,7 +540,7 @@ def evaluate_formulas(
     from matrag.evaluate import write_rows
 
     ws = _workspace()
-    out = Path("results/eval") / f"{ws.settings.corpus}_formula_benchmark.jsonl"
+    out = Path("results/eval") / f"{ws.settings.corpus}_formula_benchmark{'_' + run if run else ''}.jsonl"
     typer.echo(f"[{ws.settings.corpus} | {ws.llm_name()}]", err=True)
     try:
         rows = ws.formula_benchmark(out, limit, on_progress=_echo_progress)

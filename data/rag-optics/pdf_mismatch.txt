@@ -1,0 +1,8 @@
+# The PDF in the collection holds another paper (scripts/ocr_site/title_match.json, checked by hand);
+# these papers are indexed from their master-index entry.
+10.1016_j.infrared.2020.103571
+10.1016_j.optmat.2020.110648
+10.1143_jjap.45.5795
+10.1143_jjap.25.1397
+10.1070_qe1975v005n02abeh010943
+10.1515_nanoph_2020_0112
