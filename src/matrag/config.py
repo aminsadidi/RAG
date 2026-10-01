@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     # --- Document conversion (Docling) ---
     # OCR is only needed for scanned PDFs and is slow on CPU.
     do_ocr: bool = False
+    # OCR every page image with RapidOCR, ignoring the PDF's own text layer: for scanned papers whose
+    # embedded text is missing or garbled (implies do_ocr).
+    force_ocr: bool = False
+    ocr_lang: str = "en"
     # Decode equations to LaTeX with Docling's CodeFormula model (slow without a GPU;
     # useful for papers that state dispersion formulas as displayed equations).
     do_formula_enrichment: bool = False
