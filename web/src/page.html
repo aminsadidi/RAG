@@ -328,7 +328,8 @@ function renderHit(h, words, i) {
       <div class="label">${esc(h.label)}<span class="ref">${esc(h.reference || "")}</span></div>${pageMap(h)}</div>
     <div class="chips"><span class="chip ${type === "full_text_pdf" ? "full" : "abs"}">${TYPE_FA[type] || type}</span>
       ${h.material ? `<span class="chip">${esc(h.material)}</span>` : ""}${h.headings ? `<span class="chip">${esc(h.headings)}</span>` : ""}
-      ${h.content_type === "table" ? '<span class="chip">جدول</span>' : ""}${h.score != null ? `<span class="chip">score ${h.score.toFixed(3)}</span>` : ""}</div>
+      ${h.content_type === "table" ? '<span class="chip">جدول</span>' : ""}${h.ocr ? '<span class="chip" title="متن این مقاله‌ی اسکن‌شده با OCR از تصویر صفحه خوانده شده است">OCR</span>' : ""}
+      ${h.pdf_mismatch ? '<span class="chip abs" title="PDF موجود در مجموعه مقاله‌ی دیگری بود؛ فقط چکیده‌ی این مقاله نمایه شده است">PDF اشتباه در مجموعه</span>' : ""}${h.score != null ? `<span class="chip">score ${h.score.toFixed(3)}</span>` : ""}</div>
     <div class="text">${highlight(h.text, words)}</div>
     <div class="actions"><button data-act="more">نمایش کامل</button>
       ${boxesOf(h).length ? '<button data-act="view">نمایش روی صفحه‌ی مقاله</button>' : ""}
