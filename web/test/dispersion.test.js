@@ -23,3 +23,11 @@ test("tabulated points are interpolated linearly, NaN outside", () => {
   assert.equal(interpolate(pts, 2.0), 1.40);
   assert.ok(Number.isNaN(interpolate(pts, 2.1)));
 });
+
+test("standard Sellmeier entered by hand (B, C pairs) = refractiveindex.info type 2 with C1 = 0", () => {
+  // Malitson (1965), fused silica: n_D = 1.4584 at the sodium D line
+  const n = refractiveIndex(2, [0, 0.6961663, 0.0046791, 0.4079426, 0.0135121, 0.8974794, 97.934], 0.5893);
+  assert.ok(Math.abs(n - 1.4584) < 1e-4, String(n));
+  // Cauchy n = A + B/λ² + C/λ⁴ = type 5 with powers −2, −4
+  assert.ok(Math.abs(refractiveIndex(5, [1.5, 0.004, -2, 0.0001, -4], 0.5) - (1.5 + 0.004 / 0.25 + 0.0001 / 0.0625)) < 1e-12);
+});
