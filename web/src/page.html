@@ -80,6 +80,12 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 @media (prefers-color-scheme:dark){.viz-root{--series-1:#3987e5;--series-2:#d95926;--series-3:#199e70;--series-4:#c98500;--series-5:#d55181;--series-6:#008300;--series-7:#9085e9;--series-8:#e66767;--grid:#2a3542}}
 #chart{position:relative;direction:ltr}
 #chart svg{display:block;width:100%}
+select,input{max-width:100%}
+.row label{max-width:100%;flex-wrap:wrap}
+#uftable input{width:100%;min-width:70px;max-width:130px;direction:ltr}
+#ritable td,#ritable th{text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px}
+.entry .tools{display:flex;gap:6px;flex-wrap:wrap}
+.entry .tools button{font:inherit;font-size:12px;border:1px solid var(--line);background:transparent;color:var(--accent);border-radius:14px;padding:0 10px;cursor:pointer}
 .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:var(--shadow);white-space:nowrap;display:none;direction:ltr;text-align:left}
 .sw{display:inline-block;width:12px;height:3px;border-radius:2px;vertical-align:middle;margin-inline-end:6px}
 .entry{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
@@ -94,7 +100,7 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;direction:ltr}
 .seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:5px 12px;cursor:pointer}
 .seg button.on{background:var(--accent);color:var(--accent-ink)}
-@media (max-width:760px){main table{display:block;overflow-x:auto;white-space:nowrap}.seg{flex-wrap:wrap;direction:ltr}}
+@media (max-width:760px){main table{display:block;overflow-x:auto;white-space:nowrap;max-width:100%}.seg{flex-wrap:wrap;direction:ltr}}
 body{overflow-x:hidden}
 #evchart{position:relative;direction:ltr}#evchart svg{display:block;width:100%}
 
@@ -150,13 +156,17 @@ body{overflow-x:hidden}
 <section id="tab-index" hidden class="viz-root">
   <div class="card">
     <h2>ضریب شکست از فرمول‌های پاشندگی</h2>
-    <p class="hint">همه‌ی داده‌های ضریب شکست پایگاه refractiveindex.info (۲٬۲۴۶ ماده: بلورها، بلورهای آلاییده و آمیخته، آلیاژهای نیم‌رسانا، مواد آلی و شیشه‌های نوری تجاری)؛ فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده. هر منحنی از یک مقاله است؛ اگر آن مقاله در مجموعه‌ی شما باشد، با یک کلیک متن و صفحه‌اش باز می‌شود.</p>
+    <p class="hint">همه‌ی داده‌های ضریب شکست پایگاه refractiveindex.info (۲٬۲۴۶ ماده: بلورها، بلورهای آلاییده و آمیخته، آلیاژهای نیم‌رسانا، مواد آلی و شیشه‌های نوری تجاری)؛ فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده. هر منحنی از یک مقاله است؛ اگر آن مقاله در مجموعه‌ی شما باشد، با یک کلیک متن و صفحه‌اش باز می‌شود. داده‌ی خودتان (فرمول یا نقاط اندازه‌گیری) را هم می‌توانید پایین صفحه اضافه کنید.</p>
     <div class="row">
       <label>ماده <input id="rimat" list="rimats" placeholder="مثلاً LiB3O5، BaB2O4، N-BK7" style="width:240px;direction:ltr" autocomplete="off"><datalist id="rimats"></datalist></label>
       <span id="riinfo" class="hint"></span>
       <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button>
-      <label>از λ <input id="rilo" type="number" step="0.01" style="width:84px"> تا <input id="rihi" type="number" step="0.01" style="width:84px"> µm</label>
-      <label>n در λ = <input id="riprobe" type="number" step="0.001" value="1.064" style="width:90px"> µm</label>
+    </div>
+    <div class="row">
+      <label>از λ <input id="rilo" type="number" step="any" style="width:90px"> تا <input id="rihi" type="number" step="any" style="width:90px"> <span class="riunit">µm</span></label>
+      <label>n در λ = <input id="riprobe" type="number" step="any" value="1.064" style="width:96px"> <span class="riunit">µm</span></label>
+      <div class="seg" id="riunits" role="group" aria-label="unit"><button data-u="um" class="on">µm</button><button data-u="nm">nm</button></div>
+      <label>نمودار <select id="riref"><option value="">ضریب شکست n</option></select></label>
     </div>
   </div>
   <div class="card" style="margin-top:14px">
@@ -167,6 +177,70 @@ body{overflow-x:hidden}
     <h2>منابع و مقدار n در طول موج انتخاب‌شده</h2>
     <div id="rientries"></div>
     <div id="rispread" class="hint" style="margin-top:8px"></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>داده‌ی خودتان</h2>
+    <p class="hint">یک فرمول پاشندگی یا نقاط اندازه‌گیری‌شده (λ، n) وارد کنید تا کنار داده‌های پایگاه روی نمودار بیاید. داده‌ها فقط در همین مرورگر ذخیره می‌شوند و برای همه‌ی ماده‌ها نمایش داده می‌شوند. برای شروع از یک فرمول پایگاه، کنار آن «کپی و ویرایش» را بزنید.</p>
+    <div id="riuser"></div>
+    <div class="card" style="margin-top:10px;background:var(--soft);box-shadow:none">
+      <div class="row" style="margin-top:0">
+        <label>نام <input id="ufname" placeholder="مثلاً نمونه‌ی آزمایشگاه" style="width:220px"></label>
+        <div class="seg" id="ufkind" role="group" aria-label="data kind"><button data-k="formula" class="on">فرمول</button><button data-k="points">نقاط اندازه‌گیری</button></div>
+      </div>
+      <div id="ufformula">
+        <div class="row">
+          <label>نوع فرمول <select id="uftype">
+            <option value="sell">سلمایر استاندارد: n² = 1 + Σ Bᵢλ²/(λ² − Cᵢ)</option>
+            <option value="cauchy">کوشی: n = A + B/λ² + C/λ⁴</option>
+            <option value="1">refractiveindex.info نوع ۱ (Sellmeier)</option>
+            <option value="2">refractiveindex.info نوع ۲ (Sellmeier-2)</option>
+            <option value="3">refractiveindex.info نوع ۳ (Polynomial)</option>
+            <option value="4">refractiveindex.info نوع ۴ (RefractiveIndex.INFO)</option>
+            <option value="5">refractiveindex.info نوع ۵ (Cauchy)</option>
+            <option value="6">refractiveindex.info نوع ۶ (Gases)</option>
+            <option value="7">refractiveindex.info نوع ۷ (Herzberger)</option>
+            <option value="8">refractiveindex.info نوع ۸ (Retro)</option>
+            <option value="9">refractiveindex.info نوع ۹ (Exotic)</option>
+          </select></label>
+        </div>
+        <div class="hint" id="ufhelp" style="direction:ltr;text-align:left;font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:6px"></div>
+        <div class="row">
+          <label style="flex:1">ضرایب <input id="ufcoef" style="flex:1;min-width:220px;direction:ltr" placeholder="1.03961212 0.00600069867 0.231792344 0.0200179144 1.01046945 103.560653"></label>
+        </div>
+        <div class="row">
+          <label>معتبر از λ <input id="uflo" type="number" step="any" value="0.3" style="width:90px"> تا <input id="ufhi" type="number" step="any" value="2.5" style="width:90px"> µm</label>
+        </div>
+      </div>
+      <div id="ufpoints" hidden>
+        <div class="row">
+          <label>واحد λ در داده‌ها <select id="ufpu"><option value="um">µm</option><option value="nm">nm</option></select></label>
+          <button class="alt" id="ufaddrow">ردیف تازه</button>
+          <label class="alt" style="border:1px solid var(--accent);border-radius:9px;padding:6px 12px;cursor:pointer;color:var(--accent)">خواندن فایل CSV<input type="file" id="ufcsv" accept=".csv,.txt,.tsv" hidden></label>
+        </div>
+        <table id="uftable" style="margin-top:8px;max-width:min(420px,100%);direction:ltr"></table>
+        <details style="margin-top:8px"><summary class="hint" style="cursor:pointer">چسباندن از Excel یا متن (هر خط: λ و n)</summary>
+          <textarea id="ufpaste" style="direction:ltr;min-height:90px;margin-top:6px" placeholder="0.4047 1.4696&#10;0.5461 1.4601&#10;0.6328 1.4570"></textarea>
+          <div class="row"><button class="alt" id="ufparse">خواندن متن</button></div>
+        </details>
+      </div>
+      <div class="row">
+        <button class="main" id="ufsave">افزودن به نمودار</button>
+        <button class="alt" id="ufclear">فرم تازه</button>
+        <span id="ufmsg" class="hint"></span>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="row" style="justify-content:space-between;margin-top:0">
+      <h2 style="margin:0">جدول مقادیر</h2>
+      <div class="row" style="margin-top:0">
+        <label>تعداد ردیف <select id="rirows"><option>11</option><option selected>21</option><option>51</option><option>101</option></select></label>
+        <button class="alt" id="ricopy">کپی جدول</button>
+        <button class="alt" id="ricsv">دانلود CSV</button>
+      </div>
+    </div>
+    <p class="hint">مقدار n هر منحنیِ روی نمودار در طول موج‌های بازه‌ی انتخاب‌شده (برای Excel یا گزارش).</p>
+    <table id="ritable" style="direction:ltr"></table>
   </div>
 </section>
 
@@ -179,7 +253,7 @@ body{overflow-x:hidden}
   <div class="card" style="margin-top:14px">
     <div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0">بازیابی: برنامه‌ی کولب در برابر سایت</h2>
       <div class="seg" id="evmetric"></div></div>
-    <p class="hint">«سایت بعد از OCR»: متن ۴۵ مقاله‌ی اسکن‌شده با OCR (RapidOCR) دوباره خوانده شد و ۶ مقاله که PDF آن‌ها در مجموعه مقاله‌ی دیگری بود فقط با چکیده نمایه شدند.</p>
+    <p class="hint">«سایت بعد از OCR و معادله‌ها»: متن ۵۴ مقاله‌ی اسکن‌شده یا بی‌متن با OCR (RapidOCR) خوانده شد، معادله‌های ۴۶ مقاله‌ی ارزیابی فرمول با مدل CodeFormula (GPU کولب) به LaTeX درآمد و ۶ مقاله که PDF آن‌ها در مجموعه مقاله‌ی دیگری بود فقط با چکیده نمایه شدند (اجرای کامل در کولب).</p>
     <p class="hint">MRR: میانگین ۱/رتبه‌ی اولین مقاله‌ی درست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
     <div id="evchart"><svg id="evsvg" role="img" aria-label="retrieval comparison"></svg></div>
     <div id="evlegend" class="chips" style="direction:ltr"></div>
@@ -239,7 +313,7 @@ body{overflow-x:hidden}
     <ul class="steps">
       <li><b>جست‌وجو:</b> منابع با نام مقاله، صفحه و محل روی صفحه؛ «نمایش روی صفحه‌ی مقاله» خود صفحه‌ی PDF را با بخشِ پیداشده‌ی زرد نشان می‌دهد؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
       <li><b>مقاله:</b> همه‌ی بخش‌های یک مقاله، صفحه به صفحه.</li>
-      <li><b>ضریب شکست:</b> n(λ) از همه‌ی داده‌های refractiveindex.info (فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده، ۲٬۲۴۶ ماده) با پیوند به مقاله‌ی منبع در همین مجموعه.</li>
+      <li><b>ضریب شکست:</b> n(λ) از همه‌ی داده‌های refractiveindex.info (فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده، ۲٬۲۴۶ ماده) با پیوند به مقاله‌ی منبع در همین مجموعه؛ فرمول یا نقاط اندازه‌گیری خودتان را هم می‌توانید وارد کنید، اختلاف Δn نسبت به یک منحنی مرجع را ببینید و جدول مقادیر را کپی یا CSV دانلود کنید.</li>
       <li><b>مجموعه:</b> مقاله‌ها بر اساس سال و دسته، و فهرست قابل‌جست‌وجوی همه‌ی مقاله‌ها.</li>
       <li><b>ارزیابی:</b> نتیجه‌ی ارزیابی خودکار بازیابی (کولب در برابر سایت) و استخراج فرمول.</li>
     </ul>
@@ -556,16 +630,42 @@ loadFacets().then(() => { if (saved?.material) $("material").value = saved.mater
 </script>
 <script type="module">
 import { entryIndex } from "/dispersion.js";
-// ---------- refractive index tab: n(λ) of every refractiveindex.info formula for a material
-const RI = { entries: [], byMat: new Map(), inColl: {}, shown: new Set(), slots: new Map(), mat: null };
+// ---------- refractive index tab: n(λ) of every refractiveindex.info entry for a material, plus the user's own data
+// A curve has a key: "db:<i>" (entry i of the material) or "u:<id>" (a user entry, kept in this browser).
+const RI = { byMat: new Map(), inColl: {}, shown: new Set(), slots: new Map(), mat: null, unit: "um", user: [] };
 const MAX_SERIES = 8; // categorical slots; more entries are listed but not all drawn at once
 const color = (slot) => `var(--series-${slot + 1})`;
 const dirName = (d) => (d ? { o: "ordinary (o)", e: "extraordinary (e)", x: "x", y: "y", z: "z", alpha: "α", beta: "β", gamma: "γ" }[d] || d : "");
-const label = (e) => (e.direction && !e.page.toLowerCase().endsWith(e.direction.toLowerCase()) ? `${e.page} · ${e.direction}` : e.page);
+const label = (e) => (e.user ? e.name : e.direction && !e.page.toLowerCase().endsWith(e.direction.toLowerCase()) ? `${e.page} · ${e.direction}` : e.page);
+const U = () => (RI.unit === "nm" ? 1000 : 1); // display unit per µm
+const unitName = () => (RI.unit === "nm" ? "nm" : "µm");
+const fmtL = (um) => +(um * U()).toPrecision(6);
 
 const GROUP_FA = { main: "", "doped crystals": "بلور آلاییده", "mixed crystals": "بلور آمیخته", "semiconductor alloys": "آلیاژ نیم‌رسانا",
   alloys: "آلیاژ", perovskite: "پروسکایت", "liquid crystals": "بلور مایع", organic: "آلی", "commercial polymers": "پلیمر" };
 const matName = (m) => (m.shelf === "main" ? m.material : `${m.material} — ${m.group}`);
+
+// ---------- user entries (localStorage; the page works without it)
+function loadUser() { try { RI.user = JSON.parse(localStorage.getItem("ri_user") || "[]").filter((u) => u && u.id); } catch { RI.user = []; } }
+function saveUser() { try { localStorage.setItem("ri_user", JSON.stringify(RI.user)); } catch {} }
+loadUser();
+
+function curves() {
+  const list = RI.byMat.get(RI.mat) || [];
+  return [...list.map((e, i) => ({ key: `db:${i}`, e })), ...RI.user.map((u) => ({ key: `u:${u.id}`, e: u }))];
+}
+const curveOf = (key) => curves().find((c) => c.key === key);
+
+// A shown curve keeps its color slot while shown; a newly shown one takes the lowest free slot.
+const slotOf = (key) => RI.slots.get(key) ?? 0;
+function show(key, on) {
+  if (!on) { RI.shown.delete(key); RI.slots.delete(key); return; }
+  if (RI.shown.has(key) || RI.shown.size >= MAX_SERIES) return;
+  const used = new Set(RI.slots.values());
+  let k = 0; while (used.has(k)) k++;
+  RI.shown.add(key); RI.slots.set(key, k);
+}
+
 let loaded = null;
 window.loadFormulas = () => {
   loaded ||= fetch("/ri/index.json").then((r) => r.json()).then((index) => {
@@ -586,13 +686,16 @@ async function selectMaterial(name) {
   const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
   RI.inColl = ids.length ? await (await api("/api/incollection", { ids })).json().catch(() => ({})) : {};
   RI.mat = name; RI.byMat.set(name, list);
-  RI.shown = new Set(); RI.slots = new Map();
-  list.slice(0, MAX_SERIES).forEach((_, i) => showEntry(i, true));
-  const lo = Math.min(...list.map((e) => e.range_um[0])), hi = Math.max(...list.map((e) => e.range_um[1]));
+  // database curves of the previous material go; user curves stay as they were
+  for (const k of [...RI.shown]) if (k.startsWith("db:")) show(k, false);
+  RI.user.filter((u) => u.visible !== false).forEach((u) => show(`u:${u.id}`, true));
+  list.forEach((_, i) => show(`db:${i}`, true));
+  const all = [...list, ...RI.user.filter((u) => RI.shown.has(`u:${u.id}`))];
+  const lo = Math.min(...all.map((e) => e.range_um[0])), hi = Math.max(...all.map((e) => e.range_um[1]));
   const a = Math.max(lo, 0.2), b = Math.min(hi, Math.max(a * 1.01, a + 5));
-  $("rilo").value = +a.toPrecision(4); $("rihi").value = +b.toPrecision(4);
-  const probe = +$("riprobe").value;
-  if (!(probe >= a && probe <= b)) $("riprobe").value = +((a + b) / 2).toPrecision(4);
+  setRange(a, b);
+  const probe = getProbe();
+  if (!(probe >= a && probe <= b)) setProbe((a + b) / 2);
   render();
 }
 $("risearch").onclick = () => {
@@ -600,51 +703,249 @@ $("risearch").onclick = () => {
   $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
 };
 $("rimat").addEventListener("input", (e) => { if (RI.byName?.has(e.target.value)) selectMaterial(e.target.value); });
-for (const id of ["rilo", "rihi", "riprobe"]) $(id).addEventListener("change", render);
+for (const id of ["rilo", "rihi", "riprobe", "riref", "rirows"]) $(id).addEventListener("change", render);
 
-// A shown entry keeps its color slot while shown; a newly shown one takes the lowest free slot.
-const slotOf = (i) => RI.slots.get(i) ?? 0;
-function showEntry(i, on) {
-  if (!on) { RI.shown.delete(i); RI.slots.delete(i); return; }
-  const used = new Set(RI.slots.values());
-  let k = 0; while (used.has(k)) k++;
-  RI.shown.add(i); RI.slots.set(i, k);
+// ---------- units (inputs show the chosen unit; everything inside is in µm)
+const getRange = () => { let lo = +$("rilo").value / U(), hi = +$("rihi").value / U(); if (!(hi > lo)) [lo, hi] = [Math.min(lo, hi) || 0.3, Math.max(lo, hi) || 2]; return [lo, hi]; };
+const setRange = (lo, hi) => { $("rilo").value = fmtL(lo); $("rihi").value = fmtL(hi); };
+const getProbe = () => +$("riprobe").value / U();
+const setProbe = (um) => { $("riprobe").value = fmtL(um); };
+$("riunits").onclick = (e) => {
+  const u = e.target.dataset.u; if (!u || u === RI.unit) return;
+  const [lo, hi] = getRange(), probe = getProbe();
+  RI.unit = u; store.set("riunit", u);
+  for (const b of $("riunits").children) b.classList.toggle("on", b.dataset.u === u);
+  for (const el of document.querySelectorAll(".riunit")) el.textContent = unitName();
+  setRange(lo, hi); setProbe(probe); render();
+};
+if (store.get("riunit") === "nm") $("riunits").querySelector('[data-u="nm"]').click();
+
+// ---------- n(λ) of any curve
+function nOf(e, lam) {
+  if (e.user && e.kind === "points") {
+    const p = e.points; if (!p.length || lam < p[0][0] - 1e-9 || lam > p[p.length - 1][0] + 1e-9) return NaN;
+    return entryIndex({ type: "tab", points: p, range_um: [p[0][0], p[p.length - 1][0]] }, lam);
+  }
+  return entryIndex(e, lam);
+}
+function refCurve() { const k = $("riref").value; return k && RI.shown.has(k) ? curveOf(k) : null; }
+function valueOf(e, lam, ref) {
+  const n = nOf(e, lam);
+  return ref ? n - nOf(ref.e, lam) : n;
 }
 
 function render() {
-  const list = RI.byMat.get(RI.mat) || [];
-  let lo = +$("rilo").value, hi = +$("rihi").value;
-  if (!(hi > lo)) [lo, hi] = [Math.min(lo, hi) || 0.3, Math.max(lo, hi) || 2];
-  const probe = +$("riprobe").value;
-  drawChart(list, lo, hi, probe);
-  // entries with n at the probe wavelength
-  const values = [];
-  $("rientries").innerHTML = list.map((e, i) => {
-    const n = entryIndex(e, probe);
-    if (Number.isFinite(n)) values.push(n);
-    const coll = e.doc_id && RI.inColl[e.doc_id];
-    return `<div class="entry" data-i="${i}">
-      <input type="checkbox" ${RI.shown.has(i) ? "checked" : ""} ${!RI.shown.has(i) && RI.shown.size >= MAX_SERIES ? "disabled" : ""} aria-label="show">
-      <div class="meta"><b><span class="sw" style="background:${RI.shown.has(i) ? color(slotOf(i)) : "var(--line)"}"></span>${esc(label(e))}</b>
-        <span class="hint"> ${esc(dirName(e.direction))} · ${e.type === "tab" ? "measured data" : "formula " + e.type} · ${+e.range_um[0].toPrecision(4)}–${+e.range_um[1].toPrecision(4)} µm</span><br>
-        ${esc(e.reference)}
-        <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
-        ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}</div></div>
-      <div style="direction:ltr;font-family:'JetBrains Mono',monospace;min-width:90px;text-align:right">${Number.isFinite(n) ? n.toFixed(5) : "—"}</div>
-    </div>`;
-  }).join("") || '<p class="hint">فرمولی برای این ماده نیست.</p>';
-  $("rispread").textContent = values.length > 1
-    ? `در λ = ${probe} µm: کمترین n = ${Math.min(...values).toFixed(5)}، بیشترین = ${Math.max(...values).toFixed(5)} (همه‌ی جهت‌ها با هم؛ مقایسه‌ی منصفانه فقط بین منابع هم‌جهت است).`
-    : values.length ? "" : `هیچ فرمولی λ = ${probe} µm را پوشش نمی‌دهد.`;
+  const [lo, hi] = getRange(), probe = getProbe();
+  // Δn reference: any shown curve
+  const keep = $("riref").value;
+  const shownCurves = curves().filter((c) => RI.shown.has(c.key));
+  $("riref").innerHTML = '<option value="">ضریب شکست n</option>' +
+    shownCurves.map((c) => `<option value="${c.key}">Δn نسبت به ${esc(label(c.e))}</option>`).join("");
+  $("riref").value = shownCurves.some((c) => c.key === keep) ? keep : "";
+  drawChart(lo, hi, probe);
+  renderEntries(probe);
+  renderUser(probe);
+  renderTable(lo, hi);
 }
 
-$("rientries").addEventListener("click", (ev) => {
+function entryRow(c, probe, extra) {
+  const { key, e } = c, on = RI.shown.has(key), n = nOf(e, probe);
+  return `<div class="entry" data-key="${key}">
+    <input type="checkbox" ${on ? "checked" : ""} ${!on && RI.shown.size >= MAX_SERIES ? "disabled" : ""} aria-label="show">
+    <div class="meta"><b><span class="sw" style="background:${on ? color(slotOf(key)) : "var(--line)"}"></span>${esc(label(e))}</b>
+      ${extra}</div>
+    <div style="direction:ltr;font-family:'JetBrains Mono',monospace;min-width:90px;text-align:right">${Number.isFinite(n) ? n.toFixed(5) : "—"}</div>
+  </div>`;
+}
+
+function renderEntries(probe) {
+  const list = RI.byMat.get(RI.mat) || [], values = [];
+  $("rientries").innerHTML = list.map((e, i) => {
+    const n = nOf(e, probe); if (Number.isFinite(n)) values.push(n);
+    const coll = e.doc_id && RI.inColl[e.doc_id];
+    return entryRow({ key: `db:${i}`, e }, probe, `
+      <span class="hint"> ${esc(dirName(e.direction))} · ${e.type === "tab" ? "measured data" : "formula " + e.type} · <bdi dir="ltr">${fmtL(e.range_um[0])}–${fmtL(e.range_um[1])} ${unitName()}</bdi></span><br>
+      ${esc(e.reference)}
+      <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
+      ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}
+      <span class="tools"><button data-act="copy">کپی و ویرایش</button></span></div>`);
+  }).join("") || '<p class="hint">داده‌ای برای این ماده نیست.</p>';
+  $("rispread").textContent = values.length > 1
+    ? `در λ = ${fmtL(probe)} ${unitName()}: کمترین n = ${Math.min(...values).toFixed(5)}، بیشترین = ${Math.max(...values).toFixed(5)} (همه‌ی جهت‌ها با هم؛ مقایسه‌ی منصفانه فقط بین منابع هم‌جهت است).`
+    : values.length ? "" : `هیچ داده‌ای λ = ${fmtL(probe)} ${unitName()} را پوشش نمی‌دهد.`;
+}
+
+function renderUser(probe) {
+  $("riuser").innerHTML = RI.user.map((u) => entryRow({ key: `u:${u.id}`, e: u }, probe, `
+    <span class="hint"> ${u.kind === "points" ? `${u.points.length} نقطه‌ی اندازه‌گیری` : `فرمول ${u.label || u.type}`} · <bdi dir="ltr">${fmtL(u.range_um[0])}–${fmtL(u.range_um[1])} ${unitName()}</bdi></span>
+    ${u.note ? `<br><span class="hint">${esc(u.note)}</span>` : ""}
+    <div class="chips"><span class="tools"><button data-act="edit">ویرایش</button><button data-act="del">حذف</button></span></div>`)).join("") ||
+    '<p class="hint">هنوز داده‌ای اضافه نکرده‌اید.</p>';
+}
+
+for (const box of ["rientries", "riuser"]) $(box).addEventListener("click", (ev) => {
   const row = ev.target.closest(".entry"); if (!row) return;
-  const i = +row.dataset.i, e = RI.byMat.get(RI.mat)[i];
-  if (ev.target.type === "checkbox") { showEntry(i, ev.target.checked); render(); }
-  if (ev.target.dataset.act === "paper") openPaper(e.doc_id, null);
+  const key = row.dataset.key, c = curveOf(key); if (!c) return;
+  const act = ev.target.dataset.act;
+  if (ev.target.type === "checkbox") {
+    show(key, ev.target.checked);
+    if (c.e.user) { c.e.visible = ev.target.checked; saveUser(); }
+    render();
+  }
+  if (act === "paper") openPaper(c.e.doc_id, null);
+  if (act === "copy") fillForm({ name: `${label(c.e)} (کپی)`, ...(c.e.type === "tab"
+    ? { kind: "points", points: c.e.points } : { kind: "formula", type: String(c.e.type), coefficients: c.e.coefficients }), range_um: c.e.range_um, note: c.e.reference });
+  if (act === "edit") fillForm(c.e);
+  if (act === "del" && confirm(`«${c.e.name}» حذف شود؟`)) {
+    show(key, false); RI.user = RI.user.filter((u) => `u:${u.id}` !== key); saveUser(); render();
+  }
 });
 
+// ---------- the entry form
+const HELP = {
+  sell: ["n² = 1 + B1·λ²/(λ²−C1) + B2·λ²/(λ²−C2) + B3·λ²/(λ²−C3) …   (λ in µm, C in µm²)", "B1 C1 B2 C2 B3 C3 …"],
+  cauchy: ["n = A + B/λ² + C/λ⁴   (λ in µm)", "A B C"],
+  1: ["n² − 1 = C1 + Σ C(i)·λ²/(λ² − C(i+1)²),  i = 2,4,…", "C1 C2 C3 …"],
+  2: ["n² − 1 = C1 + Σ C(i)·λ²/(λ² − C(i+1)),  i = 2,4,…", "C1 C2 C3 …"],
+  3: ["n² = C1 + Σ C(i)·λ^C(i+1),  i = 2,4,…", "C1 C2 C3 …"],
+  4: ["n² = C1 + C2·λ^C3/(λ² − C4^C5) + C6·λ^C7/(λ² − C8^C9) + Σ C(i)·λ^C(i+1), i = 10,12,…", "C1 … C17"],
+  5: ["n = C1 + Σ C(i)·λ^C(i+1),  i = 2,4,…", "C1 C2 C3 …"],
+  6: ["n − 1 = C1 + Σ C(i)/(C(i+1) − λ⁻²),  i = 2,4,…", "C1 C2 C3 …"],
+  7: ["n = C1 + C2/(λ²−0.028) + C3/(λ²−0.028)² + C4·λ² + C5·λ⁴ + C6·λ⁶", "C1 … C6"],
+  8: ["(n²−1)/(n²+2) = C1 + C2·λ²/(λ²−C3) + C4·λ²", "C1 C2 C3 C4"],
+  9: ["n² = C1 + C2/(λ²−C3) + C4·(λ−C5)/((λ−C5)² + C6)", "C1 … C6"],
+};
+let editing = null, kind = "formula", rows = [];
+function setKind(k) {
+  kind = k;
+  for (const b of $("ufkind").children) b.classList.toggle("on", b.dataset.k === k);
+  $("ufformula").hidden = k !== "formula"; $("ufpoints").hidden = k !== "points";
+}
+$("ufkind").onclick = (e) => { if (e.target.dataset.k) setKind(e.target.dataset.k); };
+function showHelp() { const [f, c] = HELP[$("uftype").value]; $("ufhelp").textContent = `${f}\ncoefficients: ${c}`; $("ufhelp").style.whiteSpace = "pre-wrap"; }
+$("uftype").onchange = showHelp; showHelp();
+
+function drawRows() {
+  const pu = $("ufpu").value === "nm" ? 1000 : 1;
+  $("uftable").innerHTML = `<tr><th>#</th><th>λ (${$("ufpu").value === "nm" ? "nm" : "µm"})</th><th>n</th><th></th></tr>` +
+    rows.map(([l, n], i) => `<tr data-i="${i}"><td>${i + 1}</td><td><input type="number" step="any" data-c="0" value="${Number.isFinite(l) ? +(l * pu).toPrecision(8) : ""}"></td>
+      <td><input type="number" step="any" data-c="1" value="${Number.isFinite(n) ? n : ""}"></td><td><button class="chip" data-act="rm" style="border:0;cursor:pointer">✕</button></td></tr>`).join("");
+}
+$("uftable").addEventListener("input", (e) => {
+  const tr = e.target.closest("tr"); if (!tr || e.target.dataset.c === undefined) return;
+  const pu = $("ufpu").value === "nm" ? 1000 : 1, v = parseFloat(e.target.value);
+  rows[+tr.dataset.i][+e.target.dataset.c] = e.target.dataset.c === "0" ? v / pu : v;
+});
+$("uftable").addEventListener("click", (e) => { if (e.target.dataset.act === "rm") { rows.splice(+e.target.closest("tr").dataset.i, 1); drawRows(); } });
+$("ufaddrow").onclick = () => { rows.push([NaN, NaN]); drawRows(); $("uftable").querySelector("tr:last-child input")?.focus(); };
+$("ufpu").onchange = drawRows;
+
+// Lines of "λ n" (comma, tab, semicolon or spaces; decimal comma accepted when separated by tab/semicolon)
+function parsePoints(text) {
+  const pu = $("ufpu").value === "nm" ? 1000 : 1, out = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const parts = (/[\t;]/.test(line) ? line.split(/[\t;]+/).map((x) => x.replace(",", ".")) : line.split(/[\s,]+/)).filter(Boolean);
+    const [l, n] = parts.map(Number);
+    if (Number.isFinite(l) && Number.isFinite(n)) out.push([l / pu, n]);
+  }
+  return out;
+}
+$("ufparse").onclick = () => {
+  const pts = parsePoints($("ufpaste").value);
+  msg(pts.length ? `${fa(pts.length)} نقطه خوانده شد.` : "هیچ سطر عددی پیدا نشد (هر خط: λ و n).", !pts.length);
+  if (pts.length) { rows = pts; drawRows(); }
+};
+$("ufcsv").onchange = async (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  const pts = parsePoints(await f.text()); e.target.value = "";
+  msg(pts.length ? `${fa(pts.length)} نقطه از ${f.name} خوانده شد.` : "در فایل سطر عددی (λ، n) پیدا نشد.", !pts.length);
+  if (pts.length) { rows = pts; drawRows(); }
+};
+
+function msg(text, error) { $("ufmsg").textContent = text; $("ufmsg").style.color = error ? "var(--err)" : ""; }
+
+// The friendly forms are stored as refractiveindex.info types, so one evaluator serves everything.
+function toEntry(type, c) {
+  if (type === "sell") return { type: 2, coefficients: [0, ...c], label: "سلمایر" };
+  if (type === "cauchy") { const [A = 0, B = 0, C = 0] = c; return { type: 5, coefficients: [A, B, -2, C, -4], label: "کوشی" }; }
+  return { type: +type, coefficients: c, label: `refractiveindex.info نوع ${type}` };
+}
+
+function fillForm(u) {
+  editing = u.user ? u.id : null;
+  $("ufname").value = u.name || ""; setKind(u.kind || "formula");
+  if (u.kind === "points") { rows = u.points.map((p) => [...p]); drawRows(); }
+  else {
+    $("uftype").value = u.form || String(u.type); showHelp();
+    $("ufcoef").value = (u.raw || u.coefficients || []).join(" ");
+    $("uflo").value = u.range_um?.[0] ?? 0.3; $("ufhi").value = u.range_um?.[1] ?? 2.5;
+  }
+  RI.note = u.note || "";
+  $("ufsave").textContent = editing ? "ذخیره‌ی تغییرات" : "افزودن به نمودار";
+  msg(editing ? "در حال ویرایش؛ بعد از تغییر «ذخیره‌ی تغییرات» را بزنید." : "فرم پر شد؛ ضرایب را تغییر دهید و «افزودن به نمودار» را بزنید.");
+  $("ufname").scrollIntoView({ block: "center", behavior: "smooth" });
+}
+$("ufclear").onclick = () => { editing = null; RI.note = ""; $("ufname").value = ""; $("ufcoef").value = ""; rows = []; drawRows(); $("ufsave").textContent = "افزودن به نمودار"; msg(""); };
+
+$("ufsave").onclick = () => {
+  const name = $("ufname").value.trim() || (kind === "points" ? "داده‌ی اندازه‌گیری من" : "فرمول من");
+  let u;
+  if (kind === "points") {
+    const pts = rows.filter(([l, n]) => Number.isFinite(l) && Number.isFinite(n) && l > 0).sort((a, b) => a[0] - b[0]);
+    if (pts.length < 2) return msg("دست‌کم دو نقطه با λ و n عددی لازم است.", true);
+    u = { kind: "points", points: pts, range_um: [pts[0][0], pts[pts.length - 1][0]] };
+  } else {
+    const raw = $("ufcoef").value.trim().split(/[\s,;]+/).filter(Boolean).map(Number);
+    if (!raw.length || raw.some((x) => !Number.isFinite(x))) return msg("ضرایب باید عدد باشند، جداشده با فاصله یا ویرگول.", true);
+    const lo = +$("uflo").value, hi = +$("ufhi").value;
+    if (!(lo > 0 && hi > lo)) return msg("بازه‌ی طول موج درست نیست (از < تا، بر حسب µm).", true);
+    const form = $("uftype").value;
+    u = { kind: "formula", form, raw, ...toEntry(form, raw), range_um: [lo, hi] };
+    const mid = nOf({ ...u, user: true }, (lo + hi) / 2);
+    if (!Number.isFinite(mid)) return msg("فرمول در وسط بازه عدد معتبری نمی‌دهد؛ ضرایب یا نوع فرمول را بررسی کنید.", true);
+  }
+  u = { ...u, user: true, name, note: RI.note || "", visible: true, id: editing || Date.now().toString(36) };
+  const i = RI.user.findIndex((x) => x.id === u.id);
+  if (i >= 0) RI.user[i] = u; else RI.user.push(u);
+  saveUser();
+  const key = `u:${u.id}`;
+  if (!RI.shown.has(key) && RI.shown.size >= MAX_SERIES) {
+    msg("ذخیره شد، ولی نمودار حداکثر ۸ منحنی دارد؛ تیک یکی از منابع را بردارید تا این هم نمایش داده شود.", true);
+  } else { show(key, true); msg(i >= 0 ? "تغییرات ذخیره شد." : "به نمودار اضافه شد."); }
+  editing = u.id; $("ufsave").textContent = "ذخیره‌ی تغییرات";
+  // widen the plotted range if the new curve lies outside it
+  const [lo, hi] = getRange();
+  if (u.range_um[1] < lo || u.range_um[0] > hi) setRange(Math.max(u.range_um[0], 0.2), u.range_um[1]);
+  render();
+};
+drawRows();
+
+// ---------- value table and CSV
+function tableData(lo, hi) {
+  const n = +$("rirows").value, ref = refCurve();
+  const cs = curves().filter((c) => RI.shown.has(c.key) && c !== ref && c.key !== ref?.key);
+  const xs = Array.from({ length: n }, (_, k) => lo + (hi - lo) * k / (n - 1));
+  const head = [`wavelength (${unitName()})`, ...cs.map((c) => (ref ? `Δn ${label(c.e)} − ${label(ref.e)}` : `n ${label(c.e)}`))];
+  return [head, ...xs.map((x) => [fmtL(x), ...cs.map((c) => { const v = valueOf(c.e, x, ref); return Number.isFinite(v) ? +v.toFixed(6) : ""; })])];
+}
+function renderTable(lo, hi) {
+  const [head, ...body] = tableData(lo, hi);
+  $("ritable").innerHTML = `<tr>${head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr>` +
+    body.map((r) => `<tr>${r.map((v) => `<td>${v === "" ? "—" : v}</td>`).join("")}</tr>`).join("");
+}
+const csvText = () => tableData(...getRange()).map((r) => r.map((v) => (/[",\n]/.test(String(v)) ? `"${String(v).replaceAll('"', '""')}"` : v)).join(",")).join("\n");
+$("ricsv").onclick = () => {
+  const url = URL.createObjectURL(new Blob(["﻿" + csvText()], { type: "text/csv;charset=utf-8" }));
+  Object.assign(document.createElement("a"), { href: url, download: `refractive-index-${(RI.mat || "data").replace(/[^\w.-]+/g, "_")}.csv` }).click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+};
+$("ricopy").onclick = () => {
+  const tsv = tableData(...getRange()).map((r) => r.join("\t")).join("\n");
+  navigator.clipboard?.writeText(tsv).then(() => { $("ricopy").textContent = "کپی شد"; setTimeout(() => { $("ricopy").textContent = "کپی جدول"; }, 1500); });
+};
+
+// ---------- chart
 function niceTicks(a, b, count) {
   const step0 = (b - a) / count, mag = 10 ** Math.floor(Math.log10(step0)), r = step0 / mag;
   const step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag;
@@ -652,43 +953,55 @@ function niceTicks(a, b, count) {
   return out;
 }
 
-function drawChart(list, lo, hi, probe) {
+function drawChart(lo, hi, probe) {
   const svg = $("risvg"), W = Math.round($("chart").clientWidth) || 800, H = Math.round(Math.min(340, Math.max(240, W * 0.7)));
-  const m = { l: W < 500 ? 52 : 62, r: 12, t: 14, b: 40 };
+  const m = { l: W < 500 ? 56 : 66, r: 12, t: 14, b: 40 };
   svg.style.height = H + "px";
+  const ref = refCurve();
   const N = 240, xs = Array.from({ length: N + 1 }, (_, k) => lo + (hi - lo) * k / N);
-  const series = [...RI.shown].sort((a, b) => a - b).map((i) => ({ i, e: list[i], ys: xs.map((x) => entryIndex(list[i], x)) }));
-  const all = series.flatMap((s) => s.ys.filter(Number.isFinite));
-  $("rilegend").innerHTML = series.map((s) => `<span class="chip"><span class="sw" style="background:${color(slotOf(s.i))}"></span>${esc(label(s.e))}</span>`).join("");
-  if (!all.length) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">No formula covers ${lo}–${hi} µm</text>`; return; }
+  const series = curves().filter((c) => RI.shown.has(c.key))
+    .map((c) => ({ ...c, ys: xs.map((x) => valueOf(c.e, x, ref)) }));
+  const pts = series.filter((s) => s.e.user && s.e.kind === "points")
+    .flatMap((s) => s.e.points.filter(([l]) => l >= lo && l <= hi).map(([l]) => ({ s, l, v: valueOf(s.e, l, ref) })));
+  const all = [...series.flatMap((s) => s.ys.filter(Number.isFinite)), ...pts.map((p) => p.v).filter(Number.isFinite)];
+  $("rilegend").innerHTML = series.map((s) => `<span class="chip"><span class="sw" style="background:${color(slotOf(s.key))}"></span>${esc(label(s.e))}${s.e.user ? " ★" : ""}</span>`).join("");
+  if (!all.length) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">No data covers ${fmtL(lo)}–${fmtL(hi)} ${unitName()}</text>`; return; }
   let y0 = Math.min(...all), y1 = Math.max(...all); const pad = (y1 - y0) * 0.08 || 0.01; y0 -= pad; y1 += pad;
   const X = (x) => m.l + (x - lo) / (hi - lo) * (W - m.l - m.r), Y = (y) => H - m.b - (y - y0) / (y1 - y0) * (H - m.t - m.b);
-  const gx = niceTicks(lo, hi, W < 500 ? 4 : 7), gy = niceTicks(y0, y1, 5);
-  let out = gy.map((v) => `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${v.toFixed(3)}</text>`).join("");
-  out += gx.map((v) => `<text x="${X(v)}" y="${H - m.b + 18}" text-anchor="middle" font-size="11" fill="var(--muted)">${v}</text>`).join("");
+  const gx = niceTicks(lo * U(), hi * U(), W < 500 ? 4 : 7).map((v) => v / U()), gy = niceTicks(y0, y1, 5);
+  const digits = Math.max(0, Math.min(6, 2 - Math.floor(Math.log10((y1 - y0) / 5 || 1))));
+  let out = gy.map((v) => `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${v.toFixed(digits)}</text>`).join("");
+  out += gx.map((v) => `<text x="${X(v)}" y="${H - m.b + 18}" text-anchor="middle" font-size="11" fill="var(--muted)">${fmtL(v)}</text>`).join("");
   out += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="var(--line)"/>`;
-  out += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle" font-size="12" fill="var(--muted)">wavelength λ (µm)</text>`;
-  out += `<text transform="translate(14 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="var(--muted)">refractive index n</text>`;
+  out += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle" font-size="12" fill="var(--muted)">wavelength λ (${unitName()})</text>`;
+  out += `<text transform="translate(14 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="var(--muted)">${ref ? "Δn (vs " + esc(label(ref.e)) + ")" : "refractive index n"}</text>`;
+  if (ref && y0 < 0 && y1 > 0) out += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--muted)"/>`;
   if (probe >= lo && probe <= hi) out += `<line x1="${X(probe)}" x2="${X(probe)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--muted)" stroke-dasharray="4 4"/>`;
   for (const s of series) {
     let d = "", pen = false;
     s.ys.forEach((y, k) => { if (Number.isFinite(y)) { d += `${pen ? "L" : "M"}${X(xs[k]).toFixed(1)},${Y(y).toFixed(1)}`; pen = true; } else pen = false; });
-    out += `<path d="${d}" fill="none" stroke="${color(slotOf(s.i))}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const measured = s.e.user && s.e.kind === "points";
+    out += `<path d="${d}" fill="none" stroke="${color(slotOf(s.key))}" stroke-width="2" ${measured ? 'stroke-dasharray="1 0" stroke-opacity=".55"' : ""} stroke-linejoin="round" stroke-linecap="round"/>`;
   }
+  // measured points: 8px markers with a 2px surface ring
+  for (const p of pts) if (Number.isFinite(p.v)) out += `<circle cx="${X(p.l).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="4" fill="${color(slotOf(p.s.key))}" stroke="var(--card)" stroke-width="2"/>`;
   out += `<line id="rix" y1="${m.t}" y2="${H - m.b}" stroke="var(--ink)" stroke-opacity=".35" visibility="hidden"/><rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" id="rihit"/>`;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = out;
   const tip = $("ritip"), hit = $("rihit"), cross = $("rix");
+  const at = (ev) => { const box = svg.getBoundingClientRect(), px = (ev.clientX - box.left) * (W / box.width); return [box, px, lo + (px - m.l) / (W - m.l - m.r) * (hi - lo)]; };
   hit.onmousemove = (ev) => {
-    const box = svg.getBoundingClientRect(), px = (ev.clientX - box.left) * (W / box.width);
-    const lam = lo + (px - m.l) / (W - m.l - m.r) * (hi - lo);
+    const [box, px, lam] = at(ev);
     cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("visibility", "visible");
-    const rows = series.map((s) => [s, entryIndex(s.e, lam)]).filter(([, n]) => Number.isFinite(n));
-    tip.innerHTML = `<b>λ = ${lam.toFixed(4)} µm</b><br>` + (rows.map(([s, n]) => `<span class="sw" style="background:${color(slotOf(s.i))}"></span>${esc(label(s.e))}: ${n.toFixed(5)}`).join("<br>") || "—");
+    const rows = series.map((s) => [s, valueOf(s.e, lam, ref)]).filter(([, v]) => Number.isFinite(v));
+    tip.innerHTML = `<b>λ = ${(lam * U()).toFixed(RI.unit === "nm" ? 1 : 4)} ${unitName()}</b><br>` +
+      (rows.map(([s, v]) => `<span class="sw" style="background:${color(slotOf(s.key))}"></span>${esc(label(s.e))}: ${ref ? (v >= 0 ? "+" : "") + v.toExponential(3) : v.toFixed(5)}`).join("<br>") || "—") +
+      '<br><span style="color:var(--muted)">click: set λ</span>';
     tip.style.display = "block";
     const left = ev.clientX - box.left + 14; tip.style.left = (left + tip.offsetWidth > box.width ? left - tip.offsetWidth - 28 : left) + "px";
     tip.style.top = (ev.clientY - box.top + 10) + "px";
   };
   hit.onmouseleave = () => { tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); };
+  hit.onclick = (ev) => { const [, , lam] = at(ev); setProbe(lam); render(); };
 }
 let lastW = 0;
 new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w && w !== lastW && RI.mat) { lastW = w; render(); } }).observe($("chart"));
@@ -696,7 +1009,7 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 <script type="module">
 // ---------- evaluation tab
 const MODE_FA = { hybrid: "ترکیبی", bm25: "کلیدواژه (BM25)", vector: "برداری" };
-const SYS = [["local", "برنامه‌ی کولب (ChromaDB + bm25s)"], ["site", "سایت (Qdrant)"], ["site_ocr", "سایت بعد از OCR"]];
+const SYS = [["local", "برنامه‌ی کولب (ChromaDB + bm25s)"], ["site", "سایت (Qdrant)"], ["site_ocr", "سایت بعد از OCR و معادله‌ها"]];
 let EV = null, evMetric = "MRR";
 window.loadEval = async () => {
   if (!EV) EV = await (await fetch("/eval.json")).json();
