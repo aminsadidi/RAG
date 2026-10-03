@@ -207,6 +207,30 @@ def _book(rel: Path) -> tuple[str, str]:
     return parts[0], parts[1]
 
 
+def book_names(database_dir: Path) -> dict[tuple[str, str, str], str]:
+    """Display name of every material ("book") from the database's catalog-nk.yml, keyed like the site's
+    index: (shelf, group, material) -> e.g. "BaB2O4 (Barium borate, BBO)"."""
+    catalog = database_dir / "catalog-nk.yml"
+    if not catalog.exists():
+        catalog = database_dir.parent / "catalog-nk.yml"
+    if not catalog.exists():
+        return {}
+    names: dict[tuple[str, str, str], str] = {}
+
+    def walk(items, book_name=None):
+        for item in items or []:
+            if not isinstance(item, dict):
+                continue
+            name = _plain(item.get("name", "")) if "BOOK" in item else book_name
+            rel = Path(item["data"]) if "data" in item else None
+            if rel and name and rel.parts[0] != "specs":  # a specs "book" is a vendor, not a material
+                names.setdefault((rel.parts[0], *_book(rel)), name)
+            walk(item.get("content"), name)
+
+    walk(yaml.safe_load(catalog.read_text(encoding="utf-8")))
+    return names
+
+
 def formula_catalog(database_dir: Path, shelves: tuple[str, ...] = SHELVES, max_points: int = 80) -> list[dict]:
     """Every n(λ) entry of the database (dispersion formula, else tabulated n thinned to ``max_points``),
     for the site's refractive index tab. Nonlinear-index (n2) entries are left out."""

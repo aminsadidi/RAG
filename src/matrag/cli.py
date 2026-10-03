@@ -332,9 +332,10 @@ def export_formulas(
     import shutil
 
     from matrag.config import Settings
-    from matrag.references.refractiveindex import formula_catalog
+    from matrag.references.refractiveindex import book_names, formula_catalog
 
     entries = formula_catalog(Settings().reference_db)
+    names = book_names(Settings().reference_db)
     groups: dict[tuple[str, str, str], list[dict]] = {}
     for e in entries:
         groups.setdefault((e["shelf"], e["group"], e["material"]), []).append(e)
@@ -343,7 +344,9 @@ def export_formulas(
     index = []
     for i, ((shelf, group, material), items) in enumerate(sorted(groups.items(), key=lambda kv: (kv[0][0] != "main", kv[0]))):
         (out / "m" / f"{i}.json").write_text(json.dumps(items, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-        index.append({"i": i, "shelf": shelf, "group": group, "material": material, "n": len(items),
+        name = names.get((shelf, group, material), "")
+        index.append({"i": i, "shelf": shelf, "group": group, "material": material,
+                      **({"name": name} if name and name != material else {}), "n": len(items),
                       "formulas": sum(e["type"] != "tab" for e in items),
                       "range_um": [min(e["range_um"][0] for e in items), max(e["range_um"][1] for e in items)]})
     (out / "index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
