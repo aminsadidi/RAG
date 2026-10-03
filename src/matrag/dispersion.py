@@ -139,7 +139,8 @@ def _pad(c, size=17):
 
 
 def refractiveindex_info(formula_type: int, coefficients, wavelength_um) -> np.ndarray:
-    """n(λ) for refractiveindex.info formula types 1-9 (coefficients C1..Cn as in the YAML files)."""
+    """n(λ) for refractiveindex.info formula types 1-9 (coefficients C1..Cn as in the YAML files), and type 10
+    (two poles with free exponents, for formulas read from papers: data/<corpus>/paper_formulas.yml)."""
     lam = np.asarray(wavelength_um, dtype=float)
     c = _pad(coefficients)
     C = lambda i: c[i - 1]  # noqa: E731  (1-based, as in the definition document)
@@ -170,5 +171,8 @@ def refractiveindex_info(formula_type: int, coefficients, wavelength_um) -> np.n
         return np.sqrt((1 + 2 * r) / (1 - r))
     if formula_type == 9:  # Exotic
         n2 = C(1) + C(2) / (l2 - C(3)) + C(4) * (lam - C(5)) / ((lam - C(5)) ** 2 + C(6))
+        return np.sqrt(n2)
+    if formula_type == 10:  # not a refractiveindex.info type: poles with free exponents (Fève et al. 2000)
+        n2 = C(1) + C(2) * lam ** C(3) / (lam ** C(3) - C(4)) + C(5) * lam ** C(6) / (lam ** C(6) - C(7))
         return np.sqrt(n2)
     raise ValueError(f"Unknown refractiveindex.info formula type {formula_type}")

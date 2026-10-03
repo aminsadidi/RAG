@@ -202,6 +202,7 @@ body{overflow-x:hidden}
             <option value="7">refractiveindex.info نوع ۷ (Herzberger)</option>
             <option value="8">refractiveindex.info نوع ۸ (Retro)</option>
             <option value="9">refractiveindex.info نوع ۹ (Exotic)</option>
+            <option value="10">دو قطبی با توان آزاد (Fève 2000): n² = C1 + C2·λ^C3/(λ^C3−C4) + C5·λ^C6/(λ^C6−C7)</option>
           </select></label>
         </div>
         <div class="hint" id="ufhelp" style="direction:ltr;text-align:left;font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:6px"></div>
@@ -648,15 +649,15 @@ import { entryIndex } from "/dispersion.js";
 const RI = { byMat: new Map(), inColl: {}, shown: new Set(), slots: new Map(), mat: null, unit: "um", user: [] };
 const MAX_SERIES = 8; // categorical slots; more entries are listed but not all drawn at once
 const color = (slot) => `var(--series-${slot + 1})`;
-const dirName = (d) => (d ? { o: "ordinary (o)", e: "extraordinary (e)", x: "x", y: "y", z: "z", alpha: "α", beta: "β", gamma: "γ" }[d] || d : "");
+const dirName = (d) => (d ? { o: "ordinary (o)", e: "extraordinary (e)", x: "x", y: "y", z: "z", alpha: "α", beta: "β", gamma: "γ", 1: "n1 (x1)", 2: "n2 (x2)", 3: "n3 (x3)" }[d] || d : "");
 const label = (e) => (e.user ? e.name : e.direction && !e.page.toLowerCase().endsWith(e.direction.toLowerCase()) ? `${e.page} · ${e.direction}` : e.page);
 const U = () => (RI.unit === "nm" ? 1000 : 1); // display unit per µm
 const unitName = () => (RI.unit === "nm" ? "nm" : "µm");
 const fmtL = (um) => +(um * U()).toPrecision(6);
 
 const GROUP_FA = { main: "", "doped crystals": "بلور آلاییده", "mixed crystals": "بلور آمیخته", "semiconductor alloys": "آلیاژ نیم‌رسانا",
-  alloys: "آلیاژ", perovskite: "پروسکایت", "liquid crystals": "بلور مایع", organic: "آلی", "commercial polymers": "پلیمر" };
-const matName = (m) => (m.shelf === "main" ? m.material : `${m.material} — ${m.group}`);
+  alloys: "آلیاژ", papers: "از مقاله‌های همین مجموعه (refractiveindex.info داده ندارد)", perovskite: "پروسکایت", "liquid crystals": "بلور مایع", organic: "آلی", "commercial polymers": "پلیمر" };
+const matName = (m) => (m.shelf === "main" || m.shelf === "papers" ? m.material : `${m.material} — ${m.group}`);
 
 // Finding a material by its formula, name, abbreviation (BBO) or Persian name (باریم بورات).
 const FA_MAT = { باریم: "barium", باریوم: "barium", بورات: "borate", تری‌بورات: "triborate", لیتیوم: "lithium", لیتیم: "lithium",
@@ -831,6 +832,7 @@ function renderEntries(probe) {
     return entryRow({ key: `db:${i}`, e }, probe, `
       <span class="hint"> ${esc(dirName(e.direction))} · ${e.type === "tab" ? "measured data" : "formula " + e.type} · <bdi dir="ltr">${fmtL(e.range_um[0])}–${fmtL(e.range_um[1])} ${unitName()}</bdi></span><br>
       ${esc(e.reference)}
+      ${e.source === "paper" ? `<div class="hint" style="margin-top:4px"><b>از مقاله‌ی همین مجموعه، صفحه‌ی ${fa(e.pdf_page)} PDF:</b> <bdi dir="ltr">${esc(e.where)}</bdi></div>` : ""}
       <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
       ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}
       <span class="tools"><button data-act="copy">کپی و ویرایش</button></span></div>`);
@@ -879,6 +881,7 @@ const HELP = {
   7: ["n = C1 + C2/(λ²−0.028) + C3/(λ²−0.028)² + C4·λ² + C5·λ⁴ + C6·λ⁶", "C1 … C6"],
   8: ["(n²−1)/(n²+2) = C1 + C2·λ²/(λ²−C3) + C4·λ²", "C1 C2 C3 C4"],
   9: ["n² = C1 + C2/(λ²−C3) + C4·(λ−C5)/((λ−C5)² + C6)", "C1 … C6"],
+  10: ["n² = C1 + C2·λ^C3/(λ^C3 − C4) + C5·λ^C6/(λ^C6 − C7)   (A, B, p, C, D, q, E of Fève et al. 2000)", "C1 … C7"],
 };
 let editing = null, kind = "formula", rows = [];
 function setKind(k) {
@@ -934,7 +937,7 @@ function msg(text, error) { $("ufmsg").textContent = text; $("ufmsg").style.colo
 function toEntry(type, c) {
   if (type === "sell") return { type: 2, coefficients: [0, ...c], label: "سلمایر" };
   if (type === "cauchy") { const [A = 0, B = 0, C = 0] = c; return { type: 5, coefficients: [A, B, -2, C, -4], label: "کوشی" }; }
-  return { type: +type, coefficients: c, label: `refractiveindex.info نوع ${type}` };
+  return { type: +type, coefficients: c, label: +type === 10 ? "دو قطبی با توان آزاد" : `refractiveindex.info نوع ${type}` };
 }
 
 function fillForm(u) {

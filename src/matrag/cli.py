@@ -332,6 +332,7 @@ def export_formulas(
     import shutil
 
     from matrag.config import Settings
+    from matrag.references import paper_formulas
     from matrag.references.refractiveindex import book_names, formula_catalog
 
     entries = formula_catalog(Settings().reference_db)
@@ -352,6 +353,8 @@ def export_formulas(
     (out / "index.json").write_text(json.dumps(index, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     typer.echo(f"{len(entries)} entries ({sum(e['type'] != 'tab' for e in entries)} formulas) for "
                f"{len(index)} materials written to {out}")
+    added = paper_formulas.add_to_site(out, Settings().data_dir / Settings().corpus / "paper_formulas.yml")
+    typer.echo(f"{added} more materials from formulas read in the collection's papers (paper_formulas.yml)")
 
 
 @app.command("export-papers")
