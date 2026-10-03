@@ -158,8 +158,9 @@ body{overflow-x:hidden}
     <h2>ضریب شکست از فرمول‌های پاشندگی</h2>
     <p class="hint">همه‌ی داده‌های ضریب شکست پایگاه refractiveindex.info (۲٬۲۴۶ ماده: بلورها، بلورهای آلاییده و آمیخته، آلیاژهای نیم‌رسانا، مواد آلی و شیشه‌های نوری تجاری)؛ فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده. هر منحنی از یک مقاله است؛ اگر آن مقاله در مجموعه‌ی شما باشد، با یک کلیک متن و صفحه‌اش باز می‌شود. داده‌ی خودتان (فرمول یا نقاط اندازه‌گیری) را هم می‌توانید پایین صفحه اضافه کنید.</p>
     <div class="row">
-      <label>ماده <input id="rimat" list="rimats" placeholder="مثلاً LiB3O5، BaB2O4، N-BK7" style="width:240px;direction:ltr" autocomplete="off"><datalist id="rimats"></datalist></label>
+      <label>ماده <input id="rimat" list="rimats" placeholder="مثلاً BBO، باریم بورات، LiB3O5، N-BK7" style="width:240px" autocomplete="off"><datalist id="rimats"></datalist></label>
       <span id="riinfo" class="hint"></span>
+      <div id="rimatsugg" class="hint" style="width:100%"></div>
       <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button>
     </div>
     <div class="row">
@@ -435,8 +436,20 @@ async function runSearch() {
     const words = terms(data.searchQuery || data.question);
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
       (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : ""));
-    $("hits").innerHTML = data.hits.map((h, i) => renderHit(h, words, i)).join("") ||
-      '<div class="card hint">چیزی پیدا نشد. فیلترها را بردارید یا سؤال را طور دیگری بنویسید.</div>';
+    const list = data.hits.map((h, i) => renderHit(h, words, i)).join("");
+    const r = data.relevance || { verdict: "ok" };
+    const why = [
+      r.offTopic ? "سؤال به هیچ بخشی از مقاله‌های مجموعه نزدیک نیست" : "",
+      r.missingMaterials?.length ? `این ماده در هیچ‌کدام از منابع پیدا شده نیامده: <bdi dir="ltr">${esc(r.missingMaterials.join(", "))}</bdi>` : "",
+      r.missingWords?.length ? `این واژه‌ها در هیچ منبعی نیامده: <bdi dir="ltr">${esc(r.missingWords.join(", "))}</bdi>` : "",
+    ].filter(Boolean).map((x) => `<li>${x}</li>`).join("");
+    $("hits").innerHTML = !data.hits.length
+      ? '<div class="card hint">چیزی پیدا نشد. فیلترها را بردارید یا سؤال را طور دیگری بنویسید.</div>'
+      : r.verdict === "none"
+        ? `<div class="card" style="border:1px solid var(--err)"><b>در این مجموعه منبعی برای این سؤال پیدا نشد.</b><ul>${why}</ul>
+            <p class="hint">سامانه همیشه نزدیک‌ترین بخش‌ها را برمی‌گرداند؛ این بار هیچ‌کدام جواب سؤال نیست. سؤال را دقیق‌تر بنویسید (مثلاً با فرمول شیمیایی ماده) یا فیلترها را بردارید.</p></div>
+           <details><summary class="hint">نزدیک‌ترین بخش‌ها را نشان بده (احتمالاً نامرتبط)</summary>${list}</details>`
+        : (r.verdict === "weak" ? `<div class="card hint" style="border:1px solid var(--warn)">منابع فقط بخشی از سؤال را پوشش می‌دهند.<ul>${why}</ul></div>` : "") + list;
     bindHits($("hits"), data.hits);
   } catch (err) { status("خطا: " + err.message, true); }
   setBusy(false);
@@ -645,6 +658,51 @@ const GROUP_FA = { main: "", "doped crystals": "بلور آلاییده", "mixed
   alloys: "آلیاژ", perovskite: "پروسکایت", "liquid crystals": "بلور مایع", organic: "آلی", "commercial polymers": "پلیمر" };
 const matName = (m) => (m.shelf === "main" ? m.material : `${m.material} — ${m.group}`);
 
+// Finding a material by its formula, name, abbreviation (BBO) or Persian name (باریم بورات).
+const FA_MAT = { باریم: "barium", باریوم: "barium", بورات: "borate", تری‌بورات: "triborate", لیتیوم: "lithium", لیتیم: "lithium",
+  نیوبات: "niobate", نایوبات: "niobate", تانتالات: "tantalate", پتاسیم: "potassium", فسفات: "phosphate", تیتانیل: "titanyl",
+  آرسنات: "arsenate", سیلیکا: "silica", سیلیسیم: "silicon", سیلیکون: "silicon", ژرمانیوم: "germanium", ژرمانیم: "germanium",
+  کوارتز: "quartz", کوارتس: "quartz", یاقوت: "sapphire", سافایر: "sapphire", الماس: "diamond", فلوراید: "fluoride", فلورید: "fluoride",
+  کلسیم: "calcium", منیزیم: "magnesium", منیزیوم: "magnesium", سلنید: "selenide", سولفید: "sulfide", اکسید: "oxide", دی‌اکسید: "dioxide",
+  نیترید: "nitride", آرسنید: "arsenide", فسفید: "phosphide", گالیم: "gallium", گالیوم: "gallium", ایندیم: "indium", ایندیوم: "indium",
+  آلومینیوم: "alumin", آلومینیم: "alumin", طلا: "gold", نقره: "silver", مس: "copper", آهن: "iron", تیتانیوم: "titanium", تیتانیم: "titanium",
+  بیسموت: "bismuth", سزیم: "cesium", استرانسیم: "strontium", استرانسیوم: "strontium", ایتریم: "yttrium", ایتریوم: "yttrium",
+  وانادات: "vanadate", گارنت: "garnet", کربنات: "carbonate", کلرید: "chloride", برمید: "bromide", یدید: "iodide", سدیم: "sodium",
+  روی: "zinc", کادمیم: "cadmium", کادمیوم: "cadmium", تلورید: "telluride", سرب: "lead", زیرکونیوم: "zirconium", هافنیوم: "hafnium",
+  آب: "water", هوا: "air", شیشه: "glass", پلی‌متیل‌متاکریلات: "pmma", سیلیکات: "silicate", تانتالیوم: "tantalum", نیوبیوم: "niobium" };
+const MAT_SKIP = new Set(["beta", "alpha", "β", "α", "بتا", "آلفا", "crystal", "بلور", "کریستال", "ماده", "the", "of", "-"]);
+const matText = (m) => `${m.material} ${m.name || ""} ${m.group}`.toLowerCase().replace(/aluminum/g, "aluminium");
+function findMaterials(query, limit = 8) {
+  const words = query.toLowerCase().replace(/[،,()]/g, " ").replace(/aluminum/g, "aluminium").split(/\s+/)
+    .map((w) => FA_MAT[w] || FA_MAT[w.replace(/ی$/, "")] || w).filter((w) => w && !MAT_SKIP.has(w));
+  if (!words.length || !RI.index) return [];
+  const q = words.join(" ");
+  const scored = [];
+  for (const m of RI.index) {
+    const text = matText(m), mat = m.material.toLowerCase();
+    if (!words.every((w) => text.includes(w))) continue;
+    const abbr = (m.name || "").toLowerCase().split(/[(),\s]+/);
+    const score = (mat === q ? 0 : abbr.includes(q) ? 1 : mat.startsWith(q) ? 2 : 3) + (m.shelf === "main" ? 0 : 0.5);
+    scored.push([score, m.material.length, m]);
+  }
+  return scored.sort((a, b) => a[0] - b[0] || a[1] - b[1]).slice(0, limit).map((x) => x[2]);
+}
+function suggestMaterials(query) {
+  const box = $("rimatsugg");
+  if (!query.trim() || RI.byName?.has(query)) { box.innerHTML = ""; return []; }
+  const found = findMaterials(query);
+  box.innerHTML = found.length
+    ? "پیشنهاد: " + found.map((m) => `<button class="alt" data-mat="${esc(matName(m))}" style="margin:2px;direction:ltr">${esc(m.name || matName(m))}</button>`).join("")
+    : `<span class="err">این ماده در پایگاه refractiveindex.info نیست (برای نمونه KTiOAsO4، CsB3O5، KBBF، CdSiP2 و YCOB آن‌جا داده ندارند، هرچند مقاله‌هایشان در مجموعه هست).</span>
+       نام انگلیسی یا فرمول شیمیایی را امتحان کنید، یا <button class="alt" id="rinomat">«${esc(query)}» را در مقاله‌ها جست‌وجو کنید</button>
+       و فرمول سلمایر مقاله را در «داده‌ی خودتان» (پایین صفحه) وارد کنید تا نمودارش رسم شود.`;
+  return found;
+}
+document.addEventListener("click", (e) => {
+  if (e.target.id !== "rinomat") return;
+  $("q").value = `${$("rimat").value} Sellmeier equation refractive index`; $("material").value = ""; showTab("search"); runSearch();
+});
+
 // ---------- user entries (localStorage; the page works without it)
 function loadUser() { try { RI.user = JSON.parse(localStorage.getItem("ri_user") || "[]").filter((u) => u && u.id); } catch { RI.user = []; } }
 function saveUser() { try { localStorage.setItem("ri_user", JSON.stringify(RI.user)); } catch {} }
@@ -670,7 +728,7 @@ let loaded = null;
 window.loadFormulas = () => {
   loaded ||= fetch("/ri/index.json").then((r) => r.json()).then((index) => {
     RI.index = index; RI.byName = new Map(index.map((m) => [matName(m), m]));
-    $("rimats").innerHTML = index.map((m) => `<option value="${esc(matName(m))}">${m.n} (${m.formulas} formula)</option>`).join("");
+    $("rimats").innerHTML = index.map((m) => `<option value="${esc(matName(m))}">${esc(m.name ? m.name.replace(/^\S+ /, "") + " · " : "")}${m.n} (${m.formulas} formula)</option>`).join("");
     const saved = store.get("rimat2");
     selectMaterial(saved && RI.byName.has(saved) ? saved : "LiB3O5");
   }).catch((err) => { loaded = null; $("rientries").innerHTML = `<p class="err">خطا: ${esc(err.message)}</p>`; });
@@ -680,7 +738,7 @@ window.loadFormulas = () => {
 async function selectMaterial(name) {
   const m = RI.byName.get(name); if (!m) return;
   $("rimat").value = name; store.set("rimat2", name);
-  $("riinfo").textContent = `${fa(m.n)} منبع (${fa(m.formulas)} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
+  $("riinfo").textContent = `${m.name ? m.name.replace(/^\S+ /, "") + " · " : ""}${fa(m.n)} منبع (${fa(m.formulas)} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
   $("rientries").innerHTML = '<p class="hint">در حال خواندن…</p>';
   const list = await (await fetch(`/ri/m/${m.i}.json`)).json();
   const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
@@ -702,7 +760,14 @@ $("risearch").onclick = () => {
   const m = RI.byName?.get(RI.mat); if (!m) return;
   $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
 };
-$("rimat").addEventListener("input", (e) => { if (RI.byName?.has(e.target.value)) selectMaterial(e.target.value); });
+$("rimat").addEventListener("input", (e) => { if (RI.byName?.has(e.target.value)) selectMaterial(e.target.value); suggestMaterials(e.target.value); });
+$("rimat").addEventListener("change", (e) => {
+  if (RI.byName?.has(e.target.value)) return;
+  // (no re-render here: a click on a suggestion blurs the input first and must still find its button)
+  const found = findMaterials(e.target.value);
+  if (found.length === 1) { selectMaterial(matName(found[0])); $("rimatsugg").innerHTML = ""; }
+});
+$("rimatsugg").onclick = (e) => { const b = e.target.closest("[data-mat]"); if (b) { selectMaterial(b.dataset.mat); $("rimatsugg").innerHTML = ""; } };
 for (const id of ["rilo", "rihi", "riprobe", "riref", "rirows"]) $(id).addEventListener("change", render);
 
 // ---------- units (inputs show the chosen unit; everything inside is in µm)
