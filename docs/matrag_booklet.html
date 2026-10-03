@@ -86,8 +86,8 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
     <div class="tile"><div class="n">۱٬۹۲۳</div><div class="t">مقاله با متن کامل PDF</div></div>
     <div class="tile"><div class="n">۵۶٬۸۴۴</div><div class="t">بخش (پاراگراف یا جدول) قابل جست‌وجو</div></div>
     <div class="tile"><div class="n">۸٬۴۶۸</div><div class="t">جدول استخراج‌شده از مقاله‌ها</div></div>
-    <div class="tile"><div class="n">۲٬۲۴۶</div><div class="t">ماده در زبانه‌ی ضریب شکست</div></div>
-    <div class="tile"><div class="n">۳٬۴۶۱</div><div class="t">منحنی ضریب شکست (۲٬۲۸۹ فرمول)</div></div>
+    <div class="tile"><div class="n">۲٬۲۵۸</div><div class="t">ماده در زبانه‌ی ضریب شکست</div></div>
+    <div class="tile"><div class="n">۳٬۵۱۵</div><div class="t">منحنی ضریب شکست (۲٬۳۲۶ فرمول)</div></div>
   </div>
 </section>
 
@@ -165,7 +165,7 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
 
 <section id="s3">
   <h2>۳. مسیر پروژه گام‌به‌گام</h2>
-  <p>پروژه در نه مرحله پیش رفت؛ هر مرحله مشکلی از مرحله‌ی قبل را حل کرد.</p>
+  <p>پروژه در ده مرحله پیش رفت؛ هر مرحله مشکلی از مرحله‌ی قبل را حل کرد.</p>
   <ol class="steps">
     <li><b>جمع‌آوری مقاله‌ها.</b> فهرست مقاله‌ها از <span dir="ltr">OpenAlex</span> و <span dir="ltr">refractiveindex.info</span> ساخته شد و با روش «گلوله‌برفی» (رفتن سراغ مراجع مقاله‌های مهم) گسترش پیدا کرد. حدود ۱٬۹۳۰ <span dir="ltr">PDF</span> از منابع آزاد و دسترسی دانشگاه گرفته شد؛ برای بقیه فقط چکیده و مشخصات ماند. نام هر فایل همان <span dir="ltr">DOI</span> مقاله است.<br><span class="muted">چرا: بدون مجموعه‌ی بزرگ و مرتب، هیچ سامانه‌ی بازیابی معنا ندارد.</span></li>
     <li><b>سازمان‌دهی در <span dir="ltr">Google Drive</span>.</b> مقاله‌ها در پوشه‌ی <span dir="ltr">RAG-Optics</span> به ۸ دسته و ۴۷ پوشه‌ی موضوعی تقسیم شدند (مثل <span dir="ltr">Borates/BBO</span>). یک فهرست اصلی (<span dir="ltr">master index</span>) اطلاعات هر مقاله را نگه می‌دارد. هیچ فایلی پاک نشد؛ فقط جابه‌جا شد.</li>
@@ -175,6 +175,7 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
     <li><b>ساخت سایت.</b> برنامه‌ی کولب برای استفاده‌ی روزمره سخت بود؛ پس یک سایت خصوصی روی <span dir="ltr">Cloudflare</span> ساخته شد که از یک کپی پایگاه در <span dir="ltr">Qdrant Cloud</span> جست‌وجو می‌کند. در همین مرحله یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌ها (<span dir="ltr">BBO → BaB2O4</span>) اضافه شد و جست‌وجوی کلیدواژه حدود ۵۷٪ بهتر شد.</li>
     <li><b>کیفیت داده: <span dir="ltr">OCR</span> و <span dir="ltr">PDF</span>های اشتباه.</b> متن همه‌ی مقاله‌های <span dir="ltr">PDF</span> بررسی شد. ۶۱ مقاله‌ی اسکن‌شده یا با متن خراب <span dir="ltr">OCR</span> شدند و فقط جایی که متن واقعاً بهتر شد و هیچ عددی از جدول‌ها گم نشد جایگزین شدند (۴۵ مقاله، و بعداً ۹ مقاله‌ی دیگر با <span dir="ltr">GPU</span>). معادله‌های ۴۳ مقاله هم با مدل <span dir="ltr">CodeFormula</span> به <span dir="ltr">LaTeX</span> تبدیل شدند. ۶ <span dir="ltr">PDF</span> پیدا شد که مقاله‌ی دیگری داخلشان بود؛ این‌ها فقط با چکیده‌ی درست نمایه شدند.</li>
     <li><b>ابزارهای تحلیلی.</b> زبانه‌ی «ضریب شکست» با همه‌ی ۳٬۴۶۱ منحنی <span dir="ltr">refractiveindex.info</span>، زبانه‌ی «ارزیابی»، مرور مجموعه و ورود داده‌ی دستی (فرمول یا نقاط اندازه‌گیری خودتان) اضافه شد.</li>
+    <li><b>فرمول‌های تازه از دل مقاله‌ها.</b> برای ۱۲ ماده‌ای که <span dir="ltr">refractiveindex.info</span> نداشت، فرمول سلمایر و جدول‌های اندازه‌گیری از خود مقاله‌های مجموعه خوانده و با عددهای خود مقاله آزموده شد (بخش ۵).</li>
     <li><b>صداقت در جواب و جست‌وجوی نام مواد.</b> سامانه حالا اگر منبع مرتبطی نباشد، می‌گوید «پیدا نشد» و دلیلش را هم می‌گوید. زبانه‌ی ضریب شکست هم مواد را با نام انگلیسی، نام کوتاه (<span dir="ltr">BBO</span>) و نام فارسی (باریم بورات) پیدا می‌کند، نه فقط با فرمول شیمیایی.</li>
   </ol>
   <div class="box casual"><b>به زبان خودمونی</b>اول کتاب‌ها را جمع کردیم، بعد قفسه‌بندی کردیم، بعد همه را تایپ و فهرست‌بندی کردیم، بعد کتابدار را امتحان کردیم و برایش یک پیشخوان ساختیم. بعد کتاب‌های پاره و اشتباهی را درست کردیم و در آخر به کتابدار یاد دادیم وقتی چیزی را ندارد، راستش را بگوید.</div>
@@ -239,15 +240,16 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
   <div class="matgroup"><h4>بورات‌ها <span class="muted">(۴۹۳ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">BBO beta-BaB2O4</span> <b>۷۵</b></li><li><span dir="ltr">YCOB GdCOB ReCOB</span> <b>۵۹</b></li><li><span dir="ltr">LBO LiB3O5</span> <b>۵۹</b></li><li><span dir="ltr">CLBO CsLiB6O10</span> <b>۵۷</b></li><li><span dir="ltr">BiBO BiB3O6</span> <b>۵۴</b></li><li><span dir="ltr">KBBF KBe2BO3F2</span> <b>۵۳</b></li><li><span dir="ltr">LCB La2CaB10O19</span> <b>۵۲</b></li><li><span dir="ltr">SBBO KABO other borates</span> <b>۵۰</b></li><li><span dir="ltr">CBO CsB3O5</span> <b>۳۴</b></li></ul></div><div class="matgroup"><h4>فسفات‌ها و آرسنات‌ها <span class="muted">(۲۷۵ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">KTP KTiOPO4</span> <b>۶۴</b></li><li><span dir="ltr">RTP RbTiOPO4</span> <b>۵۹</b></li><li><span dir="ltr">ADP NH4H2PO4</span> <b>۵۶</b></li><li><span dir="ltr">KTA RTA arsenates</span> <b>۵۱</b></li><li><span dir="ltr">KDP DKDP KH2PO4</span> <b>۴۵</b></li></ul></div><div class="matgroup"><h4>نیوبات‌ها، تانتالات‌ها، یدات‌ها <span class="muted">(۳۰۳ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">LiNbO3 LN PPLN</span> <b>۸۰</b></li><li><span dir="ltr">LiTaO3 LT PPLT</span> <b>۵۸</b></li><li><span dir="ltr">SBN BaTiO3 ferroelectrics</span> <b>۵۶</b></li><li><span dir="ltr">KNbO3</span> <b>۵۵</b></li><li><span dir="ltr">LiIO3 alpha-HIO3</span> <b>۵۴</b></li></ul></div><div class="matgroup"><h4>بلورهای فروسرخ میانی <span class="muted">(۴۹۳ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">CdSe CdS ZnS</span> <b>۶۰</b></li><li><span dir="ltr">ZGP ZnGeP2</span> <b>۶۰</b></li><li><span dir="ltr">BaGa4Se7 BaGa4S7</span> <b>۵۶</b></li><li><span dir="ltr">AgGaSe2</span> <b>۵۵</b></li><li><span dir="ltr">AgGaS2</span> <b>۵۵</b></li><li><span dir="ltr">GaSe GaS</span> <b>۵۴</b></li><li><span dir="ltr">LiInS2 LiGaS2 LiInSe2</span> <b>۵۳</b></li><li><span dir="ltr">CdSiP2 CSP</span> <b>۵۲</b></li><li><span dir="ltr">AgGaGeS4 HgGa2S4 others</span> <b>۴۸</b></li></ul></div><div class="matgroup"><h4>نیم‌رساناها <span class="muted">(۳۰۷ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">GaAs OP-GaAs AlGaAs</span> <b>۶۹</b></li><li><span dir="ltr">Si Ge</span> <b>۶۶</b></li><li><span dir="ltr">GaN AlN</span> <b>۶۱</b></li><li><span dir="ltr">ZnSe ZnTe</span> <b>۵۷</b></li><li><span dir="ltr">GaP OP-GaP</span> <b>۵۴</b></li></ul></div><div class="matgroup"><h4>بلورهای آلی و تراهرتز <span class="muted">(۵۶ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">DAST DSTMS OH1</span> <b>۵۶</b></li></ul></div><div class="matgroup"><h4>بلورهای خطی و میزبان لیزر <span class="muted">(۲۶۹ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">YAG YVO4 GdVO4 hosts</span> <b>۵۸</b></li><li><span dir="ltr">Fluorides CaF2 MgF2 BaF2 LiF</span> <b>۵۷</b></li><li><span dir="ltr">Quartz SiO2</span> <b>۵۶</b></li><li><span dir="ltr">Calcite TeO2 TiO2 birefringent</span> <b>۵۱</b></li><li><span dir="ltr">Sapphire Al2O3</span> <b>۴۷</b></li></ul></div><div class="matgroup"><h4>نظریه و مدل‌های پاشندگی <span class="muted">(۴۰۱ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">Phase matching theory birefringence</span> <b>۶۶</b></li><li><span dir="ltr">Reviews NLO crystals databases</span> <b>۵۹</b></li><li><span dir="ltr">Seeds general</span> <b>۵۸</b></li><li><span dir="ltr">Dispersion models Cauchy Lorentz KK</span> <b>۵۵</b></li><li><span dir="ltr">Thermo-optic coefficients</span> <b>۴۵</b></li><li><span dir="ltr">Nonlinear coefficients Miller rule</span> <b>۴۵</b></li><li><span dir="ltr">Refractive index measurement methods</span> <b>۴۴</b></li><li><span dir="ltr">Sellmeier equation fitting</span> <b>۲۹</b></li></ul></div>
 
   <h3>داده‌ها و نمودارهای زبانه‌ی ضریب شکست</h3>
-  <p>این زبانه از پایگاه آزاد <span dir="ltr">refractiveindex.info</span> ساخته شده (مجوز <span dir="ltr">CC0</span>). هر منحنی از یک مقاله است:</p>
+  <p>این زبانه از پایگاه آزاد <span dir="ltr">refractiveindex.info</span> (مجوز <span dir="ltr">CC0</span>) و فرمول‌هایی که از مقاله‌های خود مجموعه خوانده شد ساخته شده. هر منحنی از یک مقاله است:</p>
   <div class="tablewrap"><table>
     <tr><th>بخش</th><th class="num">تعداد ماده</th><th>توضیح</th></tr>
     <tr><td>مواد اصلی (عناصر و ترکیب‌های معدنی)</td><td class="num">۲۵۷</td><td>بلورهایی مثل <span dir="ltr">BaB2O4، LiB3O5، LiNbO3، KTiOPO4، Al2O3</span></td></tr>
     <tr><td>بلورهای آلاییده، آمیخته، آلیاژهای نیم‌رسانا و سایر</td><td class="num">۱۰۸</td><td>مثل <span dir="ltr">MgO:LiNbO3</span>، بلور مایع و پلیمرهای تجاری</td></tr>
     <tr><td>مواد آلی</td><td class="num">۹۱</td><td></td></tr>
     <tr><td>شیشه‌ها</td><td class="num">۶</td><td></td></tr>
+    <tr><td>از مقاله‌های همین مجموعه (این پروژه)</td><td class="num">۱۲</td><td><span dir="ltr">KTA، RTA، CTA، CBO، KBBF، CdSiP2، YCOB، GdCOB، TmCOB، LCB، DAST، DSTMS</span>؛ ۵۴ منحنی که در <span dir="ltr">refractiveindex.info</span> نیستند</td></tr>
     <tr><td>شیشه‌های نوری تجاری</td><td class="num">۱٬۷۸۴</td><td><span dir="ltr">Ohara</span> (۴۱۰)، <span dir="ltr">Hikari</span> (۳۷۵)، <span dir="ltr">CDGM</span> (۳۱۴)، <span dir="ltr">Hoya</span> (۱۹۰)، <span dir="ltr">Sumita</span> (۱۷۶)، <span dir="ltr">Schott</span> (۱۷۱) و چند سازنده‌ی دیگر</td></tr>
-    <tr><th>جمع</th><th class="num">۲٬۲۴۶</th><th>۳٬۴۶۱ منحنی: ۲٬۲۸۹ فرمول پاشندگی و ۱٬۱۷۲ جدول اندازه‌گیری</th></tr>
+    <tr><th>جمع</th><th class="num">۲٬۲۵۸</th><th>۳٬۵۱۵ منحنی: ۲٬۳۲۶ فرمول پاشندگی و ۱٬۱۸۹ جدول اندازه‌گیری</th></tr>
   </table></div>
   <p>فرمول‌ها با هر ۹ نوع فرمول <span dir="ltr">refractiveindex.info</span> (سلمایر، کوشی، و بقیه) در مرورگر محاسبه می‌شوند. این محاسبه در ۶٬۸۶۷ نقطه با برنامه‌ی پایتون مقایسه شد و یکی بود.</p>
   <p><b>نمودارهایی که سایت می‌کشد:</b></p>
@@ -258,7 +260,7 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
     <li><b>مجموعه:</b> نمودار تعداد مقاله‌ها بر اساس سال و دسته.</li>
     <li><b>ارزیابی:</b> نمودار <span dir="ltr">MRR</span> و <span dir="ltr">recall@k</span> سه روش جست‌وجو و نتیجه‌ی آزمایش استخراج فرمول.</li>
   </ul>
-  <div class="box"><b>یک نکته‌ی مهم برای استاد</b>۷ خانواده از بلورهای مجموعه در <span dir="ltr">refractiveindex.info</span> اصلاً داده ندارند: <span dir="ltr">KTA</span>، <span dir="ltr">CBO</span>، <span dir="ltr">KBBF</span>، <span dir="ltr">CdSiP2</span>، <span dir="ltr">YCOB</span>، <span dir="ltr">LCB</span> و <span dir="ltr">DAST</span>. مقاله‌هایشان در مجموعه هست و جست‌وجو پیدایشان می‌کند، ولی نمودار آماده‌ای ندارند. این دقیقاً جایی است که سامانه ارزش اضافه دارد: فرمول را از مقاله پیدا می‌کنید و در «داده‌ی خودتان» وارد می‌کنید تا نمودارش رسم شود.</div>
+  <div class="box"><b>فرمول‌هایی که از خود مقاله‌های مجموعه درآمد</b>۷ خانواده از بلورهای مجموعه در <span dir="ltr">refractiveindex.info</span> هیچ داده‌ای نداشتند: <span dir="ltr">KTA</span> (و <span dir="ltr">RTA</span>، <span dir="ltr">CTA</span>)، <span dir="ltr">CBO</span>، <span dir="ltr">KBBF</span>، <span dir="ltr">CdSiP2</span>، <span dir="ltr">YCOB</span> (و <span dir="ltr">GdCOB</span>، <span dir="ltr">TmCOB</span>)، <span dir="ltr">LCB</span> و <span dir="ltr">DAST</span> (و <span dir="ltr">DSTMS</span>). فرمول‌های سلمایر و جدول‌های ضریب شکست اندازه‌گیری‌شده‌ی آن‌ها از ۱۳ مقاله‌ی خود مجموعه خوانده شد: از متن مقاله، و هر جا معادله فقط به‌صورت تصویر بود، از تصویر صفحه‌ی <span dir="ltr">PDF</span>. حاصل ۱۲ ماده‌ی تازه و ۵۴ منحنی در زبانه‌ی ضریب شکست است: ۳۷ فرمول و ۱۷ جدول اندازه‌گیری.<br><br>هر فرمول با عددهایی که <b>خود همان مقاله</b> گزارش کرده آزموده شد: ستون «مقدار محاسبه‌شده»ی جدول‌ها (برای <span dir="ltr">CBO</span> و <span dir="ltr">KBBF</span> تا ۱۰⁻⁵)، ضریب شکست مرجع (<span dir="ltr">KTA</span>: ۱٫۸۶۷۹)، نقطه‌ی هم‌سانگرد <span dir="ltr">CdSiP2</span> (۰٫۵۱۴۳ میکرومتر) و زاویه‌های تطبیق فاز (<span dir="ltr">GdCOB</span>: ۱۹٫۷°، <span dir="ltr">TmCOB</span>: ۳۲٫۵°، <span dir="ltr">CdSiP2</span>: ۴۳٫۱۳°). این آزمون‌ها در کد پروژه هستند و اگر یک ضریب اشتباه وارد شود، شکست می‌خورند. در این کار دو ناسازگاری در خود مقاله‌ها هم پیدا شد: یک عدد تکراری در جدول <span dir="ltr">CBO</span>، و اختلاف حدود ۰٫۰۲ بین فرمول <span dir="ltr">YCOB</span> و اندازه‌گیری مستقیم یک مقاله‌ی دیگر. هر دو روی نمودار و در توضیح هر منحنی آمده‌اند.</div>
 </section>
 
 <section id="s6">
@@ -284,7 +286,7 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
     <tr><th>زبانه</th><th>چه می‌کند</th><th>کاربرد</th></tr>
     <tr><td>جست‌وجو</td><td>سؤال فارسی یا انگلیسی ← بخش‌های مرتبط با نام مقاله، صفحه و <span dir="ltr">DOI</span>؛ «نمایش روی صفحه‌ی مقاله» با کادر زرد؛ «دانلود فایل برای هوش مصنوعی»؛ اعلام «منبعی پیدا نشد» وقتی جواب در مجموعه نیست</td><td>پیدا کردن سریع داده، نوشتن مرور ادبیات، پاسخ مستند با هر چت‌بات</td></tr>
     <tr><td>مقاله</td><td>همه‌ی بخش‌های یک مقاله، صفحه به صفحه</td><td>خواندن بافت کامل یک نتیجه</td></tr>
-    <tr><td>ضریب شکست</td><td>نمودار <span dir="ltr">n(λ)</span> برای ۲٬۲۴۶ ماده؛ پیدا کردن ماده با فرمول، نام انگلیسی، نام کوتاه یا نام فارسی؛ ورود فرمول یا نقاط اندازه‌گیری خودتان؛ <span dir="ltr">Δn</span>؛ جدول و <span dir="ltr">CSV</span></td><td>مقایسه‌ی منابع مختلف؛ مقایسه‌ی اندازه‌گیری آزمایشگاه با مقاله‌ها</td></tr>
+    <tr><td>ضریب شکست</td><td>نمودار <span dir="ltr">n(λ)</span> برای ۲٬۲۵۸ ماده (۱۲ تا از مقاله‌های خود مجموعه)؛ پیدا کردن ماده با فرمول، نام انگلیسی، نام کوتاه یا نام فارسی؛ ورود فرمول یا نقاط اندازه‌گیری خودتان؛ <span dir="ltr">Δn</span>؛ جدول و <span dir="ltr">CSV</span></td><td>مقایسه‌ی منابع مختلف؛ مقایسه‌ی اندازه‌گیری آزمایشگاه با مقاله‌ها</td></tr>
     <tr><td>مجموعه</td><td>آمار مقاله‌ها، نمودار سال انتشار و دسته‌ها، فهرست قابل‌جست‌وجو</td><td>شناخت دامنه‌ی پژوهش</td></tr>
     <tr><td>ارزیابی</td><td>نمودار و جدول ارزیابی خودکار</td><td>بخش نتایج پایان‌نامه</td></tr>
     <tr><td>راهنما</td><td>توضیح روش کار سامانه</td><td>معرفی پروژه</td></tr>
@@ -338,7 +340,7 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
     <li><b>استخراج فرمول:</b> از ۲۴ مقاله در ۷ مقاله فرمول پیدا شد و هیچ‌کدام تا دقت ۰٫۰۱ هم‌خوان نبود. علت‌ها: متن خراب اسکن‌ها، اشتباه در خواندن توان و علامت، و جابه‌جایی ستون‌های جدول.</li>
     <li><b>معیار ارزیابی سخت‌گیر است:</b> فقط مقاله‌ای که <span dir="ltr">refractiveindex.info</span> به آن ارجاع داده درست حساب می‌شود؛ پس عدد واقعی احتمالاً بهتر از عدد گزارش‌شده است.</li>
     <li><b>بررسی «پیدا نشد» کامل نیست:</b> سؤالی که واژه‌هایش در مقاله‌ها پراکنده باشد (مثل «درهم‌تنیدگی کوانتومی در سیاه‌چاله‌ها») ممکن است رد نشود.</li>
-    <li><b>۷ خانواده‌ی بلور</b> (<span dir="ltr">KTA، CBO، KBBF، CdSiP2، YCOB، LCB، DAST</span>) در <span dir="ltr">refractiveindex.info</span> داده ندارند و نمودار آماده‌ای برایشان نیست.</li>
+    <li><b>فرمول‌های خوانده‌شده از مقاله‌ها</b> فقط برای ۱۲ ماده است؛ برای مواد دیگری که در <span dir="ltr">refractiveindex.info</span> نیستند، همین کار باید ادامه پیدا کند.</li>
     <li><b>۶ <span dir="ltr">PDF</span> اشتباه</b> در مجموعه هست که باید با نسخه‌ی درست جایگزین شوند.</li>
     <li><b>پوشش مجموعه:</b> ۶۹۸ مقاله فقط چکیده یا عنوان دارند، چون <span dir="ltr">PDF</span> رایگانشان در دسترس نبود.</li>
     <li><b>زبان:</b> مقاله‌ها انگلیسی‌اند و سؤال فارسی اول ترجمه می‌شود. واژه‌نامه‌ی ثابت فیزیک خطای ترجمه را کم می‌کند (مثل «غیرعادی» ← <span dir="ltr">extraordinary</span>)، ولی صفر نمی‌کند.</li>
@@ -348,7 +350,7 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
     <li>ارزیابی دوباره‌ی استخراج فرمول روی متن‌های <span dir="ltr">OCR</span>‌شده و معادله‌های <span dir="ltr">LaTeX</span>.</li>
     <li>مدل زبانی قوی‌تر برای استخراج، با بررسی خودکار: اگر ضریب شکست حاصل خارج از بازه‌ی فیزیکی بود، دوباره تلاش کند.</li>
     <li>معیار ارزیابی منصفانه‌تر: هر مقاله‌ای که داده‌ی درست همان ماده را دارد، درست حساب شود.</li>
-    <li>افزودن فرمول‌های ۷ خانواده‌ی بی‌داده از روی مقاله‌های خود مجموعه.</li>
+    <li>ادامه‌ی خواندن فرمول از مقاله‌های مجموعه برای مواد دیگر، با همان آزمون‌های «عدد خود مقاله».</li>
     <li>افزودن وابستگی دمایی (<span dir="ltr">dn/dT</span>) به زبانه‌ی ضریب شکست.</li>
   </ol>
 </section>
@@ -373,7 +375,7 @@ footer{color:var(--muted);text-align:center;font-size:13.5px}
     <tr><td>درستی سیستم را چطور سنجیدید؟</td><td>با ۸۶ سؤال خودکار از <span dir="ltr">refractiveindex.info</span> که جواب درستشان (مقاله‌ی منبع) معلوم است؛ معیارها <span dir="ltr">MRR</span> و <span dir="ltr">recall@k</span> است.</td></tr>
     <tr><td>چرا اعداد ارزیابی پایین به نظر می‌رسد؟</td><td>معیار سخت‌گیر است: فقط یک مقاله‌ی خاص درست حساب می‌شود، نه همه‌ی مقاله‌های مرتبط. مهم مقایسه‌ی نسبی است (۷۳٪ بهبود).</td></tr>
     <tr><td>متن مقاله‌های اسکن‌شده چه می‌شود؟</td><td>با <span dir="ltr">OCR</span> دوباره خوانده شدند؛ فقط جایی که متن بهتر شد و هیچ عددی از جدول‌ها گم نشد جایگزین شد.</td></tr>
-    <tr><td>چرا برای بعضی بلورها نمودار نیست؟</td><td>زبانه‌ی ضریب شکست از <span dir="ltr">refractiveindex.info</span> می‌آید و ۷ خانواده (مثل <span dir="ltr">KBBF</span> و <span dir="ltr">CdSiP2</span>) آن‌جا داده ندارند. مقاله‌هایشان در مجموعه هست و فرمولشان را می‌شود دستی وارد کرد.</td></tr>
+    <tr><td>برای بلورهایی که در <span dir="ltr">refractiveindex.info</span> نیستند چه کردید؟</td><td>فرمول سلمایر و جدول‌های اندازه‌گیری ۱۲ ماده (مثل <span dir="ltr">KBBF</span>، <span dir="ltr">CBO</span>، <span dir="ltr">CdSiP2</span>، <span dir="ltr">YCOB</span>) از ۱۳ مقاله‌ی خود مجموعه خوانده و با عددهایی که خود همان مقاله گزارش کرده آزموده شد؛ مثلاً فرمول <span dir="ltr">CdSiP2</span> زاویه‌ی تطبیق فاز را ۴۳٫۱۴° می‌دهد و مقاله ۴۳٫۱۳° گزارش کرده.</td></tr>
     <tr><td>حق نشر چه می‌شود؟</td><td>سایت خصوصی و پشت رمز است و فقط برای پژوهش استفاده می‌شود. مقاله‌ها در هیچ مخزن عمومی‌ای منتشر نشده‌اند.</td></tr>
     <tr><td>محاسبه‌ی ضریب شکست در سایت درست است؟</td><td>بله؛ در ۶٬۸۶۷ نقطه با برنامه‌ی پایتون مقایسه شد. فرمول <span dir="ltr">Malitson</span> برای سیلیکا در خط سدیم <span dir="ltr">n = 1.4584</span> می‌دهد که همان مقدار شناخته‌شده است.</td></tr>
     <tr><td>چه چیزی مانده؟</td><td>استخراج خودکار ضرایب فرمول از متن؛ بخش ۹ را ببینید.</td></tr>

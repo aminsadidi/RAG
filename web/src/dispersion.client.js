@@ -39,6 +39,9 @@ export function refractiveIndex(type, coefficients, lam) {
     case 9: // Exotic
       n2 = C(1) + C(2) / (l2 - C(3)) + C(4) * (lam - C(5)) / ((lam - C(5)) ** 2 + C(6));
       return Math.sqrt(n2);
+    case 10: // not a refractiveindex.info type: poles with free exponents (Fève et al. 2000)
+      n2 = C(1) + C(2) * lam ** C(3) / (lam ** C(3) - C(4)) + C(5) * lam ** C(6) / (lam ** C(6) - C(7));
+      return Math.sqrt(n2);
     default:
       return NaN;
   }
