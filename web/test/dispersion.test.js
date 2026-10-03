@@ -31,3 +31,18 @@ test("standard Sellmeier entered by hand (B, C pairs) = refractiveindex.info typ
   // Cauchy n = A + B/λ² + C/λ⁴ = type 5 with powers −2, −4
   assert.ok(Math.abs(refractiveIndex(5, [1.5, 0.004, -2, 0.0001, -4], 0.5) - (1.5 + 0.004 / 0.25 + 0.0001 / 0.0625)) < 1e-12);
 });
+
+test("type 10 (Fève et al. 2000): KTA nz(1.064 µm) = 1.8679, the paper's reference value", () => {
+  const n = refractiveIndex(10, [2.1931, 1.2382, 1.8920, 0.059171, 0.5088, 2.0000, 53.2898], 1.064);
+  assert.ok(Math.abs(n - 1.8679) < 1e-4, String(n));
+});
+
+test("formulas read from papers: the site computes what the Python tests checked", () => {
+  // web/public/ri: entries of the "papers" shelf (data/rag-optics/paper_formulas.yml)
+  const index = JSON.parse(readFileSync(new URL("../public/ri/index.json", import.meta.url)));
+  const papers = index.filter((m) => m.shelf === "papers");
+  assert.ok(papers.length >= 12);
+  const kbbf = JSON.parse(readFileSync(new URL(`../public/ri/m/${papers.find((m) => m.material === "KBe2BO3F2").i}.json`, import.meta.url)));
+  const no = kbbf.find((e) => e.direction === "o" && e.type !== "tab");
+  assert.ok(Math.abs(refractiveIndex(no.type, no.coefficients, 0.4047) - 1.49148) < 2e-5); // Chen et al. 2009, Table 2
+});
