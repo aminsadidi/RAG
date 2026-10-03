@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>جزوه‌ی پروژه MatRAG Optics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7f9;--card:#ffffff;--ink:#1d2330;--muted:#5d6676;--line:#e3e6ec;--line-strong:#b9c0cc;
+  --accent:#2563eb;--accent-soft:#e8efff;--ok:#1a7f37;--warn:#9a6700;--warn-soft:#fff6db;--err:#c62828;--code:#f1f3f6;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151b;--card:#1a1e26;--ink:#e6e9ef;--muted:#9aa3b2;--line:#2b313c;--line-strong:#465061;
+  --accent:#6ea0ff;--accent-soft:#1d2a45;--ok:#3fb950;--warn:#d29922;--warn-soft:#2e2715;--err:#ff6b6b;--code:#232833;}}
+:root[data-theme="dark"]{
+  --bg:#12151b;--card:#1a1e26;--ink:#e6e9ef;--muted:#9aa3b2;--line:#2b313c;--line-strong:#465061;
+  --accent:#6ea0ff;--accent-soft:#1d2a45;--ok:#3fb950;--warn:#d29922;--warn-soft:#2e2715;--err:#ff6b6b;--code:#232833;}
+*{box-sizing:border-box}
+html{direction:rtl}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Vazirmatn,Tahoma,"Segoe UI",sans-serif;font-size:16.5px;line-height:2;
+  text-align:right;direction:rtl;-webkit-text-size-adjust:100%}
+main{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+h1,h2,h3,h4{line-height:1.5;margin:0}
+h1{font-size:30px;font-weight:800}
+h2{font-size:23px;font-weight:800;margin:0 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+h3{font-size:18px;font-weight:600;margin:22px 0 6px}
+h4{font-size:16px;font-weight:600;margin:0 0 6px}
+p{margin:8px 0}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin:18px 0}
+.cover{padding:30px 24px}
+.cover .sub{color:var(--muted);margin-top:6px}
+.muted{color:var(--muted)} .small{font-size:13.5px;line-height:1.7}
+[dir="ltr"]{unicode-bidi:isolate;direction:ltr;display:inline-block;text-align:left}
+span[dir="ltr"],bdi{display:inline}
+ul,ol{margin:6px 0;padding-right:26px;padding-left:0}
+ol{list-style-type:persian}
+li{margin:4px 0}
+.box{border-radius:10px;padding:10px 16px;margin:12px 0;border-right:4px solid var(--accent);background:var(--accent-soft)}
+.box.casual{border-right-color:var(--warn);background:var(--warn-soft)}
+.box b:first-child{display:block;margin-bottom:2px}
+.formula{direction:ltr;text-align:center;font-family:"Cambria Math","Times New Roman",serif;font-size:21px;background:var(--code);border-radius:10px;padding:12px;margin:12px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px;line-height:1.75}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:right;vertical-align:top}
+th{background:var(--code);font-weight:600}
+td.num,th.num{text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:14px 0}
+.tile{background:var(--code);border-radius:12px;padding:12px 14px;line-height:1.6}
+.tile .n{font-size:26px;font-weight:800;color:var(--accent)}
+.tile .t{font-size:13.5px;color:var(--muted)}
+.toc ol{columns:2;column-gap:30px}
+.toc a{color:var(--accent);text-decoration:none}
+svg.chart{direction:ltr;width:100%;height:auto;display:block;margin:10px 0;font-family:Vazirmatn,Tahoma,sans-serif}
+svg .lab{font-size:13px;fill:var(--ink)} svg .lab.muted{fill:var(--muted);font-size:12px}
+svg .val{font-size:12.5px;fill:var(--muted)} svg .strong{font-weight:700;fill:var(--ink)}
+svg .box{font-size:14px;font-weight:600;fill:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:14px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-left:6px;vertical-align:-1px}
+.matgroup{margin:14px 0}
+ul.mats{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+ul.mats li{background:var(--code);border-radius:20px;padding:0 12px;font-size:14px;margin:0}
+ul.mats b{color:var(--accent);font-weight:600;margin-right:4px}
+.steps>li{margin:10px 0}
+.qa td:first-child{font-weight:600;width:32%}
+footer{color:var(--muted);text-align:center;font-size:13.5px}
+@media (max-width:640px){
+  body{font-size:15.5px} section{padding:16px} h1{font-size:24px} h2{font-size:20px}
+  .toc ol{columns:1} .qa td:first-child{width:auto}
+}
+@media print{
+  body{background:#fff} section{break-inside:avoid-page;border:0;padding:8px 0} .toc{display:none}
+}
+</style>
+</head>
+<body>
+<main>
+
+<section class="cover">
+  <h1>سامانه‌ی بازیابی ثابت‌های نوری از مقاله‌ها</h1>
+  <div style="font-size:20px;font-weight:600;margin-top:4px"><span dir="ltr">MatRAG Optics</span></div>
+  <p class="sub">جزوه‌ی پروژه: از کجا شروع شد، چه کردیم، چرا، خروجی نهایی چیست و چطور کار می‌کند. هر بخش یک توضیح علمی دارد و یک توضیح خودمونی.</p>
+  <div class="tiles">
+    <div class="tile"><div class="n">۲٬۶۲۱</div><div class="t">مقاله در پایگاه سایت</div></div>
+    <div class="tile"><div class="n">۱٬۹۲۳</div><div class="t">مقاله با متن کامل PDF</div></div>
+    <div class="tile"><div class="n">۵۶٬۸۴۴</div><div class="t">بخش (پاراگراف یا جدول) قابل جست‌وجو</div></div>
+    <div class="tile"><div class="n">۸٬۴۶۸</div><div class="t">جدول استخراج‌شده از مقاله‌ها</div></div>
+    <div class="tile"><div class="n">۲٬۲۴۶</div><div class="t">ماده در زبانه‌ی ضریب شکست</div></div>
+    <div class="tile"><div class="n">۳٬۴۶۱</div><div class="t">منحنی ضریب شکست (۲٬۲۸۹ فرمول)</div></div>
+  </div>
+</section>
+
+<section class="toc">
+  <h2>فهرست</h2>
+  <ol>
+    <li><a href="#s1">مسئله و هدف پروژه</a></li>
+    <li><a href="#s2">مفاهیم پایه</a></li>
+    <li><a href="#s3">مسیر پروژه گام‌به‌گام</a></li>
+    <li><a href="#s4">چرا کولب</a></li>
+    <li><a href="#s5">آمار مجموعه: مقاله‌ها، مواد، نمودارها</a></li>
+    <li><a href="#s6">خروجی نهایی: سایت چطور کار می‌کند</a></li>
+    <li><a href="#s7">امکانات سایت و کاربردها</a></li>
+    <li><a href="#s8">ارزیابی و نتایج</a></li>
+    <li><a href="#s9">محدودیت‌ها و کارهای آینده</a></li>
+    <li><a href="#s10">راهنمای ارائه و سؤال‌های استاد</a></li>
+    <li><a href="#s11">واژه‌نامه</a></li>
+  </ol>
+</section>
+
+<section id="s1">
+  <h2>۱. مسئله و هدف پروژه</h2>
+  <p>هدف پروژه ساختن یک سامانه‌ی <b>بازیابی (<span dir="ltr">RAG</span>)</b> است. این سامانه از میان حدود ۲٬۶۰۰ مقاله‌ی اپتیک، بخشی را پیدا می‌کند که ثابت نوری یک ماده (ضریب شکست، فرمول پاشندگی) در آن آمده و آن را با نام مقاله، شماره‌ی صفحه و محل دقیق روی صفحه نشان می‌دهد.</p>
+  <h3>بخش علمی</h3>
+  <p>ضریب شکست <i>n</i> به طول موج <i>λ</i> بستگی دارد؛ به این پاشندگی می‌گویند. برای بلورهای نوری مثل <span dir="ltr">LBO</span>، <span dir="ltr">BBO</span> و <span dir="ltr">KTP</span> این وابستگی معمولاً با فرمول سلمایر بیان می‌شود:</p>
+  <div class="formula">n²(λ) = 1 + Σ<sub>i</sub> B<sub>i</sub> λ² / (λ² − C<sub>i</sub>)</div>
+  <p>ضرایب <span dir="ltr">B<sub>i</sub></span> و <span dir="ltr">C<sub>i</sub></span> را هر آزمایشگاه با اندازه‌گیری به دست می‌آورد و در مقاله‌اش گزارش می‌کند. این اعداد برای طراحی لیزر، تطبیق فاز (<span dir="ltr">phase matching</span>) و اپتیک غیرخطی لازم‌اند.</p>
+  <h3>مشکل</h3>
+  <p>این داده‌ها در هزاران مقاله پخش‌اند: گاهی در متن، گاهی در جدول، گاهی در مقاله‌ای اسکن‌شده از دهه‌ی ۶۰. پیدا کردن دستی‌شان ساعت‌ها طول می‌کشد. مدل‌های زبانی مثل <span dir="ltr">ChatGPT</span> هم اگر از حافظه جواب بدهند، ممکن است عدد بسازند (توهم یا <span dir="ltr">hallucination</span>) و منبع درست ندهند.</p>
+  <div class="box casual"><b>به زبان خودمونی</b>فرض کن یک کتابخانه‌ی ۲٬۶۰۰ جلدی داری و دنبال یک عدد خاص در یکی از کتاب‌ها هستی. این سیستم کتابدار باهوشی است که سؤالت را می‌فهمد، کتاب و صفحه‌ی درست را باز می‌کند و همان پاراگراف را با ماژیک زرد نشانت می‌دهد. جواب را از خودش نمی‌سازد؛ فقط سند را جلوی چشمت می‌گذارد. اگر هم کتاب مورد نظر در کتابخانه نباشد، صادقانه می‌گوید «نداریم».</div>
+  <h3>چرا «بازیابی» و نه «جواب‌دهی»</h3>
+  <p>تصمیم گرفتیم سایت خودش جواب ننویسد. سایت منابع را پیدا می‌کند و یک فایل آماده (<span dir="ltr">context pack</span>) می‌دهد که می‌شود به هر مدل زبانی داد تا با استناد به همان منابع جواب بنویسد. این‌طوری هر ادعا قابل بررسی است و مسئولیت علمی روشن می‌ماند.</p>
+</section>
+
+<section id="s2">
+  <h2>۲. مفاهیم پایه</h2>
+  <p>برای فهم پروژه هفت مفهوم کافی است. هر کدام یک تعریف علمی دارد و یک تشبیه ساده.</p>
+  <h3>۱. <span dir="ltr">RAG (Retrieval-Augmented Generation)</span></h3>
+  <ul>
+    <li><b>علمی:</b> روشی که پیش از تولید متن با مدل زبانی، مرتبط‌ترین مستندات را از یک پایگاه بازیابی می‌کند و به مدل می‌دهد تا پاسخ به آن‌ها مستند باشد.</li>
+    <li><b>خودمونی:</b> امتحان با کتاب باز. مدل از حافظه جواب نمی‌دهد؛ اول صفحه‌ی درست به دستش داده می‌شود.</li>
+    <li><b>در این پروژه:</b> سایت بخش «بازیابی» را انجام می‌دهد و «تولید» را به هر مدلی که کاربر بخواهد می‌سپارد.</li>
+  </ul>
+  <h3>۲. بخش (<span dir="ltr">chunk</span>)</h3>
+  <ul>
+    <li><b>علمی:</b> هر مقاله بر اساس ساختارش (عنوان بخش، پاراگراف، جدول) به تکه‌هایی حدود ۵۰۰ توکن تقسیم می‌شود.</li>
+    <li><b>خودمونی:</b> به‌جای اینکه کل کتاب را بیاوریم، فقط همان پاراگراف درست را می‌آوریم. کل مجموعه ۵۶٬۸۴۴ بخش است.</li>
+  </ul>
+  <h3>۳. بردار (<span dir="ltr">embedding</span>)</h3>
+  <ul>
+    <li><b>علمی:</b> یک شبکه‌ی عصبی (مدل <span dir="ltr">bge-base-en-v1.5</span>) هر متن را به یک بردار ۷۶۸ بعدی تبدیل می‌کند. شباهت معنایی دو متن برابر است با کسینوس زاویه‌ی بین بردارهایشان.</li>
+    <li><b>خودمونی:</b> به هر پاراگراف یک «مختصات معنایی» می‌دهیم. دو پاراگراف هم‌معنا نزدیک هم می‌افتند، حتی اگر کلماتشان فرق کند (مثل <span dir="ltr">dispersion formula</span> و <span dir="ltr">Sellmeier equation</span>).</li>
+  </ul>
+  <h3>۴. <span dir="ltr">BM25</span> (جست‌وجوی کلیدواژه)</h3>
+  <ul>
+    <li><b>علمی:</b> فرمولی آماری که به هر متن بر اساس تکرار کلمات سؤال و کمیاب بودنشان در کل مجموعه (<span dir="ltr">IDF</span>) امتیاز می‌دهد.</li>
+    <li><b>خودمونی:</b> مثل یک <span dir="ltr">Ctrl+F</span> باهوش. برای فرمول شیمیایی یا نام ماده (مثل <span dir="ltr">LiB3O5</span>) از بردار بهتر است، چون دنبال همان علامت دقیق می‌گردد.</li>
+  </ul>
+  <h3>۵. جست‌وجوی ترکیبی (<span dir="ltr">Hybrid + RRF</span>)</h3>
+  <ul>
+    <li><b>علمی:</b> نتیجه‌ی دو جست‌وجو با <span dir="ltr">Reciprocal Rank Fusion</span> ترکیب می‌شود؛ هر سند از هر فهرست امتیاز <span dir="ltr">1/(k + rank)</span> می‌گیرد و امتیازها جمع می‌شوند.</li>
+    <li><b>خودمونی:</b> دو داور نظر می‌دهند؛ هر چیزی که هر دو داور بالا آورده‌اند، بالاتر می‌رود.</li>
+  </ul>
+  <h3>۶. پایگاه برداری (<span dir="ltr">Vector Database</span>)</h3>
+  <ul>
+    <li><b>علمی:</b> پایگاهی که تعداد زیادی بردار را نگه می‌دارد و نزدیک‌ترین‌ها به بردار سؤال را با الگوریتم <span dir="ltr">HNSW</span> در کسری از ثانیه پیدا می‌کند. دو پایگاه داریم: <span dir="ltr">ChromaDB</span> در کولب و <span dir="ltr">Qdrant Cloud</span> برای سایت.</li>
+    <li><b>خودمونی:</b> قفسه‌ی کتابخانه که کتاب‌ها را بر اساس موضوع کنار هم چیده.</li>
+  </ul>
+  <h3>۷. <span dir="ltr">OCR</span> (خواندن نوشته از تصویر)</h3>
+  <ul>
+    <li><b>علمی:</b> مدلی که روی تصویر صفحه ناحیه‌های متن را تشخیص می‌دهد و حروف را می‌خواند (ما از <span dir="ltr">RapidOCR</span> استفاده کردیم).</li>
+    <li><b>خودمونی:</b> مقاله‌های قدیمی اسکن هستند، یعنی فقط عکس. <span dir="ltr">OCR</span> آن عکس را دوباره به متن قابل جست‌وجو تبدیل می‌کند.</li>
+  </ul>
+</section>
+
+<section id="s3">
+  <h2>۳. مسیر پروژه گام‌به‌گام</h2>
+  <p>پروژه در نه مرحله پیش رفت؛ هر مرحله مشکلی از مرحله‌ی قبل را حل کرد.</p>
+  <ol class="steps">
+    <li><b>جمع‌آوری مقاله‌ها.</b> فهرست مقاله‌ها از <span dir="ltr">OpenAlex</span> و <span dir="ltr">refractiveindex.info</span> ساخته شد و با روش «گلوله‌برفی» (رفتن سراغ مراجع مقاله‌های مهم) گسترش پیدا کرد. حدود ۱٬۹۳۰ <span dir="ltr">PDF</span> از منابع آزاد و دسترسی دانشگاه گرفته شد؛ برای بقیه فقط چکیده و مشخصات ماند. نام هر فایل همان <span dir="ltr">DOI</span> مقاله است.<br><span class="muted">چرا: بدون مجموعه‌ی بزرگ و مرتب، هیچ سامانه‌ی بازیابی معنا ندارد.</span></li>
+    <li><b>سازمان‌دهی در <span dir="ltr">Google Drive</span>.</b> مقاله‌ها در پوشه‌ی <span dir="ltr">RAG-Optics</span> به ۸ دسته و ۴۷ پوشه‌ی موضوعی تقسیم شدند (مثل <span dir="ltr">Borates/BBO</span>). یک فهرست اصلی (<span dir="ltr">master index</span>) اطلاعات هر مقاله را نگه می‌دارد. هیچ فایلی پاک نشد؛ فقط جابه‌جا شد.</li>
+    <li><b>تبدیل <span dir="ltr">PDF</span> به متن ساختاریافته (<span dir="ltr">Docling</span>).</b> ابزار <span dir="ltr">Docling</span> هر <span dir="ltr">PDF</span> را با مدل‌های یادگیری عمیق تحلیل می‌کند: عنوان‌ها، پاراگراف‌ها و جدول‌ها را جدا می‌کند و مختصات هر بخش روی صفحه را نگه می‌دارد. همین مختصات بعداً کادر زرد را می‌سازد. این کندترین مرحله بود و در ۴ حساب کولب هم‌زمان اجرا شد.</li>
+    <li><b>ساخت پایگاه دانش.</b> متن‌ها بخش‌بندی و بردارسازی شدند و در <span dir="ltr">ChromaDB</span> قرار گرفتند؛ نمایه‌ی <span dir="ltr">BM25</span> هم ساخته شد. مقاله‌های بدون <span dir="ltr">PDF</span> با چکیده‌شان وارد شدند و برچسب «فقط چکیده» دارند تا کسی آن‌ها را با متن کامل اشتباه نگیرد.</li>
+    <li><b>ارزیابی اول.</b> ۸۶ سؤال خودکار از <span dir="ltr">refractiveindex.info</span> ساخته شد و سه روش جست‌وجو مقایسه شدند. نتیجه متوسط بود و علت‌هایش مشخص شد: فرمول‌های شیمیایی فاصله‌دار در متن <span dir="ltr">PDF</span> (<span dir="ltr">«LiB 3 O 5»</span>) و مقاله‌های اسکن‌شده.</li>
+    <li><b>ساخت سایت.</b> برنامه‌ی کولب برای استفاده‌ی روزمره سخت بود؛ پس یک سایت خصوصی روی <span dir="ltr">Cloudflare</span> ساخته شد که از یک کپی پایگاه در <span dir="ltr">Qdrant Cloud</span> جست‌وجو می‌کند. در همین مرحله یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌ها (<span dir="ltr">BBO → BaB2O4</span>) اضافه شد و جست‌وجوی کلیدواژه حدود ۵۷٪ بهتر شد.</li>
+    <li><b>کیفیت داده: <span dir="ltr">OCR</span> و <span dir="ltr">PDF</span>های اشتباه.</b> متن همه‌ی مقاله‌های <span dir="ltr">PDF</span> بررسی شد. ۶۱ مقاله‌ی اسکن‌شده یا با متن خراب <span dir="ltr">OCR</span> شدند و فقط جایی که متن واقعاً بهتر شد و هیچ عددی از جدول‌ها گم نشد جایگزین شدند (۴۵ مقاله، و بعداً ۹ مقاله‌ی دیگر با <span dir="ltr">GPU</span>). معادله‌های ۴۳ مقاله هم با مدل <span dir="ltr">CodeFormula</span> به <span dir="ltr">LaTeX</span> تبدیل شدند. ۶ <span dir="ltr">PDF</span> پیدا شد که مقاله‌ی دیگری داخلشان بود؛ این‌ها فقط با چکیده‌ی درست نمایه شدند.</li>
+    <li><b>ابزارهای تحلیلی.</b> زبانه‌ی «ضریب شکست» با همه‌ی ۳٬۴۶۱ منحنی <span dir="ltr">refractiveindex.info</span>، زبانه‌ی «ارزیابی»، مرور مجموعه و ورود داده‌ی دستی (فرمول یا نقاط اندازه‌گیری خودتان) اضافه شد.</li>
+    <li><b>صداقت در جواب و جست‌وجوی نام مواد.</b> سامانه حالا اگر منبع مرتبطی نباشد، می‌گوید «پیدا نشد» و دلیلش را هم می‌گوید. زبانه‌ی ضریب شکست هم مواد را با نام انگلیسی، نام کوتاه (<span dir="ltr">BBO</span>) و نام فارسی (باریم بورات) پیدا می‌کند، نه فقط با فرمول شیمیایی.</li>
+  </ol>
+  <div class="box casual"><b>به زبان خودمونی</b>اول کتاب‌ها را جمع کردیم، بعد قفسه‌بندی کردیم، بعد همه را تایپ و فهرست‌بندی کردیم، بعد کتابدار را امتحان کردیم و برایش یک پیشخوان ساختیم. بعد کتاب‌های پاره و اشتباهی را درست کردیم و در آخر به کتابدار یاد دادیم وقتی چیزی را ندارد، راستش را بگوید.</div>
+</section>
+
+<section id="s4">
+  <h2>۴. چرا کولب، و چه چیزهایی آن‌جا اجرا شد</h2>
+  <p>کارهای سنگین در <span dir="ltr">Google Colab</span> اجرا شدند، چون کولب به‌رایگان کارت گرافیک (<span dir="ltr">GPU</span>) می‌دهد و مستقیم به <span dir="ltr">Google Drive</span> (جایی که <span dir="ltr">PDF</span>ها هستند) وصل می‌شود. سایت فقط جست‌وجو می‌کند و بار پردازش را نمی‌کشد.</p>
+  <div class="box casual"><b>به زبان خودمونی</b>کولب آشپزخانه است و سایت سالن رستوران. غذا یک بار در آشپزخانه پخته می‌شود و بعد بارها سرو می‌شود.</div>
+  <div class="tablewrap"><table>
+    <tr><th>کار</th><th>نوت‌بوک</th><th>چرا آن‌جا</th></tr>
+    <tr><td>تبدیل حدود ۱٬۹۰۰ <span dir="ltr">PDF</span> با <span dir="ltr">Docling</span></td><td><span dir="ltr">colab_worker_1…4</span><br><span class="muted small">هم‌زمان در ۴ حساب</span></td><td>مدل‌های تحلیل صفحه روی <span dir="ltr">GPU</span> چند برابر سریع‌ترند؛ تقسیم کار بین ۴ حساب، زمان را حدود ۴ برابر کم کرد.</td></tr>
+    <tr><td>بخش‌بندی و بردارسازی ۵۶ هزار بخش</td><td><span dir="ltr">colab_demo</span></td><td>مدل <span dir="ltr">embedding</span> روی <span dir="ltr">GPU</span> سریع است.</td></tr>
+    <tr><td>ارزیابی بازیابی و استخراج فرمول</td><td><span dir="ltr">colab_demo</span></td><td>مدل زبانی متن‌باز (<span dir="ltr">qwen3:8b</span>) روی <span dir="ltr">GPU</span> کولب رایگان اجرا می‌شود.</td></tr>
+    <tr><td>بارگذاری پایگاه و <span dir="ltr">PDF</span>ها در سایت</td><td><span dir="ltr">colab_site</span></td><td>کولب مستقیم به <span dir="ltr">Drive</span> دسترسی دارد.</td></tr>
+    <tr><td><span dir="ltr">OCR</span> مقاله‌های بی‌متن و بازسازی معادله‌ها</td><td><span dir="ltr">colab_gpu_update</span></td><td>مدل خواندن معادله (<span dir="ltr">CodeFormula</span>) بدون <span dir="ltr">GPU</span> عملاً قابل اجرا نیست.</td></tr>
+  </table></div>
+  <h3>نکته‌های فنی که ارزش گفتن دارند</h3>
+  <ul>
+    <li>هر مرحله <b>ادامه‌پذیر</b> است: اگر کولب قطع شود، اجرای دوباره از همان‌جا ادامه می‌دهد، چون نتیجه‌ی هر مقاله جداگانه در <span dir="ltr">Drive</span> ذخیره می‌شود.</li>
+    <li>بردارهای سایت <b>همان بردارهای کولب</b> هستند و دوباره ساخته نشدند؛ پس ارزیابی کولب به سایت هم مربوط است.</li>
+    <li>سایت برای سؤال‌ها از همان مدل <span dir="ltr">bge</span> با همان تنظیمات استفاده می‌کند؛ وگرنه بردار سؤال و بردار مقاله‌ها قابل مقایسه نبودند.</li>
+  </ul>
+</section>
+
+<section id="s5">
+  <h2>۵. آمار مجموعه: مقاله‌ها، مواد، نمودارها</h2>
+  <p>این بخش برای جواب دادن به سؤال «دقیقاً چه چیزی پردازش شده؟» است. همه‌ی اعداد از خود پایگاه سایت شمرده شده‌اند.</p>
+
+  <h3>مقاله‌ها بر اساس نوع</h3>
+  <div class="tablewrap"><table>
+    <tr><th>نوع</th><th class="num">تعداد مقاله</th><th class="num">تعداد بخش</th><th>یعنی چه</th></tr>
+    <tr><td>متن کامل <span dir="ltr">PDF</span></td><td class="num">۱٬۹۲۳</td><td class="num">۵۶٬۱۴۶</td><td>کل مقاله خوانده شده؛ جست‌وجو صفحه و محل دقیق را نشان می‌دهد و کادر زرد روی <span dir="ltr">PDF</span> دارد.</td></tr>
+    <tr><td>فقط چکیده</td><td class="num">۶۶۴</td><td class="num">۶۶۴</td><td><span dir="ltr">PDF</span> رایگان در دسترس نبود؛ فقط چکیده (از <span dir="ltr">OpenAlex</span>) نمایه شد.</td></tr>
+    <tr><td>فقط عنوان</td><td class="num">۳۴</td><td class="num">۳۴</td><td>نه <span dir="ltr">PDF</span> بود نه چکیده؛ فقط مشخصات مقاله.</td></tr>
+    <tr><th>جمع</th><th class="num">۲٬۶۲۱</th><th class="num">۵۶٬۸۴۴</th><th></th></tr>
+  </table></div>
+  <p>از ۵۶٬۸۴۴ بخش، <b>۴۷٬۶۷۸ بخش متن</b> و <b>۸٬۴۶۸ بخش جدول</b> است. جدول‌ها مهم‌اند، چون ضرایب سلمایر و ضریب شکست اندازه‌گیری‌شده بیشتر در جدول‌ها می‌آیند. <span dir="ltr">Docling</span> جدول‌ها را با ساختار سطر و ستون نگه می‌دارد. همه‌ی بخش‌های متن کامل مختصات روی صفحه دارند.</p>
+
+  <h3>کیفیت داده</h3>
+  <ul>
+    <li><b><span dir="ltr">OCR</span>:</b> ۶۱ مقاله‌ی اسکن‌شده یا با متن خراب دوباره خوانده شدند؛ ۴۵ تا که متنشان واقعاً بهتر شد جایگزین شدند و ۹ مقاله‌ی دیگر هم در اجرای <span dir="ltr">GPU</span>.</li>
+    <li><b>معادله‌ها:</b> در ۴۳ مقاله‌ی پرمعادله، معادله‌ها با مدل <span dir="ltr">CodeFormula</span> به <span dir="ltr">LaTeX</span> تبدیل شدند تا فرمول سلمایر قابل خواندن و جست‌وجو باشد.</li>
+    <li><b><span dir="ltr">PDF</span> اشتباه:</b> ۶ فایل پیدا شد که مقاله‌ی دیگری داخلشان بود. این‌ها فقط با چکیده‌ی درست نمایه شدند تا منبع غلط نشان داده نشود.</li>
+    <li><b>بازه‌ی زمانی:</b> قدیمی‌ترین مقاله مال سال ۱۹۴۷ و جدیدترین مال ۲۰۲۶ است.</li>
+  </ul>
+
+  <h3>مقاله‌ها در ۸ دسته</h3>
+  <div class="tablewrap"><table>
+    <tr><th>دسته</th><th class="num">مقاله</th><th>چه موادی / چه موضوعی</th></tr>
+    <tr><td>بلورهای فروسرخ میانی<div class="muted small" dir="ltr">Mid-IR chalcopyrites, chalcogenides</div></td><td class="num">۴۹۳</td><td>ZGP، AgGaS2، AgGaSe2، GaSe، CdSiP2، BaGa4Se7؛ لیزرها و OPOهای فروسرخ</td></tr><tr><td>بورات‌ها<div class="muted small" dir="ltr">Borates</div></td><td class="num">۴۹۳</td><td>BBO، LBO، CLBO، BiBO، KBBF؛ بلورهای غیرخطی فرابنفش و مرئی</td></tr><tr><td>نظریه و مدل‌های پاشندگی<div class="muted small" dir="ltr">Theory, dispersion models</div></td><td class="num">۴۰۱</td><td>تطبیق فاز، مدل‌های سلمایر/کوشی/کرامرز-کرونیگ، ضریب گرمانوری، روش‌های اندازه‌گیری، مرورها</td></tr><tr><td>نیم‌رساناها<div class="muted small" dir="ltr">Semiconductors, QPM</div></td><td class="num">۳۰۷</td><td>GaAs، GaP، Si، Ge، GaN، ZnSe؛ اپتیک فروسرخ و نیم‌رسانای جهت‌دار</td></tr><tr><td>نیوبات‌ها، تانتالات‌ها، یدات‌ها<div class="muted small" dir="ltr">Niobates, Tantalates, Iodates</div></td><td class="num">۳۰۳</td><td>LiNbO3، LiTaO3 (PPLN/PPLT)، KNbO3، LiIO3؛ تطبیق فاز شبه‌فازی</td></tr><tr><td>فسفات‌ها و آرسنات‌ها<div class="muted small" dir="ltr">Phosphates, Arsenates, KDP</div></td><td class="num">۲۷۵</td><td>KTP، RTP، KDP، ADP، KTA؛ تبدیل بسامد و الکترواپتیک</td></tr><tr><td>بلورهای خطی و میزبان لیزر<div class="muted small" dir="ltr">Linear crystals, laser hosts</div></td><td class="num">۲۶۹</td><td>YAG، YVO4، سافایر، کوارتز، فلورایدها، کلسیت</td></tr><tr><td>بلورهای آلی و تراهرتز<div class="muted small" dir="ltr">Organic NLO, THz</div></td><td class="num">۵۶</td><td>DAST، DSTMS، OH1؛ تولید تراهرتز</td></tr>
+  </table></div>
+  <svg viewBox="0 0 720 282" class="chart" role="img"><text x="716" y="23.0" text-anchor="end" class="lab">بلورهای فروسرخ میانی</text><rect x="62.0" y="5" width="400.0" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="56.0" y="23.0" text-anchor="end" class="val">۴۹۳</text><text x="716" y="57.0" text-anchor="end" class="lab">بورات‌ها</text><rect x="62.0" y="39" width="400.0" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="56.0" y="57.0" text-anchor="end" class="val">۴۹۳</text><text x="716" y="91.0" text-anchor="end" class="lab">نظریه و مدل‌های پاشندگی</text><rect x="136.6" y="73" width="325.4" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="130.6" y="91.0" text-anchor="end" class="val">۴۰۱</text><text x="716" y="125.0" text-anchor="end" class="lab">نیم‌رساناها</text><rect x="212.9" y="107" width="249.1" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="206.9" y="125.0" text-anchor="end" class="val">۳۰۷</text><text x="716" y="159.0" text-anchor="end" class="lab">نیوبات‌ها، تانتالات‌ها، یدات‌ها</text><rect x="216.2" y="141" width="245.8" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="210.2" y="159.0" text-anchor="end" class="val">۳۰۳</text><text x="716" y="193.0" text-anchor="end" class="lab">فسفات‌ها و آرسنات‌ها</text><rect x="238.9" y="175" width="223.1" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="232.9" y="193.0" text-anchor="end" class="val">۲۷۵</text><text x="716" y="227.0" text-anchor="end" class="lab">بلورهای خطی و میزبان لیزر</text><rect x="243.7" y="209" width="218.3" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="237.7" y="227.0" text-anchor="end" class="val">۲۶۹</text><text x="716" y="261.0" text-anchor="end" class="lab">بلورهای آلی و تراهرتز</text><rect x="416.6" y="243" width="45.4" height="26" rx="4" fill="var(--accent)" opacity="0.75"/><text x="410.6" y="261.0" text-anchor="end" class="val">۵۶</text></svg>
+  <p class="muted small">شمارش از فهرست مجموعه است؛ ۱۵ مقاله دسته‌ی مشخصی ندارند.</p>
+
+  <h3>مقاله‌ها بر اساس دهه‌ی انتشار</h3>
+  <svg viewBox="0 0 720 260" class="chart" role="img"><line x1="30" x2="710" y1="226" y2="226" stroke="var(--line)"/><rect x="40.0" y="225.8" width="45.5" height="0.2" rx="3" fill="var(--accent)" opacity=".8"/><text x="62.7" y="219.8" text-anchor="middle" class="val">۱</text><text x="62.7" y="246" text-anchor="middle" class="lab">۱٬۹۴۰</text><rect x="113.3" y="225.3" width="45.5" height="0.7" rx="3" fill="var(--accent)" opacity=".8"/><text x="136.1" y="219.3" text-anchor="middle" class="val">۳</text><text x="136.1" y="246" text-anchor="middle" class="lab">۱٬۹۵۰</text><rect x="186.7" y="200.2" width="45.5" height="25.8" rx="3" fill="var(--accent)" opacity=".8"/><text x="209.4" y="194.2" text-anchor="middle" class="val">۱۰۶</text><text x="209.4" y="246" text-anchor="middle" class="lab">۱٬۹۶۰</text><rect x="260.0" y="185.4" width="45.5" height="40.6" rx="3" fill="var(--accent)" opacity=".8"/><text x="282.7" y="179.4" text-anchor="middle" class="val">۱۶۷</text><text x="282.7" y="246" text-anchor="middle" class="lab">۱٬۹۷۰</text><rect x="333.3" y="188.6" width="45.5" height="37.4" rx="3" fill="var(--accent)" opacity=".8"/><text x="356.1" y="182.6" text-anchor="middle" class="val">۱۵۴</text><text x="356.1" y="246" text-anchor="middle" class="lab">۱٬۹۸۰</text><rect x="406.7" y="121.2" width="45.5" height="104.8" rx="3" fill="var(--accent)" opacity=".8"/><text x="429.4" y="115.2" text-anchor="middle" class="val">۴۳۱</text><text x="429.4" y="246" text-anchor="middle" class="lab">۱٬۹۹۰</text><rect x="480.0" y="88.1" width="45.5" height="137.9" rx="3" fill="var(--accent)" opacity=".8"/><text x="502.7" y="82.1" text-anchor="middle" class="val">۵۶۷</text><text x="502.7" y="246" text-anchor="middle" class="lab">۲٬۰۰۰</text><rect x="553.3" y="30.0" width="45.5" height="196.0" rx="3" fill="var(--accent)" opacity=".8"/><text x="576.1" y="24.0" text-anchor="middle" class="val">۸۰۶</text><text x="576.1" y="246" text-anchor="middle" class="lab">۲٬۰۱۰</text><rect x="626.7" y="138.0" width="45.5" height="88.0" rx="3" fill="var(--accent)" opacity=".8"/><text x="649.4" y="132.0" text-anchor="middle" class="val">۳۶۲</text><text x="649.4" y="246" text-anchor="middle" class="lab">۲٬۰۲۰</text></svg>
+  <p>بیشتر مقاله‌ها مال دهه‌های ۲۰۰۰ و ۲۰۱۰ هستند، ولی حدود ۲۷۰ مقاله مال دهه‌های ۶۰ و ۷۰ است. این‌ها همان مقاله‌های کلاسیکی‌اند که فرمول‌های سلمایر پایه را گزارش کرده‌اند و بیشترشان اسکن‌شده‌اند؛ دلیل اصلی نیاز به <span dir="ltr">OCR</span> همین‌جاست.</p>
+
+  <h3>چند ماده داریم؟</h3>
+  <p>مقاله‌ها در <b>۴۷ پوشه‌ی موضوعی</b> چیده شده‌اند: <b>۳۹ پوشه برای مواد</b> (هر پوشه یک ماده یا یک خانواده‌ی نزدیک، مثل <span dir="ltr">LiNbO3 / PPLN</span>) و <b>۸ پوشه برای موضوع‌های عمومی</b> (نظریه‌ی تطبیق فاز، مدل‌های پاشندگی، ضریب گرمانوری، روش‌های اندازه‌گیری، مرورها). اگر هر ماده‌ی داخل پوشه‌ها را جدا بشماریم، مجموعه حدود ۷۰ بلور و ماده‌ی نوری را پوشش می‌دهد. عدد کنار هر پوشه، تعداد مقاله‌های آن است:</p>
+  <div class="matgroup"><h4>بورات‌ها <span class="muted">(۴۹۳ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">BBO beta-BaB2O4</span> <b>۷۵</b></li><li><span dir="ltr">YCOB GdCOB ReCOB</span> <b>۵۹</b></li><li><span dir="ltr">LBO LiB3O5</span> <b>۵۹</b></li><li><span dir="ltr">CLBO CsLiB6O10</span> <b>۵۷</b></li><li><span dir="ltr">BiBO BiB3O6</span> <b>۵۴</b></li><li><span dir="ltr">KBBF KBe2BO3F2</span> <b>۵۳</b></li><li><span dir="ltr">LCB La2CaB10O19</span> <b>۵۲</b></li><li><span dir="ltr">SBBO KABO other borates</span> <b>۵۰</b></li><li><span dir="ltr">CBO CsB3O5</span> <b>۳۴</b></li></ul></div><div class="matgroup"><h4>فسفات‌ها و آرسنات‌ها <span class="muted">(۲۷۵ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">KTP KTiOPO4</span> <b>۶۴</b></li><li><span dir="ltr">RTP RbTiOPO4</span> <b>۵۹</b></li><li><span dir="ltr">ADP NH4H2PO4</span> <b>۵۶</b></li><li><span dir="ltr">KTA RTA arsenates</span> <b>۵۱</b></li><li><span dir="ltr">KDP DKDP KH2PO4</span> <b>۴۵</b></li></ul></div><div class="matgroup"><h4>نیوبات‌ها، تانتالات‌ها، یدات‌ها <span class="muted">(۳۰۳ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">LiNbO3 LN PPLN</span> <b>۸۰</b></li><li><span dir="ltr">LiTaO3 LT PPLT</span> <b>۵۸</b></li><li><span dir="ltr">SBN BaTiO3 ferroelectrics</span> <b>۵۶</b></li><li><span dir="ltr">KNbO3</span> <b>۵۵</b></li><li><span dir="ltr">LiIO3 alpha-HIO3</span> <b>۵۴</b></li></ul></div><div class="matgroup"><h4>بلورهای فروسرخ میانی <span class="muted">(۴۹۳ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">CdSe CdS ZnS</span> <b>۶۰</b></li><li><span dir="ltr">ZGP ZnGeP2</span> <b>۶۰</b></li><li><span dir="ltr">BaGa4Se7 BaGa4S7</span> <b>۵۶</b></li><li><span dir="ltr">AgGaSe2</span> <b>۵۵</b></li><li><span dir="ltr">AgGaS2</span> <b>۵۵</b></li><li><span dir="ltr">GaSe GaS</span> <b>۵۴</b></li><li><span dir="ltr">LiInS2 LiGaS2 LiInSe2</span> <b>۵۳</b></li><li><span dir="ltr">CdSiP2 CSP</span> <b>۵۲</b></li><li><span dir="ltr">AgGaGeS4 HgGa2S4 others</span> <b>۴۸</b></li></ul></div><div class="matgroup"><h4>نیم‌رساناها <span class="muted">(۳۰۷ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">GaAs OP-GaAs AlGaAs</span> <b>۶۹</b></li><li><span dir="ltr">Si Ge</span> <b>۶۶</b></li><li><span dir="ltr">GaN AlN</span> <b>۶۱</b></li><li><span dir="ltr">ZnSe ZnTe</span> <b>۵۷</b></li><li><span dir="ltr">GaP OP-GaP</span> <b>۵۴</b></li></ul></div><div class="matgroup"><h4>بلورهای آلی و تراهرتز <span class="muted">(۵۶ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">DAST DSTMS OH1</span> <b>۵۶</b></li></ul></div><div class="matgroup"><h4>بلورهای خطی و میزبان لیزر <span class="muted">(۲۶۹ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">YAG YVO4 GdVO4 hosts</span> <b>۵۸</b></li><li><span dir="ltr">Fluorides CaF2 MgF2 BaF2 LiF</span> <b>۵۷</b></li><li><span dir="ltr">Quartz SiO2</span> <b>۵۶</b></li><li><span dir="ltr">Calcite TeO2 TiO2 birefringent</span> <b>۵۱</b></li><li><span dir="ltr">Sapphire Al2O3</span> <b>۴۷</b></li></ul></div><div class="matgroup"><h4>نظریه و مدل‌های پاشندگی <span class="muted">(۴۰۱ مقاله)</span></h4><ul class="mats"><li><span dir="ltr">Phase matching theory birefringence</span> <b>۶۶</b></li><li><span dir="ltr">Reviews NLO crystals databases</span> <b>۵۹</b></li><li><span dir="ltr">Seeds general</span> <b>۵۸</b></li><li><span dir="ltr">Dispersion models Cauchy Lorentz KK</span> <b>۵۵</b></li><li><span dir="ltr">Thermo-optic coefficients</span> <b>۴۵</b></li><li><span dir="ltr">Nonlinear coefficients Miller rule</span> <b>۴۵</b></li><li><span dir="ltr">Refractive index measurement methods</span> <b>۴۴</b></li><li><span dir="ltr">Sellmeier equation fitting</span> <b>۲۹</b></li></ul></div>
+
+  <h3>داده‌ها و نمودارهای زبانه‌ی ضریب شکست</h3>
+  <p>این زبانه از پایگاه آزاد <span dir="ltr">refractiveindex.info</span> ساخته شده (مجوز <span dir="ltr">CC0</span>). هر منحنی از یک مقاله است:</p>
+  <div class="tablewrap"><table>
+    <tr><th>بخش</th><th class="num">تعداد ماده</th><th>توضیح</th></tr>
+    <tr><td>مواد اصلی (عناصر و ترکیب‌های معدنی)</td><td class="num">۲۵۷</td><td>بلورهایی مثل <span dir="ltr">BaB2O4، LiB3O5، LiNbO3، KTiOPO4، Al2O3</span></td></tr>
+    <tr><td>بلورهای آلاییده، آمیخته، آلیاژهای نیم‌رسانا و سایر</td><td class="num">۱۰۸</td><td>مثل <span dir="ltr">MgO:LiNbO3</span>، بلور مایع و پلیمرهای تجاری</td></tr>
+    <tr><td>مواد آلی</td><td class="num">۹۱</td><td></td></tr>
+    <tr><td>شیشه‌ها</td><td class="num">۶</td><td></td></tr>
+    <tr><td>شیشه‌های نوری تجاری</td><td class="num">۱٬۷۸۴</td><td><span dir="ltr">Ohara</span> (۴۱۰)، <span dir="ltr">Hikari</span> (۳۷۵)، <span dir="ltr">CDGM</span> (۳۱۴)، <span dir="ltr">Hoya</span> (۱۹۰)، <span dir="ltr">Sumita</span> (۱۷۶)، <span dir="ltr">Schott</span> (۱۷۱) و چند سازنده‌ی دیگر</td></tr>
+    <tr><th>جمع</th><th class="num">۲٬۲۴۶</th><th>۳٬۴۶۱ منحنی: ۲٬۲۸۹ فرمول پاشندگی و ۱٬۱۷۲ جدول اندازه‌گیری</th></tr>
+  </table></div>
+  <p>فرمول‌ها با هر ۹ نوع فرمول <span dir="ltr">refractiveindex.info</span> (سلمایر، کوشی، و بقیه) در مرورگر محاسبه می‌شوند. این محاسبه در ۶٬۸۶۷ نقطه با برنامه‌ی پایتون مقایسه شد و یکی بود.</p>
+  <p><b>نمودارهایی که سایت می‌کشد:</b></p>
+  <ul>
+    <li><b>ضریب شکست:</b> نمودار <span dir="ltr">n(λ)</span> هر منحنی، روی بازه‌ی طول موج دلخواه، به میکرومتر یا نانومتر.</li>
+    <li><b>اختلاف <span dir="ltr">Δn</span>:</b> فاصله‌ی هر منحنی از یک منحنی مرجع؛ برای مقایسه‌ی منابع مختلف یک ماده.</li>
+    <li><b>داده‌ی خودتان:</b> فرمول یا نقاط اندازه‌گیری خودتان کنار منحنی مقاله‌ها، با جدول مقادیر و خروجی <span dir="ltr">CSV</span>.</li>
+    <li><b>مجموعه:</b> نمودار تعداد مقاله‌ها بر اساس سال و دسته.</li>
+    <li><b>ارزیابی:</b> نمودار <span dir="ltr">MRR</span> و <span dir="ltr">recall@k</span> سه روش جست‌وجو و نتیجه‌ی آزمایش استخراج فرمول.</li>
+  </ul>
+  <div class="box"><b>یک نکته‌ی مهم برای استاد</b>۷ خانواده از بلورهای مجموعه در <span dir="ltr">refractiveindex.info</span> اصلاً داده ندارند: <span dir="ltr">KTA</span>، <span dir="ltr">CBO</span>، <span dir="ltr">KBBF</span>، <span dir="ltr">CdSiP2</span>، <span dir="ltr">YCOB</span>، <span dir="ltr">LCB</span> و <span dir="ltr">DAST</span>. مقاله‌هایشان در مجموعه هست و جست‌وجو پیدایشان می‌کند، ولی نمودار آماده‌ای ندارند. این دقیقاً جایی است که سامانه ارزش اضافه دارد: فرمول را از مقاله پیدا می‌کنید و در «داده‌ی خودتان» وارد می‌کنید تا نمودارش رسم شود.</div>
+</section>
+
+<section id="s6">
+  <h2>۶. خروجی نهایی: سایت چطور کار می‌کند</h2>
+  <p>خروجی نهایی یک سایت خصوصی روی <span dir="ltr">Cloudflare</span> است که در کمتر از دو ثانیه منابع یک سؤال را از میان ۵۶٬۸۴۴ بخش پیدا می‌کند.</p>
+  <svg viewBox="0 0 760 410" class="chart" role="img"><defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs><text x="754" y="56.0" text-anchor="end" class="lab muted">یک بار، در کولب (پردازش سنگین)</text><rect x="576.0" y="66.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="660" y="92" text-anchor="middle" class="box">PDF مقاله‌ها</text><text x="660" y="112" text-anchor="middle" class="lab muted">Google Drive</text><path d="M576.0 95H557.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="386.0" y="66.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="470" y="92" text-anchor="middle" class="box">Docling</text><text x="470" y="112" text-anchor="middle" class="lab muted">متن، جدول، مختصات</text><path d="M386.0 95H367.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="196.0" y="66.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="280" y="92" text-anchor="middle" class="box">بخش‌بندی و بردار</text><text x="280" y="112" text-anchor="middle" class="lab muted">bge-base · ۷۶۸ بعد</text><path d="M196.0 95H177.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="6.0" y="66.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="90" y="92" text-anchor="middle" class="box">Qdrant Cloud</text><text x="90" y="112" text-anchor="middle" class="lab muted">۵۶٬۸۴۴ بخش</text><text x="754" y="186.0" text-anchor="end" class="lab muted">برای هر سؤال، در سایت (کمتر از ۲ ثانیه)</text><rect x="576.0" y="196.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="660" y="222" text-anchor="middle" class="box">سؤال کاربر</text><text x="660" y="242" text-anchor="middle" class="lab muted">فارسی یا انگلیسی</text><path d="M576.0 225H557.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="386.0" y="196.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="470" y="222" text-anchor="middle" class="box">ترجمه</text><text x="470" y="242" text-anchor="middle" class="lab muted">Llama 3.3 + واژه‌نامه</text><path d="M386.0 225H367.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="196.0" y="196.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="280" y="222" text-anchor="middle" class="box">برداری + BM25</text><text x="280" y="242" text-anchor="middle" class="lab muted">ترکیب با RRF</text><path d="M196.0 225H177.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="6.0" y="196.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="90" y="222" text-anchor="middle" class="box">بررسی مرتبط‌بودن</text><text x="90" y="242" text-anchor="middle" class="lab muted">پیدا شد / پیدا نشد</text><text x="754" y="316.0" text-anchor="end" class="lab muted">خروجی برای کاربر</text><rect x="6.0" y="326.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="90" y="352" text-anchor="middle" class="box">نتایج</text><text x="90" y="372" text-anchor="middle" class="lab muted">مقاله، صفحه، مختصات</text><path d="M174.0 355H193.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="196.0" y="326.0" width="168" height="58" rx="9" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="280" y="352" text-anchor="middle" class="box">کادر زرد روی PDF</text><text x="280" y="372" text-anchor="middle" class="lab muted">صفحه‌ی اصلی مقاله</text><path d="M364.0 355H383.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="386.0" y="326.0" width="168" height="58" rx="9" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="470" y="352" text-anchor="middle" class="box">فایل برای چت‌بات</text><text x="470" y="372" text-anchor="middle" class="lab muted">context pack</text><path d="M554.0 355H573.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/><rect x="576.0" y="326.0" width="168" height="58" rx="9" fill="var(--card)" stroke="var(--line-strong)" stroke-width="1.2"/><text x="660" y="352" text-anchor="middle" class="box">پاسخ مستند</text><text x="660" y="372" text-anchor="middle" class="lab muted">هر چت‌بات، با صفحه</text><path d="M90 124.0V193.0" stroke="var(--muted)" fill="none" stroke-dasharray="4 3" marker-end="url(#ar)"/><path d="M90 254.0V323.0" stroke="var(--muted)" fill="none" marker-end="url(#ar)"/></svg>
+  <p class="muted small">ردیف بالا یک بار انجام شد (پردازش سنگین در کولب)؛ ردیف وسط برای هر سؤال تکرار می‌شود؛ ردیف پایین چیزی است که کاربر می‌بیند.</p>
+  <h3>مسیر یک سؤال، مثلاً «ضرایب سلمایر بلور <span dir="ltr">LBO</span>»</h3>
+  <ol>
+    <li>سؤال فارسی با <span dir="ltr">Llama 3.3</span> و یک واژه‌نامه‌ی ثابت فیزیک به <span dir="ltr">«Sellmeier coefficients of LBO crystal»</span> ترجمه می‌شود. مدل فقط ترجمه می‌کند و جواب نمی‌نویسد.</li>
+    <li>نام رایج <span dir="ltr">LBO</span> به فرمول <span dir="ltr">LiB3O5</span> گسترش پیدا می‌کند تا جست‌وجوی کلیدواژه هر دو شکل را پیدا کند.</li>
+    <li><span dir="ltr">Qdrant</span> دو فهرست می‌سازد (برداری و <span dir="ltr">BM25</span>) و با <span dir="ltr">RRF</span> یکی‌شان می‌کند.</li>
+    <li><b>بررسی مرتبط‌بودن:</b> ماده‌ها و واژه‌های اصلی سؤال باید در منابع پیدا‌شده آمده باشند و سؤال نباید از همه‌ی مقاله‌ها دور باشد. اگر این‌طور نباشد، سایت کادر قرمز «منبعی پیدا نشد» نشان می‌دهد و دلیلش را می‌گوید.</li>
+    <li>هر نتیجه نام مقاله، صفحه و مختصات روی صفحه را دارد؛ با همین مختصات کادر زرد روی <span dir="ltr">PDF</span> کشیده می‌شود.</li>
+  </ol>
+  <div class="box casual"><b>اجزای فنی به زبان خودمونی</b><span dir="ltr">Cloudflare Worker</span> متصدی سایت است (رمز، صفحه، جست‌وجو). <span dir="ltr">Qdrant</span> قفسه‌ی کتاب‌هاست. یک <span dir="ltr">Worker</span> جداگانه، بدون آدرس عمومی، انبار <span dir="ltr">PDF</span>هاست و فقط بعد از رمز باز می‌شود. همه‌ی این‌ها در نسخه‌ی رایگان سرویس‌ها اجرا می‌شوند.</div>
+</section>
+
+<section id="s7">
+  <h2>۷. امکانات سایت و کاربردها</h2>
+  <p>سایت شش زبانه دارد. همه پشت رمز هستند و سایت به خاطر حق نشر مقاله‌ها عمومی نیست.</p>
+  <div class="tablewrap"><table>
+    <tr><th>زبانه</th><th>چه می‌کند</th><th>کاربرد</th></tr>
+    <tr><td>جست‌وجو</td><td>سؤال فارسی یا انگلیسی ← بخش‌های مرتبط با نام مقاله، صفحه و <span dir="ltr">DOI</span>؛ «نمایش روی صفحه‌ی مقاله» با کادر زرد؛ «دانلود فایل برای هوش مصنوعی»؛ اعلام «منبعی پیدا نشد» وقتی جواب در مجموعه نیست</td><td>پیدا کردن سریع داده، نوشتن مرور ادبیات، پاسخ مستند با هر چت‌بات</td></tr>
+    <tr><td>مقاله</td><td>همه‌ی بخش‌های یک مقاله، صفحه به صفحه</td><td>خواندن بافت کامل یک نتیجه</td></tr>
+    <tr><td>ضریب شکست</td><td>نمودار <span dir="ltr">n(λ)</span> برای ۲٬۲۴۶ ماده؛ پیدا کردن ماده با فرمول، نام انگلیسی، نام کوتاه یا نام فارسی؛ ورود فرمول یا نقاط اندازه‌گیری خودتان؛ <span dir="ltr">Δn</span>؛ جدول و <span dir="ltr">CSV</span></td><td>مقایسه‌ی منابع مختلف؛ مقایسه‌ی اندازه‌گیری آزمایشگاه با مقاله‌ها</td></tr>
+    <tr><td>مجموعه</td><td>آمار مقاله‌ها، نمودار سال انتشار و دسته‌ها، فهرست قابل‌جست‌وجو</td><td>شناخت دامنه‌ی پژوهش</td></tr>
+    <tr><td>ارزیابی</td><td>نمودار و جدول ارزیابی خودکار</td><td>بخش نتایج پایان‌نامه</td></tr>
+    <tr><td>راهنما</td><td>توضیح روش کار سامانه</td><td>معرفی پروژه</td></tr>
+  </table></div>
+  <p>مهم‌ترین قابلیت برای نشان دادن، <b>کادر زرد روی صفحه‌ی اصلی مقاله</b> است: منبع هر ادعا با یک کلیک در متن اصلی دیده می‌شود. همین چیزی است که یک سامانه‌ی <span dir="ltr">RAG</span> را از یک چت‌بات معمولی جدا می‌کند.</p>
+  <h3>کاربردها به زبان خودمونی</h3>
+  <ul>
+    <li>دانشجویی که می‌خواهد بداند ضریب شکست <span dir="ltr">LBO</span> در ۱۰۶۴ نانومتر چقدر است، ظرف چند ثانیه هم عدد را می‌بیند و هم مقاله‌ی منبع را.</li>
+    <li>کسی که در آزمایشگاه ضریب شکست اندازه گرفته، داده‌اش را وارد می‌کند و می‌بیند چقدر با منحنی مقاله‌ها فاصله دارد (<span dir="ltr">Δn</span>).</li>
+    <li>کسی که مقاله‌ی مروری می‌نویسد، فایل منابع را به <span dir="ltr">ChatGPT</span> می‌دهد و جوابی می‌گیرد که هر جمله‌اش به منبع و صفحه ارجاع دارد.</li>
+  </ul>
+</section>
+
+<section id="s8">
+  <h2>۸. ارزیابی و نتایج</h2>
+  <p>جست‌وجوی ترکیبی از نسخه‌ی کولب تا سایت نهایی حدود <b>۷۳٪ بهتر</b> شد: <span dir="ltr">MRR</span> از ۰٫۱۶۹ به ۰٫۲۹۳ رسید و <span dir="ltr">recall@10</span> از ۰٫۳۳۷ به ۰٫۴۰۷.</p>
+  <div class="legend"><span><i style="background:var(--muted);opacity:.35"></i>کولب</span><span><i style="background:var(--muted);opacity:.7"></i>سایت، پیش از <span dir="ltr">OCR</span></span><span><i style="background:var(--accent)"></i>سایت، پس از <span dir="ltr">OCR</span> و معادله‌ها</span></div>
+  <svg viewBox="0 0 720 330" class="chart" role="img"><line x1="60" x2="710" y1="204.3" y2="204.3" stroke="var(--line)" stroke-dasharray="3 4"/><text x="52" y="208.3" text-anchor="end" class="lab">۰٫۱</text><line x1="60" x2="710" y1="138.6" y2="138.6" stroke="var(--line)" stroke-dasharray="3 4"/><text x="52" y="142.6" text-anchor="end" class="lab">۰٫۲</text><line x1="60" x2="710" y1="72.9" y2="72.9" stroke="var(--line)" stroke-dasharray="3 4"/><text x="52" y="76.9" text-anchor="end" class="lab">۰٫۳</text><line x1="60" x2="710" y1="270" y2="270" stroke="var(--muted)"/><text x="20" y="28" class="lab">MRR</text><rect x="97.0" y="158.9" width="50" height="111.1" rx="3" fill="var(--muted)" opacity="0.35"/><text x="122.0" y="152.9" text-anchor="middle" class="val">۰٫۱۶۹</text><rect x="155.0" y="103.1" width="50" height="166.9" rx="3" fill="var(--muted)" opacity="0.7"/><text x="180.0" y="97.1" text-anchor="middle" class="val">۰٫۲۵۴</text><rect x="213.0" y="77.5" width="50" height="192.5" rx="3" fill="var(--accent)" opacity="1"/><text x="238.0" y="71.5" text-anchor="middle" class="val strong">۰٫۲۹۳</text><text x="180" y="294" text-anchor="middle" class="lab strong">ترکیبی (Hybrid)</text><rect x="317.0" y="148.4" width="50" height="121.6" rx="3" fill="var(--muted)" opacity="0.35"/><text x="342.0" y="142.4" text-anchor="middle" class="val">۰٫۱۸۵</text><rect x="375.0" y="79.4" width="50" height="190.6" rx="3" fill="var(--muted)" opacity="0.7"/><text x="400.0" y="73.4" text-anchor="middle" class="val">۰٫۲۹۰</text><rect x="433.0" y="71.5" width="50" height="198.5" rx="3" fill="var(--accent)" opacity="1"/><text x="458.0" y="65.5" text-anchor="middle" class="val strong">۰٫۳۰۲</text><text x="400" y="294" text-anchor="middle" class="lab strong">کلیدواژه (BM25)</text><rect x="537.0" y="183.9" width="50" height="86.1" rx="3" fill="var(--muted)" opacity="0.35"/><text x="562.0" y="177.9" text-anchor="middle" class="val">۰٫۱۳۱</text><rect x="595.0" y="182.6" width="50" height="87.4" rx="3" fill="var(--muted)" opacity="0.7"/><text x="620.0" y="176.6" text-anchor="middle" class="val">۰٫۱۳۳</text><rect x="653.0" y="174.7" width="50" height="95.3" rx="3" fill="var(--accent)" opacity="1"/><text x="678.0" y="168.7" text-anchor="middle" class="val strong">۰٫۱۴۵</text><text x="620" y="294" text-anchor="middle" class="lab strong">برداری (Vector)</text></svg>
+  <h3>روش ارزیابی</h3>
+  <p>۸۶ سؤال به‌صورت خودکار از <span dir="ltr">refractiveindex.info</span> ساخته شد (مثلاً <span dir="ltr">«dispersion formula of LiB3O5»</span>). برای هر سؤال معلوم است کدام مقاله منبع داده بوده. سامانه ۱۰ نتیجه برمی‌گرداند و ما نگاه می‌کنیم مقاله‌ی درست در کدام رتبه آمده.</p>
+  <ul>
+    <li><b><span dir="ltr">MRR</span>:</b> میانگین <span dir="ltr">1/rank</span> اولین نتیجه‌ی درست. اگر جواب درست همیشه اول بیاید، ۱ است؛ اگر معمولاً سوم بیاید، حدود ۰٫۳۳.</li>
+    <li><b><span dir="ltr">recall@k</span>:</b> در چند درصد سؤال‌ها مقاله‌ی درست بین <i>k</i> نتیجه‌ی اول هست.</li>
+  </ul>
+  <div class="tablewrap"><table>
+    <tr><th>روش و نسخه</th><th class="num"><span dir="ltr">recall@1</span></th><th class="num"><span dir="ltr">recall@3</span></th><th class="num"><span dir="ltr">recall@5</span></th><th class="num"><span dir="ltr">recall@10</span></th><th class="num"><span dir="ltr">MRR</span></th></tr>
+    <tr><td>ترکیبی، کولب</td><td class="num">۰٫۱۱۶</td><td class="num">۰٫۱۷۴</td><td class="num">۰٫۲۲۱</td><td class="num">۰٫۳۳۷</td><td class="num">۰٫۱۶۹</td></tr>
+    <tr><td>ترکیبی، سایت پیش از <span dir="ltr">OCR</span></td><td class="num">۰٫۱۸۶</td><td class="num">۰٫۳۱۴</td><td class="num">۰٫۳۲۶</td><td class="num">۰٫۳۴۹</td><td class="num">۰٫۲۵۴</td></tr>
+    <tr><th>ترکیبی، سایت نهایی</th><th class="num">۰٫۲۳۳</th><th class="num">۰٫۳۴۹</th><th class="num">۰٫۳۶۰</th><th class="num">۰٫۴۰۷</th><th class="num">۰٫۲۹۳</th></tr>
+    <tr><td>کلیدواژه، سایت نهایی</td><td class="num">۰٫۲۷۹</td><td class="num">۰٫۳۲۶</td><td class="num">۰٫۳۲۶</td><td class="num">۰٫۳۶۰</td><td class="num">۰٫۳۰۲</td></tr>
+    <tr><td>برداری، سایت نهایی</td><td class="num">۰٫۱۰۵</td><td class="num">۰٫۱۶۳</td><td class="num">۰٫۱۸۶</td><td class="num">۰٫۲۶۷</td><td class="num">۰٫۱۴۵</td></tr>
+  </table></div>
+  <h3>چه چیزی بهبود را ساخت</h3>
+  <ol>
+    <li><b>کولب ← سایت:</b> یکسان‌سازی فرمول‌های شیمیایی (<span dir="ltr">«LiB 3 O 5» → «LiB3O5»</span>) و گسترش نام‌های رایج (<span dir="ltr">BBO → BaB2O4</span>). جست‌وجوی کلیدواژه از ۰٫۱۸۵ به ۰٫۲۹۰ رسید (حدود ۵۷٪).</li>
+    <li><b>سایت ← سایت نهایی:</b> <span dir="ltr">OCR</span> مقاله‌های اسکن‌شده و بازسازی معادله‌ها با <span dir="ltr">GPU</span> کولب. حالا متن مقاله‌های قدیمی هم قابل جست‌وجوست و جست‌وجوی ترکیبی از ۰٫۲۵۴ به ۰٫۲۹۳ رسید.</li>
+  </ol>
+  <p>جست‌وجوی برداری به‌تنهایی ضعیف‌ترین روش است (۰٫۱۴۵)، چون مدل بردار فرق <span dir="ltr">LiB3O5</span> و <span dir="ltr">BiB3O6</span> را خوب نمی‌فهمد. برای همین سایت از جست‌وجوی ترکیبی استفاده می‌کند.</p>
+  <h3>آزمون «منبعی پیدا نشد»</h3>
+  <p>بررسی مرتبط‌بودن روی سایت با ۲۴ سؤال واقعی و ۱۰ سؤال بی‌ربط آزمایش شد. هیچ سؤال واقعی‌ای به‌اشتباه «پیدا نشد» نگرفت (از جمله «ضرایب سلمایر بتا باریم بورات»). ۸ سؤال از ۱۰ سؤال بی‌ربط (مثل «قیمت بیت‌کوین» یا «ضریب شکست kryptonite») «پیدا نشد» گرفتند، یکی هشدار «پوشش ناقص» گرفت و یکی رد نشد.</p>
+  <div class="box casual"><b>به زبان خودمونی</b>اعداد ارزیابی کوچک به نظر می‌رسند، ولی معیار سخت‌گیر است: فقط همان یک مقاله‌ای که <span dir="ltr">refractiveindex.info</span> نام برده درست حساب می‌شود، حتی اگر ده مقاله‌ی دیگر هم همان داده را داشته باشند. مهم مقایسه‌ی نسبی است: با همان سؤال‌ها و همان معیار، سامانه‌ی نهایی خیلی بهتر از نسخه‌ی اول است.</div>
+  <h3>استخراج خودکار فرمول (نتیجه‌ی صادقانه)</h3>
+  <p>در یک آزمایش جداگانه، مدل زبانی <span dir="ltr">qwen3:8b</span> متن مقاله را خواند تا ضرایب سلمایر را بیرون بکشد. از ۲۴ مقاله، فقط در ۷ مقاله فرمولی استخراج شد و هیچ‌کدام تا دقت ۰٫۰۱ با <span dir="ltr">refractiveindex.info</span> یکی نبود. بهترین نتیجه مال مقاله‌ی <span dir="ltr">Eimerl</span> بود، با بیشترین اختلاف <span dir="ltr">Δn = 0.053</span>. یعنی بازیابی کار می‌کند، ولی خواندن دقیق ضرایب هنوز کار انسان است.</p>
+</section>
+
+<section id="s9">
+  <h2>۹. محدودیت‌ها و کارهای آینده</h2>
+  <p>مهم‌ترین محدودیت، استخراج خودکار فرمول از متن مقاله است: بازیابی کار می‌کند، ولی خواندن دقیق ضرایب هنوز قابل اعتماد نیست. این را صادقانه بگویید؛ استاد به نتیجه‌ی صادقانه بیشتر از نتیجه‌ی بزک‌شده اعتماد می‌کند.</p>
+  <h3>محدودیت‌ها</h3>
+  <ul>
+    <li><b>استخراج فرمول:</b> از ۲۴ مقاله در ۷ مقاله فرمول پیدا شد و هیچ‌کدام تا دقت ۰٫۰۱ هم‌خوان نبود. علت‌ها: متن خراب اسکن‌ها، اشتباه در خواندن توان و علامت، و جابه‌جایی ستون‌های جدول.</li>
+    <li><b>معیار ارزیابی سخت‌گیر است:</b> فقط مقاله‌ای که <span dir="ltr">refractiveindex.info</span> به آن ارجاع داده درست حساب می‌شود؛ پس عدد واقعی احتمالاً بهتر از عدد گزارش‌شده است.</li>
+    <li><b>بررسی «پیدا نشد» کامل نیست:</b> سؤالی که واژه‌هایش در مقاله‌ها پراکنده باشد (مثل «درهم‌تنیدگی کوانتومی در سیاه‌چاله‌ها») ممکن است رد نشود.</li>
+    <li><b>۷ خانواده‌ی بلور</b> (<span dir="ltr">KTA، CBO، KBBF، CdSiP2، YCOB، LCB، DAST</span>) در <span dir="ltr">refractiveindex.info</span> داده ندارند و نمودار آماده‌ای برایشان نیست.</li>
+    <li><b>۶ <span dir="ltr">PDF</span> اشتباه</b> در مجموعه هست که باید با نسخه‌ی درست جایگزین شوند.</li>
+    <li><b>پوشش مجموعه:</b> ۶۹۸ مقاله فقط چکیده یا عنوان دارند، چون <span dir="ltr">PDF</span> رایگانشان در دسترس نبود.</li>
+    <li><b>زبان:</b> مقاله‌ها انگلیسی‌اند و سؤال فارسی اول ترجمه می‌شود. واژه‌نامه‌ی ثابت فیزیک خطای ترجمه را کم می‌کند (مثل «غیرعادی» ← <span dir="ltr">extraordinary</span>)، ولی صفر نمی‌کند.</li>
+  </ul>
+  <h3>کارهای آینده</h3>
+  <ol>
+    <li>ارزیابی دوباره‌ی استخراج فرمول روی متن‌های <span dir="ltr">OCR</span>‌شده و معادله‌های <span dir="ltr">LaTeX</span>.</li>
+    <li>مدل زبانی قوی‌تر برای استخراج، با بررسی خودکار: اگر ضریب شکست حاصل خارج از بازه‌ی فیزیکی بود، دوباره تلاش کند.</li>
+    <li>معیار ارزیابی منصفانه‌تر: هر مقاله‌ای که داده‌ی درست همان ماده را دارد، درست حساب شود.</li>
+    <li>افزودن فرمول‌های ۷ خانواده‌ی بی‌داده از روی مقاله‌های خود مجموعه.</li>
+    <li>افزودن وابستگی دمایی (<span dir="ltr">dn/dT</span>) به زبانه‌ی ضریب شکست.</li>
+  </ol>
+</section>
+
+<section id="s10">
+  <h2>۱۰. راهنمای ارائه و سؤال‌های احتمالی استاد</h2>
+  <p>یک ارائه‌ی ۱۰ دقیقه‌ای با همین ترتیب کافی است:</p>
+  <ol>
+    <li><b>مسئله (۱ دقیقه):</b> ثابت‌های نوری در هزاران مقاله پخش‌اند و چت‌بات‌ها عدد می‌سازند.</li>
+    <li><b>راه‌حل و آمار (۲ دقیقه):</b> <span dir="ltr">RAG</span>؛ نمودار بخش ۶ و کاشی‌های اعداد بالای همین جزوه.</li>
+    <li><b>نمایش زنده (۴ دقیقه):</b> جست‌وجوی «ضریب گرمانوری <span dir="ltr">BBO</span>» ← «نمایش روی صفحه‌ی مقاله» ← یک سؤال بی‌ربط برای دیدن «پیدا نشد» ← زبانه‌ی ضریب شکست (تایپ «باریم بورات» و وارد کردن یک فرمول سلمایر) ← دانلود فایل برای هوش مصنوعی.</li>
+    <li><b>نتایج (۲ دقیقه):</b> نمودار ارزیابی؛ بهبود ۷۳٪ و نقش <span dir="ltr">OCR</span>.</li>
+    <li><b>محدودیت‌ها و آینده (۱ دقیقه).</b></li>
+  </ol>
+  <h3>سؤال‌های احتمالی و جواب کوتاه</h3>
+  <div class="tablewrap"><table class="qa">
+    <tr><th>سؤال</th><th>جواب</th></tr>
+    <tr><td>فرق این با <span dir="ltr">ChatGPT</span> چیست؟</td><td><span dir="ltr">ChatGPT</span> از حافظه جواب می‌دهد و ممکن است عدد بسازد. این سامانه فقط از مقاله‌های مجموعه می‌آورد و منبع و صفحه را نشان می‌دهد.</td></tr>
+    <tr><td>اگر جواب در مقاله‌ها نباشد چه می‌شود؟</td><td>سامانه می‌گوید «منبعی پیدا نشد» و دلیلش را هم می‌گوید (ماده در منابع نیست، یا سؤال از همه‌ی مقاله‌ها دور است). نتایج نزدیک فقط اگر کاربر بخواهد نشان داده می‌شوند.</td></tr>
+    <tr><td>چند مقاله پردازش شده؟</td><td>۲٬۶۲۱ مقاله: ۱٬۹۲۳ با متن کامل و بقیه با چکیده یا عنوان. روی هم ۵۶٬۸۴۴ بخش، که ۸٬۴۶۸ تایش جدول است.</td></tr>
+    <tr><td>چرا دو نوع جست‌وجو؟</td><td>جست‌وجوی برداری معنا را می‌فهمد و <span dir="ltr">BM25</span> فرمول شیمیایی دقیق را پیدا می‌کند. ترکیبشان (<span dir="ltr">RRF</span>) از هر کدام به‌تنهایی پایدارتر است.</td></tr>
+    <tr><td>درستی سیستم را چطور سنجیدید؟</td><td>با ۸۶ سؤال خودکار از <span dir="ltr">refractiveindex.info</span> که جواب درستشان (مقاله‌ی منبع) معلوم است؛ معیارها <span dir="ltr">MRR</span> و <span dir="ltr">recall@k</span> است.</td></tr>
+    <tr><td>چرا اعداد ارزیابی پایین به نظر می‌رسد؟</td><td>معیار سخت‌گیر است: فقط یک مقاله‌ی خاص درست حساب می‌شود، نه همه‌ی مقاله‌های مرتبط. مهم مقایسه‌ی نسبی است (۷۳٪ بهبود).</td></tr>
+    <tr><td>متن مقاله‌های اسکن‌شده چه می‌شود؟</td><td>با <span dir="ltr">OCR</span> دوباره خوانده شدند؛ فقط جایی که متن بهتر شد و هیچ عددی از جدول‌ها گم نشد جایگزین شد.</td></tr>
+    <tr><td>چرا برای بعضی بلورها نمودار نیست؟</td><td>زبانه‌ی ضریب شکست از <span dir="ltr">refractiveindex.info</span> می‌آید و ۷ خانواده (مثل <span dir="ltr">KBBF</span> و <span dir="ltr">CdSiP2</span>) آن‌جا داده ندارند. مقاله‌هایشان در مجموعه هست و فرمولشان را می‌شود دستی وارد کرد.</td></tr>
+    <tr><td>حق نشر چه می‌شود؟</td><td>سایت خصوصی و پشت رمز است و فقط برای پژوهش استفاده می‌شود. مقاله‌ها در هیچ مخزن عمومی‌ای منتشر نشده‌اند.</td></tr>
+    <tr><td>محاسبه‌ی ضریب شکست در سایت درست است؟</td><td>بله؛ در ۶٬۸۶۷ نقطه با برنامه‌ی پایتون مقایسه شد. فرمول <span dir="ltr">Malitson</span> برای سیلیکا در خط سدیم <span dir="ltr">n = 1.4584</span> می‌دهد که همان مقدار شناخته‌شده است.</td></tr>
+    <tr><td>چه چیزی مانده؟</td><td>استخراج خودکار ضرایب فرمول از متن؛ بخش ۹ را ببینید.</td></tr>
+  </table></div>
+</section>
+
+<section id="s11">
+  <h2>۱۱. واژه‌نامه</h2>
+  <div class="tablewrap"><table>
+    <tr><th>واژه</th><th>معنی</th></tr>
+    <tr><td><span dir="ltr">RAG</span></td><td>بازیابی منابع پیش از تولید پاسخ با مدل زبانی</td></tr>
+    <tr><td><span dir="ltr">Chunk</span> (بخش)</td><td>تکه‌ای از مقاله (حدود یک پاراگراف یا جدول) که واحد جست‌وجوست</td></tr>
+    <tr><td><span dir="ltr">Embedding</span> (بردار)</td><td>نمایش عددی معنای متن؛ در این پروژه ۷۶۸ عدد (مدل <span dir="ltr">bge-base-en-v1.5</span>)</td></tr>
+    <tr><td><span dir="ltr">BM25</span></td><td>رتبه‌بندی آماری بر اساس کلمات مشترک سؤال و متن</td></tr>
+    <tr><td><span dir="ltr">RRF</span></td><td>ترکیب چند فهرست نتیجه با جمع <span dir="ltr">1/(k + rank)</span></td></tr>
+    <tr><td><span dir="ltr">Vector database</span></td><td>پایگاهی برای پیدا کردن سریع نزدیک‌ترین بردارها (<span dir="ltr">ChromaDB</span>، <span dir="ltr">Qdrant</span>)</td></tr>
+    <tr><td><span dir="ltr">OCR</span></td><td>خواندن متن از تصویر صفحه‌ی اسکن‌شده</td></tr>
+    <tr><td><span dir="ltr">Docling</span></td><td>ابزاری که <span dir="ltr">PDF</span> را به متن ساختاریافته (عنوان، پاراگراف، جدول، مختصات) تبدیل می‌کند</td></tr>
+    <tr><td><span dir="ltr">Context pack</span></td><td>فایلی شامل سؤال، منابع شماره‌دار و دستور پاسخ‌دهی برای هر چت‌بات</td></tr>
+    <tr><td>بررسی مرتبط‌بودن</td><td>آزمونی بعد از هر جست‌وجو که تصمیم می‌گیرد منابع واقعاً به سؤال مربوط‌اند یا باید گفت «پیدا نشد»</td></tr>
+    <tr><td><span dir="ltr">MRR</span></td><td>میانگین <span dir="ltr">1/rank</span> اولین نتیجه‌ی درست؛ ۱ یعنی همیشه اولین نتیجه درست است</td></tr>
+    <tr><td><span dir="ltr">recall@k</span></td><td>سهم سؤال‌هایی که جواب درستشان در <i>k</i> نتیجه‌ی اول آمده</td></tr>
+    <tr><td>فرمول سلمایر</td><td>رابطه‌ی تجربی ضریب شکست با طول موج: <span dir="ltr">n² = 1 + Σ Bᵢλ²/(λ² − Cᵢ)</span></td></tr>
+    <tr><td><span dir="ltr">Δn</span></td><td>اختلاف ضریب شکست دو منبع در یک طول موج</td></tr>
+    <tr><td><span dir="ltr">Cloudflare Worker</span></td><td>برنامه‌ی کوچکی که سایت را روی سرورهای <span dir="ltr">Cloudflare</span> اجرا می‌کند</td></tr>
+    <tr><td><span dir="ltr">Colab</span></td><td>سرویس گوگل برای اجرای کد با <span dir="ltr">GPU</span> رایگان</td></tr>
+  </table></div>
+</section>
+
+<footer>جزوه‌ی پروژه‌ی <span dir="ltr">MatRAG Optics</span> · مهر ۱۴۰۵</footer>
+</main>
+</body>
+</html>
