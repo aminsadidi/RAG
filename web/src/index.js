@@ -1,7 +1,7 @@
 // The web app: searches the knowledge base in Qdrant and gives the sources, never an AI-written answer.
 // A question in Persian is translated to English (the papers are in English); the query is embedded with
 // the same model and pooling as the Python pipeline, and Qdrant fuses dense and BM25 results with RRF.
-import { cleanTranslation, contextPack, expandQuery, isPersian, shared, sourceLabel, translatePrompt } from "./text.js";
+import { cleanTranslation, contextPack, expandQuery, isPersian, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
@@ -75,10 +75,14 @@ async function search(env, opts) {
   const filter = filterOf(opts);
   const sparse = { text: expandQuery(query), model: shared.BM25_MODEL };
   let body;
+  // The query vector is needed in every mode: its best cosine similarity is one signal of the relevance check.
+  const vector = await embed(env, query);
+  const bestCosine = mode === "vector" ? null
+    : qdrant(env, `/collections/${env.COLLECTION}/points/query`, { query: vector, using: shared.DENSE, filter, limit: 1 })
+      .then((r) => r.points[0]?.score ?? 0);
   if (mode === "bm25") {
     body = { query: sparse, using: shared.SPARSE, filter, limit: topK };
   } else {
-    const vector = await embed(env, query);
     body = mode === "vector"
       ? { query: vector, using: shared.DENSE, filter, limit: topK }
       : {
@@ -93,7 +97,8 @@ async function search(env, opts) {
       { ...body, group_by: "doc_id", group_size: 1, with_payload: PAYLOAD })).groups.map((g) => g.hits[0])
     : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
   const hits = points.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
-  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), hits, ms: Date.now() - started };
+  const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
+  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), hits, relevance: check, ms: Date.now() - started };
 }
 
 async function facets(env) {
@@ -132,6 +137,15 @@ async function paper(env, docId) {
   return { doc_id: docId, chunks };
 }
 
+function relevanceNote(r) {
+  if (!r || r.verdict === "ok") return "ok: the question's materials and words occur in the sources";
+  const parts = [];
+  if (r.offTopic) parts.push(`the question is far from every passage (best cosine ${r.bestCosine.toFixed(2)})`);
+  if (r.missingMaterials.length) parts.push(`not in any source: ${r.missingMaterials.join(", ")}`);
+  if (r.missingWords.length) parts.push(`words in no source: ${r.missingWords.join(", ")}`);
+  return `${r.verdict === "none" ? "NO RELEVANT SOURCE FOUND" : "partial"}: ${parts.join("; ")}`;
+}
+
 function packFile(found) {
   const language = found.searchQuery ? "Persian" : null;
   const about = {
@@ -140,6 +154,7 @@ function packFile(found) {
     corpus: "rag-optics",
     retrieval: `${found.mode}${found.mode === "hybrid" ? " (dense + BM25, RRF in Qdrant)" : ""}, top ${found.topK}${found.perPaper ? ", one passage per paper" : ""}`,
     "embedding model": shared.EMBED_MODEL,
+    "relevance check": relevanceNote(found.relevance),
     created: new Date().toISOString().slice(0, 16).replace("T", " ") + " UTC",
   };
   return contextPack(found.question, found.hits, about, language, found.searchQuery);

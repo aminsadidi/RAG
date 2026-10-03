@@ -26,3 +26,21 @@ test("source labels and context pack", () => {
   assert.match(pack, /Papers the sources come from:\n- Ref A\n$/);
   assert.equal(mod.cleanTranslation('"Sellmeier of LBO"\nextra', "x"), "Sellmeier of LBO");
 });
+
+test("relevance check: says 'not found' instead of passing off the nearest passages", () => {
+  const rel = new Function("S", `${src}; return { queryTerms, relevance };`)(S);
+  const bbo = [{ text: "Sellmeier equations of β-BaB 2 O 4 at room temperature", citation: "Eimerl (1987)" }];
+  assert.deepEqual(rel.queryTerms("Sellmeier coefficients of beta barium borate").materials, ["BaB2O4"]);
+  assert.deepEqual(rel.queryTerms("SHG in KTP and GaAs").materials, ["GaAs", "KTP"]);
+  assert.equal(rel.relevance("Sellmeier equation of BBO", bbo, 0.8).verdict, "ok");
+  assert.equal(rel.relevance("Sellmeier equation of LiB3O5", bbo, 0.8).verdict, "none");
+  assert.deepEqual(rel.relevance("Sellmeier equation of LiB3O5", bbo, 0.8).missingMaterials, ["LiB3O5"]);
+  assert.equal(rel.relevance("price of bitcoin", bbo, 0.5).verdict, "none");
+  assert.equal(rel.relevance("Sellmeier equations at high pressure", bbo, 0.75).verdict, "weak");
+  assert.equal(rel.relevance("quantum entanglement in black holes", bbo, 0.7).verdict, "none");
+  assert.equal(rel.relevance("anything", [], 0.9).verdict, "none");
+  assert.deepEqual(rel.relevance("Sellmeier equation of unobtainium crystal", bbo, 0.75).missingMaterials, ["unobtainium"]);
+  const far = [{ text: "black ink was used. The holes of the semiconductor" }];
+  assert.deepEqual(rel.relevance("black holes", far, 0.7).missingWords, ["black holes"]);
+  assert.deepEqual(rel.relevance("Sellmeier equations at room temperature", bbo, 0.8).verdict, "ok");
+});
