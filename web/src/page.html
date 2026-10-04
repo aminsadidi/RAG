@@ -250,7 +250,7 @@ body{overflow-x:hidden}
 <section id="tab-pm" hidden class="viz-root">
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
-    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. فقط شرط تطبیق فاز بررسی می‌شود، نه بزرگی ضریب غیرخطی (d<sub>eff</sub>).</p>
+    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۲۱ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌های مجموعه خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
@@ -282,7 +282,8 @@ body{overflow-x:hidden}
   <div class="card" style="margin-top:14px" id="pmallcard" hidden>
     <h2>کدام بلورها؟</h2>
     <p class="hint" id="pmallinfo"></p>
-    <label class="hint"><input type="checkbox" id="pmevery"> همه‌ی مواد دوشکستی (نه فقط بلورهای غیرخطی شناخته‌شده)</label>
+    <div class="row"><label>مرتب‌سازی <select id="pmsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³ (بازده تبدیل)</option><option value="deff">d_eff</option><option value="walk">کمترین walk-off</option></select></label>
+    <label class="hint"><input type="checkbox" id="pmevery"> همه‌ی مواد دوشکستی (نه فقط بلورهای غیرخطی شناخته‌شده)</label></div>
     <div style="overflow-x:auto"><table id="pmalltable" style="direction:ltr;min-width:640px"></table></div>
   </div>
 </section>
@@ -1129,7 +1130,7 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 <script type="module">
 // ---------- phase-matching tab (web/src/phasematch.client.js does the physics)
 import { entryIndex } from "/dispersion.js";
-import { solveAll, waves } from "/phasematch.js";
+import { effectiveD, solveAll, waves } from "/phasematch.js";
 
 // Noncentrosymmetric crystals used for frequency conversion: the default set of the comparison.
 const NLO = new Set(["BaB2O4", "LiB3O5", "BiB3O6", "CsLiB6O10", "CsB3O5", "KBe2BO3F2", "KTiOPO4", "RbTiOPO4", "Nb-RbTiOPO4",
@@ -1141,7 +1142,7 @@ const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
 const PROC = {
   shg: ["طول موج اصلی", ""], sfg: ["طول موج ۱", "طول موج ۲"], opo: ["طول موج پمپ", "طول موج سیگنال"],
 };
-const PM = { list: null, crystal: null, source: null };
+const PM = { list: null, crystal: null, source: null, dij: {} };
 const short = (c) => (c.name ? c.name.replace(/^\S+\s*/, "").replace(/^\(|\)$/g, "") : "");
 const key = (c) => c.material;
 
@@ -1151,6 +1152,13 @@ function nAt(src) {
     ? (lam) => { const o = entryIndex(ax.o, lam); return [o, o, entryIndex(ax.e, lam)]; }
     : (lam) => [entryIndex(ax.x, lam), entryIndex(ax.y, lam), entryIndex(ax.z, lam)];
 }
+// d_eff (pm/V) and the figure of merit d_eff²/(n1·n2·n3) of a solution, when the crystal's d_il are known.
+function withD(c, src, r) {
+  const d = PM.dij[c.material]; if (!d) return { ...r, deff: null };
+  const e = effectiveD(nAt(src), src.kind, r, d.d);
+  return { ...r, deff: e.deff, phi: e.phi, fom: e.deff ** 2 / (r.n[0] * r.n[1] * r.n[2]) };
+}
+const fmtD = (r) => (r.deff == null ? "—" : r.deff < 0.005 ? "≈ 0" : r.deff.toFixed(2));
 const covers = (src, w) => [w.l1, w.l2, w.l3].every((l) => l >= src.range_um[0] - 1e-9 && l <= src.range_um[1] + 1e-9);
 function inputs() {
   const proc = $("pmproc").value, a = +$("pma").value, b = +$("pmb").value;
@@ -1159,7 +1167,7 @@ function inputs() {
 
 window.loadPM = async () => {
   if (PM.list) return;
-  PM.list = await (await fetch("/ri/aniso.json")).json();
+  [PM.list, PM.dij] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({}))]);
   $("pmmats").innerHTML = PM.list.map((c) => `<option value="${esc(key(c))}">${esc(short(c))}</option>`).join("");
   const saved = store.get("pm"); if (saved) { $("pmproc").value = saved.proc; $("pma").value = saved.a; $("pmb").value = saved.b; }
   setProc(); pick(saved?.mat && PM.list.some((c) => key(c) === saved.mat) ? saved.mat : "BaB2O4");
@@ -1190,17 +1198,20 @@ function run() {
   store.set("pm", { proc, a, b, mat: key(c) });
   const ref = Object.values(src.axes)[0];
   $("pminfo").innerHTML = `${esc(c.name || c.material)} — ${src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
-    + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "");
+    + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
+    + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
+        + PM.dij[c.material].sources.map((s) => `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what)}" onclick="openPaper('${esc(s.doc_id)}')">${esc(s.cite)}، ص ${fa(s.pdf_page)}</button>`).join(" ")
+      : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
     $("pmtable").innerHTML = `<tr><td class="err" style="direction:rtl;text-align:right">طول موج‌ها (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) خارج از بازه‌ی این منبع (${src.range_um[0]}–${src.range_um[1]} µm) است؛ منبع دیگری انتخاب کنید یا طول موج را عوض کنید.</td></tr>`;
   } else {
-    const rows = solveAll(nAt(src), src.kind, proc, a, b);
-    $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>walk-off (mrad)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
+    const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
+    $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
       (rows.map((r) => `<tr><td>${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]}</td><td>${r.type === "I" ? "I" : "II"}</td>
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
-        <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
+        <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td><b>${fmtD(r)}</b>${r.phi !== undefined && r.deff > 0.005 ? ` <span class="hint">(φ = ${r.phi}°)</span>` : ""}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
         <td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
-       '<tr><td colspan="8" style="direction:rtl;text-align:right">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
+       '<tr><td colspan="9" style="direction:rtl;text-align:right">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
   }
   drawTuning(src, proc, a, b);
 }
@@ -1262,17 +1273,23 @@ function compareAll() {
   for (const c of PM.list) {
     if (!every && !NLO.has(c.material)) continue;
     const src = c.sources.find((s) => covers(s, w)); if (!src) continue;
-    const sols = solveAll(nAt(src), src.kind, proc, a, b); if (!sols.length) continue;
-    const best = sols.reduce((p, q) => (Math.max(...q.walkoff_mrad) < Math.max(...p.walkoff_mrad) ? q : p));
+    const sols = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r)); if (!sols.length) continue;
+    const useful = sols.filter((r) => r.deff == null || r.deff > 0.005);
+    if (!useful.length) continue; // phase-matched only where d_eff vanishes
+    const sortBy = $("pmsort").value;
+    const score = (r) => (sortBy === "fom" ? -(r.fom ?? -1) : sortBy === "deff" ? -(r.deff ?? -1) : Math.max(...r.walkoff_mrad));
+    const best = useful.reduce((p, q) => (score(q) < score(p) ? q : p));
     rows.push({ c, src, best, count: sols.length });
   }
-  rows.sort((p, q) => (q.best.noncritical - p.best.noncritical) || Math.max(...p.best.walkoff_mrad) - Math.max(...q.best.walkoff_mrad));
+  const sortBy = $("pmsort").value;
+  rows.sort((p, q) => sortBy === "fom" ? (q.best.fom ?? -1) - (p.best.fom ?? -1) : sortBy === "deff" ? (q.best.deff ?? -1) - (p.best.deff ?? -1)
+    : (q.best.noncritical - p.best.noncritical) || Math.max(...p.best.walkoff_mrad) - Math.max(...q.best.walkoff_mrad));
   $("pmallcard").hidden = false;
-  $("pmallinfo").textContent = `${fa(rows.length)} بلور برای ${[w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ")} → ${w.l3.toFixed(4)} µm تطبیق فاز دارند (برای هر بلور، جوابِ با کمترین walk-off؛ مرتب از کم به زیاد). روی هر ردیف کلیک کنید تا همه‌ی جواب‌هایش را ببینید.`;
-  $("pmalltable").innerHTML = `<tr><th>crystal</th><th>source</th><th>plane · type</th><th>angle</th><th>walk-off (mrad)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th><th>solutions</th></tr>` +
+  $("pmallinfo").innerHTML = `${fa(rows.length)} بلور برای ${[w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ")} → ${w.l3.toFixed(4)} µm تطبیق فاز دارند (برای هر بلور بهترین جواب به معیار انتخاب‌شده؛ جواب‌هایی که d<sub>eff</sub>شان صفر است کنار گذاشته شده‌اند). روی هر ردیف کلیک کنید تا همه‌ی جواب‌هایش را ببینید.`;
+  $("pmalltable").innerHTML = `<tr><th>crystal</th><th>source</th><th>plane · type</th><th>angle</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³ (pm²/V²)</th><th>walk-off (mrad)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th><th>solutions</th></tr>` +
     rows.map((r) => `<tr data-mat="${esc(r.c.material)}" data-src="${esc(r.src.label)}" style="cursor:pointer"><td><b>${esc(r.c.material)}</b> <span class="hint">${esc(short(r.c))}</span></td><td>${esc(r.src.label)}</td>
       <td>${r.src.kind === "uniaxial" ? "θ" : r.best.plane} · ${r.best.type === "I" ? "I" : "II"}</td><td>${r.best.angle.toFixed(2)}°${r.best.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td>
-      <td>${Math.max(...r.best.walkoff_mrad).toFixed(1)}</td><td>${r.best.angular_mrad.toFixed(2)}</td><td>${r.best.spectral_nm.toFixed(2)}</td><td>${fa(r.count)}</td></tr>`).join("");
+      <td><b>${fmtD(r.best)}</b></td><td>${r.best.fom == null ? "—" : r.best.fom.toFixed(2)}</td><td>${Math.max(...r.best.walkoff_mrad).toFixed(1)}</td><td>${r.best.angular_mrad.toFixed(2)}</td><td>${r.best.spectral_nm.toFixed(2)}</td><td>${fa(r.count)}</td></tr>`).join("");
 }
 
 $("pmproc").onchange = () => {
@@ -1294,6 +1311,7 @@ $("pmmat").addEventListener("change", (e) => {
 });
 $("pmall").onclick = compareAll;
 $("pmevery").onchange = compareAll;
+$("pmsort").onchange = compareAll;
 $("pmalltable").onclick = (e) => { const tr = e.target.closest("tr[data-mat]"); if (tr) { pick(tr.dataset.mat, tr.dataset.src); $("pmtable").scrollIntoView({ behavior: "smooth", block: "center" }); } };
 </script>
 <script type="module">
