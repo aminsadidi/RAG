@@ -75,4 +75,7 @@ test("d_eff of the crystals from Pack et al. and Hellwig et al. against measured
   near(deff("BiB3O6", null, "shg", 1.0795, 0, "yz", "I").deff, 3.2, 0.06, "BiBO");
   // KTP with Pack et al.'s d against Eckardt's measured 3.18 pm/V
   near(deff("KTiOPO4", null, "shg", 1.064, 0, "xy", "IIa").deff, 3.18, 0.1, "KTP (Pack)");
+  // Li et al. 2016: LCB type-I THG (1.064 + 0.532 µm) in the xz plane, 0.82 and 0.57 pm/V
+  const l = deff("La2CaB10O19", null, "sfg", 1.064, 0.532, "xz", "I");
+  near(l.deff, 0.82, 0.05, "LCB"); near(l.deff - l.spread, 0.57, 0.05, "LCB other side");
 });
