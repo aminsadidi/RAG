@@ -273,6 +273,7 @@ body{overflow-x:hidden}
   <div class="card" style="margin-top:14px">
     <h2>جواب‌ها</h2>
     <div style="overflow-x:auto"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
+    <div id="pmqpm" class="hint" style="margin-top:10px"></div>
     <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
   </div>
   <div class="card" style="margin-top:14px">
@@ -1261,7 +1262,22 @@ function run() {
         <td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
        '<tr><td colspan="9" style="direction:rtl;text-align:right">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
   }
+  qpm(c, src, w);
   drawTuning(src, proc, a, b);
+}
+
+// Quasi-phase matching in the periodically poled ferroelectrics: all three waves polarized along z (d33),
+// first order, period Λ = 1 / (n3/λ3 − n1/λ1 − n2/λ2), d_eff = (2/π)·d33.
+const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
+function qpm(c, src, w) {
+  const d33 = PM.dij[c.material]?.d["33"];
+  if (!POLED.has(c.material) || d33 == null) { $("pmqpm").innerHTML = ""; return; }
+  if (!covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
+  const nz = (l) => nAt(src)(l)[2], [n1, n2, n3] = [nz(w.l1), nz(w.l2), nz(w.l3)];
+  const period = 1 / (n3 / w.l3 - n1 / w.l1 - n2 / w.l2), deff = (2 / Math.PI) * Math.abs(d33);
+  $("pmqpm").innerHTML = `<b>تطبیق فاز شبه‌فازی (QPM)</b> در بلور قطبیده‌ی تناوبی (مثل PPLN/PPKTP)، هر سه موج قطبیده در امتداد z (ضریب d<sub>33</sub>)، مرتبه‌ی اول، دمای اتاق: `
+    + `<bdi dir="ltr">Λ = <b>${period.toFixed(2)} µm</b>, n<sub>z</sub> = ${[n1, n2, n3].map((x) => x.toFixed(4)).join(", ")}, d<sub>eff</sub> = (2/π)·|d33| = <b>${deff.toFixed(1)} pm/V</b>, d<sub>eff</sub>²/n³ = ${(deff ** 2 / (n1 * n2 * n3)).toFixed(1)} pm²/V²</bdi>`
+    + ` — بدون walk-off. دوره‌ی واقعی با دما و ترکیب بلور کمی جابه‌جا می‌شود؛ این عدد از همان فرمول پاشندگی منبع انتخاب‌شده است.`;
 }
 
 // The curve takes ~100 solutions (30 ms each in a biaxial crystal): computed in slices after the table is shown,
