@@ -79,3 +79,18 @@ test("d_eff of the crystals from Pack et al. and Hellwig et al. against measured
   const l = deff("La2CaB10O19", null, "sfg", 1.064, 0.532, "xz", "I");
   near(l.deff, 0.82, 0.05, "LCB"); near(l.deff - l.spread, 0.57, 0.05, "LCB other side");
 });
+
+test("first-order QPM periods of the poled crystals match the published ones", () => {
+  // Λ = 1 / (n(λ/2)/(λ/2) − 2 n(λ)/λ) for SHG with all waves along z
+  const period = (m, la) => {
+    const s = A.find((c) => c.material === m).sources[0], ax = s.axes.e || s.axes.z, n = (l) => entryIndex(ax, l);
+    return 1 / (n(la / 2) / (la / 2) - 2 * n(la) / la);
+  };
+  assert.ok(Math.abs(period("LiNbO3", 1.064) - 6.8) < 0.15);   // PPLN, 1.064 µm SHG
+  assert.ok(Math.abs(period("LiNbO3", 1.55) - 19.0) < 0.5);    // PPLN, 1.55 µm SHG
+  assert.ok(Math.abs(period("KTiOPO4", 1.064) - 9.0) < 0.15);  // PPKTP, 1.064 µm SHG
+});
+
+test("every source id of dij.json is a string", () => {
+  for (const [m, r] of Object.entries(D)) for (const s of r.sources) if ("doc_id" in s) assert.equal(typeof s.doc_id, "string", m);
+});

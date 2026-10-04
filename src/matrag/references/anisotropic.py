@@ -65,6 +65,11 @@ def build_nonlinear(out: Path, path: Path) -> int:
     import yaml
 
     rows = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else []
+    for r in rows or []:
+        for s in r["sources"]:
+            # YAML reads an unquoted id of digits, dots and '_' as a number (10.1088_1464_4258_10_10_104011)
+            if "doc_id" in s and not isinstance(s["doc_id"], str):
+                raise ValueError(f"{r['material']}: quote the doc_id {s['doc_id']!r} in {path.name}")
     data = {r["material"]: {"point_group": str(r["point_group"]), "d": {str(k): float(v) for k, v in r["d"].items()},
                             "sources": r["sources"], "notes": r.get("notes", "")} for r in rows or []}
     (out / "dij.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
