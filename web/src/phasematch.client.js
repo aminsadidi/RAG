@@ -120,3 +120,73 @@ export function solveAll(nAt, kind, process, p, q) {
   }
   return out;
 }
+
+// ---------- effective nonlinear coefficient
+
+// Eigenvalues and eigenvectors of a symmetric 3×3 matrix (Jacobi rotations): [[λ, v], ...].
+function eigSym(a) {
+  a = a.map((r) => [...r]);
+  const v = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  for (let sweep = 0; sweep < 50; sweep++) {
+    let off = 0;
+    for (let p = 0; p < 2; p++) for (let q = p + 1; q < 3; q++) off += a[p][q] ** 2;
+    if (off < 1e-30) break;
+    for (let p = 0; p < 2; p++) for (let q = p + 1; q < 3; q++) {
+      if (Math.abs(a[p][q]) < 1e-300) continue;
+      const th = (a[q][q] - a[p][p]) / (2 * a[p][q]);
+      const t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), s = t * c;
+      for (let k = 0; k < 3; k++) { const akp = a[k][p], akq = a[k][q]; a[k][p] = c * akp - s * akq; a[k][q] = s * akp + c * akq; }
+      for (let k = 0; k < 3; k++) { const apk = a[p][k], aqk = a[q][k]; a[p][k] = c * apk - s * aqk; a[q][k] = s * apk + c * aqk; }
+      for (let k = 0; k < 3; k++) { const vkp = v[k][p], vkq = v[k][q]; v[k][p] = c * vkp - s * vkq; v[k][q] = s * vkp + c * vkq; }
+    }
+  }
+  return [0, 1, 2].map((i) => [a[i][i], [v[0][i], v[1][i], v[2][i]]]);
+}
+
+// Unit electric-field vectors [slow, fast] for propagation along s: the D vectors are the eigenvectors
+// of the inverse dielectric tensor projected on the plane normal to s (eigenvalues 1/n²), and E ∝ η·D.
+export function fieldVectors([nx, ny, nz], s) {
+  const eta = [nx ** -2, ny ** -2, nz ** -2];
+  const P = [0, 1, 2].map((i) => [0, 1, 2].map((j) => (i === j ? 1 : 0) - s[i] * s[j]));
+  const M = [0, 1, 2].map((i) => [0, 1, 2].map((j) => [0, 1, 2].reduce((acc, k) => acc + P[i][k] * eta[k] * P[k][j], 0)));
+  const modes = eigSym(M).filter(([, v]) => Math.abs(v[0] * s[0] + v[1] * s[1] + v[2] * s[2]) < 0.5).sort((p, q) => p[0] - q[0]);
+  return modes.slice(0, 2).map(([, d]) => { const e = d.map((x, i) => x * eta[i]), n = Math.hypot(...e); return e.map((x) => x / n); });
+}
+
+// d_ijk (pm/V) from contracted elements {"22": 2.2, ...}; l = 1..6 ↔ xx, yy, zz, yz, xz, xy.
+const PAIRS = { 1: [[0, 0]], 2: [[1, 1]], 3: [[2, 2]], 4: [[1, 2], [2, 1]], 5: [[0, 2], [2, 0]], 6: [[0, 1], [1, 0]] };
+export function dTensor(elements) {
+  const d = [0, 1, 2].map(() => [0, 1, 2].map(() => [0, 0, 0]));
+  for (const [il, v] of Object.entries(elements)) {
+    const i = +String(il)[0] - 1;
+    for (const [j, k] of PAIRS[+String(il)[1]]) d[i][j][k] = v;
+  }
+  return d;
+}
+export function contract(d, e3, e1, e2) {
+  let sum = 0;
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) for (let k = 0; k < 3; k++) sum += e3[i] * d[i][j][k] * e1[j] * e2[k];
+  return sum;
+}
+
+// |d_eff| of a phase-matching solution (from describe/solveAll). A uniaxial crystal is free in φ:
+// the best φ is taken. A biaxial one is evaluated for the four equivalent directions of the
+// principal plane (they differ in monoclinic crystals) and the best is kept.
+export function effectiveD(nAt, kind, sol, d) {
+  const a = sol.angle * Math.PI / 180, w = sol.waves, D = dTensor(d);
+  const mode = (lam, pol, s) => fieldVectors(nAt(lam), s)[pol === "s" ? 0 : 1];
+  const at = (s) => Math.abs(contract(D, mode(w.l3, sol.pol[2], s), mode(w.l1, sol.pol[0], s), mode(w.l2, sol.pol[1], s)));
+  if (kind === "uniaxial") {
+    let best = { deff: 0, phi: 0 };
+    for (let k = 0; k < 360; k += 1) {
+      const p = k * Math.PI / 180, v = at([Math.sin(a) * Math.cos(p), Math.sin(a) * Math.sin(p), Math.cos(a)]);
+      if (v > best.deff + 1e-12) best = { deff: v, phi: k };
+    }
+    return best;
+  }
+  const c = Math.cos(a), s = Math.sin(a);
+  const dirs = sol.plane === "xy" ? [[c, s, 0], [c, -s, 0], [-c, s, 0], [-c, -s, 0]]
+    : sol.plane === "yz" ? [[0, s, c], [0, -s, c], [0, s, -c], [0, -s, -c]] : [[s, 0, c], [-s, 0, c], [s, 0, -c], [-s, 0, -c]];
+  const vals = dirs.map(at);
+  return { deff: Math.max(...vals), spread: Math.max(...vals) - Math.min(...vals) };
+}

@@ -356,6 +356,8 @@ def export_formulas(
     added = paper_formulas.add_to_site(out, Settings().data_dir / Settings().corpus / "paper_formulas.yml")
     typer.echo(f"{added} more materials from formulas read in the collection's papers (paper_formulas.yml)")
     typer.echo(f"{anisotropic.build(out)} birefringent crystals written to aniso.json (phase-matching tab)")
+    dij = Settings().data_dir / Settings().corpus / "nonlinear_coefficients.yml"
+    typer.echo(f"{anisotropic.build_nonlinear(out, dij)} crystals with nonlinear coefficients written to dij.json")
 
 
 @app.command("export-papers")

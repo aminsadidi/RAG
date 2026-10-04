@@ -1,0 +1,166 @@
+# Second-order nonlinear coefficients d_il (pm/V, SHG of about 1.064 µm unless noted), read from papers
+# of the collection, for the d_eff of the site's phase-matching tab.
+#
+# `d` lists every nonzero element in contracted notation (l: 1 = xx, 2 = yy, 3 = zz, 4 = yz, 5 = xz,
+# 6 = xy), in the frame of the crystal's dispersion formulas: for a uniaxial crystal z is the optic
+# axis; for a biaxial crystal x, y, z are the principal axes with nx < ny < nz. Elements that the
+# point-group symmetry or Kleinman symmetry make equal to a measured one are written out and marked
+# in `notes`. The site computes d_eff = Σ e3_i d_ijk e1_j e2_k from the field directions of the three
+# waves, so no d_eff formula has to be chosen by hand.
+#
+# Frames of biaxial crystals differ between papers (KTP's d31/d32 and d15/d24 are swapped in part of
+# the literature). The frames below are fixed by measured d_eff values of phase-matched SHG reported
+# in the collection; tests in web/test/phasematch.test.js recompute them.
+
+- material: BaB2O4
+  point_group: 3m
+  d: {22: 2.2, 21: -2.2, 16: -2.2, 31: 0.1, 32: 0.1, 15: 0.1, 24: 0.1}
+  sources:
+    - {doc_id: 10.1109_3.55534, cite: "Eckardt et al. (1990)", pdf_page: 10, what: "|d22| = 2.2 pm/V (Table III), from the measured d_eff = 1.94 pm/V of type-I SHG at 1.064 µm"}
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "d31 = 0.1 pm/V and the relative sign d21 = −d22 (Table VI)"}
+  notes: "3m: d21 = d16 = −d22, d31 = d32 = d15 = d24; d33 is not needed for the o/e interactions and is left out"
+
+- material: LiNbO3
+  point_group: 3m
+  d: {33: -25.2, 31: -4.6, 32: -4.6, 15: -4.6, 24: -4.6, 22: 2.1, 21: -2.1, 16: -2.1}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "congruent LiNbO3, |d33| = 25.2, |d31| = 4.6 pm/V at 1.064 µm (Table 10)"}
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "d22 = 2.1 pm/V and the signs (Table VI)"}
+  notes: "3m"
+
+- material: MgO-LiNbO3
+  point_group: 3m
+  d: {33: -25.0, 31: -4.4, 32: -4.4, 15: -4.4, 24: -4.4, 22: 2.1, 21: -2.1, 16: -2.1}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "5% MgO:LiNbO3, |d33| = 25.0, |d31| = 4.4 pm/V at 1.064 µm (Table 10)"}
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "d22 = 2.1 pm/V of congruent LiNbO3 and the signs (Table VI)"}
+  notes: "3m"
+
+- material: LiTaO3
+  point_group: 3m
+  d: {33: 13.8, 31: 0.85, 32: 0.85, 15: 0.85, 24: 0.85}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "|d33| = 13.8, |d31| = 0.85 pm/V at 1.064 µm (Table 10)"}
+  notes: "3m; d22 not measured there, left out"
+
+- material: KH2PO4
+  point_group: -42m
+  d: {36: 0.39, 14: 0.39, 25: 0.39}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "d36 = 0.39 pm/V at 1.064 µm (Table 10)"}
+  notes: "−42m: d14 = d25; d14 = d36 by Kleinman symmetry"
+
+- material: CsLiB6O10
+  point_group: -42m
+  d: {36: 0.73, 14: 0.73, 25: 0.73}
+  sources:
+    - {doc_id: 10.1364_josab.24.002877, cite: "Zhang et al. (2007)", pdf_page: 5, what: "d36 = 0.73 ± 0.01 pm/V at 1.064 µm, Maker fringes (Table 1); 0.74 by Shoji et al. (2001)"}
+  notes: "−42m, Kleinman"
+
+- material: CdSiP2
+  point_group: -42m
+  d: {36: 84.5, 14: 84.5, 25: 84.5}
+  sources:
+    - {doc_id: 10.1063_1.3590136, cite: "Kato et al. (2011)", pdf_page: 2, what: "d36 = 84.5 pm/V, quoted from Schunemann et al. (2009)"}
+  notes: "−42m, Kleinman"
+
+- material: ZnGeP2
+  point_group: -42m
+  d: {36: 69, 14: 69, 25: 69}
+  sources:
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "d36 = 69 pm/V at 10.6 µm (Table VI)"}
+  notes: "−42m, Kleinman; measured at 10.6 µm"
+
+- material: AgGaS2
+  point_group: -42m
+  d: {36: 13, 14: 13, 25: 13}
+  sources:
+    - {doc_id: 10.1364_josab.14.002481, cite: "Zondy et al. (1997)", pdf_page: 1, what: "d36 = 13 ± 2 pm/V from three phase-matched processes"}
+  notes: "−42m, Kleinman"
+
+- material: AgGaSe2
+  point_group: -42m
+  d: {36: 33, 14: 33, 25: 33}
+  sources:
+    - {doc_id: 10.1021_acs.chemmater.2c01011, cite: "Gao et al. (2022)", pdf_page: 1, what: "d36 = 33 pm/V (quoted)"}
+  notes: "−42m, Kleinman"
+
+- material: CH4N2O - urea
+  point_group: -42m
+  d: {36: 1.2, 14: 1.2, 25: 1.2}
+  sources:
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "d14 = d25 = d36 = 1.2 pm/V (Table VI)"}
+  notes: "−42m, Kleinman"
+
+- material: KBe2BO3F2
+  point_group: "32"
+  d: {11: 0.47, 12: -0.47, 26: -0.47}
+  sources:
+    - {doc_id: 10.1007_s00340_009_3554_4, cite: "Chen et al. (2009)", pdf_page: 9, what: "d11 = 0.47 ± 0.01 pm/V, Maker fringes relative to d36(KDP) = 0.39 pm/V"}
+  notes: "32: d12 = d26 = −d11; d14 ≈ 0 (Kleinman)"
+
+- material: SiO2
+  point_group: "32"
+  d: {11: 0.30, 12: -0.30, 26: -0.30}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "α-quartz d11 = 0.30 pm/V at 1.064 µm (Table 10)"}
+  notes: "32: d12 = d26 = −d11"
+
+- material: LiIO3
+  point_group: "6"
+  d: {31: -4.1, 32: -4.1, 15: -4.1, 24: -4.1}
+  sources:
+    - {doc_id: 10.1109_3.55534, cite: "Eckardt et al. (1990)", pdf_page: 10, what: "d31 = −4.1 pm/V (Table III)"}
+  notes: "6: d31 = d32 = d15 = d24 (Kleinman); d33 is not needed for the o/e interactions"
+
+- material: KTiOPO4
+  point_group: mm2
+  d: {31: 2.2, 32: 3.7, 33: 14.6, 15: 1.9, 24: 3.7}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "d33 = 14.6, d31 = 3.7, d32 = 2.2, d15 = 3.7, d24 = 1.9 pm/V at 1.064 µm (Table 10), in the frame with x and y exchanged"}
+    - {doc_id: 10.1109_3.55534, cite: "Eckardt et al. (1990)", pdf_page: 10, what: "fixes the frame: in the principal frame of the dispersion formulas |d24| = 3.3 > |d15| = 2.6, and the measured type-II d_eff = 3.18 pm/V"}
+  notes: "mm2, polar axis z; Shoji's values with indices 1 and 2 exchanged (as tabulated by Buryy et al. 2022 together with nx < ny < nz)"
+
+- material: KTiOAsO4
+  point_group: mm2
+  d: {31: 2.9, 32: 5.1, 33: 16.2, 15: 2.5, 24: 4.4}
+  sources:
+    - {doc_id: 10.12693_aphyspola.141.365, cite: "Buryy et al. (2022)", pdf_page: 3, what: "d15 = 2.5, d24 = 4.4, d31 = 2.9, d32 = 5.1, d33 = 16.2 pm/V, listed with nx < ny < nz (Table I)"}
+  notes: "mm2, polar axis z"
+
+- material: RbTiOAsO4
+  point_group: mm2
+  d: {31: 2.3, 32: 3.8, 33: 15.8, 15: 2.3, 24: 3.8}
+  sources:
+    - {doc_id: 10.1007_s003400100733, cite: "Peltz et al. (2001)", pdf_page: 2, what: "d31 = 2.3, d32 = 3.8, d33 = 15.8 pm/V (Table 1)"}
+  notes: "mm2, polar axis z; d15 = d31, d24 = d32 by Kleinman symmetry"
+
+- material: RbTiOPO4
+  point_group: mm2
+  d: {31: 3.3, 32: 4.1, 33: 17.1, 15: 3.3, 24: 4.1}
+  sources:
+    - {doc_id: 10.1007_s003400100733, cite: "Peltz et al. (2001)", pdf_page: 2, what: "d31 = 3.3, d32 = 4.1, d33 = 17.1 pm/V (Table 1)"}
+  notes: "mm2, polar axis z; d15 = d31, d24 = d32 by Kleinman symmetry"
+
+- material: LiB3O5
+  point_group: mm2
+  d: {23: 0.85, 34: 0.85, 21: -0.67, 16: -0.67, 22: 0.04}
+  sources:
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "0.85, −0.67 and 0.04 pm/V (Table VI)"}
+    - {doc_id: 10.1364_josab.24.002877, cite: "Zhang et al. (2007)", pdf_page: 6, what: "d_eff = d32·cos φ for type-I SHG in the xy plane, which fixes the frame"}
+    - {doc_id: 10.1088_1464_4258_10_10_104011, cite: "Sarrouf et al. (2008)", pdf_page: 7, what: "measured single-pass SHG consistent with d_eff = 0.82 pm/V"}
+  notes: "mm2 with the polar axis along y of the principal frame (nx < ny < nz): the literature's d32, d31, d33 are d_yzz (= d23), d_yxx (= d21), d_yyy (= d22) here. Zhang et al. (2007) measured larger values (0.96, 1.04, 0.06 pm/V), which do not match the measured d_eff of Sarrouf et al."
+
+- material: CsB3O5
+  point_group: "222"
+  d: {14: 1.15, 25: 1.15, 36: 1.15}
+  sources:
+    - {doc_id: 10.1364_josab.24.002877, cite: "Zhang et al. (2007)", pdf_page: 5, what: "d14 = 1.15 ± 0.05 pm/V at 1.064 µm, Maker fringes (Table 1)"}
+  notes: "222: d14, d25, d36, equal by Kleinman symmetry"
+
+- material: TmCa4O(BO3)3
+  point_group: m
+  d: {12: 0.24, 26: 0.24, 32: 1.70, 24: 1.70}
+  sources:
+    - {doc_id: 10.1039_c4ce00869c, cite: "Liu et al. (2014)", pdf_page: 5, what: "d12 = 0.24 and d32 = 1.70 pm/V from the d_eff measured at (32.5°, 180°) and (32.5°, 0°): 1.11 and 0.67 pm/V"}
+  notes: "m, mirror normal to y; only the elements of type-I SHG in the xz plane were measured (d26 = d12, d24 = d32 by Kleinman symmetry)"
