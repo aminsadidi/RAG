@@ -5,6 +5,7 @@ import { cleanTranslation, contextPack, expandQuery, isPersian, relevance, share
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
+import PHASEMATCH_JS from "./phasematch.client.js";
 import PAPERS from "./papers.json";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
@@ -181,6 +182,9 @@ async function handle(request, env) {
     return url.pathname.startsWith("/api/") ? json({ error: "login required" }, 401) : html(LOGIN);
   }
   if (url.pathname === "/") return html(PAGE);
+  if (url.pathname === "/phasematch.js") {
+    return new Response(PHASEMATCH_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
+  }
   if (url.pathname === "/dispersion.js") {
     return new Response(DISPERSION_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
   }
