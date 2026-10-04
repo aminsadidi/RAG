@@ -250,7 +250,7 @@ body{overflow-x:hidden}
 <section id="tab-pm" hidden class="viz-root">
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
-    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۲۱ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌های مجموعه خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
+    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۲۶ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
@@ -1200,7 +1200,9 @@ function run() {
   $("pminfo").innerHTML = `${esc(c.name || c.material)} — ${src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
-        + PM.dij[c.material].sources.map((s) => `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what)}" onclick="openPaper('${esc(s.doc_id)}')">${esc(s.cite)}، ص ${fa(s.pdf_page)}</button>`).join(" ")
+        + PM.dij[c.material].sources.map((s) => (s.doc_id
+          ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what)}" onclick="openPaper('${esc(s.doc_id)}')">${esc(s.cite)}، ص ${fa(s.pdf_page)}</button>`
+          : `<a class="chip" title="${esc(s.what)}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${esc(s.cite)}، ص ${fa(s.pdf_page)} (خارج از مجموعه)</a>`)).join(" ")
       : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
     $("pmtable").innerHTML = `<tr><td class="err" style="direction:rtl;text-align:right">طول موج‌ها (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) خارج از بازه‌ی این منبع (${src.range_um[0]}–${src.range_um[1]} µm) است؛ منبع دیگری انتخاب کنید یا طول موج را عوض کنید.</td></tr>`;

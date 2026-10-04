@@ -51,9 +51,8 @@ test("field vectors: o-wave normal to the optic axis, e-wave in the plane", () =
 
 test("d_eff against values measured or reported in the collection's papers", () => {
   const near = (v, ref, tol, what) => assert.ok(Math.abs(v - ref) <= tol * ref, `${what}: ${v} vs ${ref}`);
-  // Eckardt et al. 1990: measured type-I d_eff(BBO) = 1.94, type-II d_eff(KTP) = 3.18 pm/V
+  // Eckardt et al. 1990: measured type-I d_eff(BBO) = 1.94 pm/V (KTP: see the next test)
   near(deff("BaB2O4", "Tamosauskas", "shg", 1.064, 0, "xz", "I").deff, 1.94, 0.06, "BBO");
-  near(deff("KTiOPO4", null, "shg", 1.064, 0, "xy", "IIa").deff, 3.18, 0.08, "KTP");
   // LiIO3: d31·sin(θ + ρ) with Eckardt's θ = 30.2°, ρ = 4.26°, d31 = −4.1 pm/V
   near(deff("LiIO3", null, "shg", 1.064, 0, "xz", "I").deff, 4.1 * Math.sin((30.2 + 4.26) * Math.PI / 180), 0.01, "LiIO3");
   // Sarrouf et al. 2008 / Wang et al. 2002: d_eff(LBO) ≈ 0.82–0.83, d_eff(KDP, type I) = 0.26 pm/V
@@ -62,4 +61,18 @@ test("d_eff against values measured or reported in the collection's papers", () 
   // Liu et al. 2014, TmCOB: 1.11 pm/V at (32.5°, 180°) and 0.67 pm/V at (32.5°, 0°)
   const tm = deff("TmCa4O(BO3)3", null, "shg", 1.064, 0, "xz", "I");
   near(tm.deff, 1.11, 0.03, "TmCOB best"); near(tm.deff - tm.spread, 0.67, 0.03, "TmCOB other side");
+});
+
+test("d_eff of the crystals from Pack et al. and Hellwig et al. against measured values", () => {
+  const near = (v, ref, tol, what) => assert.ok(Math.abs(v - ref) <= tol * ref, `${what}: ${v} vs ${ref}`);
+  // Adams et al., as quoted by Pack et al. 2005: GdCOB 0.78 and 0.38 pm/V on the two sides of the xz plane
+  const g = deff("GdCa4O(BO3)3", null, "shg", 1.064, 0, "xz", "I");
+  near(g.deff, 0.78, 0.08, "GdCOB"); near(g.deff - g.spread, 0.38, 0.12, "GdCOB other side");
+  // YCOB: 1.12 and 0.69 pm/V (Adams); the Segonds indices used here are ~0.03 low in nx
+  const y = deff("YCa4O(BO3)3", null, "shg", 1.064, 0, "xz", "I");
+  near(y.deff, 1.12, 0.15, "YCOB"); near(y.deff - y.spread, 0.69, 0.2, "YCOB other side");
+  // Hellwig et al.: BiBO type-I SHG of 1.0795 µm with k normal to b, d_eff = 3.2 pm/V
+  near(deff("BiB3O6", null, "shg", 1.0795, 0, "yz", "I").deff, 3.2, 0.06, "BiBO");
+  // KTP with Pack et al.'s d against Eckardt's measured 3.18 pm/V
+  near(deff("KTiOPO4", null, "shg", 1.064, 0, "xy", "IIa").deff, 3.18, 0.1, "KTP (Pack)");
 });
