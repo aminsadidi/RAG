@@ -190,3 +190,32 @@ export function effectiveD(nAt, kind, sol, d) {
   const vals = dirs.map(at);
   return { deff: Math.max(...vals), spread: Math.max(...vals) - Math.min(...vals) };
 }
+
+// Noncritical phase matching by temperature: the waves travel along a principal axis and are polarized
+// along the other two, so only the temperature tunes Δk. nAtT(T) gives λ → [nx, ny, nz] at T (°C).
+// Returns every polarization assignment that phase-matches between lo and hi, with its temperature and,
+// when the d tensor is given, |d_eff| (unit field vectors along the axes).
+const AXES = ["x", "y", "z"];
+export function ncpmTemperatures(nAtT, kind, process, a, b, d, [lo, hi] = [-50, 300]) {
+  const w = waves(process, a, b), D = d ? dTensor(d) : null, unit = (i) => [0, 1, 2].map((j) => (j === i ? 1 : 0));
+  const found = [];
+  for (const k of kind === "uniaxial" ? [0] : [0, 1, 2]) {
+    const across = [0, 1, 2].filter((i) => i !== k);
+    for (const p1 of across) for (const p2 of across) for (const p3 of across) {
+      if (p1 === p2 && p2 === p3) continue; // no birefringence to compensate the dispersion
+      if (process === "shg" && p1 > p2) continue; // the same pair of fundamental waves
+      const f = (T) => { const n = nAtT(T); return n(w.l3)[p3] / w.l3 - n(w.l1)[p1] / w.l1 - n(w.l2)[p2] / w.l2; };
+      let t0 = lo, f0 = f(lo);
+      for (let T = lo + 1; T <= hi; T += 1) {
+        const f1 = f(T);
+        if (Number.isFinite(f0) && Number.isFinite(f1) && Math.sign(f0) !== Math.sign(f1)) {
+          const t = bisect(f, t0, T, f0);
+          found.push({ axis: kind === "uniaxial" ? "⊥ z" : AXES[k], pol: [p1, p2, p3].map((i) => AXES[i]), T: t, waves: w,
+            deff: D ? Math.abs(contract(D, unit(p3), unit(p1), unit(p2))) : null });
+        }
+        t0 = T; f0 = f1;
+      }
+    }
+  }
+  return found.sort((p, q) => p.T - q.T);
+}

@@ -44,19 +44,51 @@ def sources(entries: list[dict]) -> list[dict]:
     return out
 
 
-def build(out: Path) -> int:
-    """Write ``aniso.json`` next to the site's ``index.json``; returns the number of crystals."""
+def build(out: Path, thermo_path: Path | None = None) -> int:
+    """Write ``aniso.json`` next to the site's ``index.json``; returns the number of crystals.
+
+    A crystal listed on several shelves (e.g. LBO in refractiveindex.info and in the papers of the
+    collection) is one entry with all its sources. ``thermo_path`` (thermo_optic.yml) adds the
+    temperature dependence to the sources it names."""
     index = json.loads((out / "index.json").read_text(encoding="utf-8"))
-    crystals = []
+    crystals: dict[str, dict] = {}
     for m in index:
         if m["shelf"] == "specs":
             continue
         found = sources(json.loads((out / "m" / f"{m['i']}.json").read_text(encoding="utf-8")))
-        if found:
-            crystals.append({"material": m["material"], "name": m.get("name", ""), "shelf": m["shelf"],
-                             "group": m["group"], "sources": found})
-    (out / "aniso.json").write_text(json.dumps(crystals, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        if not found:
+            continue
+        if m["material"] in crystals:
+            crystals[m["material"]]["sources"] += found
+        else:
+            crystals[m["material"]] = {"material": m["material"], "name": m.get("name", ""), "shelf": m["shelf"],
+                                       "group": m["group"], "sources": found}
+    if thermo_path is not None and thermo_path.exists():
+        add_thermo(crystals, thermo_path)
+    (out / "aniso.json").write_text(json.dumps(list(crystals.values()), ensure_ascii=False, separators=(",", ":")),
+                                    encoding="utf-8")
     return len(crystals)
+
+
+def add_thermo(crystals: dict[str, dict], path: Path) -> None:
+    """Attach each block of thermo_optic.yml to its source (``thermo`` on the source, the per-axis
+    formula on each axis); a block marked ``prefer`` puts its source first."""
+    import yaml
+
+    for block in yaml.safe_load(path.read_text(encoding="utf-8")) or []:
+        crystal = crystals.get(block["material"])
+        src = next((s for s in crystal["sources"] if s["label"] == block["source"]), None) if crystal else None
+        if src is None:
+            raise ValueError(f"thermo_optic.yml: no source {block['source']!r} of {block['material']}")
+        if set(block["axes"]) != set(src["axes"]):
+            raise ValueError(f"thermo_optic.yml: {block['material']} axes {sorted(block['axes'])} "
+                             f"do not match the source's {sorted(src['axes'])}")
+        src["thermo"] = {k: block[k] for k in ("form", "t0_c", "cite", "doc_id", "pdf_page", "where") if k in block}
+        for axis, spec in block["axes"].items():
+            src["axes"][axis]["thermo"] = spec
+        if block.get("prefer"):
+            crystal["sources"].remove(src)
+            crystal["sources"].insert(0, src)
 
 
 def build_nonlinear(out: Path, path: Path) -> int:
