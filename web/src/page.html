@@ -267,6 +267,11 @@ body{overflow-x:hidden}
       <button id="pmgo">محاسبه</button>
       <button class="alt" id="pmall">مقایسه‌ی همه‌ی بلورها</button>
     </div>
+    <div class="row">
+      <label>دمای بلور <input id="pmT" type="number" step="any" style="width:84px" placeholder="—"> °C</label>
+      <button class="alt" id="pmncpmgo">دمای تطبیق فاز غیربحرانی (NCPM)</button>
+      <span class="hint" id="pmTinfo"></span>
+    </div>
     <label class="hint"><input type="checkbox" id="pmmore"> مواد دوشکستیِ دیگر را هم نشان بده (فقط زاویه و walk-off؛ ضرایب غیرخطی‌شان در داده‌ها نیست)</label>
     <p class="hint" id="pminfo"></p>
   </div>
@@ -274,6 +279,7 @@ body{overflow-x:hidden}
     <h2>جواب‌ها</h2>
     <div style="overflow-x:auto"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
     <div id="pmqpm" class="hint" style="margin-top:10px"></div>
+    <div id="pmncpm" style="margin-top:10px"></div>
     <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
   </div>
   <div class="card" style="margin-top:14px">
@@ -1131,8 +1137,8 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 </script>
 <script type="module">
 // ---------- phase-matching tab (web/src/phasematch.client.js does the physics)
-import { entryIndex } from "/dispersion.js";
-import { effectiveD, solveAll, waves } from "/phasematch.js";
+import { entryIndex, thermoShift } from "/dispersion.js";
+import { effectiveD, ncpmTemperatures, solveAll, waves } from "/phasematch.js";
 
 const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
 const PROC = {
@@ -1142,12 +1148,20 @@ const PM = { list: null, crystal: null, source: null, dij: {} };
 const short = (c) => (c.name ? c.name.replace(/^\S+\s*/, "").replace(/^\(|\)$/g, "") : "");
 const key = (c) => c.material;
 
-function nAt(src) {
-  const ax = src.axes;
-  return src.kind === "uniaxial"
-    ? (lam) => { const o = entryIndex(ax.o, lam); return [o, o, entryIndex(ax.e, lam)]; }
-    : (lam) => [entryIndex(ax.x, lam), entryIndex(ax.y, lam), entryIndex(ax.z, lam)];
+// Principal indices of a source at temperature T (°C); sources without thermo-optic data (and T = null)
+// stay at the temperature of their formula.
+const tempC = () => { const v = $("pmT").value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
+function nAtT(src, T) {
+  const ax = src.axes, th = src.thermo;
+  const one = (e) => (lam) => {
+    const n0 = entryIndex(e, lam);
+    return th && e.thermo && T !== null ? n0 + thermoShift(th.form, e.thermo, th.t0_c, n0, lam, T) : n0;
+  };
+  if (src.kind === "uniaxial") { const o = one(ax.o), e = one(ax.e); return (lam) => { const n = o(lam); return [n, n, e(lam)]; }; }
+  const x = one(ax.x), y = one(ax.y), z = one(ax.z);
+  return (lam) => [x(lam), y(lam), z(lam)];
 }
+const nAt = (src) => nAtT(src, tempC());
 // d_eff (pm/V) and the figure of merit d_eff²/(n1·n2·n3) of a solution, when the crystal's d_il are known.
 function withD(c, src, r) {
   const d = PM.dij[c.material]; if (!d) return { ...r, deff: null };
@@ -1240,6 +1254,7 @@ function run() {
   store.set("pm", { proc, a, b, mat: key(c) });
   const ref = Object.values(src.axes)[0];
   const moved = PM.moved; PM.moved = "";
+  showTemp(src); $("pmncpm").innerHTML = "";
   $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "") + `${esc(c.name || c.material)} — ${src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
@@ -1264,6 +1279,35 @@ function run() {
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
+}
+
+// The temperature line: the source's thermo-optic formula, or why the temperature has no effect.
+function showTemp(src) {
+  const th = src.thermo, T = tempC(), other = PM.crystal.sources.findIndex((s) => s.thermo);
+  $("pmT").placeholder = th ? String(th.t0_c) : "—";
+  $("pmncpmgo").disabled = !th && other < 0;
+  $("pmTinfo").innerHTML = th
+    ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)}</button>` : esc(th.cite)}`
+      + (T === null ? ` — خالی = ${fa(th.t0_c)} °C (دمای فرمول)` : "")
+    : "برای این منبع فرمول وابستگی دمایی در مجموعه نیست" + (other >= 0
+      ? `؛ <button class="chip coll" style="border:0;cursor:pointer" id="pmTalt">رفتن به منبع ${esc(PM.crystal.sources[other].label)} که دارد</button>`
+      : T === null ? "." : "؛ محاسبه در دمای اندازه‌گیری فرمول است و دما اثری ندارد.");
+  if (!th && other >= 0) $("pmTalt").onclick = () => { $("pmsrc").value = String(other); run(); };
+}
+
+// NCPM: propagation along a principal axis, tuned by temperature only (-50 to 300 °C).
+function ncpmRun() {
+  const c = PM.crystal;
+  if (!c.sources[+$("pmsrc").value].thermo) { $("pmsrc").value = String(c.sources.findIndex((s) => s.thermo)); run(); }
+  const src = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
+  if (!src?.thermo) return;
+  const rows = ncpmTemperatures((T) => nAtT(src, T), src.kind, proc, a, b, PM.dij[c.material]?.d, [-50, 300]);
+  const lam = (i) => [w.l1, w.l2, w.l3][i].toFixed(4);
+  $("pmncpm").innerHTML = `<h3 style="margin:6px 0">تطبیق فاز غیربحرانی با تنظیم دما (−۵۰ تا ۳۰۰ °C)</h3>`
+    + (rows.length ? `<div style="overflow-x:auto"><table style="direction:ltr;min-width:520px"><tr><th>k along</th><th>polarizations (λ₁ + λ₂ → λ₃)</th><th>T (°C)</th><th>d<sub>eff</sub> (pm/V)</th></tr>`
+      + rows.map((r) => `<tr><td>${r.axis}</td><td>${lam(0)}<sup>${r.pol[0]}</sup> + ${lam(1)}<sup>${r.pol[1]}</sup> → ${lam(2)}<sup>${r.pol[2]}</sup></td><td><b>${r.T.toFixed(1)}</b></td><td>${r.deff == null ? "—" : r.deff < 0.005 ? "≈ 0" : r.deff.toFixed(2)}</td></tr>`).join("")
+      + `</table></div><p class="hint">جهت انتشار در امتداد یک محور اصلی است (θ = 90° یا 0°)، پس walk-off صفر و پهنای پذیرش زاویه‌ای زیاد است؛ فقط دما Δk را صفر می‌کند. بالانویس‌ها محور قطبش هر موج‌اند. دقت این عدد به دقت فرمول وابستگی دمایی منبع بستگی دارد.</p>`
+      : `<p class="hint">برای این طول موج‌ها در این بازه‌ی دما، تطبیق فاز غیربحرانی پیدا نشد.</p>`);
 }
 
 // Quasi-phase matching in the periodically poled ferroelectrics: all three waves polarized along z (d33),
@@ -1374,6 +1418,8 @@ $("pmproc").onchange = () => {
 };
 for (const id of ["pma", "pmb"]) $(id).addEventListener("change", () => pick(key(PM.crystal), undefined, false));
 $("pmsrc").onchange = run;
+$("pmT").addEventListener("change", run);
+$("pmncpmgo").onclick = ncpmRun;
 $("pmgo").onclick = run;
 $("pmmat").onchange = (e) => pick(e.target.value);
 $("pmmore").onchange = () => {

@@ -265,3 +265,41 @@
     - {direction: x, points: [[1.064, 2.290]], tol: 6.0e-4}
     - {direction: y, points: [[1.064, 2.330]], tol: 6.0e-4}
     - {direction: z, points: [[1.064, 2.339]], tol: 6.0e-4}
+
+- material: LiInSe2
+  name: LiInSe2 (Lithium selenoindate, LISe)
+  doc_id: 10.1364_ao.53.001063
+  reference: "Katō, Petrov, Umemura (2014). Sellmeier and thermo-optic dispersion formulas for LiInSe2. Appl. Opt. 53, 1063. doi:10.1364/ao.53.001063"
+  doi: 10.1364/ao.53.001063
+  pdf_page: 2
+  where: "Eq. (1), at 25 °C: n² = A + B/(λ² − C) + D/(λ² − E), 0.717–10.591 µm, refitted to the indices of Petrov et al. (2010) and to new phase-matching angles, which the Petrov formula misses by up to 11° (Table 1); thermo-optic formula Eq. (4) in thermo_optic.yml"
+  entries:
+    - {page: Kato-2014, direction: x, type: 4, coefficients: [5.79323, 0.21461, 0, 0.08391, 1, 466.11, 0, 617.02, 1], range_um: [0.717, 10.591]}
+    - {page: Kato-2014, direction: y, type: 4, coefficients: [6.01426, 0.23387, 0, 0.08872, 1, 495.14, 0, 622.67, 1], range_um: [0.717, 10.591]}
+    - {page: Kato-2014, direction: z, type: 4, coefficients: [6.19362, 0.23879, 0, 0.08957, 1, 628.13, 0, 664.90, 1], range_um: [0.717, 10.591]}
+  checks: []  # checked in the test against Table 1, "Calculated (K)" and "(P)" columns
+
+- material: LiB3O5
+  name: LiB3O5 (Lithium triborate, LBO)
+  doc_id: 10.1063_1.360499
+  reference: "Ghosh (1995). Temperature dispersion of refractive indices in β-BaB2O4 and LiB3O5 crystals for nonlinear optical devices. J. Appl. Phys. 78, 6752. doi:10.1063/1.360499"
+  doi: 10.1063/1.360499
+  pdf_page: 3
+  where: "Table I, at 20 °C: n² = A + B/(1 − C/λ²) + D/(1 − E/λ²), fitted to indices measured at 0.365–1.1 µm and to phase-matching angles (curves drawn to 2 µm); thermo-optic model Eqs. (2), (3), (7), (8) in thermo_optic.yml"
+  entries:
+    - {page: Ghosh-1995, direction: x, type: 4, coefficients: [1.4426279, 1.0109932, 2, 1.1210197e-2, 1, 1.2363218, 2, 91, 1], range_um: [0.25, 2.0]}
+    - {page: Ghosh-1995, direction: y, type: 4, coefficients: [1.5014015, 1.0388217, 2, 1.2157100e-2, 1, 1.7567133, 2, 91, 1], range_um: [0.25, 2.0]}
+    - {page: Ghosh-1995, direction: z, type: 4, coefficients: [1.4489240, 1.1365228, 2, 1.1676746e-2, 1, 1.5830069, 2, 91, 1], range_um: [0.25, 2.0]}
+  checks: []  # checked in the test: type-I NCPM SHG of 1.064 µm near 148.7 °C (p. 6)
+
+- material: BaB2O4
+  name: BaB2O4 (Barium borate, BBO)
+  doc_id: 10.1063_1.360499
+  reference: "Ghosh (1995). Temperature dispersion of refractive indices in β-BaB2O4 and LiB3O5 crystals for nonlinear optical devices. J. Appl. Phys. 78, 6752. doi:10.1063/1.360499"
+  doi: 10.1063/1.360499
+  pdf_page: 3
+  where: "Table I, at 20 °C: n² = A + B/(1 − C/λ²) + D/(1 − E/λ²); thermo-optic model Eqs. (2), (3) in thermo_optic.yml"
+  entries:
+    - {page: Ghosh-1995, direction: o, type: 4, coefficients: [1.7018379, 1.0357554, 2, 1.8003440e-2, 1, 1.2479989, 2, 91, 1], range_um: [0.25, 2.0]}
+    - {page: Ghosh-1995, direction: e, type: 4, coefficients: [1.5920433, 0.7816893, 2, 1.6067891e-2, 1, 0.8403893, 2, 91, 1], range_um: [0.25, 2.0]}
+  checks: []  # checked in the test: type-I SHG of 1.064 µm at 22.8° and dθ/dT (Table III, p. 5)

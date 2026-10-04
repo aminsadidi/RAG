@@ -1,0 +1,76 @@
+# Temperature dependence of the principal indices, read from papers of the collection, for the
+# phase-matching tab (temperature input and noncritical phase-matching temperatures).
+#
+# Each block applies to one source of the crystal (`source`: the page label of its Sellmeier
+# equations, the same paper's) and gives n(λ, T) = n(λ, t0) + Δn(λ, T):
+#   form "kato":  dn/dT = Σ c·λ^p × 10⁻⁵ /°C, constant in T, so Δn = (T − t0)·dn/dT; `pieces` cover
+#                 wavelength ranges (outside them the nearest piece is used).
+#   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
+#                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8).
+# Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
+# phase-matching temperatures the papers report.
+
+- material: KTiOPO4
+  source: Kato
+  doc_id: 10.1364_ao.41.005040
+  cite: "Katō & Takaoka (2002)"
+  pdf_page: 2
+  where: "Eq. (2); with the Sellmeier equations of Eq. (1), the refractiveindex.info 'Kato' entry"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.43, 1.58], terms: [[0.1717, -3], [-0.5353, -2], [0.8416, -1], [0.1627, 0]]}]
+    y: [{range_um: [0.43, 1.58], terms: [[0.1997, -3], [-0.4063, -2], [0.5154, -1], [0.5425, 0]]}]
+    z: [{range_um: [0.53, 1.57], terms: [[0.9221, -3], [-2.9220, -2], [3.6677, -1], [-0.1897, 0]]},
+        {range_um: [1.57, 3.53], terms: [[-0.5523, -1], [3.3920, 0], [-1.7101, 1], [0.3424, 2]]}]
+
+- material: CdSiP2
+  source: Kato-2011
+  doc_id: 10.1063_1.3590136
+  cite: "Kato, Umemura, Petrov (2011)"
+  pdf_page: 2
+  where: "Eq. (2), 0.5143–6.554 µm; the Sellmeier equations of Eq. (1) are at 25 °C"
+  t0_c: 25
+  form: kato
+  axes:
+    o: [{range_um: [0.5143, 6.554], terms: [[1.1538, -3], [-1.1955, -2], [0.7263, -1], [10.8238, 0]]}]
+    e: [{range_um: [0.5143, 6.554], terms: [[1.3732, -3], [-0.6361, -2], [0.8303, -1], [11.4051, 0]]}]
+
+- material: LiInSe2
+  source: Kato-2014
+  prefer: true  # more accurate than Petrov et al. (2010), whose angles are off by up to 11° (Table 1)
+  doc_id: 10.1364_ao.53.001063
+  cite: "Katō, Petrov, Umemura (2014)"
+  pdf_page: 4
+  where: "Eq. (4), 1.0642–10.591 µm; the Sellmeier equations of Eq. (1) are at 25 °C"
+  t0_c: 25
+  form: kato
+  axes:
+    x: [{range_um: [1.0642, 10.591], terms: [[0.7242, -3], [-0.9339, -2], [1.7224, -1], [3.9593, 0]]}]
+    y: [{range_um: [1.0642, 10.591], terms: [[1.4136, -3], [-2.0858, -2], [2.4430, -1], [7.4585, 0]]}]
+    z: [{range_um: [1.0642, 10.591], terms: [[0.9988, -3], [-1.3402, -2], [1.9607, -1], [5.3949, 0]]}]
+
+- material: LiB3O5
+  source: Ghosh-1995
+  doc_id: 10.1063_1.360499
+  cite: "Ghosh (1995)"
+  pdf_page: 4
+  where: "Table II (G, H, λig) and Eqs. (7), (8): G of y and H of z vary with T; the paper's model reproduces the measured NCPM temperatures to ±4 °C"
+  t0_c: 20
+  form: ghosh
+  axes:
+    x: {lig_um: 0.0530, G: [-127.70167], H: [122.13435]}
+    y: {lig_um: 0.0327, G: [372.170, -2.199e-1, 1.1748e-3, -2.05077e-6], H: [-415.10435]}
+    z: {lig_um: 0.0435, G: [-446.95031], H: [410.66123, 1.667e-1, -5.1887e-4, 5.56251e-7]}
+
+- material: BaB2O4
+  source: Ghosh-1995
+  doc_id: 10.1063_1.360499
+  cite: "Ghosh (1995)"
+  pdf_page: 4
+  where: "Table II (G, H, λig), constant in T (the measured dn/dT of BBO are constant from 20 to 80 °C)"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.0652, G: [-19.3007], H: [-34.9683]}
+    e: {lig_um: 0.0730, G: [-141.421], H: [110.8630]}
