@@ -405,6 +405,105 @@ time.sleep(5)
     ], gpu=True)
 
 
+NEW_PAPERS = """
+# File in the downloads folder -> DOI, category, material; rows only for papers the master index lacks.
+PAPERS = {
+    'pack2003.pdf': ('10.1364/josab.20.002109', '03_Niobates_Tantalates_Iodates', 'KNbO3', {
+        'title': 'Measurement of the χ^(2) tensor of the potassium niobate crystal',
+        'authors': 'Michael V. Pack; Darrell J. Armstrong; Arlee V. Smith', 'year': 2003,
+        'journal': 'Journal of the Optical Society of America B'}),
+    'pack2004.pdf': ('10.1364/ao.43.003319', '02_Phosphates_Arsenates_KDP', 'RTP_RbTiOPO4', None),
+    'pack2005.pdf': ('10.1364/josab.22.000417', '01_Borates', 'YCOB_GdCOB_ReCOB', {
+        'title': 'Measurement of the χ^(2) tensors of GdCa4O(BO3)3 and YCa4O(BO3)3 crystals',
+        'authors': 'Michael V. Pack; Darrell J. Armstrong; Arlee V. Smith; Gerard Aka; Bernard Ferrand; Denis Pelenc',
+        'year': 2005, 'journal': 'Journal of the Optical Society of America B'}),
+    'hellwig1998.pdf': ('10.1016/s0038-1098(98)00538-9', '01_Borates', 'BiBO_BiB3O6', None),
+    'jerphagnon1970.pdf': ('10.1103/physrevb.1.1739', '02_Phosphates_Arsenates_KDP', 'ADP_NH4H2PO4', None),
+    'li2016.pdf': ('10.1016/j.optmat.2016.10.023', '01_Borates', 'LCB_La2CaB10O19', None),
+}
+import csv, json, pathlib, shutil
+from matrag.catalog import PAPERS_DIR, doi_key, index_file, load_catalog
+root = pathlib.Path(open(f'{WORK}/data/rag-optics/corpus_root.txt').read().strip())
+downloads = pathlib.Path(DOWNLOADS)
+known = {e.key for e in load_catalog(root)}
+rows, placed = [], 0
+for name, (doi, category, material, meta) in PAPERS.items():
+    pdf = downloads / name
+    target = root / PAPERS_DIR / category / material / (doi_key(doi) + '.pdf')
+    if target.exists():
+        print('already in the collection:', name)
+    elif not pdf.exists():
+        print('⚠️ not found, skipped:', pdf)
+        continue
+    else:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(pdf, target)  # a copy: the downloads folder stays as it is
+        placed += 1
+        print('added:', name, '->', target.relative_to(root))
+    if doi_key(doi) not in known and meta:
+        rows.append({'category': category, 'material': material, 'doi': doi, 'doi_link': 'https://doi.org/' + doi,
+                     'status': 'downloaded', **meta})
+if rows:
+    path = index_file(root)
+    shutil.copy2(path, str(path) + '.before_new_papers')  # backup of the master index
+    if path.suffix == '.csv':
+        with path.open(encoding='utf-8-sig', newline='') as f:
+            fields = csv.DictReader(f).fieldnames
+        with path.open('a', encoding='utf-8', newline='') as f:
+            csv.DictWriter(f, fieldnames=fields, extrasaction='ignore').writerows(rows)
+    else:
+        with path.open('a', encoding='utf-8') as f:
+            f.writelines(json.dumps(r, ensure_ascii=False) + '\\n' for r in rows)
+    print(len(rows), 'rows added to', path.name)
+print(f'✅ {placed} PDFs copied')
+"""
+
+
+def new_papers() -> dict:
+    """CPU run: the papers downloaded by hand put in their category folders, indexed, and sent to the site."""
+    return notebook([
+        md(f"""
+# افزودن مقاله‌های تازه به مجموعه و سایت (نسخه‌ی {VERSION})
+
+PDFها باید در پوشه‌ی `proDownloads` در Drive باشند (`pack2003.pdf`، `pack2004.pdf`، `pack2005.pdf`،
+`hellwig1998.pdf`، `jerphagnon1970.pdf`، `li2016.pdf`). فقط یک سلول دارد: روی ▶️ بزنید و اجازه‌ی دسترسی به
+Google Drive را بدهید. کارت گرافیک لازم نیست. حدود ۳۰ تا ۶۰ دقیقه طول می‌کشد.
+
+۱) هر PDF با نام DOI در پوشه‌ی دسته و بلور خودش در `RAG-Optics` **کپی** می‌شود (چیزی پاک یا جابه‌جا نمی‌شود)؛
+مقاله‌هایی که در فهرست اصلی نیستند به آن اضافه می‌شوند (یک نسخه‌ی پشتیبان از فهرست کنار آن ذخیره می‌شود).
+۲) مقاله‌ها پردازش و وارد پایگاه می‌شوند. ۳) PDFها و پایگاه روی سایت به‌روز می‌شوند.
+اگر قطع شد دوباره اجرا کنید؛ کارهای انجام‌شده تکرار نمی‌شوند.
+"""),
+        code("#@title ▶️ افزودن مقاله‌ها\n"
+             "DOWNLOADS = '/content/drive/MyDrive/proDownloads'  #@param {type:\"string\"}\n" + ENV + """
+WORK = '/content/drive/MyDrive/matrag_data'
+os.environ['MATRAG_DATA_DIR'] = f'{WORK}/data'
+os.environ['MATRAG_STORAGE_DIR'] = '/content/storage'
+os.environ['MATRAG_STORAGE_BACKUP_DIR'] = f'{WORK}/storage'
+os.environ['MATRAG_CORPUS'] = 'rag-optics'
+print('Copying the database from Drive...')
+!mkdir -p /content/storage && cp -rT "{WORK}/storage" /content/storage
+""" + INSTALL + NEW_PAPERS + QDRANT_KEYS + """
+%cd {WORK}
+# 2. Only the new papers are converted and embedded (the rest is already in the database)
+!matrag --corpus rag-optics ingest 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/ingest.log"
+# 3. The site: PDFs for the page view, then the chunks for the search
+if os.environ.get('CLOUDFLARE_API_TOKEN'):
+    !matrag --corpus rag-optics export-pdfs /content/RAG/web-pdfs/pdfs 2>&1 | grep -vE "Warning|Loading"
+    if not os.path.exists('/content/node/bin/node'):
+        !curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C /content && mv /content/node-v22.12.0-linux-x64 /content/node
+    os.environ['PATH'] = '/content/node/bin:' + os.environ['PATH']
+    !cd /content/RAG/web-pdfs && npx --yes wrangler@4 deploy 2>&1 | grep -vE "telemetry|^$" | tail -4
+else:
+    print('ℹ️ No matrag_data/cloudflare.env: PDFs not uploaded (the page view needs them)')
+!matrag --corpus rag-optics export-qdrant 2>&1 | grep -vE "Warning|Loading"
+%cd /content/RAG
+!matrag --corpus rag-optics status 2>&1 | grep -vE "Warning"
+print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+"""),
+    ], gpu=False)
+
+
 def worker(n: int) -> dict:
     return notebook([
         md(f"""
@@ -443,4 +542,6 @@ if __name__ == "__main__":
                                                       "utf-8")
     (HERE / "colab_gpu_update.ipynb").write_text(json.dumps(gpu_update(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     (HERE / "colab_site.ipynb").write_text(json.dumps(site(), ensure_ascii=False, indent=1) + "\n", "utf-8")
+    (HERE / "colab_new_papers.ipynb").write_text(json.dumps(new_papers(), ensure_ascii=False, indent=1) + "\n",
+                                                 "utf-8")
     print("written")

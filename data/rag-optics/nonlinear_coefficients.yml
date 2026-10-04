@@ -199,3 +199,10 @@
   sources:
     - {doi: 10.1016/s0038-1098(98)00538-9, cite: "Hellwig, Liebertz, Bohatý (1998)", pdf_page: 2, what: "all eight d_ijk at 1.0795 µm in the crystal-physics frame (e2 ∥ b, e3 ∥ c), indicatrix rotated by φ = −42.9° about b, and d_eff = 3.2 pm/V for type-I SHG with k normal to b"}
   notes: "Rotated into the principal frame of the Umemura formula (whose indices equal Hellwig's n1, n2, n3 to 10⁻⁴). Of the four possible assignments (b along x or y, rotation sign ±), only b ∥ x with the in-plane axes turned by +42.9° reproduces Hellwig's d_eff = 3.2 pm/V (3.31); that is also the yz plane in which BiBO is used for 1.064 µm SHG"
+
+- material: La2CaB10O19
+  point_group: "2"
+  d: {22: 1.04, 21: -0.58, 16: -0.58, 23: 0.25, 34: 0.25, 14: 0.70, 25: 0.70, 36: 0.70}
+  sources:
+    - {doi: 10.1016/j.optmat.2016.10.023, cite: "Li et al. (2016)", pdf_page: 5, what: "d21 = −0.58, d22 = 1.04, d23 = 0.25, d14 = 0.70 pm/V (relative signs from Maker fringes and phase matching); calculated THG d_eff 0.82 and 0.57 pm/V at (49.4°, 0°) and (49.4°, 180°) (Table 1)"}
+  notes: "2, twofold axis along y (b ∥ Y, Wang et al. 2002); Kleinman: d16 = d21, d25 = d36 = d14, d34 = d23"
