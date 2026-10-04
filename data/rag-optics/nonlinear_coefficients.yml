@@ -206,3 +206,26 @@
   sources:
     - {doc_id: 10.1016_j.optmat.2016.10.023, doi: 10.1016/j.optmat.2016.10.023, cite: "Li et al. (2016)", pdf_page: 5, what: "d21 = −0.58, d22 = 1.04, d23 = 0.25, d14 = 0.70 pm/V (relative signs from Maker fringes and phase matching); calculated THG d_eff 0.82 and 0.57 pm/V at (49.4°, 0°) and (49.4°, 180°) (Table 1)"}
   notes: "2, twofold axis along y (b ∥ Y, Wang et al. 2002); Kleinman: d16 = d21, d25 = d36 = d14, d34 = d23"
+
+- material: LiInS2
+  point_group: mm2
+  d: {32: 7.25, 24: 7.25, 31: 5.66, 15: 5.66, 33: -16}
+  sources:
+    - {doc_id: 10.1364_josab.21.001981, cite: "Fossier et al. (2004)", pdf_page: 19, what: "d31 = 7.25 (±5%), d24 = 5.66 (±10%), d33 = −16 (±25%) pm/V, femtosecond SHG scaled to 2.3 µm by Miller's rule (Eqs. 42–44); d15 = d31 and d24 = d32 by Kleinman symmetry"}
+    - {doc_id: 10.1364_josab.27.001902, cite: "Petrov et al. (2010)", pdf_page: 19, what: "d_eff(φ = 42°) of LIS = 6.54 pm/V from this tensor, used as reference for LISe"}
+  notes: "mm2, polar axis Z. The papers label d in the crystal axes (a, b, c), while the formula's principal axes are X ↔ b, Y ↔ a, Z ↔ c: their d31 (measured by type-I SHG in the X-Z plane, d_eff ∝ d_Z,YY) is d32 here and their d24 is d15 here. This is what their d_eff = d24 sin²φ + d15 cos²φ (X-Y plane) requires, and it reproduces Petrov's 6.54 pm/V at φ = 42°; Kleinman: d24 = d32, d15 = d31"
+
+- material: LiInSe2
+  point_group: mm2
+  d: {32: 11.78, 24: 11.78, 31: 8.17, 15: 8.17, 33: -16}
+  sources:
+    - {doc_id: 10.1364_josab.27.001902, cite: "Petrov et al. (2010)", pdf_page: 15, what: "d31 = 11.78 (±5%), d24 = 8.17 (±10%), d33 = −16 (±25%) pm/V at 2.3 µm (Eqs. 20–22, Table 6); d_eff(φ = 55°) = 9.35 pm/V in the X-Y plane (p. 18)"}
+  notes: "mm2, polar axis Z, (X, Y, Z) ↔ (b, a, c): the paper's d31 and d24 (crystal axes) are d32 and d15 in the principal frame used here, as for LiInS2; this reproduces its d_eff(φ = 55°) = 9.35 pm/V. Kleinman: d24 = d32, d15 = d31"
+
+- material: LiGaS2
+  point_group: mm2
+  d: {32: 5.8, 24: 5.8, 31: 5.1, 15: 5.1}
+  sources:
+    - {doc_id: 10.7498_aps.67.20181591, cite: "Jia et al. (2018)", pdf_page: 3, what: "d31 = 5.8 pm/V (comparison table of mid-IR crystals)"}
+    - {doc_id: 10.1063_1.4723645, cite: "Yèlisseyev et al. (2012)", pdf_page: 3, what: "d24 = 5.1 pm/V, in the same convention as d24 of LIS (5.7) and LISe (8.2) (Table I)"}
+  notes: "mm2, polar axis Z; the quoted d31 and d24 follow the crystal-axis labels of LIS and LISe and are d32 and d15 in the principal frame, as for those two; d33 is not given in the collection's papers and is left out: it does not enter d_eff in the principal planes. Kleinman: d24 = d32, d15 = d31"

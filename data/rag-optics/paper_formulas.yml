@@ -1,5 +1,5 @@
 # Dispersion data read from papers of the collection, for crystals the refractiveindex.info database
-# does not have (KTA/RTA/CTA, CBO, KBBF, CdSiP2, YCOB/GdCOB/TmCOB, LCB, DAST/DSTMS).
+# does not have (KTA/RTA/CTA, CBO, KBBF, CdSiP2, YCOB/GdCOB/TmCOB, LCB, DAST/DSTMS, LiInS2, LiInSe2).
 #
 # Every value was read from the paper itself (the PDF page given in `pdf_page`; equations that the
 # text extraction lost were read from the page image), never from memory. `checks` are values the
@@ -236,3 +236,32 @@
     - {page: Mutter-2007, direction: "2", type: 4, coefficients: [2.647129, 0.090721, 0, 0.502, 2], range_um: [0.6, 1.6]}
     - {page: Mutter-2007, direction: "3", type: 4, coefficients: [2.493241, 0.014256, 0, 0.360, 2], range_um: [0.6, 1.6]}
   checks: []
+
+- material: LiInS2
+  name: LiInS2 (Lithium thioindate, LIS)
+  doc_id: 10.1364_josab.21.001981
+  reference: "Fossier et al. (2004). Optical, vibrational, thermal, electrical, damage, and phase-matching properties of lithium thioindate. J. Opt. Soc. Am. B 21, 1981. doi:10.1364/josab.21.001981"
+  doi: 10.1364/josab.21.001981
+  pdf_page: 11
+  where: "Eqs. (21)-(23): n² = A + B/(λ² − C) + D/(λ² − E), λ in µm, nX < nY < nZ with X ↔ b, Y ↔ a, Z ↔ c (polar); fitted to phase-matching data, angles predicted to ±1.5° (Table IV)"
+  entries:
+    - {page: Fossier-2004, direction: x, type: 4, coefficients: [6.686059, 0.1385833, 0, 0.05910334, 1, 2047.46509, 0, 897.7476, 1], range_um: [0.41, 11.6]}
+    - {page: Fossier-2004, direction: y, type: 4, coefficients: [7.095493, 0.1422326, 0, 0.06614640, 1, 2511.08936, 0, 988.2024, 1], range_um: [0.41, 11.6]}
+    - {page: Fossier-2004, direction: z, type: 4, coefficients: [7.256327, 0.15072, 0, 0.06823652, 1, 2626.10840, 0, 983.0503, 1], range_um: [0.41, 11.6]}
+  checks: []  # checked in the test against the "Calculated" angles of Table IV (p. 12)
+
+- material: LiInSe2
+  name: LiInSe2 (Lithium selenoindate, LISe)
+  doc_id: 10.1364_josab.27.001902
+  reference: "Petrov et al. (2010). Optical, thermal, electrical, damage, and phase-matching properties of lithium selenoindate. J. Opt. Soc. Am. B 27, 1902. doi:10.1364/josab.27.001902"
+  doi: 10.1364/josab.27.001902
+  pdf_page: 10
+  where: "Eq. (7): n² = A + B/(λ² − C) + D/(λ² − E), λ in µm, nX < nY < nZ with (X, Y, Z) ↔ (b, a, c), Z polar; fitted to the indices of Table 3 (0.525–12 µm) and to SHG, OPO and DFG angles (±0.6°)"
+  entries:
+    - {page: Petrov-2010, direction: x, type: 4, coefficients: [5.669848, 0.1948525, 0, 0.09473786, 1, 300.72708, 0, 492.0924, 1], range_um: [0.525, 12]}
+    - {page: Petrov-2010, direction: y, type: 4, coefficients: [5.676208, 0.2451579, 0, 0.06265155, 1, 205.05597, 0, 432.8862, 1], range_um: [0.525, 12]}
+    - {page: Petrov-2010, direction: z, type: 4, coefficients: [6.302234, 0.2509052, 0, 0.04137438, 1, 755.68622, 0, 713.0767, 1], range_um: [0.525, 12]}
+  checks:  # Table 6 (p. 21): indices at 1.064 µm, to the 3 decimals printed
+    - {direction: x, points: [[1.064, 2.290]], tol: 6.0e-4}
+    - {direction: y, points: [[1.064, 2.330]], tol: 6.0e-4}
+    - {direction: z, points: [[1.064, 2.339]], tol: 6.0e-4}

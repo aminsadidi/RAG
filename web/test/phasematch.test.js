@@ -94,3 +94,18 @@ test("first-order QPM periods of the poled crystals match the published ones", (
 test("every source id of dij.json is a string", () => {
   for (const [m, r] of Object.entries(D)) for (const s of r.sources) if ("doc_id" in s) assert.equal(typeof s.doc_id, "string", m);
 });
+
+test("LiInS2 and LiInSe2: the papers' calculated angles and d_eff", () => {
+  // Fossier et al. 2004, Table IV ("Calculated"): YZ type-II SHG of 2.5527 µm at θ = 34.684°, X-Y DFG 0.77022 − 0.87224 µm at φ = 42.170°
+  assert.ok(Math.abs(angle("LiInS2", null, "shg", 2.5527, 0, "yz", "IIa") - 34.684) < 0.05);
+  assert.ok(Math.abs(angle("LiInS2", null, "opo", 0.77022, 0.87224, "xy", "IIa") - 42.17) < 0.1);
+  // Petrov et al. 2010, Table 4: X-Y DFG 0.7754523 − 0.8856533 µm at φ = 54.4285°
+  assert.ok(Math.abs(angle("LiInSe2", null, "opo", 0.7754523, 0.8856533, "xy", "IIa") - 54.4285) < 0.1);
+  // d_eff in the X-Y plane: 6.54 pm/V for LIS at φ = 42° and 9.35 pm/V for LISe at φ = 55° (Petrov et al. 2010, p. 18–19)
+  const deffOf = (mat, a, b) => {
+    const s = source(mat), sol = solveAll(nAt(s), s.kind, "opo", a, b).find((r) => r.plane === "xy" && r.type === "IIa");
+    return effectiveD(nAt(s), s.kind, sol, D[mat].d).deff;
+  };
+  assert.ok(Math.abs(deffOf("LiInS2", 0.77022, 0.87224) - 6.54) < 0.15);
+  assert.ok(Math.abs(deffOf("LiInSe2", 0.7754523, 0.8856533) - 9.35) < 0.15);
+});
