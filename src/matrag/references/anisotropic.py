@@ -57,3 +57,15 @@ def build(out: Path) -> int:
                              "group": m["group"], "sources": found})
     (out / "aniso.json").write_text(json.dumps(crystals, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return len(crystals)
+
+
+def build_nonlinear(out: Path, path: Path) -> int:
+    """Write ``dij.json`` (the nonlinear coefficients of data/<corpus>/nonlinear_coefficients.yml) next
+    to ``aniso.json``; returns the number of crystals."""
+    import yaml
+
+    rows = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else []
+    data = {r["material"]: {"point_group": str(r["point_group"]), "d": {str(k): float(v) for k, v in r["d"].items()},
+                            "sources": r["sources"], "notes": r.get("notes", "")} for r in rows or []}
+    (out / "dij.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    return len(data)
