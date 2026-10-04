@@ -250,7 +250,7 @@ body{overflow-x:hidden}
 <section id="tab-pm" hidden class="viz-root">
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
-    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۲۶ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
+    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۲۷ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
@@ -262,11 +262,12 @@ body{overflow-x:hidden}
       <span id="pmderived" class="hint" style="direction:ltr"></span>
     </div>
     <div class="row">
-      <label>بلور <input id="pmmat" list="pmmats" style="width:230px" autocomplete="off" placeholder="مثلاً BBO، KTP، LBO"><datalist id="pmmats"></datalist></label>
+      <label>بلور <select id="pmmat" style="max-width:300px"></select></label>
       <label>منبع <select id="pmsrc" style="max-width:260px"></select></label>
       <button id="pmgo">محاسبه</button>
       <button class="alt" id="pmall">مقایسه‌ی همه‌ی بلورها</button>
     </div>
+    <label class="hint"><input type="checkbox" id="pmmore"> مواد دوشکستیِ دیگر را هم نشان بده (فقط زاویه و walk-off؛ ضرایب غیرخطی‌شان در داده‌ها نیست)</label>
     <p class="hint" id="pminfo"></p>
   </div>
   <div class="card" style="margin-top:14px">
@@ -283,7 +284,7 @@ body{overflow-x:hidden}
     <h2>کدام بلورها؟</h2>
     <p class="hint" id="pmallinfo"></p>
     <div class="row"><label>مرتب‌سازی <select id="pmsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³ (بازده تبدیل)</option><option value="deff">d_eff</option><option value="walk">کمترین walk-off</option></select></label>
-    <label class="hint"><input type="checkbox" id="pmevery"> همه‌ی مواد دوشکستی (نه فقط بلورهای غیرخطی شناخته‌شده)</label></div>
+    <label class="hint"><input type="checkbox" id="pmevery"> مواد دوشکستیِ بدون ضرایب غیرخطی را هم بیاور</label></div>
     <div style="overflow-x:auto"><table id="pmalltable" style="direction:ltr;min-width:640px"></table></div>
   </div>
 </section>
@@ -1132,12 +1133,6 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 import { entryIndex } from "/dispersion.js";
 import { effectiveD, solveAll, waves } from "/phasematch.js";
 
-// Noncentrosymmetric crystals used for frequency conversion: the default set of the comparison.
-const NLO = new Set(["BaB2O4", "LiB3O5", "BiB3O6", "CsLiB6O10", "CsB3O5", "KBe2BO3F2", "KTiOPO4", "RbTiOPO4", "Nb-RbTiOPO4",
-  "KTiOAsO4", "RbTiOAsO4", "CsTiOAsO4", "KH2PO4", "NH4H2PO4", "LiNbO3", "MgO-LiNbO3", "LiTaO3", "KNbO3", "LiIO3", "AgGaS2",
-  "AgGaSe2", "ZnGeP2", "CdSiP2", "CdGeAs2", "GaSe", "GaS", "CdSe", "CdS", "HgGa2S4", "LiGaS2", "BaGa4S7", "BaGa4Se7",
-  "BaGa2GeSe6", "CdGa2S4", "Ag3AsS3", "Tl3AsSe3", "Te", "Se", "HgS", "SiO2", "YCa4O(BO3)3", "GdCa4O(BO3)3",
-  "TmCa4O(BO3)3", "La2CaB10O19", "LuAl3(BO3)4", "DAST", "DSTMS", "CH4N2O - urea", "Pb5Ge3O11", "ZnSiAs2", "CuGaS2"]);
 const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
 const PROC = {
   shg: ["طول موج اصلی", ""], sfg: ["طول موج ۱", "طول موج ۲"], opo: ["طول موج پمپ", "طول موج سیگنال"],
@@ -1168,10 +1163,21 @@ function inputs() {
 window.loadPM = async () => {
   if (PM.list) return;
   [PM.list, PM.dij] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({}))]);
-  $("pmmats").innerHTML = PM.list.map((c) => `<option value="${esc(key(c))}">${esc(short(c))}</option>`).join("");
   const saved = store.get("pm"); if (saved) { $("pmproc").value = saved.proc; $("pma").value = saved.a; $("pmb").value = saved.b; }
-  setProc(); pick(saved?.mat && PM.list.some((c) => key(c) === saved.mat) ? saved.mat : "BaB2O4");
+  const mat = saved?.mat && PM.list.some((c) => key(c) === saved.mat) ? saved.mat : "BaB2O4";
+  $("pmmore").checked = !PM.dij[mat];
+  fillMats(); setProc(); pick(mat);
 };
+
+// The crystal menu: those with nonlinear coefficients (complete data), then, if asked, the other birefringent materials.
+const matLabel = (c) => `${c.material}${short(c) ? " — " + short(c) : ""}`;
+function fillMats() {
+  const opts = (cs) => cs.map((c) => `<option value="${esc(key(c))}">${esc(matLabel(c))}</option>`).join("");
+  const full = PM.list.filter((c) => PM.dij[c.material]), rest = PM.list.filter((c) => !PM.dij[c.material]);
+  $("pmmat").innerHTML = `<optgroup label="بلورهای غیرخطی با ضرایب d (${fa(full.length)})">${opts(full)}</optgroup>`
+    + ($("pmmore").checked ? `<optgroup label="دوشکستی، بدون ضرایب غیرخطی (${fa(rest.length)})">${opts(rest)}</optgroup>` : "");
+  if (PM.crystal && [...$("pmmat").options].some((o) => o.value === key(PM.crystal))) $("pmmat").value = key(PM.crystal);
+}
 
 function setProc() {
   const [la, lb] = PROC[$("pmproc").value];
@@ -1181,13 +1187,48 @@ function setProc() {
   $("pmderived").textContent = proc === "shg" ? `→ ${f(w.l3)} µm` : proc === "sfg" ? `→ ${f(w.l3)} µm` : `idler ${f(w.l2)} µm`;
 }
 
-function pick(mat, label) {
+// Common laser lines: when a crystal's sources cannot take the entered wavelengths (e.g. ZGP at 1.064 µm, whose
+// second harmonic it absorbs), the first case it phase-matches is used instead.
+const LINES = {
+  shg: [[1.064], [0.8], [1.55], [2.09], [3.0], [4.0], [5.0], [10.6], [0.946], [0.6], [0.5]],
+  sfg: [[1.064, 0.532], [1.064, 0.355], [1.55, 1.064], [2.09, 1.064], [3.0, 2.09], [10.6, 2.09], [0.8, 0.4]],
+  opo: [[0.532, 0.8], [1.064, 1.55], [2.09, 3.0], [0.355, 0.5], [1.064, 2.0], [0.8, 1.3]],
+};
+function fitWaves(c, proc) {
+  const ok = (a, b) => c.sources.find((s) => covers(s, waves(proc, a, b)) && solveAll(nAt(s), s.kind, proc, a, b).length);
+  for (const [a, b] of LINES[proc]) if (ok(a, b)) return [a, b];
+  // otherwise a scan of each source's range
+  for (const s of c.sources) {
+    const [lo, hi] = s.range_um, N = 40;
+    for (let i = N; i >= 0; i--) {
+      const a = +(lo + (hi - lo) * i / N).toFixed(4);
+      for (let j = 1; j <= (proc === "shg" ? 1 : 10); j++) {
+        const b = +(proc === "sfg" ? lo + (a - lo) * j / 10 : a * (1 + j / 10)).toFixed(4);
+        if (covers(s, waves(proc, a, b)) && solveAll(nAt(s), s.kind, proc, a, b).length) return [a, b];
+      }
+    }
+  }
+  return null;
+}
+
+function pick(mat, label, fit = true) {
   const c = PM.list.find((x) => key(x) === mat); if (!c) return;
-  PM.crystal = c; $("pmmat").value = mat;
-  const { w } = inputs();
-  const best = c.sources.find((s) => covers(s, w)) || c.sources[0];
+  let { proc, a, b, w } = inputs(); PM.moved = "";
+  if (fit && !label && !c.sources.some((s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, a, b).length)) {
+    const fit = fitWaves(c, proc), [na, nb] = fit || [a, b];
+    if (!fit) PM.moved = `این بلور با فرمول‌های موجود در هیچ طول موجی از بازه‌اش برای ${proc === "shg" ? "SHG" : proc === "sfg" ? "SFG" : "OPO"} تطبیق فاز زاویه‌ای (در صفحه‌های اصلی) ندارد؛ دوشکستی آن کم است و در عمل با قطبش تناوبی (QPM) به کار می‌رود.`;
+    else if (na !== a || (proc !== "shg" && nb !== b)) {
+      PM.moved = `طول موج${proc === "shg" ? "" : "‌های"} قبلی (${proc === "shg" ? a : a + " و " + b} µm) در بازه‌ی منبع‌های این بلور نبود یا تطبیق فاز نداشت؛ طول موج خودکار به ${proc === "shg" ? na : na + " و " + nb} µm تغییر کرد. می‌توانید آن را عوض کنید.`;
+      $("pma").value = na; if (proc !== "shg") $("pmb").value = nb;
+      ({ w } = inputs());
+    }
+  }
+  const cur = PM.crystal === c && !label ? c.sources[+$("pmsrc").value] : null;
+  const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, +$("pma").value, +$("pmb").value).length;
+  const best = (cur && has(cur) ? cur : null) || c.sources.find(has) || (cur && covers(cur, w) ? cur : null) || c.sources.find((s) => covers(s, w)) || c.sources[0];
   $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · ${s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
   $("pmsrc").value = String(c.sources.indexOf(label ? c.sources.find((s) => s.label === label) || best : best));
+  PM.crystal = c; $("pmmat").value = mat;
   run();
 }
 
@@ -1197,7 +1238,8 @@ function run() {
   const src = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
   store.set("pm", { proc, a, b, mat: key(c) });
   const ref = Object.values(src.axes)[0];
-  $("pminfo").innerHTML = `${esc(c.name || c.material)} — ${src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
+  const moved = PM.moved; PM.moved = "";
+  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "") + `${esc(c.name || c.material)} — ${src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
         + PM.dij[c.material].sources.map((s) => (s.doc_id
@@ -1205,7 +1247,11 @@ function run() {
           : `<a class="chip" title="${esc(s.what)}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${esc(s.cite)}، ص ${fa(s.pdf_page)} (خارج از مجموعه)</a>`)).join(" ")
       : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
-    $("pmtable").innerHTML = `<tr><td class="err" style="direction:rtl;text-align:right">طول موج‌ها (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) خارج از بازه‌ی این منبع (${src.range_um[0]}–${src.range_um[1]} µm) است؛ منبع دیگری انتخاب کنید یا طول موج را عوض کنید.</td></tr>`;
+    const other = c.sources.findIndex((s) => covers(s, w));
+    $("pmtable").innerHTML = `<tr><td class="err" style="direction:rtl;text-align:right">طول موج‌های این فرایند (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) همه باید در بازه‌ی فرمول این منبع (${src.range_um[0]}–${src.range_um[1]} µm) باشند و نیستند. `
+      + (other >= 0 ? `<button id="pmother">رفتن به منبع ${esc(c.sources[other].label)} که این بازه را دارد</button>` : `<button id="pmfit">تنظیم خودکار طول موج برای این بلور</button>`) + `</td></tr>`;
+    if (other >= 0) $("pmother").onclick = () => { $("pmsrc").value = String(other); run(); };
+    else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
   } else {
     const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
     $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
@@ -1218,14 +1264,22 @@ function run() {
   drawTuning(src, proc, a, b);
 }
 
+// The curve takes ~100 solutions (30 ms each in a biaxial crystal): computed in slices after the table is shown,
+// and dropped when another crystal or wavelength is chosen meanwhile.
+const pause = () => new Promise((r) => setTimeout(r, 0));
+
 // Tuning curve: SHG/SFG — angle against the tuned wavelength; OPO — signal and idler against the angle.
-function drawTuning(src, proc, a, b) {
+async function drawTuning(src, proc, a, b) {
+  const token = PM.draw = {}, stale = () => PM.draw !== token;
   const [lo, hi] = src.range_um, fn = nAt(src), pts = new Map();
   const add = (k, x, y) => { if (!pts.has(k)) pts.set(k, []); pts.get(k).push([x, y]); };
-  const N = 140;
+  const N = src.kind === "biaxial" ? 80 : 140;
+  $("pmcharttitle").textContent = "منحنی تنظیم (در حال محاسبه…)"; $("pmlegend").innerHTML = "";
+  $("pmsvg").innerHTML = ""; await pause(); if (stale()) return;
   if (proc === "opo") {
     const smin = a * 1.02, smax = 2 * a;
     for (let k = 0; k <= N; k++) {
+      if (k % 8 === 0) { await pause(); if (stale()) return; }
       const s = smin + (smax - smin) * k / N, w = waves("opo", a, s);
       if (!covers(src, w)) continue;
       for (const r of solveAll(fn, src.kind, "opo", a, s)) { const kk = `${r.plane} ${r.type}`; add(kk, r.angle, s); add(kk, r.angle, w.l2); }
@@ -1233,6 +1287,7 @@ function drawTuning(src, proc, a, b) {
   } else {
     const x0 = proc === "shg" ? Math.max(lo, 2 * lo) : lo, x1 = hi;
     for (let k = 0; k <= N; k++) {
+      if (k % 8 === 0) { await pause(); if (stale()) return; }
       const x = x0 + (x1 - x0) * k / N, w = waves(proc, x, b);
       if (!covers(src, w)) continue;
       for (const r of solveAll(fn, src.kind, proc, x, b)) add(`${r.plane} ${r.type}`, x, r.angle);
@@ -1273,7 +1328,7 @@ function drawTuning(src, proc, a, b) {
 function compareAll() {
   const { proc, a, b, w } = inputs(), every = $("pmevery").checked, rows = [];
   for (const c of PM.list) {
-    if (!every && !NLO.has(c.material)) continue;
+    if (!every && !PM.dij[c.material]) continue;
     const src = c.sources.find((s) => covers(s, w)); if (!src) continue;
     const sols = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r)); if (!sols.length) continue;
     const useful = sols.filter((r) => r.deff == null || r.deff > 0.005);
@@ -1301,20 +1356,17 @@ $("pmproc").onchange = () => {
   if (p === "shg") $("pma").value = 1.064;
   pick(key(PM.crystal));
 };
-for (const id of ["pma", "pmb"]) $(id).addEventListener("change", () => pick(key(PM.crystal)));
+for (const id of ["pma", "pmb"]) $(id).addEventListener("change", () => pick(key(PM.crystal), undefined, false));
 $("pmsrc").onchange = run;
-$("pmgo").onclick = () => { const m = PM.list.find((c) => key(c) === $("pmmat").value); if (m) pick(m.material); else run(); };
-$("pmmat").addEventListener("input", (e) => { if (PM.list?.some((c) => key(c) === e.target.value)) pick(e.target.value); });
-$("pmmat").addEventListener("change", (e) => {
-  const v = e.target.value.trim().toLowerCase(); if (!v || PM.list.some((c) => key(c) === e.target.value)) return;
-  const m = PM.list.find((c) => c.material.toLowerCase() === v || (c.name || "").toLowerCase().split(/[(),\s]+/).includes(v))
-    || PM.list.find((c) => (c.material + " " + c.name).toLowerCase().includes(v));
-  if (m) pick(m.material);
-});
+$("pmgo").onclick = run;
+$("pmmat").onchange = (e) => pick(e.target.value);
+$("pmmore").onchange = () => {
+  if (!$("pmmore").checked && PM.crystal && !PM.dij[PM.crystal.material]) { PM.crystal = null; fillMats(); pick("BaB2O4"); } else fillMats();
+};
 $("pmall").onclick = compareAll;
 $("pmevery").onchange = compareAll;
 $("pmsort").onchange = compareAll;
-$("pmalltable").onclick = (e) => { const tr = e.target.closest("tr[data-mat]"); if (tr) { pick(tr.dataset.mat, tr.dataset.src); $("pmtable").scrollIntoView({ behavior: "smooth", block: "center" }); } };
+$("pmalltable").onclick = (e) => { const tr = e.target.closest("tr[data-mat]"); if (tr) { if (!PM.dij[tr.dataset.mat] && !$("pmmore").checked) { $("pmmore").checked = true; fillMats(); } pick(tr.dataset.mat, tr.dataset.src); $("pmtable").scrollIntoView({ behavior: "smooth", block: "center" }); } };
 </script>
 <script type="module">
 // ---------- evaluation tab
