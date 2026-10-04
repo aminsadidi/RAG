@@ -332,7 +332,7 @@ def export_formulas(
     import shutil
 
     from matrag.config import Settings
-    from matrag.references import paper_formulas
+    from matrag.references import anisotropic, paper_formulas
     from matrag.references.refractiveindex import book_names, formula_catalog
 
     entries = formula_catalog(Settings().reference_db)
@@ -355,6 +355,7 @@ def export_formulas(
                f"{len(index)} materials written to {out}")
     added = paper_formulas.add_to_site(out, Settings().data_dir / Settings().corpus / "paper_formulas.yml")
     typer.echo(f"{added} more materials from formulas read in the collection's papers (paper_formulas.yml)")
+    typer.echo(f"{anisotropic.build(out)} birefringent crystals written to aniso.json (phase-matching tab)")
 
 
 @app.command("export-papers")
