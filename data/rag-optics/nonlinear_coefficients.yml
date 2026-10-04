@@ -148,7 +148,7 @@
   sources:
     - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "0.85, −0.67 and 0.04 pm/V (Table VI)"}
     - {doc_id: 10.1364_josab.24.002877, cite: "Zhang et al. (2007)", pdf_page: 6, what: "d_eff = d32·cos φ for type-I SHG in the xy plane, which fixes the frame"}
-    - {doc_id: 10.1088_1464_4258_10_10_104011, cite: "Sarrouf et al. (2008)", pdf_page: 7, what: "measured single-pass SHG consistent with d_eff = 0.82 pm/V"}
+    - {doc_id: "10.1088_1464_4258_10_10_104011", cite: "Sarrouf et al. (2008)", pdf_page: 7, what: "measured single-pass SHG consistent with d_eff = 0.82 pm/V"}
   notes: "mm2 with the polar axis along y of the principal frame (nx < ny < nz): the literature's d32, d31, d33 are d_yzz (= d23), d_yxx (= d21), d_yyy (= d22) here. Zhang et al. (2007) measured larger values (0.96, 1.04, 0.06 pm/V), which do not match the measured d_eff of Sarrouf et al."
 
 - material: CsB3O5
