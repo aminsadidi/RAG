@@ -422,16 +422,18 @@ PAPERS = {
     'li2016.pdf': ('10.1016/j.optmat.2016.10.023', '01_Borates', 'LCB_La2CaB10O19', None),
 }
 import csv, json, pathlib, shutil
-from matrag.catalog import PAPERS_DIR, doi_key, index_file, load_catalog
+from matrag.catalog import PAPERS_DIR, doi_key, index_file, load_catalog, plan
 root = pathlib.Path(open(f'{WORK}/data/rag-optics/corpus_root.txt').read().strip())
 downloads = pathlib.Path(DOWNLOADS)
 known = {e.key for e in load_catalog(root)}
+print('1/4 Looking for the papers in the collection...')
+have = {i.doc_id: i.pdf for i in plan(root).items if i.pdf is not None}  # a PDF under any file name
 rows, placed = [], 0
 for name, (doi, category, material, meta) in PAPERS.items():
     pdf = downloads / name
     target = root / PAPERS_DIR / category / material / (doi_key(doi) + '.pdf')
-    if target.exists():
-        print('already in the collection:', name)
+    if target.exists() or doi_key(doi) in have:
+        print('already in the collection:', name, '->', (target if target.exists() else have[doi_key(doi)]).relative_to(root))
     elif not pdf.exists():
         print('⚠️ not found, skipped:', pdf)
         continue
@@ -486,16 +488,20 @@ print('Copying the database from Drive...')
 """ + INSTALL + NEW_PAPERS + QDRANT_KEYS + """
 %cd {WORK}
 # 2. Only the new papers are converted and embedded (the rest is already in the database)
+print('2/4 Indexing the new papers (the rest are skipped as unchanged)...')
 !matrag --corpus rag-optics ingest 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/ingest.log"
 # 3. The site: PDFs for the page view, then the chunks for the search
 if os.environ.get('CLOUDFLARE_API_TOKEN'):
+    print('3/4 Copying all PDFs from Drive for the site: 10-20 minutes with no output, it is not stuck...')
     !matrag --corpus rag-optics export-pdfs /content/RAG/web-pdfs/pdfs 2>&1 | grep -vE "Warning|Loading"
     if not os.path.exists('/content/node/bin/node'):
         !curl -fsSL https://nodejs.org/dist/v22.12.0/node-v22.12.0-linux-x64.tar.xz | tar -xJ -C /content && mv /content/node-v22.12.0-linux-x64 /content/node
     os.environ['PATH'] = '/content/node/bin:' + os.environ['PATH']
+    print('   Uploading the PDFs to the site (a few minutes)...')
     !cd /content/RAG/web-pdfs && npx --yes wrangler@4 deploy 2>&1 | grep -vE "telemetry|^$" | tail -4
 else:
     print('ℹ️ No matrag_data/cloudflare.env: PDFs not uploaded (the page view needs them)')
+print('4/4 Sending the new chunks to the site search (Qdrant)...')
 !matrag --corpus rag-optics export-qdrant 2>&1 | grep -vE "Warning|Loading"
 %cd /content/RAG
 !matrag --corpus rag-optics status 2>&1 | grep -vE "Warning"
