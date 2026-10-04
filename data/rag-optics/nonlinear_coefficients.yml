@@ -117,7 +117,7 @@
   point_group: mm2
   d: {15: 2.02, 24: 3.75, 31: 2.10, 32: 3.75, 33: 15.4}
   sources:
-    - {doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 2.02, d_yyz = 3.75, d_zxx = 2.10, d_zyy = 3.75, d_zzz = 15.4 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
+    - {doc_id: 10.1364_ao.43.003319, doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 2.02, d_yyz = 3.75, d_zxx = 2.10, d_zyy = 3.75, d_zzz = 15.4 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
     - {doc_id: 10.1109_3.55534, cite: "Eckardt et al. (1990)", pdf_page: 10, what: "fixes the frame: |d24| > |d15| with nx < ny < nz, and the measured type-II d_eff = 3.18 pm/V"}
   notes: "mm2, polar axis z; d_yyz (d24) inferred by Pack et al. from Kleinman symmetry. Earlier values: Shoji et al. (1997) 3.7/2.2/14.6 with x and y exchanged, Peltz et al. (2001) 2.5/4.4/16.9"
 
@@ -125,21 +125,21 @@
   point_group: mm2
   d: {15: 2.30, 24: 3.64, 31: 2.30, 32: 3.66, 33: 15.5}
   sources:
-    - {doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 2.30, d_yyz = 3.64, d_zxx = 2.30, d_zyy = 3.66, d_zzz = 15.5 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
+    - {doc_id: 10.1364_ao.43.003319, doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 2.30, d_yyz = 3.64, d_zxx = 2.30, d_zyy = 3.66, d_zzz = 15.5 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
   notes: "mm2, polar axis z; d_xxz (d15) inferred by Pack et al. from Kleinman symmetry. Earlier: Buryy et al. (2022) 2.5/4.4/2.9/5.1/16.2"
 
 - material: RbTiOAsO4
   point_group: mm2
   d: {15: 2.17, 24: 3.92, 31: 2.25, 32: 3.89, 33: 15.9}
   sources:
-    - {doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 2.17, d_yyz = 3.92, d_zxx = 2.25, d_zyy = 3.89, d_zzz = 15.9 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
+    - {doc_id: 10.1364_ao.43.003319, doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 2.17, d_yyz = 3.92, d_zxx = 2.25, d_zyy = 3.89, d_zzz = 15.9 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
   notes: "mm2, polar axis z. Earlier: Peltz et al. (2001) 2.3/3.8/15.8"
 
 - material: RbTiOPO4
   point_group: mm2
   d: {15: 1.98, 24: 3.98, 31: 2.05, 32: 3.82, 33: 15.6}
   sources:
-    - {doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 1.98, d_yyz = 3.98, d_zxx = 2.05, d_zyy = 3.82, d_zzz = 15.6 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
+    - {doc_id: 10.1364_ao.43.003319, doi: 10.1364/ao.43.003319, cite: "Pack, Armstrong, Smith (2004)", pdf_page: 5, what: "d_xxz = 1.98, d_yyz = 3.98, d_zxx = 2.05, d_zyy = 3.82, d_zzz = 15.6 pm/V (Table 6; separated-beams method, relative to d_zxy(KDP) = 0.39 pm/V)"}
   notes: "mm2, polar axis z. Earlier: Peltz et al. (2001) 3.3/4.1/17.1"
 
 - material: LiB3O5
@@ -169,40 +169,40 @@
   point_group: -42m
   d: {36: 0.47, 14: 0.47, 25: 0.47}
   sources:
-    - {doi: 10.1103/physrevb.1.1739, cite: "Jerphagnon & Kurtz (1970)", pdf_page: 4, what: "d36(ADP) = (1.21 ± 0.05)·d36(KDP) and (1.57 ± 0.07)·d11(quartz) at 1.064 µm; with d36(KDP) = 0.39 pm/V (Shoji et al. 1997) this is 0.47 pm/V"}
+    - {doc_id: 10.1103_physrevb.1.1739, doi: 10.1103/physrevb.1.1739, cite: "Jerphagnon & Kurtz (1970)", pdf_page: 4, what: "d36(ADP) = (1.21 ± 0.05)·d36(KDP) and (1.57 ± 0.07)·d11(quartz) at 1.064 µm; with d36(KDP) = 0.39 pm/V (Shoji et al. 1997) this is 0.47 pm/V"}
   notes: "−42m, Kleinman"
 
 - material: KNbO3
   point_group: mm2
   d: {11: 21.9, 12: 8.9, 26: 9.2, 13: 12.4, 35: 13.0}
   sources:
-    - {doi: 10.1364/josab.20.002109, cite: "Pack, Armstrong, Smith (2003)", pdf_page: 6, what: "d_xxx = 21.9, d_xyy = 8.9, d_yxy = 9.2, d_xzz = 12.4, d_zxz = 13.0 pm/V, all of the same sign (Table 5)"}
+    - {doc_id: 10.1364_josab.20.002109, doi: 10.1364/josab.20.002109, cite: "Pack, Armstrong, Smith (2003)", pdf_page: 6, what: "d_xxx = 21.9, d_xyy = 8.9, d_yxy = 9.2, d_xzz = 12.4, d_zxz = 13.0 pm/V, all of the same sign (Table 5)"}
   notes: "mm2 with the polar axis along x; Pack et al. measured the indices of their x, y, z polarizations (Table 3: 2.1196, 2.2198, 2.2570 at 1.064 µm), equal to nx, ny, nz of the Umemura formula used here"
 
 - material: GdCa4O(BO3)3
   point_group: m
   d: {11: 0.28, 12: 0.21, 26: 0.23, 13: -0.58, 35: -0.61, 15: -0.36, 31: -0.32, 24: 1.66, 32: 1.67, 33: -1.20}
   sources:
-    - {doi: 10.1364/josab.22.000417, cite: "Pack, Armstrong, Smith (2005)", pdf_page: 4, what: "all ten d_ijk measured directly (Table 2; d_xxx and d_zzz are the mean of two samples)"}
+    - {doc_id: 10.1364_josab.22.000417, doi: 10.1364/josab.22.000417, cite: "Pack, Armstrong, Smith (2005)", pdf_page: 4, what: "all ten d_ijk measured directly (Table 2; d_xxx and d_zzz are the mean of two samples)"}
   notes: "m, mirror normal to y; Pack's measured indices (Table 1) agree with the Aka formula used here to 5×10⁻⁴. Checked against the d_eff measured by Adams et al.: 0.78 and 0.38 pm/V on the two sides of the xz plane"
 
 - material: YCa4O(BO3)3
   point_group: m
   d: {11: 0.155, 12: 0.235, 26: 0.24, 13: -0.59, 35: -0.59, 15: -0.30, 31: -0.30, 24: 1.62, 32: 1.62, 33: -1.195}
   sources:
-    - {doi: 10.1364/josab.22.000417, cite: "Pack, Armstrong, Smith (2005)", pdf_page: 4, what: "d_ijk of YCOB (Table 2); d_xzz and d_xxz, not measured for YCOB, set equal to d_zxz and d_zxx (Kleinman)"}
+    - {doc_id: 10.1364_josab.22.000417, doi: 10.1364/josab.22.000417, cite: "Pack, Armstrong, Smith (2005)", pdf_page: 4, what: "d_ijk of YCOB (Table 2); d_xzz and d_xxz, not measured for YCOB, set equal to d_zxz and d_zxx (Kleinman)"}
   notes: "m, mirror normal to y. Pack's measured indices (nx = 1.6670 at 1.064 µm) confirm that the Segonds formula used here is ~0.03 low in nx; the phase-matching angles and d_eff of YCOB are therefore approximate"
 
 - material: BiB3O6
   point_group: "2"
   d: {11: 2.53, 12: 2.926, 13: -1.926, 14: -1.627, 25: -1.669, 26: 3.479, 35: -1.579, 36: -1.669}
   sources:
-    - {doi: 10.1016/s0038-1098(98)00538-9, cite: "Hellwig, Liebertz, Bohatý (1998)", pdf_page: 2, what: "all eight d_ijk at 1.0795 µm in the crystal-physics frame (e2 ∥ b, e3 ∥ c), indicatrix rotated by φ = −42.9° about b, and d_eff = 3.2 pm/V for type-I SHG with k normal to b"}
+    - {doc_id: 10.1016_s0038_1098_98_00538_9, doi: 10.1016/s0038-1098(98)00538-9, cite: "Hellwig, Liebertz, Bohatý (1998)", pdf_page: 2, what: "all eight d_ijk at 1.0795 µm in the crystal-physics frame (e2 ∥ b, e3 ∥ c), indicatrix rotated by φ = −42.9° about b, and d_eff = 3.2 pm/V for type-I SHG with k normal to b"}
   notes: "Rotated into the principal frame of the Umemura formula (whose indices equal Hellwig's n1, n2, n3 to 10⁻⁴). Of the four possible assignments (b along x or y, rotation sign ±), only b ∥ x with the in-plane axes turned by +42.9° reproduces Hellwig's d_eff = 3.2 pm/V (3.31); that is also the yz plane in which BiBO is used for 1.064 µm SHG"
 
 - material: La2CaB10O19
   point_group: "2"
   d: {22: 1.04, 21: -0.58, 16: -0.58, 23: 0.25, 34: 0.25, 14: 0.70, 25: 0.70, 36: 0.70}
   sources:
-    - {doi: 10.1016/j.optmat.2016.10.023, cite: "Li et al. (2016)", pdf_page: 5, what: "d21 = −0.58, d22 = 1.04, d23 = 0.25, d14 = 0.70 pm/V (relative signs from Maker fringes and phase matching); calculated THG d_eff 0.82 and 0.57 pm/V at (49.4°, 0°) and (49.4°, 180°) (Table 1)"}
+    - {doc_id: 10.1016_j.optmat.2016.10.023, doi: 10.1016/j.optmat.2016.10.023, cite: "Li et al. (2016)", pdf_page: 5, what: "d21 = −0.58, d22 = 1.04, d23 = 0.25, d14 = 0.70 pm/V (relative signs from Maker fringes and phase matching); calculated THG d_eff 0.82 and 0.57 pm/V at (49.4°, 0°) and (49.4°, 180°) (Table 1)"}
   notes: "2, twofold axis along y (b ∥ Y, Wang et al. 2002); Kleinman: d16 = d21, d25 = d36 = d14, d34 = d23"
