@@ -2,8 +2,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { entryIndex } from "../src/dispersion.client.js";
-import { eigenIndices, effectiveD, fieldVectors, solveAll } from "../src/phasematch.client.js";
+import { entryIndex, thermoShift } from "../src/dispersion.client.js";
+import { eigenIndices, effectiveD, fieldVectors, ncpmTemperatures, solveAll } from "../src/phasematch.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const D = JSON.parse(readFileSync(new URL("../public/ri/dij.json", import.meta.url)));
@@ -100,12 +100,68 @@ test("LiInS2 and LiInSe2: the papers' calculated angles and d_eff", () => {
   assert.ok(Math.abs(angle("LiInS2", null, "shg", 2.5527, 0, "yz", "IIa") - 34.684) < 0.05);
   assert.ok(Math.abs(angle("LiInS2", null, "opo", 0.77022, 0.87224, "xy", "IIa") - 42.17) < 0.1);
   // Petrov et al. 2010, Table 4: X-Y DFG 0.7754523 − 0.8856533 µm at φ = 54.4285°
-  assert.ok(Math.abs(angle("LiInSe2", null, "opo", 0.7754523, 0.8856533, "xy", "IIa") - 54.4285) < 0.1);
+  assert.ok(Math.abs(angle("LiInSe2", "Petrov-2010", "opo", 0.7754523, 0.8856533, "xy", "IIa") - 54.4285) < 0.1);
   // d_eff in the X-Y plane: 6.54 pm/V for LIS at φ = 42° and 9.35 pm/V for LISe at φ = 55° (Petrov et al. 2010, p. 18–19)
-  const deffOf = (mat, a, b) => {
-    const s = source(mat), sol = solveAll(nAt(s), s.kind, "opo", a, b).find((r) => r.plane === "xy" && r.type === "IIa");
+  const deffOf = (mat, a, b, label) => {
+    const s = source(mat, label), sol = solveAll(nAt(s), s.kind, "opo", a, b).find((r) => r.plane === "xy" && r.type === "IIa");
     return effectiveD(nAt(s), s.kind, sol, D[mat].d).deff;
   };
   assert.ok(Math.abs(deffOf("LiInS2", 0.77022, 0.87224) - 6.54) < 0.15);
-  assert.ok(Math.abs(deffOf("LiInSe2", 0.7754523, 0.8856533) - 9.35) < 0.15);
+  assert.ok(Math.abs(deffOf("LiInSe2", 0.7754523, 0.8856533, "Petrov-2010") - 9.35) < 0.15);
+});
+
+test("LiInSe2: Katō et al. 2014 reproduce their angles, Petrov et al. 2010 the ones Katō quote for them", () => {
+  // Table 1 (p. 2), "Calculated (K)": type-1 SHG in zx of 2.0520 µm at θ = 13.5°, of 10.5910 µm at 25.5°; type-2 SHG in xy of 5.2955 µm at φ = 41.0°
+  assert.ok(Math.abs(angle("LiInSe2", "Kato-2014", "shg", 2.052, 0, "xz", "I") - 13.5) < 0.15);
+  assert.ok(Math.abs(angle("LiInSe2", "Kato-2014", "shg", 10.591, 0, "xz", "I") - 25.5) < 0.15);
+  assert.ok(Math.abs(angle("LiInSe2", "Kato-2014", "shg", 5.2955, 0, "xy", "IIa") - 41.0) < 0.15);
+  // "Calculated (P)", the Petrov formula: 14.1° and 43.3° for the last two
+  assert.ok(Math.abs(angle("LiInSe2", "Petrov-2010", "shg", 10.591, 0, "xz", "I") - 14.1) < 0.15);
+  assert.ok(Math.abs(angle("LiInSe2", "Petrov-2010", "shg", 5.2955, 0, "xy", "IIa") - 43.3) < 0.15);
+});
+
+// Indices at T (°C) with the thermo-optic block of the source (thermo_optic.yml).
+const nAtTemp = (s, T) => (lam) => (s.kind === "uniaxial" ? ["o", "o", "e"] : ["x", "y", "z"]).map((a) => {
+  const e = s.axes[a], n0 = entryIndex(e, lam);
+  return e.thermo ? n0 + thermoShift(s.thermo.form, e.thermo, s.thermo.t0_c, n0, lam, T) : n0;
+});
+const ncpm = (mat, label, proc, a, b) => {
+  const s = source(mat, label);
+  return ncpmTemperatures((T) => nAtTemp(s, T), s.kind, proc, a, b, D[mat]?.d, [-50, 300]);
+};
+
+test("thermo-optic formulas: the 90° phase-matching temperatures the papers calculate", () => {
+  // KTP, Katō & Takaoka 2002, Table 2 "Cal": SHG of 1.0795 µm (y + z → y) at 63.8 °C, of 3.1842 µm at 77.6 °C,
+  // and SFG 1.3188 + 0.6594 → 0.4396 µm at 59.8 °C. (Its OPO line, 1.0907 + 1.0390 → 0.5321 µm at 30.9 °C, is
+  // not checked: the rounded wavelengths miss 1/λ1 + 1/λ2 = 1/λ3 by 1×10⁻⁵ µm⁻¹, which moves T by ~15 °C.)
+  const at = (rows, pol) => rows.find((r) => r.pol.join("") === pol)?.T;
+  assert.ok(Math.abs(at(ncpm("KTiOPO4", "Kato", "shg", 1.0795, 0), "yzy") - 63.8) < 0.3);
+  assert.ok(Math.abs(at(ncpm("KTiOPO4", "Kato", "shg", 3.1842, 0), "yzy") - 77.6) < 0.3);
+  assert.ok(Math.abs(at(ncpm("KTiOPO4", "Kato", "sfg", 1.3188, 0.6594), "yzy") - 59.8) < 0.3);
+  // LiInSe2, Katō et al. 2014: type-2 SHG along y of 2.6216 µm at 25 °C, tuning by −0.128 nm/°C (Fig. 3)
+  const t1 = at(ncpm("LiInSe2", "Kato-2014", "shg", 2.6216, 0), "xzx"), t2 = at(ncpm("LiInSe2", "Kato-2014", "shg", 2.6088, 0), "xzx");
+  assert.ok(Math.abs(t1 - 25) < 3);
+  assert.ok(Math.abs((t2 - t1) - 100) < 5);
+  // LBO, Ghosh 1995: type-I SHG of 1.064 µm along x at 148.7 °C (measured 148.1–149.5); his model, as
+  // implemented here, gives 153.7 °C (the paper states ±4 °C agreement for its NCPM temperatures)
+  assert.ok(Math.abs(at(ncpm("LiB3O5", "Ghosh-1995", "shg", 1.064, 0), "zzy") - 148.7) < 6);
+});
+
+test("thermo-optic formulas: BBO angle drift and the CdSiP2 isotropic point", () => {
+  // BBO, Ghosh 1995 Table III: type-I SHG of 1.064 µm at 22.8°, dθ/dT = 12.8 µrad/°C (calculated)
+  const s = source("BaB2O4", "Ghosh-1995");
+  const ang = (T) => solveAll(nAtTemp(s, T), s.kind, "shg", 1.064, 0).find((r) => r.type === "I").angle;
+  assert.ok(Math.abs(ang(20) - 22.8) < 0.1);
+  assert.ok(Math.abs((ang(30) - ang(10)) / 20 * Math.PI / 180 * 1e6 - 12.8) < 0.5);
+  // CdSiP2, Kato et al. 2011: no = ne at 0.5143 µm (300 K), 0.4998 µm (77 K) and 0.4950 µm (4.2 K)
+  const c = source("CdSiP2", "Kato-2011"), wide = (e) => ({ ...e, range_um: [0.3, 7] });
+  const iso = (K) => {
+    const T = K - 273.15, n = (a, l) => { const e = wide(c.axes[a]), n0 = entryIndex(e, l); return n0 + thermoShift("kato", e.thermo, 25, n0, l, T); };
+    let lo = 0.45, hi = 0.53; const f = (l) => n("o", l) - n("e", l);
+    for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (Math.sign(f(m)) === Math.sign(f(lo))) lo = m; else hi = m; }
+    return lo;
+  };
+  assert.ok(Math.abs(iso(300) - 0.5143) < 0.0005);
+  assert.ok(Math.abs(iso(77) - 0.4998) < 0.001);
+  assert.ok(Math.abs(iso(4.2) - 0.4950) < 0.001);
 });

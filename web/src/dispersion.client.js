@@ -63,3 +63,22 @@ export function entryIndex(entry, lam) {
   if (!(lam >= lo - 1e-9 && lam <= hi + 1e-9)) return NaN;
   return entry.type === "tab" ? interpolate(entry.points, lam) : refractiveIndex(entry.type, entry.coefficients, lam);
 }
+
+// Change of a principal index with temperature, from a thermo_optic.yml block (data/rag-optics/):
+// n(λ, T) = n(λ, t0) + thermoShift(...). "kato": dn/dT = Σ c·λ^p × 10⁻⁵ /°C, constant in T (the
+// piece covering λ, else the nearest); "ghosh": 2n·dn/dT = G(T)·R + H(T)·R², R = λ²/(λ² − λig²),
+// G and H in 10⁻⁶ /°C, polynomials in T (°C) integrated from t0 (Ghosh 1995).
+export function thermoShift(form, spec, t0, n0, lam, T) {
+  if (T === t0 || !Number.isFinite(T)) return 0;
+  if (form === "kato") {
+    const dist = (p) => Math.max(p.range_um[0] - lam, lam - p.range_um[1], 0);
+    const piece = spec.reduce((best, p) => (dist(p) < dist(best) ? p : best));
+    return (T - t0) * piece.terms.reduce((s, [c, p]) => s + c * lam ** p, 0) * 1e-5;
+  }
+  if (form === "ghosh") {
+    const integral = (poly) => poly.reduce((s, c, k) => s + c * (T ** (k + 1) - t0 ** (k + 1)) / (k + 1), 0);
+    const R = lam * lam / (lam * lam - spec.lig_um ** 2);
+    return (R * integral(spec.G) + R * R * integral(spec.H)) * 1e-6 / (2 * n0);
+  }
+  return NaN;
+}
