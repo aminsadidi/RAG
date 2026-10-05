@@ -25,6 +25,7 @@ def make_llm(settings: Settings) -> LLM:
             request_timeout=settings.ollama_timeout_s,
             context_window=settings.ollama_context_window,
             thinking=settings.ollama_thinking,
+            additional_kwargs={"num_predict": settings.ollama_num_predict} if settings.ollama_num_predict else {},
         )
 
     from llama_index.llms.google_genai import GoogleGenAI
