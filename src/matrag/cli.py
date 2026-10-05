@@ -419,66 +419,65 @@ def evaluate_retrieval(
     k: Annotated[int, typer.Option(help="Chunks retrieved per question.")] = 10,
     persian: Annotated[bool, typer.Option(help="Use the Persian questions (question_fa), translated by the LLM.")] = False,
     backend: Annotated[str, typer.Option(help="'local' (this database) or 'qdrant' (the web app's search).")] = "local",
+    gold: Annotated[list[str] | None, typer.Option("--gold", help="Question files in gold/ (default: questions.csv; "
+                                                    "repeat for several, e.g. --gold questions.csv --gold generated.csv).")] = None,
 ) -> None:
-    """Recall@k and MRR of each retrieval mode (no LLM needed, except with --persian)."""
-    from matrag.evaluate import evaluate_retrieval as run, load_questions, write_rows
+    """Recall@k and MRR of each retrieval mode, overall and per group of questions (no LLM needed,
+    except with --persian)."""
+    from matrag.evaluate import evaluate_retrieval as run, group_summaries, load_questions, write_rows
 
     ws = _workspace()
-    if backend == "qdrant":
-        return _evaluate_retrieval_qdrant(ws, modes, k)
-    items = load_questions(_gold("questions.csv"))
+    items = [it for name in gold or ["questions.csv"] for it in load_questions(_gold(name))]
+    items = [it for it in items if it.answerable]
     query_fn = None
     if persian:
         items = [it for it in items if it.question_fa]
+        typer.echo(f"Translating {len(items)} Persian questions...", err=True)
         translations = {it.id: ws.search_query(it.question_fa) or it.question_fa for it in items}
         query_fn = lambda it: translations[it.id]  # noqa: E731
+    typer.echo(f"{len(items)} questions", err=True)
     ks = tuple(x for x in (1, 3, 5, 10) if x <= k)
-    reports = [run(items, ws.retriever(m, k), m.value + (" (fa→en)" if persian else ""), ks, query_fn)
-               for m in modes or list(RetrievalMode)]
+    tag = (" (qdrant)" if backend == "qdrant" else "") + (" (fa→en)" if persian else "")
+    retriever = _qdrant_retrievers(ws, items, k, query_fn) if backend == "qdrant" else (lambda m: ws.retriever(m, k))
+    reports = [run(items, retriever(m), m.value + tag, ks, query_fn) for m in modes or list(RetrievalMode)]
     rows = [r.summary() for r in reports]
     _print_table(rows)
-    suffix = "_retrieval_fa" if persian else "_retrieval"
+    groups = [{"mode": r.mode, **g} for r in reports for g in group_summaries(r, items)]
+    _print_table(groups)
+    suffix = "_retrieval" + ("_qdrant" if backend == "qdrant" else "") + ("_fa" if persian else "")
     out = Path("results/eval") / f"{ws.settings.corpus}{suffix}.csv"
     if persian:
         write_rows(out.with_name(out.stem + "_translations.csv"),
                    [{"id": it.id, "question_fa": it.question_fa, "translation": translations[it.id],
                      "original_en": it.question} for it in items])
     write_rows(out, rows)
+    write_rows(out.with_name(out.stem + "_groups.csv"), groups)
     write_rows(out.with_name(out.stem + "_ranks.csv"),
-               [{"id": i, **{r.mode: r.ranks[i] for r in reports}} for i in reports[0].ranks])
+               [{"id": it.id, "group": it.group, **{r.mode: r.ranks[it.id] for r in reports}} for it in items])
     typer.echo(f"saved {out}")
 
 
-def _evaluate_retrieval_qdrant(ws, modes, k: int) -> None:
-    """The same metrics for the web app's search (Qdrant: stored vectors, server-side BM25, RRF)."""
+def _qdrant_retrievers(ws, items, k: int, query_fn=None):
+    """Retrievers over the web app's search (Qdrant: stored vectors, server-side BM25, RRF)."""
     from types import SimpleNamespace
 
     from matrag import qdrant_store
-    from matrag.evaluate import evaluate_retrieval as run, load_questions, write_rows
 
-    items = load_questions(_gold("questions.csv"))
     qc = qdrant_store.client()
     embed = ws.kb.index._embed_model
-    vectors = {it.id: embed.get_query_embedding(it.question) for it in items}
+    texts = sorted({(query_fn or (lambda it: it.question))(it) for it in items})
+    typer.echo(f"Embedding {len(texts)} queries...", err=True)
+    vectors = {q: embed.get_query_embedding(q) for q in texts}
 
     class QdrantRetriever:
         def __init__(self, mode):
-            self.mode, self.current = mode, None
+            self.mode = mode
 
         def retrieve(self, query):
-            item = next(it for it in items if it.question == query)
-            points = qdrant_store.search(qc, ws.settings.corpus, query, vectors[item.id], k, self.mode)
+            points = qdrant_store.search(qc, ws.settings.corpus, query, vectors[query], k, self.mode)
             return [SimpleNamespace(node=SimpleNamespace(metadata=p.payload)) for p in points]
 
-    ks = tuple(x for x in (1, 3, 5, 10) if x <= k)
-    reports = [run(items, QdrantRetriever(m.value), m.value + " (qdrant)", ks) for m in modes or list(RetrievalMode)]
-    rows = [r.summary() for r in reports]
-    _print_table(rows)
-    out = Path("results/eval") / f"{ws.settings.corpus}_retrieval_qdrant.csv"
-    write_rows(out, rows)
-    write_rows(out.with_name(out.stem + "_ranks.csv"),
-               [{"id": i, **{r.mode: r.ranks[i] for r in reports}} for i in reports[0].ranks])
-    typer.echo(f"saved {out}")
+    return lambda m: QdrantRetriever(m.value)
 
 
 @evaluate_app.command("answers")
@@ -516,27 +515,52 @@ def evaluate_answers(
 def evaluate_build_gold(
     overwrite: Annotated[bool, typer.Option(help="Replace an existing questions.csv.")] = False,
 ) -> None:
-    """Retrieval questions built from refractiveindex.info: 'the dispersion formula of <material>'
-    must retrieve one of the corpus papers the database cites for that material."""
-    from matrag.benchmark import retrieval_questions
+    """Retrieval questions with a known relevant paper, built from checked data (see matrag.questions):
+    refractiveindex.info materials asked three ways (with Persian versions), the papers of the
+    nonlinear coefficients and of the formulas read from the collection, and questions the collection
+    cannot answer."""
     from matrag.config import get_settings
-    from matrag.evaluate import write_rows
+    from matrag.questions import build_curated, write_questions
+    from matrag.references.refractiveindex import book_names
 
     ws = _workspace()
-    path = get_settings().data_dir / get_settings().corpus / "gold" / "questions.csv"
+    s = get_settings()
+    path = s.data_dir / s.corpus / "gold" / "questions.csv"
     if path.exists() and not overwrite:
         typer.echo(f"{path} exists (use --overwrite to replace it)")
         return
-    try:
-        references = ws.formula_references()
-    except (ValueError, FileNotFoundError) as e:
-        typer.echo(str(e), err=True)
+    if not s.reference_db.exists():
+        typer.echo(f"refractiveindex.info database not found: {s.reference_db}", err=True)
         raise typer.Exit(1)
-    questions = retrieval_questions(references)
-    write_rows(path, [{"id": q.id, "question": q.question, "doc_id": q.doc_id, "pages": "", "expected": ""}
-                      for q in questions])
-    typer.echo(f"{len(questions)} questions ({len(references)} papers with a refractiveindex.info formula); "
-               f"saved {path}")
+    full_text = {d for d, kind in ws.kb.doc_source_types().items() if kind == "full_text_pdf"}
+    names = {m: n for (shelf, _, m), n in book_names(s.reference_db).items() if shelf == "main"}
+    # the curated YAML files are read from the repository (data/<corpus>/), next to this program
+    corpus_dir = Path(__file__).resolve().parents[2] / "data" / s.corpus
+    rows = build_curated(s.reference_db, corpus_dir if corpus_dir.exists() else s.data_dir / s.corpus,
+                         full_text, names)
+    write_questions(path, rows)
+    counts = {}
+    for r in rows:
+        counts[r["group"]] = counts.get(r["group"], 0) + 1
+    typer.echo(f"{len(rows)} questions {counts}; saved {path}")
+
+
+@evaluate_app.command("generate-questions")
+def evaluate_generate_questions(
+    n: Annotated[int, typer.Option(help="Number of accepted questions wanted (the file is resumed).")] = 1000,
+    seed: Annotated[int, typer.Option(help="Seed of the passage sample.")] = 0,
+) -> None:
+    """Questions written by the LLM from passages of the papers, saved to gold/generated.csv
+    (the passage's paper and pages are the answer). Use a local model on a GPU (Colab)."""
+    from matrag.config import get_settings
+    from matrag.questions import generate
+
+    ws = _workspace()
+    s = get_settings()
+    out = s.data_dir / s.corpus / "gold" / "generated.csv"
+    typer.echo(f"[{ws.llm_name()}] choosing passages...", err=True)
+    total = generate(ws.kb.nodes(), ws.llm(), out, n, seed, on_progress=_echo_progress)
+    typer.echo(f"{total} questions in {out}")
 
 
 @evaluate_app.command("formulas")
