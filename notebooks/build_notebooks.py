@@ -513,7 +513,9 @@ print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
 OLLAMA = """
 import subprocess, time
 os.environ.update({'MATRAG_LLM_PROVIDER': 'ollama', 'MATRAG_OLLAMA_MODEL': OLLAMA_MODEL,
-                   'MATRAG_OLLAMA_THINKING': 'false', 'OLLAMA_MODELS': '/content/ollama_models'})
+                   'MATRAG_OLLAMA_THINKING': 'false', 'OLLAMA_MODELS': '/content/ollama_models',
+                   # 4 requests at once on the T4 (the code sends 4 passages at a time); short context and replies
+                   'OLLAMA_NUM_PARALLEL': '4', 'MATRAG_OLLAMA_CONTEXT_WINDOW': '4096', 'MATRAG_OLLAMA_NUM_PREDICT': '400'})
 if subprocess.run('which ollama', shell=True, capture_output=True).returncode != 0:
     !apt-get install -y -qq zstd > /dev/null
     !curl -fsSL https://ollama.com/install.sh | sh > /dev/null
@@ -532,12 +534,14 @@ def big_eval() -> dict:
 
 **قبل از شروع:** *Runtime → Change runtime type* → **T4 GPU**. دو سلول دارد؛ هر دو را به ترتیب اجرا کنید.
 
-**سلول ۱** (حدود ۲ تا ۳ ساعت برای ۱۰۰۰ سؤال): سؤال‌ها ساخته می‌شوند.
+**سلول ۱** (حدود ۱ تا ۱٫۵ ساعت برای ۱۰۰۰ سؤال؛ ۴ بخش هم‌زمان به مدل داده می‌شود): سؤال‌ها ساخته می‌شوند.
+هر سؤال همان لحظه در Drive ذخیره می‌شود (`matrag_data/data/rag-optics/gold/generated.csv`).
 - حدود ۵۰۰ سؤال از داده‌های بررسی‌شده: هر ماده‌ی refractiveindex.info به سه شکل (فرمول، نام، نام کوتاه) با نسخه‌ی فارسی،
   مقاله‌های ضرایب غیرخطی و فرمول‌هایی که از مقاله‌ها خوانده شد، و ۴۰ سؤال که جوابشان در مجموعه نیست؛
 - و **N** سؤال که مدل زبانی qwen3 روی کارت گرافیک، از روی بخش‌هایی از خود مقاله‌ها (جدول یا متن با عدد) می‌نویسد؛ جواب هر
   سؤال همان مقاله و صفحه است. سؤال‌هایی که از متن کپی شده‌اند یا نام ماده را ندارند خودکار کنار گذاشته می‌شوند.
-اگر کولب قطع شد، دوباره اجرا کنید: سؤال‌های ساخته‌شده می‌مانند و از همان‌جا ادامه می‌دهد.
+اگر کولب قطع شد، دوباره اجرا کنید: سؤال‌های ساخته‌شده می‌مانند و از همان‌جا ادامه می‌دهد (شمارنده از تعداد ذخیره‌شده شروع می‌کند).
+**مدل سریع‌تر:** `qwen3:4b-instruct` حدود دو برابر سریع‌تر است و سؤال‌هایش کمی ساده‌تر.
 
 **سلول ۲** (حدود ۱ ساعت): هر سه روش جست‌وجو (برداری، کلیدواژه، ترکیبی) روی پایگاه کولب و روی جست‌وجوی سایت، با همه‌ی سؤال‌ها
 و نسخه‌ی فارسی‌شان سنجیده می‌شود. نتیجه در `matrag_data/results/eval` در Drive ذخیره می‌شود؛ بعد به من بگویید تا در
@@ -562,7 +566,8 @@ if not os.path.isdir('/content/refractiveindex/database'):
 GOLD = f'{WORK}/data/rag-optics/gold'
 !mkdir -p "{GOLD}" && [ -f "{GOLD}/questions.csv" ] && [ ! -f "{GOLD}/questions_86.csv" ] && cp "{GOLD}/questions.csv" "{GOLD}/questions_86.csv"; true
 !matrag --corpus rag-optics evaluate build-gold --overwrite 2>&1 | grep -vE "Warning|Loading"
-!matrag --corpus rag-optics evaluate generate-questions --n {N} 2>&1 | grep -vE "Warning|Loading|it/s\\]"
+!ls "{GOLD}"/generated.csv > /dev/null 2>&1 && echo "Continuing: $(($(wc -l < "{GOLD}/generated.csv") - 1)) questions already saved"
+!matrag --corpus rag-optics evaluate generate-questions --n {N} --workers 4 2>&1 | grep -vE "Warning|Loading|it/s\\]"
 %cd /content/RAG
 print('✅ Questions ready. Run cell 2.')
 """),
