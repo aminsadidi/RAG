@@ -433,7 +433,12 @@ def evaluate_retrieval(
     if persian:
         items = [it for it in items if it.question_fa]
         typer.echo(f"Translating {len(items)} Persian questions...", err=True)
-        translations = {it.id: ws.search_query(it.question_fa) or it.question_fa for it in items}
+        from concurrent.futures import ThreadPoolExecutor
+
+        # several at once: Ollama serves parallel requests (OLLAMA_NUM_PARALLEL)
+        with ThreadPoolExecutor(4) as pool:
+            done = list(pool.map(lambda it: ws.search_query(it.question_fa) or it.question_fa, items))
+        translations = {it.id: tr for it, tr in zip(items, done)}
         query_fn = lambda it: translations[it.id]  # noqa: E731
     typer.echo(f"{len(items)} questions", err=True)
     ks = tuple(x for x in (1, 3, 5, 10) if x <= k)
@@ -549,6 +554,7 @@ def evaluate_build_gold(
 def evaluate_generate_questions(
     n: Annotated[int, typer.Option(help="Number of accepted questions wanted (the file is resumed).")] = 1000,
     seed: Annotated[int, typer.Option(help="Seed of the passage sample.")] = 0,
+    workers: Annotated[int, typer.Option(help="Passages sent to the LLM at once (set OLLAMA_NUM_PARALLEL to match).")] = 4,
 ) -> None:
     """Questions written by the LLM from passages of the papers, saved to gold/generated.csv
     (the passage's paper and pages are the answer). Use a local model on a GPU (Colab)."""
@@ -559,7 +565,7 @@ def evaluate_generate_questions(
     s = get_settings()
     out = s.data_dir / s.corpus / "gold" / "generated.csv"
     typer.echo(f"[{ws.llm_name()}] choosing passages...", err=True)
-    total = generate(ws.kb.nodes(), ws.llm(), out, n, seed, on_progress=_echo_progress)
+    total = generate(ws.kb.nodes(), ws.llm(), out, n, seed, on_progress=_echo_progress, workers=workers)
     typer.echo(f"{total} questions in {out}")
 
 

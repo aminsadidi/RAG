@@ -247,48 +247,65 @@ def candidate_passages(nodes, seed: int = 0) -> list:
     return picked
 
 
+def _ask(llm, node) -> dict | None:
+    """The LLM's question for one passage, or None if it is unusable."""
+    md, text = node.metadata, node.get_content()
+    title = str(md.get("reference", "")).split(". ")[1] if ". " in str(md.get("reference", "")) else ""
+    try:
+        data = _parse(llm.complete(PROMPT.format(title=title, text=text[:2500])).text)
+    except Exception:  # a failed call must not stop the run
+        return None
+    if not data or not acceptable(data["question"], text) or not str(data.get("answer", "")).strip():
+        return None
+    return {"id": "gen-" + node.node_id.replace(":", "_"),
+            "group": "generated-table" if md.get("content_type") == "table" else "generated-text",
+            "question": data["question"].strip(), "question_fa": str(data.get("question_fa", "")).strip(),
+            "doc_id": md["doc_id"], "pages": ";".join(p.strip() for p in str(md.get("pages", "")).split(",") if p.strip()),
+            "expected": ""}
+
+
+def _append(path: Path, line_or_row, header: bool = False) -> None:
+    """Append and close at once: on a Google Drive mount a file is only uploaded when it is closed, so a
+    file kept open is lost when Colab disconnects."""
+    with path.open("a", encoding="utf-8", newline="") as f:
+        if isinstance(line_or_row, dict):
+            w = csv.DictWriter(f, fieldnames=FIELDS)
+            if header:
+                w.writeheader()
+            w.writerow(line_or_row)
+        else:
+            f.write(line_or_row + "\n")
+
+
 def generate(nodes, llm, out: Path, n: int, seed: int = 0,
-             on_progress: Callable[[int, int, str], None] | None = None) -> int:
-    """Append up to ``n`` accepted questions to ``out`` (CSV, FIELDS); passages already used are skipped,
-    so an interrupted run continues. Returns the number of questions in the file."""
+             on_progress: Callable[[int, int, str], None] | None = None, workers: int = 4) -> int:
+    """Append up to ``n`` accepted questions to ``out`` (CSV, FIELDS); passages already used (accepted or
+    rejected, listed in ``<out>.tried``) are skipped, so an interrupted run continues. ``workers`` passages
+    are sent to the LLM at once (Ollama serves them in parallel with OLLAMA_NUM_PARALLEL).
+    Returns the number of questions in the file."""
+    from concurrent.futures import ThreadPoolExecutor
+
     done: dict[str, dict] = {}
     if out.exists():
         with out.open(encoding="utf-8", newline="") as f:
             done = {r["id"]: r for r in csv.DictReader(f)}
     tried = out.with_suffix(".tried")
     skipped = set(tried.read_text(encoding="utf-8").split()) if tried.exists() else set()
-    new = not out.exists()
     out.parent.mkdir(parents=True, exist_ok=True)
-    with out.open("a", encoding="utf-8", newline="") as f, tried.open("a", encoding="utf-8") as log:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        if new:
-            w.writeheader()
-        last = -1
-        for node in candidate_passages(nodes, seed):
-            accepted = len(done)
-            if accepted >= n:
+    seen = set(done) | skipped
+    todo = [nd for nd in candidate_passages(nodes, seed)
+            if "gen-" + nd.node_id.replace(":", "_") not in seen]
+    with ThreadPoolExecutor(max(1, workers)) as pool:
+        for start in range(0, len(todo), max(1, workers)):
+            if len(done) >= n:
                 break
-            qid = "gen-" + node.node_id.replace(":", "_")
-            if qid in done or qid in skipped:
-                continue
-            md, text = node.metadata, node.get_content()
-            if on_progress and accepted != last:  # once per accepted question
-                on_progress(accepted, n, md.get("citation", md["doc_id"]))
-                last = accepted
-            title = str(md.get("reference", "")).split(". ")[1] if ". " in str(md.get("reference", "")) else ""
-            try:
-                data = _parse(llm.complete(PROMPT.format(title=title, text=text[:2500])).text)
-            except Exception:  # a failed call must not stop the run
-                data = None
-            if not data or not acceptable(data["question"], text) or not str(data.get("answer", "")).strip():
-                log.write(qid + "\n")
-                log.flush()
-                continue
-            row = {"id": qid, "group": "generated-table" if md.get("content_type") == "table" else "generated-text",
-                   "question": data["question"].strip(), "question_fa": str(data.get("question_fa", "")).strip(),
-                   "doc_id": md["doc_id"], "pages": ";".join(p.strip() for p in str(md.get("pages", "")).split(",") if p.strip()),
-                   "expected": ""}
-            w.writerow(row)
-            f.flush()
-            done[qid] = row
+            batch = todo[start:start + max(1, workers)]
+            for node, row in zip(batch, pool.map(lambda nd: _ask(llm, nd), batch)):
+                qid = "gen-" + node.node_id.replace(":", "_")
+                if row and len(done) < n:
+                    _append(out, row, header=not out.exists() or out.stat().st_size == 0)
+                    done[qid] = row
+                    if on_progress:
+                        on_progress(len(done) - 1, n, node.metadata.get("citation", node.metadata["doc_id"]))
+                _append(tried, qid)
     return len(done)
