@@ -297,8 +297,15 @@ body{overflow-x:hidden}
 </section>
 
 <section id="tab-eval" hidden class="viz-root">
-  <div class="card">
-    <h2>ارزیابی خودکار</h2>
+  <div class="card" id="evbig" hidden>
+    <h2>ارزیابی بزرگ</h2>
+    <p class="hint">برای هر سؤال مقاله‌ی درست (و اگر معلوم است صفحه‌ی درست) از پیش معلوم است. پنج گروه: سؤال‌هایی که مدل زبانی qwen3 روی کارت گرافیک کولب از روی یک بخش متن یا یک جدول از خود مقاله‌ها نوشت (سؤال‌های کپی‌شده از متن یا بدون نام ماده خودکار کنار گذاشته شدند)؛ هر ماده‌ی refractiveindex.info به سه شکل (فرمول، نام، نام کوتاه)؛ مقاله‌های ضرایب غیرخطی؛ و فرمول‌هایی که از خود مقاله‌ها خوانده شد. «سایت» جست‌وجوی Qdrant با یکسان‌سازی فرمول‌ها و جست‌وجوی جداگانه‌ی نام ماده است.</p>
+    <div class="tiles" id="evbigtiles"></div>
+    <div style="overflow-x:auto"><table id="evbigtable" style="margin-top:10px;min-width:640px"></table></div>
+    <p class="hint" id="evbignote"></p>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>ارزیابی اولیه (۸۶ سؤال)</h2>
     <p class="hint">سؤال‌ها خودکار از refractiveindex.info ساخته شده‌اند: «فرمول پاشندگی ماده‌ی X» باید مقاله‌ای را پیدا کند که پایگاه فرمول آن ماده را از آن برداشته است. این معیار سخت‌گیر است: مقاله‌های دیگرِ همان ماده که در مجموعه هستند، درست حساب نمی‌شوند.</p>
     <div class="tiles" id="evtiles"></div>
   </div>
@@ -1435,6 +1442,25 @@ $("pmalltable").onclick = (e) => { const tr = e.target.closest("tr[data-mat]"); 
 const MODE_FA = { hybrid: "ترکیبی", bm25: "کلیدواژه (BM25)", vector: "برداری" };
 const SYS = [["local", "برنامه‌ی کولب (ChromaDB + bm25s)"], ["site", "سایت (Qdrant)"], ["site_ocr", "سایت بعد از OCR و معادله‌ها"]];
 let EV = null, evMetric = "MRR";
+const GROUP_FA = { "generated-text": "نوشته‌ی مدل از متن مقاله", "generated-table": "نوشته‌ی مدل از جدول مقاله",
+  ri: "refractiveindex.info (سه شکل نام)", dij: "ضرایب غیرخطی d", paper: "فرمول‌های خوانده‌شده از مقاله‌ها", all: "همه" };
+function drawBig(B) {
+  const MRR = B.metrics.indexOf("MRR"), R10 = B.metrics.indexOf("recall@10"), R5 = B.metrics.indexOf("recall@5");
+  const all = B.groups.find((g) => g.group === "all"), nf = B.notfound;
+  $("evbig").hidden = false;
+  $("evbigtiles").innerHTML = [[fa(all.questions + nf.unanswerable), "سؤال (" + fa(nf.unanswerable) + " تا بی‌جواب)"],
+    [fa(B.generated.accepted), "سؤال نوشته‌ی مدل، از " + fa(B.generated.papers) + " مقاله"],
+    [all.site.hybrid[MRR].toFixed(3), "MRR سایت (ترکیبی)"], [Math.round(all.site.hybrid[R10] * 100) + "%", "مقاله‌ی درست در ۱۰ نتیجه‌ی اول"],
+    [`<bdi dir="ltr">${fa(nf.said_none)}/${fa(nf.unanswerable)}</bdi>`, "سؤال بی‌جواب که سایت گفت «پیدا نشد»"]]
+    .map(([v, t]) => `<div class="tile"><b>${v}</b><span>${t}</span></div>`).join("");
+  const bar = (v, color) => `<div style="display:flex;align-items:center;gap:6px;direction:ltr"><span style="display:inline-block;height:10px;width:${Math.round(v * 120)}px;background:${color};border-radius:3px"></span>${v.toFixed(3)}</div>`;
+  $("evbigtable").innerHTML = `<tr><th>گروه</th><th class="num">سؤال</th><th>MRR سایت، ترکیبی</th><th class="ltr">site bm25</th><th class="ltr">site vector</th><th>MRR کولب، ترکیبی</th><th class="ltr">recall@5</th><th class="ltr">recall@10</th></tr>`
+    + B.groups.map((g) => `<tr${g.group === "all" ? ' style="font-weight:600"' : ""}><td>${GROUP_FA[g.group] || g.group}</td><td class="num">${fa(g.questions)}</td>
+      <td>${bar(g.site.hybrid[MRR], "var(--accent)")}</td><td class="ltr">${g.site.bm25[MRR].toFixed(3)}</td><td class="ltr">${g.site.vector[MRR].toFixed(3)}</td>
+      <td>${bar(g.local.hybrid[MRR], "var(--muted)")}</td><td class="ltr">${g.site.hybrid[R5].toFixed(3)}</td><td class="ltr">${g.site.hybrid[R10].toFixed(3)}</td></tr>`).join("");
+  $("evbignote").innerHTML = `سؤال‌های واقعی‌تر (نوشته‌ی مدل از متن مقاله‌ها) بهترین نتیجه را دارند: در حدود ${Math.round(B.groups[0].site.hybrid[R10] * 100)}٪ آن‌ها مقاله‌ی درست در ۱۰ نتیجه‌ی اول است. گروه refractiveindex.info سخت‌گیرانه است: فقط مقاله‌ای که پایگاه به آن ارجاع داده درست حساب می‌شود، نه مقاله‌های دیگرِ همان ماده.`
+    + ` بررسی «پیدا نشد» با جست‌وجوی خود سایت: از ${fa(nf.unanswerable)} سؤال بی‌جواب، ${fa(nf.said_none)} تا «پیدا نشد»، ${fa(nf.said_weak)} تا «ضعیف» و ${fa(nf.said_ok)} تا به اشتباه «پیدا شد» گرفتند؛ از ${fa(nf.answerable)} سؤال جواب‌دار فقط ${fa(nf.answerable_said_none)} تا به اشتباه «پیدا نشد» گرفتند.`;
+}
 window.loadEval = async () => {
   if (!EV) EV = await (await fetch("/eval.json")).json();
   const r = EV.retrieval, mi = r.metrics.indexOf("MRR");
@@ -1445,6 +1471,7 @@ window.loadEval = async () => {
   $("evmetric").innerHTML = r.metrics.map((m) => `<button data-m="${m}" class="${m === evMetric ? "on" : ""}">${m}</button>`).join("");
   $("evmetric").onclick = (e) => { if (e.target.dataset.m) { evMetric = e.target.dataset.m; loadEval(); } };
   drawEval();
+  if (EV.big) drawBig(EV.big);
   $("evtable").innerHTML = `<tr><th>روش</th><th>سامانه</th>${r.metrics.map((m) => `<th class="ltr">${m}</th>`).join("")}</tr>` +
     ["hybrid", "bm25", "vector"].flatMap((mode) => SYS.map(([k, name]) =>
       `<tr><td>${MODE_FA[mode]}</td><td>${name}</td>${r[k][mode].map((v) => `<td class="ltr">${v.toFixed(3)}</td>`).join("")}</tr>`)).join("");
