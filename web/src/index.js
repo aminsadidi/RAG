@@ -1,7 +1,7 @@
 // The web app: searches the knowledge base in Qdrant and gives the sources, never an AI-written answer.
 // A question in Persian is translated to English (the papers are in English); the query is embedded with
 // the same model and pooling as the Python pipeline, and Qdrant fuses dense and BM25 results with RRF.
-import { cleanTranslation, contextPack, expandQuery, isPersian, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
+import { cleanTranslation, contextPack, expandQuery, isPersian, queryTerms, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
@@ -75,6 +75,12 @@ async function search(env, opts) {
   const query = searchQuery || question;
   const filter = filterOf(opts);
   const sparse = { text: expandQuery(query), model: shared.BM25_MODEL };
+  // The materials of the question searched on their own as well: in a long question ("the dispersion formula
+  // (Sellmeier coefficients) for the refractive index of NaCl") the common words outweigh the one formula,
+  // and papers on other crystals win. Fused with the rest by RRF.
+  const materials = queryTerms(query).materials;
+  const named = materials.length ? [{ query: { text: expandQuery(materials.join(" ")), model: shared.BM25_MODEL },
+    using: shared.SPARSE, filter, limit: 50 }] : [];
   let body;
   // The query vector is needed in every mode: its best cosine similarity is one signal of the relevance check.
   const vector = await embed(env, query);
@@ -82,13 +88,15 @@ async function search(env, opts) {
     : qdrant(env, `/collections/${env.COLLECTION}/points/query`, { query: vector, using: shared.DENSE, filter, limit: 1 })
       .then((r) => r.points[0]?.score ?? 0);
   if (mode === "bm25") {
-    body = { query: sparse, using: shared.SPARSE, filter, limit: topK };
+    body = named.length
+      ? { prefetch: [{ query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named], query: { fusion: "rrf" }, limit: topK }
+      : { query: sparse, using: shared.SPARSE, filter, limit: topK };
   } else {
     body = mode === "vector"
       ? { query: vector, using: shared.DENSE, filter, limit: topK }
       : {
         prefetch: [{ query: vector, using: shared.DENSE, filter, limit: 50 },
-          { query: sparse, using: shared.SPARSE, filter, limit: 50 }],
+          { query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named],
         query: { fusion: "rrf" }, limit: topK,
       };
   }

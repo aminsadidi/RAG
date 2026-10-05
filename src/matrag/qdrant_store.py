@@ -61,6 +61,21 @@ def expand_query(query: str) -> str:
     return " ".join([query, *extra])
 
 
+_FORMULA = re.compile(r"\b(?:[A-Z][a-z]?\d*(?:\.\d+)?){2,}\b")
+_ELEMENTS = set("""H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr
+Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re
+Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu""".split())
+
+
+def query_materials(query: str) -> list[str]:
+    """Chemical formulas and crystal abbreviations of a query (the formula part of text.js queryTerms)."""
+    text = normalize_formulas(query)
+    formulas = [w for w in _FORMULA.findall(text)
+                if all(e in _ELEMENTS for e in re.findall(r"[A-Z][a-z]?", w)) and re.search(r"[\da-z]", w)]
+    abbrs = [n for n in SYNONYMS if re.search(rf"\b{re.escape(n)}\b", text)]
+    return list(dict.fromkeys(formulas + abbrs))
+
+
 def point_id(node_id: str) -> str:
     return str(uuid.uuid5(uuid.NAMESPACE_URL, f"matrag:{node_id}"))
 
@@ -189,16 +204,25 @@ def search(qc, name: str, query: str, query_vector: list[float], top_k: int = 8,
     if doc_ids:
         flt = models.Filter(must=[models.FieldCondition(key="doc_id", match=models.MatchAny(any=list(doc_ids)))])
     sparse_query = models.Document(text=expand_query(query), model=BM25_MODEL)
+    # The materials of the query also searched alone, so common words cannot outweigh them (as on the site).
+    materials = query_materials(query)
+    named = [models.Prefetch(query=models.Document(text=expand_query(" ".join(materials)), model=BM25_MODEL),
+                             using=SPARSE, limit=prefetch, filter=flt)] if materials else []
     if mode == "vector":
         return qc.query_points(name, query=query_vector, using=DENSE, limit=top_k, query_filter=flt,
                                with_payload=True).points
     if mode == "bm25":
+        if named:
+            return qc.query_points(name, prefetch=[models.Prefetch(query=sparse_query, using=SPARSE, limit=prefetch,
+                                                                   filter=flt), *named],
+                                   query=models.FusionQuery(fusion=models.Fusion.RRF), limit=top_k,
+                                   with_payload=True).points
         return qc.query_points(name, query=sparse_query, using=SPARSE, limit=top_k, query_filter=flt,
                                with_payload=True).points
     return qc.query_points(
         name,
         prefetch=[models.Prefetch(query=query_vector, using=DENSE, limit=prefetch, filter=flt),
-                  models.Prefetch(query=sparse_query, using=SPARSE, limit=prefetch, filter=flt)],
+                  models.Prefetch(query=sparse_query, using=SPARSE, limit=prefetch, filter=flt), *named],
         query=models.FusionQuery(fusion=models.Fusion.RRF), limit=top_k, with_payload=True,
     ).points
 
