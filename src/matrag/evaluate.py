@@ -42,6 +42,7 @@ from matrag.schema import ExtractedRecord
 
 class GoldQuestion(BaseModel):
     id: str
+    group: str = ""  # kind of question, for per-group results (default: the id up to its first '-')
     question: str
     question_fa: str = ""  # optional Persian version, for the translation experiment
     doc_id: str
@@ -72,7 +73,8 @@ def load_questions(path: Path) -> list[GoldQuestion]:
     with path.open(encoding="utf-8") as f:
         return [
             GoldQuestion(
-                id=row["id"], question=row["question"], question_fa=row.get("question_fa") or "",
+                id=row["id"], group=row.get("group") or row["id"].split("-")[0],
+                question=row["question"], question_fa=row.get("question_fa") or "",
                 doc_id=row.get("doc_id") or "",
                 pages=[int(p) for p in re.split(r"[;, ]+", row.get("pages") or "") if p.strip()],
                 expected=[[alt.strip() for alt in group.split("|") if alt.strip()]
@@ -123,6 +125,19 @@ class RetrievalReport:
     def summary(self) -> dict[str, float | str]:
         return {"mode": self.mode, **{f"recall@{k}": round(self.recall_at(k), 3) for k in self.ks},
                 "MRR": round(self.mrr, 3)}
+
+
+def group_summaries(report: RetrievalReport, items: list[GoldQuestion]) -> list[dict]:
+    """The report's metrics for each group of questions, and for all of them."""
+    groups: dict[str, list[str]] = {}
+    for it in items:
+        if it.id in report.ranks:
+            groups.setdefault(it.group, []).append(it.id)
+    rows = []
+    for name, ids in sorted(groups.items()) + [("all", list(report.ranks))]:
+        sub = RetrievalReport(report.mode, {i: report.ranks[i] for i in ids}, report.ks)
+        rows.append({"group": name, "questions": len(ids), **sub.summary()})
+    return rows
 
 
 def evaluate_retrieval(items: list[GoldQuestion], retriever, mode: str, ks=(1, 3, 5, 10),

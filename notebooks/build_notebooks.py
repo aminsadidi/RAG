@@ -510,6 +510,83 @@ print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
     ], gpu=False)
 
 
+OLLAMA = """
+import subprocess, time
+os.environ.update({'MATRAG_LLM_PROVIDER': 'ollama', 'MATRAG_OLLAMA_MODEL': OLLAMA_MODEL,
+                   'MATRAG_OLLAMA_THINKING': 'false', 'OLLAMA_MODELS': '/content/ollama_models'})
+if subprocess.run('which ollama', shell=True, capture_output=True).returncode != 0:
+    !apt-get install -y -qq zstd > /dev/null
+    !curl -fsSL https://ollama.com/install.sh | sh > /dev/null
+subprocess.Popen('ollama serve > /content/ollama.log 2>&1', shell=True)
+time.sleep(5)
+!ollama pull {OLLAMA_MODEL} 2>&1 | tail -1
+"""
+
+
+def big_eval() -> dict:
+    """GPU: many more evaluation questions (curated + written by a local LLM), then retrieval evaluated
+    on the Colab database and on the site's search."""
+    return notebook([
+        md(f"""
+# ارزیابی بزرگ: هزاران سؤال (نسخه‌ی {VERSION})
+
+**قبل از شروع:** *Runtime → Change runtime type* → **T4 GPU**. دو سلول دارد؛ هر دو را به ترتیب اجرا کنید.
+
+**سلول ۱** (حدود ۲ تا ۳ ساعت برای ۱۰۰۰ سؤال): سؤال‌ها ساخته می‌شوند.
+- حدود ۵۰۰ سؤال از داده‌های بررسی‌شده: هر ماده‌ی refractiveindex.info به سه شکل (فرمول، نام، نام کوتاه) با نسخه‌ی فارسی،
+  مقاله‌های ضرایب غیرخطی و فرمول‌هایی که از مقاله‌ها خوانده شد، و ۴۰ سؤال که جوابشان در مجموعه نیست؛
+- و **N** سؤال که مدل زبانی qwen3 روی کارت گرافیک، از روی بخش‌هایی از خود مقاله‌ها (جدول یا متن با عدد) می‌نویسد؛ جواب هر
+  سؤال همان مقاله و صفحه است. سؤال‌هایی که از متن کپی شده‌اند یا نام ماده را ندارند خودکار کنار گذاشته می‌شوند.
+اگر کولب قطع شد، دوباره اجرا کنید: سؤال‌های ساخته‌شده می‌مانند و از همان‌جا ادامه می‌دهد.
+
+**سلول ۲** (حدود ۱ ساعت): هر سه روش جست‌وجو (برداری، کلیدواژه، ترکیبی) روی پایگاه کولب و روی جست‌وجوی سایت، با همه‌ی سؤال‌ها
+و نسخه‌ی فارسی‌شان سنجیده می‌شود. نتیجه در `matrag_data/results/eval` در Drive ذخیره می‌شود؛ بعد به من بگویید تا در
+زبانه‌ی «ارزیابی» سایت بگذارم.
+"""),
+        code("#@title ▶️ ۱. ساخت سؤال‌ها\n"
+             "N = 1000  #@param {type:\"integer\"}\n"
+             "OLLAMA_MODEL = \"qwen3:8b\"  #@param [\"qwen3:8b\", \"qwen3:4b-instruct-2507-q4_K_M\"]\n" + ENV + """
+WORK = '/content/drive/MyDrive/matrag_data'
+os.environ['MATRAG_DATA_DIR'] = f'{WORK}/data'
+os.environ['MATRAG_STORAGE_DIR'] = '/content/storage'
+os.environ['MATRAG_CORPUS'] = 'rag-optics'
+os.environ['MATRAG_REFERENCE_DIR'] = '/content/refractiveindex/database'
+!nvidia-smi --query-gpu=name --format=csv,noheader || echo "⚠️ No GPU: Runtime → Change runtime type → T4 GPU"
+print('Copying the database from Drive...')
+!mkdir -p /content/storage && cp -rT "{WORK}/storage" /content/storage
+""" + INSTALL + """
+if not os.path.isdir('/content/refractiveindex/database'):
+    !git clone -q --depth 1 https://github.com/polyanskiy/refractiveindex.info-database.git /content/refractiveindex
+""" + OLLAMA + """
+%cd {WORK}
+GOLD = f'{WORK}/data/rag-optics/gold'
+!mkdir -p "{GOLD}" && [ -f "{GOLD}/questions.csv" ] && [ ! -f "{GOLD}/questions_86.csv" ] && cp "{GOLD}/questions.csv" "{GOLD}/questions_86.csv"; true
+!matrag --corpus rag-optics evaluate build-gold --overwrite 2>&1 | grep -vE "Warning|Loading"
+!matrag --corpus rag-optics evaluate generate-questions --n {N} 2>&1 | grep -vE "Warning|Loading|it/s\\]"
+%cd /content/RAG
+print('✅ Questions ready. Run cell 2.')
+"""),
+        code("""
+#@title ▶️ ۲. ارزیابی با همه‌ی سؤال‌ها (کولب و سایت)
+#@markdown **PERSIAN**: نسخه‌ی فارسی سؤال‌ها هم با ترجمه‌ی qwen3 سنجیده شود (حدود ۴۰ دقیقه بیشتر).
+PERSIAN = True  #@param {type:"boolean"}
+""" + QDRANT_KEYS + """
+%cd {WORK}
+G = '--gold questions.csv --gold generated.csv'
+print('1/3 Colab database (ChromaDB + BM25)...')
+!matrag --corpus rag-optics evaluate retrieval {G} 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+print('2/3 The site search (Qdrant)...')
+!matrag --corpus rag-optics evaluate retrieval --backend qdrant {G} 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+if PERSIAN:
+    print('3/3 Persian questions, translated...')
+    !matrag --corpus rag-optics evaluate retrieval --persian {G} 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
+!ls -la results/eval | grep -E "retrieval" 
+%cd /content/RAG
+print('✅ Done: the results are in matrag_data/results/eval on Drive')
+"""),
+    ], gpu=True)
+
+
 def worker(n: int) -> dict:
     return notebook([
         md(f"""
@@ -548,6 +625,7 @@ if __name__ == "__main__":
                                                       "utf-8")
     (HERE / "colab_gpu_update.ipynb").write_text(json.dumps(gpu_update(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     (HERE / "colab_site.ipynb").write_text(json.dumps(site(), ensure_ascii=False, indent=1) + "\n", "utf-8")
+    (HERE / "colab_big_eval.ipynb").write_text(json.dumps(big_eval(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     (HERE / "colab_new_papers.ipynb").write_text(json.dumps(new_papers(), ensure_ascii=False, indent=1) + "\n",
                                                  "utf-8")
     print("written")
