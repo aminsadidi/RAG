@@ -7,6 +7,8 @@ from .jsa_engine import JSAEngine, GaussianPump, PhaseMatchingFunction
 from .schmidt import SchmidtDecomposition, schmidt_purity, entanglement_entropy
 from .hom_dip import HongOuMandelDip, hom_visibility
 from .spatial_modes import SpatialModeCoupling
+from .catalog import SPDCPreset, get_preset, PRESETS
+from .entanglement import PolarizationEntanglement, bell_state_fidelity
 
 __all__ = [
     "JSAEngine",
@@ -18,4 +20,9 @@ __all__ = [
     "HongOuMandelDip",
     "hom_visibility",
     "SpatialModeCoupling",
+    "SPDCPreset",
+    "get_preset",
+    "PRESETS",
+    "PolarizationEntanglement",
+    "bell_state_fidelity",
 ]
