@@ -3,28 +3,18 @@
   "branch": "claude/festive-bardeen-nnw123",
   "storage_root": "research_package/",
   "github_repo": "https://github.com/aminsadidi/RAG",
-  "last_updated": "2026-10-07T17:57:00Z",
+  "last_updated": "2026-10-07T18:30:00Z",
   "phases": {
     "phase_2_thermo_optics": {
-      "status": "completed_batch_1",
+      "status": "completed",
       "target_crystals": 25,
-      "completed_crystals_count": 15,
-      "completed_crystals": [
-        "KTiOPO4",
-        "CdSiP2",
-        "LiInSe2",
-        "LiB3O5_Ghosh",
-        "BaB2O4_Ghosh",
-        "LiB3O5_Kato",
-        "CsLiB6O10",
-        "RbBe2BO3F2",
-        "MgO-LiNbO3",
-        "Mg-LiTaO3",
-        "BiB3O6",
-        "KH2PO4",
-        "KD2PO4",
-        "NH4H2PO4",
-        "Li2B4O7"
+      "completed_crystals_count": 25,
+      "crystals": [
+        "KTiOPO4", "CdSiP2", "LiInSe2", "LiB3O5_Ghosh", "BaB2O4_Ghosh",
+        "LiB3O5_Kato", "CsLiB6O10", "RbBe2BO3F2", "MgO-LiNbO3", "Mg-LiTaO3",
+        "BiB3O6", "KH2PO4", "KD2PO4", "NH4H2PO4", "Li2B4O7",
+        "ZnGeP2", "AgGaS2", "GaSe", "CdGa2S4", "LiGaS2",
+        "KNbO3", "LiTaO3", "LiIO3", "SiO2", "CaGdAlO4"
       ],
       "verification_tests": "research_package/tests/test_thermo_models.py (100% PASS)"
     },
@@ -33,20 +23,8 @@
       "target_crystals": 70,
       "completed_crystals_count": 71,
       "point_groups_covered": [
-        "-43m",
-        "-42m",
-        "3m",
-        "6mm",
-        "mm2",
-        "32",
-        "-62m",
-        "-4",
-        "m",
-        "2",
-        "222",
-        "4mm",
-        "3",
-        "6"
+        "-43m", "-42m", "3m", "6mm", "mm2", "32", "-62m",
+        "-4", "m", "2", "222", "4mm", "3", "6"
       ],
       "verification_tests": "research_package/tests/test_nonlinear_tensors.py (100% PASS)"
     },
@@ -56,16 +34,66 @@
         "modules/spdc/jsa_engine.py",
         "modules/spdc/schmidt.py",
         "modules/spdc/hom_dip.py",
-        "modules/spdc/spatial_modes.py"
+        "modules/spdc/spatial_modes.py",
+        "modules/spdc/catalog.py",
+        "modules/spdc/entanglement.py",
+        "modules/spdc/export_viz.py",
+        "cli_spdc.py"
       ],
       "benchmarks_file": "research_package/data/spdc_benchmarks.json",
       "benchmarks_reproduced": [
         "Evans et al. (2010) PPKTP Telecom Purity P=0.8108 (Target: 0.81 ± 0.02)",
         "Evans et al. (2010) Independent Photon HOM Visibility V=81.1%",
         "Symmetric Type-I HOM Quantum Dip V=100.0%, P_min=0.0000",
-        "Bennink (2010) Spatial Optimal Fiber Coupling eta=92.0% at wc=sqrt(2)*wp"
+        "Bennink (2010) Spatial Optimal Fiber Coupling eta=92.0% at wc=sqrt(2)*wp",
+        "Kwiat et al. (1995) BBO Walk-off Delay 1150.8 fs, Concurrence C=1.000 with compensator",
+        "Fedrizzi et al. (2007) Sagnac PPKTP Entangled Pair Simulation"
       ],
+      "visualization_and_export": {
+        "formats": ["Standalone SVG vector graphics", "CSV numerical grids"],
+        "exports_count": 24,
+        "export_directory": "research_package/data/spdc_exports/"
+      },
       "verification_tests": "research_package/tests/test_quantum_spdc.py (100% PASS)"
+    },
+    "phase_5_phase_matching": {
+      "status": "completed",
+      "modules": [
+        "modules/phase_matching/fresnel.py",
+        "modules/phase_matching/bpm.py",
+        "modules/phase_matching/deff.py",
+        "modules/phase_matching/qpm.py",
+        "cli_phasematch.py"
+      ],
+      "verified_benchmarks": [
+        "BBO Type-I SHG 1064 nm theta_pm = 22.78 deg (Literature: 22.8 deg)",
+        "PPLN 1064 nm SHG Poling Period 6.973 um at 25C (Gayer 2008: 6.97 um)",
+        "PPLN 1064 nm SHG Poling Period 6.844 um at 100C (Gayer 2008: 6.84 um)",
+        "Effective nonlinearity deff for -42m, 3m, mm2, and 1st-order QPM (2/pi * d33)"
+      ],
+      "verification_tests": "research_package/tests/test_phase_matching.py (100% PASS)"
+    },
+    "phase_6_master_catalog": {
+      "status": "completed",
+      "document": "research_package/reports/CRYSTAL_CATALOG_OVERVIEW.md",
+      "crystals_cataloged": 71,
+      "point_groups": 14,
+      "generator_script": "research_package/reports/generate_catalog_overview.py"
+    },
+    "phase_7_persian_rag_eval": {
+      "status": "completed",
+      "dataset_file": "research_package/data/eval_dataset_persian.json",
+      "total_questions": 30,
+      "evaluation_runner": "research_package/tests/evaluate_rag_optics.py",
+      "scorecard_json": "research_package/reports/EVALUATION_SCORECARD.json",
+      "scorecard_md": "research_package/reports/EVALUATION_SCORECARD.md",
+      "results": {
+        "pass_rate": "100.0%",
+        "mean_quality_score": "97.5%",
+        "thermo_optics_pass": "10/10",
+        "nonlinear_tensors_pass": "10/10",
+        "quantum_spdc_pass": "10/10"
+      }
     }
   }
 }
