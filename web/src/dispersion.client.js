@@ -80,5 +80,14 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const R = lam * lam / (lam * lam - spec.lig_um ** 2);
     return (R * integral(spec.G) + R * R * integral(spec.H)) * 1e-6 / (2 * n0);
   }
+  if (form === "gayer") {
+    const f = (T - t0) * (T + t0 + 546.32);
+    const { a, b } = spec;
+    const l2 = lam * lam;
+    const p1 = (a[1] + (b[1] || 0) * f) / (l2 - (a[2] + (b[2] || 0) * f) ** 2);
+    const p2 = (a[3] + (b[3] || 0) * f) / (l2 - (a[4] + (b[4] || 0) * f) ** 2);
+    const n2 = a[0] + (b[0] || 0) * f + p1 + p2 - (a[5] || 0) * l2;
+    return Math.sqrt(n2) - n0;
+  }
   return NaN;
 }
