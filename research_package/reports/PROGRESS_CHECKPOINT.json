@@ -1,0 +1,42 @@
+{
+  "project": "Nonlinear & Quantum Optics Standalone Research Package",
+  "branch": "claude/festive-bardeen-nnw123",
+  "storage_root": "research_package/",
+  "github_repo": "https://github.com/aminsadidi/RAG",
+  "last_updated": "2026-10-07T17:49:00Z",
+  "phases": {
+    "phase_2_thermo_optics": {
+      "status": "completed_batch_1",
+      "target_crystals": 25,
+      "completed_crystals_count": 15,
+      "completed_crystals": [
+        "KTiOPO4",
+        "CdSiP2",
+        "LiInSe2",
+        "LiB3O5_Ghosh",
+        "BaB2O4_Ghosh",
+        "LiB3O5_Kato",
+        "CsLiB6O10",
+        "RbBe2BO3F2",
+        "MgO-LiNbO3",
+        "Mg-LiTaO3",
+        "BiB3O6",
+        "KH2PO4",
+        "KD2PO4",
+        "NH4H2PO4",
+        "Li2B4O7"
+      ],
+      "verification_tests": "research_package/tests/test_thermo_models.py (100% PASS)"
+    },
+    "phase_3_nonlinear_tensors": {
+      "status": "in_progress",
+      "target_crystals": 70,
+      "completed_crystals": []
+    },
+    "phase_4_quantum_spdc": {
+      "status": "pending",
+      "modules": ["jsa_engine", "schmidt", "hom_dip", "spatial_modes"],
+      "benchmarks": []
+    }
+  }
+}
