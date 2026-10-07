@@ -229,3 +229,57 @@
     - {doc_id: 10.7498_aps.67.20181591, cite: "Jia et al. (2018)", pdf_page: 3, what: "d31 = 5.8 pm/V (comparison table of mid-IR crystals)"}
     - {doc_id: 10.1063_1.4723645, cite: "Yèlisseyev et al. (2012)", pdf_page: 3, what: "d24 = 5.1 pm/V, in the same convention as d24 of LIS (5.7) and LISe (8.2) (Table I)"}
   notes: "mm2, polar axis Z; the quoted d31 and d24 follow the crystal-axis labels of LIS and LISe and are d32 and d15 in the principal frame, as for those two; d33 is not given in the collection's papers and is left out: it does not enter d_eff in the principal planes. Kleinman: d24 = d32, d15 = d31"
+
+- material: CdS
+  point_group: 6mm
+  d: {33: 19.1, 31: -10.1, 32: -10.1, 15: -10.7, 24: -10.7}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 20, what: "|d33| = 19.1, |d31| = 10.1, |d15| = 10.7 pm/V at 1.064 µm (Table 11, absolute)"}
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 13, what: "relative signs: d31 = d32 = −16, d33 = 32 pm/V at 10.6 µm (Table VI)"}
+  notes: "6mm: d31 = d32, d15 = d24 (measured separately, close to Kleinman d15 = d31)"
+
+- material: CdSe
+  point_group: 6mm
+  d: {33: 36, 31: -18, 32: -18, 15: -18, 24: -18}
+  sources:
+    - {doc_id: 10.1109_3.159516, cite: "Roberts (1992)", pdf_page: 12, what: "d33 = 36, d31 = −18 pm/V at 10.6 µm (Table V)"}
+    - {doc_id: 10.1364_josab.17.002086, cite: "Kaindl et al. (2000)", pdf_page: 2, what: "d31 = 18 pm/V at 10 µm, d_oeo = d31 sin θ (Table 1)"}
+  notes: "6mm, values for 10.6 µm SHG; Kleinman: d15 = d24 = d31 = d32"
+
+- material: CdGeAs2
+  point_group: -42m
+  d: {36: 186, 14: 186, 25: 186}
+  sources:
+    - {doc_id: 10.1364_ao.41.002299, cite: "Zakel et al. (2002)", pdf_page: 1, what: "d36 = 186 ± 16 pm/V"}
+    - {doc_id: 10.7498_aps.67.20181591, cite: "Jia et al. (2018)", pdf_page: 3, what: "d36 = 186 pm/V at 10.6 µm (comparison table)"}
+  notes: "−42m, Kleinman d14 = d25 = d36; values for 10.6 µm SHG. 236 pm/V is also quoted in the collection (e.g. McCrae et al. 1997)"
+
+- material: HgGa2S4
+  point_group: "-4"
+  d: {36: 22.9, 14: 22.9, 25: 22.9, 31: 7.6, 32: -7.6, 15: 7.6, 24: -7.6}
+  sources:
+    - {doc_id: 10.1364_ao.43.004590, cite: "Petrov et al. (2004)", pdf_page: 2, what: "d36 = 22.9, d31 = 7.6 pm/V at λref = 5.3 µm; d_ooe = (d36 sin2φ + d31 cos2φ) sin θ (Table 1, on the scale d36(AgGaS2) = 12.7 pm/V)"}
+    - {doc_id: 10.1016_s0030_4018_00_00987_1, cite: "Rotermund et al. (2000)", pdf_page: 2, what: "the same d_eff expressions; d36 = 31.5, d31 = 10.5 pm/V at 1.064 µm relative to d36(AgGaS2) = 17.5 pm/V"}
+  notes: "−4: d31 = −d32, d15 = −d24, d14 = d25; Kleinman d14 = d36, d15 = d31. Values for 5.3 µm, on the same AgGaS2 scale as the AgGaS2 entry above"
+
+- material: GaSe
+  point_group: -62m
+  d: {22: 57.7, 21: -57.7, 16: -57.7}
+  sources:
+    - {doc_id: 10.1364_ao.43.004590, cite: "Petrov et al. (2004)", pdf_page: 2, what: "d22 = 57.7 pm/V at λref = 5.3 µm; d_ooe = d22 cos θ sin3φ, d_eoe = d22 cos²θ cos3φ (Table 1)"}
+    - {doc_id: 10.1364_josab.17.002086, cite: "Kaindl et al. (2000)", pdf_page: 2, what: "d22 = 54 pm/V at 10 µm, same d_eff expressions (Table 1)"}
+  notes: "−6m2: d21 = d16 = −d22"
+
+- material: CsTiOAsO4
+  point_group: mm2
+  d: {31: 2.1, 15: 2.1, 32: 3.4, 24: 3.4, 33: 18.1}
+  sources:
+    - {doc_id: 10.1063_1.110424, cite: "Cheng et al. (1993)", pdf_page: 2, what: "d31 = 2.1 (±20%), d32 = 3.4 (±20%), d33 = 18.1 (±10%) pm/V, Maker fringes at 1.064 µm"}
+  notes: "mm2, polar axis z; d31 < d32 as in the KTP-family entries above (Pack et al. 2004). Kleinman: d15 = d31, d24 = d32"
+
+- material: Te
+  point_group: "32"
+  d: {11: 670, 12: -670, 26: -670}
+  sources:
+    - {doc_id: 10.1364_josab.17.002086, cite: "Kaindl et al. (2000)", pdf_page: 2, what: "d11 = 670 pm/V at 10 µm; d_eeo = d11 cos²θ sin3φ, d_oeo = d11 cos θ cos3φ (Table 1)"}
+  notes: "32: d12 = d26 = −d11; d14 = −d25 vanishes under Kleinman symmetry"

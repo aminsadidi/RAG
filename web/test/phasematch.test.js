@@ -95,6 +95,29 @@ test("every source id of dij.json is a string", () => {
   for (const [m, r] of Object.entries(D)) for (const s of r.sources) if ("doc_id" in s) assert.equal(typeof s.doc_id, "string", m);
 });
 
+test("IR crystals: d_eff against the expressions of Petrov et al. 2004 and Kaindl et al. 2000", () => {
+  const rad = Math.PI / 180;
+  // The tensor's d_eff uses the field (not D) of the e-waves, so it is the paper's expression at θ ± ρ:
+  // the walk-off of these crystals is a few degrees, hence the tolerances.
+  const check = (mat, proc, a, b, type, f, tol, label) => {
+    const s = source(mat, label), sol = solveAll(nAt(s), s.kind, proc, a, b).find((r) => r.type === type);
+    const v = effectiveD(nAt(s), s.kind, sol, D[mat].d).deff, ref = f(sol.angle * rad);
+    assert.ok(Math.abs(v - ref) <= tol * ref, `${mat}: ${v} vs ${ref}`);
+  };
+  // HgGa2S4 (−4): d_ooe = (d36 sin2φ + d31 cos2φ) sin θ, best φ: √(d36² + d31²) sin θ
+  check("HgGa2S4", "shg", 4, 0, "I", (t) => Math.hypot(22.9, 7.6) * Math.sin(t), 0.03);
+  // GaSe (−6m2): d_ooe = d22 cos θ sin3φ
+  check("GaSe", "shg", 10.6, 0, "I", (t) => 57.7 * Math.cos(t), 0.03);
+  // CdSe (6mm): d_oeo = d31 sin θ
+  check("CdSe", "opo", 2.8, 4.0, "IIa", (t) => 18 * Math.sin(t), 0.01);
+  // Te (32): d_eeo = d11 cos²θ sin3φ
+  check("Te", "shg", 10.6, 0, "I", (t) => 670 * Math.cos(t) ** 2, 0.05, "Caldwell");
+  // CdGeAs2 (−42m): d_eeo = d36 sin2θ cos2φ
+  check("CdGeAs2", "shg", 10.6, 0, "I", (t) => 186 * Math.sin(2 * t), 0.03);
+  // CTA, Cheng et al. 1993: type-II SHG of 1.32 µm in the x-y plane, φ = 62.8° calculated, 64.5° measured
+  assert.ok(Math.abs(angle("CsTiOAsO4", null, "shg", 1.32, 0, "xy", "IIa") - 63.5) < 2);
+});
+
 test("LiInS2 and LiInSe2: the papers' calculated angles and d_eff", () => {
   // Fossier et al. 2004, Table IV ("Calculated"): YZ type-II SHG of 2.5527 µm at θ = 34.684°, X-Y DFG 0.77022 − 0.87224 µm at φ = 42.170°
   assert.ok(Math.abs(angle("LiInS2", null, "shg", 2.5527, 0, "yz", "IIa") - 34.684) < 0.05);
