@@ -104,9 +104,53 @@ def test_spatial_mode_coupling():
     print("Spatial mode coupling verified (OK)")
 
 
+def test_catalog_presets():
+    """Verifies that all standard SPDC experimental presets in catalog load and execute."""
+    from modules.spdc.catalog import PRESETS, get_preset
+    assert len(PRESETS) >= 6, f"Expected at least 6 presets, found {len(PRESETS)}"
+    for key, preset in PRESETS.items():
+        engine = preset.build_engine()
+        res = engine.compute_jsa(signal_span_nm=10.0, idler_span_nm=10.0, n_points=40)
+        schmidt = SchmidtDecomposition(res["jsa"])
+        assert 0.0 < schmidt.purity <= 1.0, f"Invalid purity for preset {key}"
+        print(f"  Preset {key:22s}: Purity = {schmidt.purity:.3f}, K = {schmidt.schmidt_number:.2f} (OK)")
+    print("All standard SPDC catalog presets verified (OK)")
+
+
+def test_polarization_entanglement_fidelity():
+    """Validates Kwiat et al. (1995) BBO walk-off and compensation crystal physics."""
+    from modules.spdc.entanglement import PolarizationEntanglement
+    # 3 mm BBO with ng_o = 1.660, ng_e = 1.545, coherence time 150 fs
+    uncompensated = PolarizationEntanglement(
+        crystal_length_mm=3.0,
+        ng_o=1.660,
+        ng_e=1.545,
+        coherence_time_fs=150.0,
+        compensation_ratio=0.0,
+    )
+    # Huge walk-off destroys entanglement without compensator
+    assert uncompensated.concurrence < 0.01, "Uncompensated walk-off must destroy concurrence"
+    assert abs(uncompensated.bell_singlet_fidelity - 0.50) < 0.02, "Uncompensated fidelity must drop to 0.5"
+    print(f"Kwiat (1995) Uncompensated: Walk-off = {uncompensated.raw_walkoff_fs:.1f} fs, Concurrence = {uncompensated.concurrence:.3f}, Fidelity = {uncompensated.bell_singlet_fidelity*100:.1f}%")
+
+    # With 100% walk-off compensation crystal
+    compensated = PolarizationEntanglement(
+        crystal_length_mm=3.0,
+        ng_o=1.660,
+        ng_e=1.545,
+        coherence_time_fs=150.0,
+        compensation_ratio=1.0,
+    )
+    assert compensated.concurrence == 1.0, "Fully compensated state must have C = 1.0"
+    assert compensated.bell_singlet_fidelity == 1.0, "Fully compensated state must have F = 1.0"
+    print(f"Kwiat (1995) Compensated:   Residual = {compensated.residual_walkoff_fs:.1f} fs, Concurrence = {compensated.concurrence:.3f}, Fidelity = {compensated.bell_singlet_fidelity*100:.1f}% (OK)")
+
+
 if __name__ == "__main__":
     print("Running Quantum SPDC Engine Verification Suite...")
     test_evans_benchmark()
     test_hom_symmetry()
     test_spatial_mode_coupling()
+    test_catalog_presets()
+    test_polarization_entanglement_fidelity()
     print("\nALL QUANTUM SPDC TESTS PASSED!")
