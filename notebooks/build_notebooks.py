@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 12
+VERSION = 13
 WORKERS = 4
 
 
@@ -420,6 +420,33 @@ PAPERS = {
     'hellwig1998.pdf': ('10.1016/s0038-1098(98)00538-9', '01_Borates', 'BiBO_BiB3O6', None),
     'jerphagnon1970.pdf': ('10.1103/physrevb.1.1739', '02_Phosphates_Arsenates_KDP', 'ADP_NH4H2PO4', None),
     'li2016.pdf': ('10.1016/j.optmat.2016.10.023', '01_Borates', 'LCB_La2CaB10O19', None),
+    # 2026-10-07: sources of the NLO data (docs/nlo_sources.md) and SPDC theory
+    'ljunggren2005.pdf': ('10.1103/physreva.72.062301', '08_Theory_Dispersion_Models', 'Phase_matching_theory_birefringence', {'title': 'Optimal focusing for maximal collection of entangled narrow-band photon pairs into single-mode fibers', 'authors': 'Daniel Ljunggren; Maria Tengner', 'year': 2005, 'journal': 'Physical Review A'}),
+    'tzankov2005.pdf': ('10.1364/ao.44.006971', '08_Theory_Dispersion_Models', 'Nonlinear_coefficients_Miller_rule', {'title': 'Effective second-order nonlinearity in acentric optical crystals with low symmetry', 'authors': 'Pancho Tzankov; Valentin Petrov', 'year': 2005, 'journal': 'Applied Optics'}),
+    'kato1994.pdf': ('10.1109/3.362711', '01_Borates', 'LBO_LiB3O5', {'title': 'Temperature-tuned 90° phase-matching properties of LiB3O5', 'authors': 'K. Kato', 'year': 1994, 'journal': 'IEEE Journal of Quantum Electronics'}),
+    'fedrizzi2007.pdf': ('10.1364/oe.15.015377', '02_Phosphates_Arsenates_KDP', 'KTP_KTiOPO4', {'title': 'A wavelength-tunable fiber-coupled source of narrowband entangled photons', 'authors': 'Alessandro Fedrizzi; Thomas Herbst; Andreas Poppe; Thomas Jennewein; Anton Zeilinger', 'year': 2007, 'journal': 'Optics Express'}),
+    'gayer2010.pdf': ('10.1007/s00340-010-4203-7', '03_Niobates_Tantalates_Iodates', 'LiNbO3_LN_PPLN', {'title': 'Erratum to: Temperature and wavelength dependent refractive index equations for MgO-doped congruent and stoichiometric LiNbO3', 'authors': 'O. Gayer; Z. Sacks; E. Galun; A. Arie', 'year': 2010, 'journal': 'Applied Physics B'}),
+    'dolev2009.pdf': ('10.1007/s00340-009-3502-3', '03_Niobates_Tantalates_Iodates', 'LiTaO3_LT_PPLT', {'title': 'Linear and nonlinear optical properties of MgO:LiTaO3', 'authors': 'I. Dolev; A. Ganany-Padowicz; O. Gayer; A. Arie; J. Mangin; G. Gadret', 'year': 2009, 'journal': 'Applied Physics B'}),
+    'petrov2015.pdf': ('10.1016/j.pquantelec.2015.04.001', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Frequency down-conversion of solid-state laser sources to the mid-infrared spectral range using non-oxide nonlinear crystals', 'authors': 'Valentin Petrov', 'year': 2015, 'journal': 'Progress in Quantum Electronics'}),
+    'petrov2012.pdf': ('10.1016/j.optmat.2011.03.042', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Parametric down-conversion devices: The coverage of the mid-infrared spectral range by solid-state laser sources', 'authors': 'Valentin Petrov', 'year': 2012, 'journal': 'Optical Materials'}),
+    'grice1997.pdf': ('10.1103/physreva.56.1627', '08_Theory_Dispersion_Models', 'Phase_matching_theory_birefringence', {'title': 'Spectral information and distinguishability in type-II down-conversion with a broadband pump', 'authors': 'W. P. Grice; I. A. Walmsley', 'year': 1997, 'journal': 'Physical Review A'}),
+    'zhai2013.pdf': ('10.1016/j.optmat.2013.09.017', '01_Borates', 'KBBF_KBe2BO3F2', {'title': 'Measurement of thermal refractive index coefficients of nonlinear optical crystal RbBe2BO3F2', 'authors': 'Naixia Zhai; Lirong Wang; Lijuan Liu; Xiaoyang Wang; Yong Zhu; Chuangtian Chen', 'year': 2013, 'journal': 'Optical Materials'}),
+    'kato2018.pdf': ('10.1088/1555-6611/aac9df', '01_Borates', 'LBO_LiB3O5', {'title': 'New thermo-optic dispersion formula for LiB3O5', 'authors': 'K Kato; S G Grechin; N Umemura', 'year': 2018, 'journal': 'Laser Physics'}),
+    'komatsu1997.pdf': ('10.1063/1.119210', '01_Borates', 'SBBO_KABO_other_borates', {'title': 'Growth and ultraviolet application of Li2B4O7 crystals: Generation of the fourth and fifth harmonics of Nd:Y3Al5O12 lasers', 'authors': 'R. Komatsu; T. Sugawara; K. Sassa; N. Sarukura; Z. Liu; S. Izumida; Y. Segawa; S. Uda; T. Fukuda; K. Yamanouchi', 'year': 1997, 'journal': 'Applied Physics Letters'}),
+    'bennink2010.pdf': ('10.1103/physreva.81.053805', '08_Theory_Dispersion_Models', 'Phase_matching_theory_birefringence', {'title': 'Optimal collinear Gaussian beams for spontaneous parametric down-conversion', 'authors': 'Ryan S. Bennink', 'year': 2010, 'journal': 'Physical Review A'}),
+    'hong1985.pdf': ('10.1103/physreva.31.2409', '08_Theory_Dispersion_Models', 'Phase_matching_theory_birefringence', {'title': 'Theory of parametric frequency down conversion of light', 'authors': 'C. K. Hong; L. Mandel', 'year': 1985, 'journal': 'Physical Review A'}),
+    'sugawara1998.pdf': ('10.1016/s0038-1098(98)00190-2', '01_Borates', 'SBBO_KABO_other_borates', {'title': 'Linear and nonlinear optical properties of lithium tetraborate', 'authors': 'Tamotsu Sugawara; Ryuichi Komatsu; Satoshi Uda', 'year': 1998, 'journal': 'Solid State Communications'}),
+    'ghosh1992.pdf': ('10.1117/12.637003', '02_Phosphates_Arsenates_KDP', 'KDP_DKDP_KH2PO4', {'title': 'Dispersion of thermo-optic coefficients and temperature-dependent nonlinear optical devices of some nonlinear crystals', 'authors': 'Gorachand Ghosh', 'year': 1992, 'journal': 'SPIE Proceedings'}),
+    'evans2010.pdf': ('10.1103/physrevlett.105.253601', '02_Phosphates_Arsenates_KDP', 'KTP_KTiOPO4', {'title': 'Bright Source of Spectrally Uncorrelated Polarization-Entangled Photons with Nearly Single-Mode Emission', 'authors': 'P. G. Evans; R. S. Bennink; W. P. Grice; T. S. Humble; J. Schaake', 'year': 2010, 'journal': 'Physical Review Letters'}),
+    'umemura2001.pdf': ('10.1364/assl.1999.pd15', '01_Borates', 'CLBO_CsLiB6O10', {'title': 'New data on the phase-matching properties of CsLiB6O10', 'authors': 'N. Umemura; K. Yoshida; T. Kamimura; Y. Mori; T. Sasaki; K. Kato', 'year': 2001, 'journal': 'Advanced Solid State Lasers'}),
+    'mosley2008.pdf': ('10.1103/physrevlett.100.133601', '02_Phosphates_Arsenates_KDP', 'KDP_DKDP_KH2PO4', {'title': 'Heralded Generation of Ultrafast Single Photons in Pure Quantum States', 'authors': 'Peter J. Mosley; Jeff S. Lundeen; Brian J. Smith; Piotr Wasylczyk; Alfred B. U’Ren; Christine Silberhorn; Ian A. Walmsley', 'year': 2008, 'journal': 'Physical Review Letters'}),
+    'petrov1998.pdf': ('10.1063/1.368904', '01_Borates', 'SBBO_KABO_other_borates', {'title': 'Vacuum ultraviolet application of Li2B4O7 crystals: Generation of 100 fs pulses down to 170 nm', 'authors': 'V. Petrov; F. Rotermund; F. Noack; R. Komatsu; T. Sugawara; S. Uda', 'year': 1998, 'journal': 'Journal of Applied Physics'}),
+    'ghotbi2004.pdf': ('10.1364/opex.12.006002', '01_Borates', 'BiBO_BiB3O6', None),
+    'law2000.pdf': ('10.1103/physrevlett.84.5304', '08_Theory_Dispersion_Models', 'Phase_matching_theory_birefringence', {'title': 'Continuous Frequency Entanglement: Effective Finite Hilbert Space and Entropy Control', 'authors': 'C. K. Law; I. A. Walmsley; J. H. Eberly', 'year': 2000, 'journal': 'Physical Review Letters'}),
+    'miyata2009.pdf': ('10.1364/ol.34.000500', '01_Borates', 'BiBO_BiB3O6', {'title': 'Phase-matched pure χ^(3) third-harmonic generation in noncentrosymmetric BiB3O6', 'authors': 'Kentaro Miyata; Nobuhiro Umemura; Kiyoshi Kato', 'year': 2009, 'journal': 'Optics Letters'}),
+    'shoji1999.pdf': ('10.1364/josab.16.000620', '01_Borates', 'BBO_beta-BaB2O4', {'title': 'Absolute measurement of second-order nonlinear-optical coefficients of β-BaB2O4 for visible to ultraviolet second-harmonic wavelengths', 'authors': 'Ichiro Shoji; Hirotaka Nakamura; Keisuke Ohdaira; Takashi Kondo; Ryoichi Ito; Tsutomu Okamoto; Koichi Tatsuki; Shigeo Kubota', 'year': 1999, 'journal': 'Journal of the Optical Society of America B'}),
+    'hong1987.pdf': ('10.1103/physrevlett.59.2044', '08_Theory_Dispersion_Models', 'Phase_matching_theory_birefringence', {'title': 'Measurement of subpicosecond time intervals between two photons by interference', 'authors': 'C. K. Hong; Z. Y. Ou; L. Mandel', 'year': 1987, 'journal': 'Physical Review Letters'}),
+
 }
 import csv, json, pathlib, shutil
 from matrag.catalog import PAPERS_DIR, doi_key, index_file, load_catalog, plan
@@ -467,8 +494,8 @@ def new_papers() -> dict:
         md(f"""
 # افزودن مقاله‌های تازه به مجموعه و سایت (نسخه‌ی {VERSION})
 
-PDFها باید در پوشه‌ی `proDownloads` در Drive باشند (`pack2003.pdf`، `pack2004.pdf`، `pack2005.pdf`،
-`hellwig1998.pdf`، `jerphagnon1970.pdf`، `li2016.pdf`). فقط یک سلول دارد: روی ▶️ بزنید و اجازه‌ی دسترسی به
+PDFها باید در پوشه‌ی `proDownloads` در Drive باشند، با همان نام‌هایی که دانلود شده‌اند (مثل `petrov2015.pdf`،
+`kato2018.pdf`، `pack2004.pdf`؛ فهرست کامل در کد). مقاله‌هایی که از قبل اضافه شده‌اند دوباره اضافه نمی‌شوند. فقط یک سلول دارد: روی ▶️ بزنید و اجازه‌ی دسترسی به
 Google Drive را بدهید. کارت گرافیک لازم نیست. حدود ۳۰ تا ۶۰ دقیقه طول می‌کشد.
 
 ۱) هر PDF با نام DOI در پوشه‌ی دسته و بلور خودش در `RAG-Optics` **کپی** می‌شود (چیزی پاک یا جابه‌جا نمی‌شود)؛
