@@ -3,7 +3,7 @@
   "branch": "claude/festive-bardeen-nnw123",
   "storage_root": "research_package/",
   "github_repo": "https://github.com/aminsadidi/RAG",
-  "last_updated": "2026-10-07T17:52:00Z",
+  "last_updated": "2026-10-07T17:57:00Z",
   "phases": {
     "phase_2_thermo_optics": {
       "status": "completed_batch_1",
@@ -51,9 +51,21 @@
       "verification_tests": "research_package/tests/test_nonlinear_tensors.py (100% PASS)"
     },
     "phase_4_quantum_spdc": {
-      "status": "in_progress",
-      "modules": ["jsa_engine", "schmidt", "hom_dip", "spatial_modes"],
-      "benchmarks": []
+      "status": "completed",
+      "modules": [
+        "modules/spdc/jsa_engine.py",
+        "modules/spdc/schmidt.py",
+        "modules/spdc/hom_dip.py",
+        "modules/spdc/spatial_modes.py"
+      ],
+      "benchmarks_file": "research_package/data/spdc_benchmarks.json",
+      "benchmarks_reproduced": [
+        "Evans et al. (2010) PPKTP Telecom Purity P=0.8108 (Target: 0.81 ± 0.02)",
+        "Evans et al. (2010) Independent Photon HOM Visibility V=81.1%",
+        "Symmetric Type-I HOM Quantum Dip V=100.0%, P_min=0.0000",
+        "Bennink (2010) Spatial Optimal Fiber Coupling eta=92.0% at wc=sqrt(2)*wp"
+      ],
+      "verification_tests": "research_package/tests/test_quantum_spdc.py (100% PASS)"
     }
   }
 }
