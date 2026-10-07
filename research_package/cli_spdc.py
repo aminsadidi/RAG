@@ -50,7 +50,15 @@ def run_cli():
     parser.add_argument("--preset", type=str, default="PPKTP_EVANS_2010", help="Preset key to simulate")
     parser.add_argument("--span-nm", type=float, default=15.0, help="Spectral span in nm for JSA grid")
     parser.add_argument("--points", type=int, default=80, help="Grid resolution")
+    parser.add_argument("--export-all", type=str, metavar="DIR", help="Export SVG/CSV for all presets to directory")
     args = parser.parse_args()
+
+    if args.export_all:
+        from modules.spdc.export_viz import batch_export_all_presets
+        out_path = Path(args.export_all)
+        batch_export_all_presets(out_path)
+        print(f"\nAll presets exported to: {out_path.resolve()}\n")
+        return
 
     if args.list_presets:
         print("\n=== AVAILABLE QUANTUM SPDC PRESETS ===")

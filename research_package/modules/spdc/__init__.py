@@ -9,6 +9,13 @@ from .hom_dip import HongOuMandelDip, hom_visibility
 from .spatial_modes import SpatialModeCoupling
 from .catalog import SPDCPreset, get_preset, PRESETS
 from .entanglement import PolarizationEntanglement, bell_state_fidelity
+from .export_viz import (
+    export_jsi_csv,
+    export_hom_csv,
+    generate_jsi_svg,
+    generate_hom_dip_svg,
+    batch_export_all_presets,
+)
 
 __all__ = [
     "JSAEngine",
@@ -25,4 +32,9 @@ __all__ = [
     "PRESETS",
     "PolarizationEntanglement",
     "bell_state_fidelity",
+    "export_jsi_csv",
+    "export_hom_csv",
+    "generate_jsi_svg",
+    "generate_hom_dip_svg",
+    "batch_export_all_presets",
 ]

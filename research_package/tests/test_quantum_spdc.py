@@ -146,6 +146,21 @@ def test_polarization_entanglement_fidelity():
     print(f"Kwiat (1995) Compensated:   Residual = {compensated.residual_walkoff_fs:.1f} fs, Concurrence = {compensated.concurrence:.3f}, Fidelity = {compensated.bell_singlet_fidelity*100:.1f}% (OK)")
 
 
+def test_export_viz():
+    """Validates CSV and SVG generation for JSI heatmaps and HOM dip curves."""
+    import tempfile
+    from modules.spdc.export_viz import batch_export_all_presets
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir)
+        records = batch_export_all_presets(tmp_path)
+        assert len(records) >= 6, f"Expected 6 exported records, got {len(records)}"
+        for r in records:
+            assert (tmp_path / r["svg_jsi"]).exists(), f"SVG JSI missing for {r['key']}"
+            assert (tmp_path / r["svg_hom"]).exists(), f"SVG HOM missing for {r['key']}"
+        print("SPDC export and SVG visualization verified (OK)")
+
+
 if __name__ == "__main__":
     print("Running Quantum SPDC Engine Verification Suite...")
     test_evans_benchmark()
@@ -153,4 +168,5 @@ if __name__ == "__main__":
     test_spatial_mode_coupling()
     test_catalog_presets()
     test_polarization_entanglement_fidelity()
+    test_export_viz()
     print("\nALL QUANTUM SPDC TESTS PASSED!")
