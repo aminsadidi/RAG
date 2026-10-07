@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 16px; font-weight: bold; fill: #1e293b; text-anchor: middle; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 13px; fill: #059669; text-anchor: middle; }
+    .axis-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; font-weight: 600; fill: #475569; text-anchor: middle; }
+    .tick { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 10px; fill: #64748b; }
+  </style>
+  <rect width="600" height="400" fill="#ffffff"/>
+  <text x="300.0" y="24" class="title">HOM Dip - Fedrizzi et al. (2007) High-Brightness PPKTP</text>
+  <text x="300.0" y="42" class="subtitle">Interference Visibility V = 0.6%</text>
+
+  <!-- Plot Background & Grid -->
+  <g transform="translate(70, 50)">
+    <rect width="490" height="290" fill="#f8fafc" stroke="#cbd5e1"/>
+    <!-- Grid line at P = 0.5 -->
+    <line x1="0" y1="145.0" x2="490" y2="145.0" stroke="#e2e8f0" stroke-dasharray="4,4"/>
+  </g>
+
+  <!-- Dip Curve -->
+  <path d="M 70.0,228.0 L 76.1,227.2 L 82.2,226.4 L 88.4,225.6 L 94.5,224.8 L 100.6,224.0 L 106.8,223.2 L 112.9,222.4 L 119.0,221.6 L 125.1,220.7 L 131.2,219.9 L 137.4,219.0 L 143.5,218.2 L 149.6,217.3 L 155.8,216.5 L 161.9,215.7 L 168.0,214.8 L 174.1,214.0 L 180.2,213.2 L 186.4,212.4 L 192.5,211.6 L 198.6,210.8 L 204.8,210.0 L 210.9,209.2 L 217.0,208.4 L 223.1,207.5 L 229.2,206.7 L 235.4,205.9 L 241.5,205.0 L 247.6,204.1 L 253.8,203.2 L 259.9,202.3 L 266.0,201.4 L 272.1,200.6 L 278.2,199.7 L 284.4,198.9 L 290.5,198.2 L 296.6,197.5 L 302.8,196.8 L 308.9,196.3 L 315.0,195.9 L 321.1,195.5 L 327.2,195.2 L 333.4,195.0 L 339.5,194.8 L 345.6,194.8 L 351.8,194.7 L 357.9,194.8 L 364.0,194.8 L 370.1,194.9 L 376.2,194.9 L 382.4,195.0 L 388.5,195.0 L 394.6,195.1 L 400.8,195.1 L 406.9,195.1 L 413.0,195.1 L 419.1,195.1 L 425.2,195.0 L 431.4,195.0 L 437.5,195.0 L 443.6,195.0 L 449.8,194.9 L 455.9,194.9 L 462.0,194.9 L 468.1,194.9 L 474.2,195.0 L 480.4,195.0 L 486.5,195.0 L 492.6,195.0 L 498.8,195.0 L 504.9,195.0 L 511.0,195.0 L 517.1,195.0 L 523.2,195.0 L 529.4,195.0 L 535.5,195.0 L 541.6,195.0 L 547.8,195.0 L 553.9,195.0 L 560.0,195.0" fill="none" stroke="#2563eb" stroke-width="2.5"/>
+
+  <!-- X-Axis Labels -->
+  <text x="315.0" y="385" class="axis-label">Relative Delay τ (fs)</text>
+  <text x="70" y="360" class="tick" text-anchor="middle">-400</text>
+  <text x="315.0" y="360" class="tick" text-anchor="middle">0</text>
+  <text x="560" y="360" class="tick" text-anchor="middle">400</text>
+
+  <!-- Y-Axis Labels -->
+  <text x="20" y="195.0" class="axis-label" transform="rotate(-90, 20, 195.0)">Coincidence Probability P_c(τ)</text>
+  <text x="62" y="344" class="tick" text-anchor="end">0.0</text>
+  <text x="62" y="199.0" class="tick" text-anchor="end">0.5</text>
+  <text x="62" y="54" class="tick" text-anchor="end">1.0</text>
+
+</svg>
