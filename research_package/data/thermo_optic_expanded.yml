@@ -199,3 +199,125 @@
   axes:
     o: [{range_um: [0.435, 0.644], terms: [[-0.3176, 1], [0.2995, 0]]}]
     e: [{range_um: [0.435, 0.644], terms: [[-0.2837, 1], [0.4590, 0]]}]
+
+- material: ZnGeP2
+  source: Boyd-1971
+  doc_id: 10.1364_josa.69.000730
+  cite: "Bhar & Ghosh (1979) / Boyd (1971)"
+  pdf_page: 2
+  where: "Mid-IR thermo-optic coefficients from 20 to 70 °C"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.64, 12.0], terms: [[11.5, 0]]}]
+    e: [{range_um: [0.64, 12.0], terms: [[11.0, 0]]}]
+
+- material: AgGaS2
+  source: Takaoka-1999
+  doc_id: 10.1364_ao.38.004577
+  cite: "Takaoka & Kato (1999)"
+  pdf_page: 2
+  where: "Appl. Opt. 38, 4577; constant dn/dT in mid-IR"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.58, 10.59], terms: [[15.4, 0]]}]
+    e: [{range_um: [0.58, 10.59], terms: [[15.5, 0]]}]
+
+- material: GaSe
+  source: Kato-2013
+  doc_id: 10.1364_ao.52.002325
+  cite: "Kato, Tanno, Umemura (2013)"
+  pdf_page: 2
+  where: "Appl. Opt. 52, 2325; thermo-optic dispersion in 0.8–16 µm"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.8, 16.0], terms: [[-0.0874, -1], [0.150, 0]]}]
+    e: [{range_um: [0.8, 16.0], terms: [[3.907, 0]]}]
+
+- material: CdGa2S4
+  source: Kato-2017
+  doc_id: 10.1016_j.optcom.2016.10.054
+  cite: "Kato, Umemura, Petrov (2017)"
+  pdf_page: 2
+  where: "Opt. Commun. 386, 49; thermo-optic formulas for defect chalcopyrite"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.49, 7.5], terms: [[7.8, 0]]}]
+    e: [{range_um: [0.49, 7.5], terms: [[8.2, 0]]}]
+
+- material: LiGaS2
+  source: Kato-2017
+  doc_id: 10.1364_ol.42.004363
+  cite: "Kato, Miyata, Petrov (2017)"
+  pdf_page: 3
+  where: "Opt. Lett. 42, 4363; thermo-optic values in mid-IR"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [1.02, 10.59], terms: [[3.8, 0]]}]
+    y: [{range_um: [1.02, 10.59], terms: [[4.2, 0]]}]
+    z: [{range_um: [1.02, 10.59], terms: [[4.0, 0]]}]
+
+- material: KNbO3
+  source: Zysset-1992
+  doc_id: 10.1364_josab.9.000380
+  cite: "Zysset et al. (1992) / Ghosh (1998)"
+  pdf_page: 5
+  where: "Biaxial ferroelectric perovskite dnx, dny, dnz vs T"
+  t0_c: 22
+  form: kato
+  axes:
+    x: [{range_um: [0.4, 3.5], terms: [[3.5, 0]]}]
+    y: [{range_um: [0.4, 3.5], terms: [[-1.2, 0]]}]
+    z: [{range_um: [0.4, 3.5], terms: [[-4.8, 0]]}]
+
+- material: LiTaO3
+  source: Ghosh-1994
+  doc_id: 10.1364_ol.19.001391
+  cite: "Ghosh (1994)"
+  pdf_page: 2
+  where: "Opt. Lett. 19, 1391; electronic-lattice thermo-optic dispersion"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.130, G: [25.0], H: [15.0]}
+    e: {lig_um: 0.130, G: [65.0], H: [20.0]}
+
+- material: LiIO3
+  source: Ghosh-1998
+  doc_id: 10.1016_b978_012281855_4_50005_1
+  cite: "Ghosh (1998 Handbook)"
+  pdf_page: 145
+  where: "Table 3.4.1; hexagonal iodate thermo-optic coefficients"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.35, 5.0], terms: [[-8.6, 0]]}]
+    e: [{range_um: [0.35, 5.0], terms: [[-7.5, 0]]}]
+
+- material: SiO2
+  source: Toyoda-1983
+  doc_id: 10.1088_0022_3727_16_5_017
+  cite: "Toyoda & Yabe (1983) / Ghosh (1998)"
+  pdf_page: 4
+  where: "Alpha-quartz thermo-optic dispersion in visible and near-IR"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.3, 2.0], terms: [[-0.15, 1], [1.25, 0]]}]
+    e: [{range_um: [0.3, 2.0], terms: [[-0.16, 1], [1.30, 0]]}]
+
+- material: CaGdAlO4
+  source: Loiko-2017
+  doc_id: 10.1364_ol.42.002275
+  cite: "Loiko, Becker, Bohaty (2017)"
+  pdf_page: 2
+  where: "Opt. Lett. 42, 2275; CALGO laser host and nonlinear matrix"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.35, 2.1], terms: [[0.85, 0]]}]
+    e: [{range_um: [0.35, 2.1], terms: [[1.05, 0]]}]
