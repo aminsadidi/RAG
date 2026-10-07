@@ -303,3 +303,62 @@
     - {page: Ghosh-1995, direction: o, type: 4, coefficients: [1.7018379, 1.0357554, 2, 1.8003440e-2, 1, 1.2479989, 2, 91, 1], range_um: [0.25, 2.0]}
     - {page: Ghosh-1995, direction: e, type: 4, coefficients: [1.5920433, 0.7816893, 2, 1.6067891e-2, 1, 0.8403893, 2, 91, 1], range_um: [0.25, 2.0]}
   checks: []  # checked in the test: type-I SHG of 1.064 µm at 22.8° and dθ/dT (Table III, p. 5)
+
+- material: LiB3O5
+  name: LiB3O5 (Lithium triborate, LBO)
+  doc_id: 10.1109_3.362711
+  reference: "Katō (1994). Temperature-tuned 90° phase-matching properties of LiB3O5. IEEE J. Quantum Electron. 30, 2950. doi:10.1109/3.362711"
+  doi: 10.1109/3.362711
+  pdf_page: 2
+  where: "Eq. (2): n² = A + B/(λ² − C) − Dλ² (+ Eλ⁴ − Fλ⁶); improved Sellmeier equations at 20 °C"
+  entries:
+    - {page: Kato-1994, direction: x, type: 4, coefficients: [2.4542, 0.01125, 0, 0.01135, 1, 0, 0, 0, 1, -0.01388, 2], range_um: [0.38, 2.5]}
+    - {page: Kato-1994, direction: y, type: 4, coefficients: [2.5390, 0.01277, 0, 0.01189, 1, 0, 0, 0, 1, -0.01849, 2, 4.3025e-5, 4, -2.9131e-5, 6], range_um: [0.38, 2.5]}
+    - {page: Kato-1994, direction: z, type: 4, coefficients: [2.5865, 0.01310, 0, 0.01223, 1, 0, 0, 0, 1, -0.01862, 2, 4.5778e-5, 4, -3.2526e-5, 6], range_um: [0.38, 2.5]}
+  checks:
+    - {direction: x, points: [[1.0642, 1.56477]], tol: 1.0e-4}
+    - {direction: y, points: [[0.5321, 1.60650]], tol: 1.0e-4}
+    - {direction: z, points: [[1.0642, 1.60534]], tol: 1.0e-4}
+
+- material: RbBe2BO3F2
+  name: RbBe2BO3F2 (Rubidium beryllium borate fluoride, RBBF)
+  doc_id: 10.1016_j.optmat.2013.09.017
+  reference: "Zhai et al. (2013). Thermal refractive index coefficients and temperature-dependent phase-matching conditions of RbBe2BO3F2 crystal. Opt. Mater. 36, 442. doi:10.1016/j.optmat.2013.09.017"
+  doi: 10.1016/j.optmat.2013.09.017
+  pdf_page: 4
+  where: "Eq. (3): Sellmeier equations from Wu et al. (2009); Eq. (2): thermo-optic dispersion in thermo_optic.yml"
+  entries:
+    - {page: Zhai-2013, direction: o, type: 4, coefficients: [1.0, 1.18675, 2, 0.00750, 1, 0, 0, 0, 1, -0.00910, 2], range_um: [0.194, 1.014]}
+    - {page: Zhai-2013, direction: e, type: 4, coefficients: [1.0, 0.97530, 2, 0.00665, 1, 0, 0, 0, 1, -0.00145, 2], range_um: [0.194, 1.014]}
+  checks:
+    - {direction: o, points: [[0.435, 1.49490], [1.014, 1.47857]], tol: 2.0e-4}
+    - {direction: e, points: [[0.435, 1.41769], [1.014, 1.40697]], tol: 2.0e-4}
+
+- material: Li2B4O7
+  name: Li2B4O7 (Lithium tetraborate, LB4)
+  doc_id: 10.1016_s0925-3467_98_00004-9
+  reference: "Sugawara et al. (1998). Linear and nonlinear optical properties of lithium tetraborate (Li2B4O7) crystal. Opt. Mater. 107, 234."
+  doi: 10.1016/S0925-3467(98)00004-9
+  pdf_page: 3
+  where: "Table 2: Sellmeier constants at 25 °C; n² = A1 + A2/(λ² − A3²) + A4·λ²"
+  entries:
+    - {page: Sugawara-1998, direction: o, type: 4, coefficients: [2.564310, 0.012337, 0, 0.114467, 2, 0, 0, 0, 1, -0.019075, 2], range_um: [0.185, 2.325]}
+    - {page: Sugawara-1998, direction: e, type: 4, coefficients: [2.386510, 0.010664, 0, 0.113483, 2, 0, 0, 0, 1, -0.012813, 2], range_um: [0.185, 2.325]}
+  checks:
+    - {direction: o, points: [[0.63282, 1.60888]], tol: 1.0e-4}
+    - {direction: e, points: [[0.63282, 1.55206]], tol: 1.0e-4}
+
+- material: Mg-LiTaO3
+  name: Mg:LiTaO3 (Magnesium-doped stoichiometric lithium tantalate, PPSLT)
+  doc_id: 10.1007_s00340-009-3547-4
+  reference: "Dolev et al. (2009). Linear and nonlinear optical properties of MgO:LiTaO3. Appl. Phys. B 96, 423. doi:10.1007/s00340-009-3547-4"
+  doi: 10.1007/s00340-009-3547-4
+  pdf_page: 6
+  where: "Table 3 (0.5% MgO SLT): Sellmeier eq. (4) at 24.5 °C (f = 0); temperature dependence in thermo_optic.yml"
+  entries:
+    - {page: Dolev-2009, direction: o, type: 4, coefficients: [4.5082, 0.084888, 0, 0.19552, 2, 1.1570, 0, 8.2517, 2, -0.0237, 2], range_um: [0.38, 4.0]}
+    - {page: Dolev-2009, direction: e, type: 4, coefficients: [4.5615, 0.08488, 0, 0.1927, 2, 5.5832, 0, 8.3067, 2, -0.021696, 2], range_um: [0.38, 4.0]}
+  checks:
+    - {direction: o, points: [[1.064, 2.13112]], tol: 1.0e-4}
+    - {direction: e, points: [[1.064, 2.12889]], tol: 1.0e-4}
+

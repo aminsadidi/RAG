@@ -188,3 +188,48 @@ test("thermo-optic formulas: BBO angle drift and the CdSiP2 isotropic point", ()
   assert.ok(Math.abs(iso(77) - 0.4998) < 0.001);
   assert.ok(Math.abs(iso(4.2) - 0.4950) < 0.001);
 });
+
+test("thermo-optic formulas: LBO (Kato 1994 & 2018) reproduces Table 1 90° temperatures", () => {
+  const at = (rows, pol) => rows.find((r) => r.pol.join("") === pol)?.T;
+  // Kato 2018 Table 1: SHG 1.0642 µm at 149 °C, 1.047 µm at 174.4 °C, 1.3188 µm at 43.0 °C, 1.206 µm at 23.6 °C
+  const t_1064 = at(ncpm("LiB3O5", "Kato-1994", "shg", 1.0642, 0), "zzy");
+  assert.ok(Math.abs(t_1064 - 149.0) < 0.2);
+  const t_1047 = at(ncpm("LiB3O5", "Kato-1994", "shg", 1.0470, 0), "zzy");
+  assert.ok(Math.abs(t_1047 - 174.4) < 0.2);
+  const t_1318 = at(ncpm("LiB3O5", "Kato-1994", "shg", 1.3188, 0), "xyx");
+  assert.ok(Math.abs(t_1318 - 43.0) < 0.2);
+  const t_1206 = at(ncpm("LiB3O5", "Kato-1994", "shg", 1.2060, 0), "zzy");
+  assert.ok(Math.abs(t_1206 - 23.6) < 0.6);
+});
+
+test("thermo-optic formulas: CLBO and RBBF temperature tuning", () => {
+  // CLBO, Umemura et al. 1999/2001: type-1 SHG of 1.0642 µm at 20 °C is 29.2°
+  const clbo = source("CsLiB6O10", "Sasaki");
+  const ang_clbo = (T) => solveAll(nAtTemp(clbo, T), clbo.kind, "shg", 1.0642, 0).find((r) => r.type === "I").angle;
+  assert.ok(Math.abs(ang_clbo(20) - 29.24) < 0.1);
+  assert.ok(Math.abs(ang_clbo(100) - 29.33) < 0.1);
+
+  // RBBF, Zhai et al. 2013 Table 3: 532 nm -> 266 nm SHG angle is 39.97° at 24 °C and 40.09° at 160 °C
+  const rbbf = source("RbBe2BO3F2", "Zhai-2013");
+  const ang_rbbf = (T) => solveAll(nAtTemp(rbbf, T), rbbf.kind, "shg", 0.532, 0).find((r) => r.type === "I").angle;
+  assert.ok(Math.abs(ang_rbbf(24) - 39.97) < 0.05);
+  assert.ok(Math.abs(ang_rbbf(160) - 40.09) < 0.05);
+});
+
+test("thermo-optic formulas: PPLN (Gayer 2008/2010) and PPSLT (Dolev 2009) QPM periods vs temperature", () => {
+  const qpmPeriod = (mat, label, la, T) => {
+    const s = source(mat, label), ax = s.axes.e;
+    const n = (l) => {
+      const n0 = entryIndex(ax, l);
+      return ax.thermo ? n0 + thermoShift(s.thermo.form, ax.thermo, s.thermo.t0_c, n0, l, T) : n0;
+    };
+    return 1 / (n(la / 2) / (la / 2) - 2 * n(la) / la);
+  };
+
+  // PPLN 5% MgO:CLN (Gayer): 1.064 µm SHG period is 6.97 µm at 25 °C and shifts to 6.84 µm at 100 °C
+  assert.ok(Math.abs(qpmPeriod("MgO-LiNbO3", "Gayer-5", 1.064, 25) - 6.97) < 0.05);
+  assert.ok(Math.abs(qpmPeriod("MgO-LiNbO3", "Gayer-5", 1.064, 100) - 6.84) < 0.05);
+
+  // PPSLT 0.5% MgO:SLT (Dolev 2009 Table 2): 1.064 µm SHG at 160 °C has period 7.72 µm
+  assert.ok(Math.abs(qpmPeriod("Mg-LiTaO3", "Dolev-2009", 1.064, 160) - 7.72) < 0.03);
+});
