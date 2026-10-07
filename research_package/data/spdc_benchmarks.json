@@ -1,0 +1,46 @@
+[
+  {
+    "reference": "Evans et al. (2010)",
+    "doi": "10.1103/PhysRevLett.105.253601",
+    "crystal": "PPKTP",
+    "crystal_length_mm": 20.0,
+    "qpm_period_um": 46.2,
+    "pump_wavelength_nm": 776.0,
+    "pump_fwhm_nm": 0.68,
+    "pulse_duration_ps": 1.3,
+    "signal_wavelength_nm": 1552.0,
+    "idler_wavelength_nm": 1552.0,
+    "phase_matching_type": "Type-II",
+    "reported_purity": 0.81,
+    "reported_schmidt_number": 1.23,
+    "reported_hom_visibility": 0.98,
+    "notes": "Group-velocity matched PPKTP engineered for factorable state in telecom band (PRL 105, 253601)"
+  },
+  {
+    "reference": "Fedrizzi et al. (2007)",
+    "doi": "10.1364/oe.15.015374",
+    "crystal": "PPKTP",
+    "crystal_length_mm": 10.0,
+    "qpm_period_um": 9.825,
+    "pump_wavelength_nm": 405.0,
+    "pump_fwhm_nm": 0.05,
+    "signal_wavelength_nm": 810.0,
+    "idler_wavelength_nm": 810.0,
+    "phase_matching_type": "Type-II",
+    "reported_heralding_efficiency": 0.82,
+    "notes": "CW pumped high-brightness entangled photon pair source with optimized fiber collection"
+  },
+  {
+    "reference": "Mosley et al. (2008)",
+    "doi": "10.1103/physrevlett.100.133601",
+    "crystal": "KH2PO4",
+    "crystal_length_mm": 8.0,
+    "pump_wavelength_nm": 415.0,
+    "pump_fwhm_nm": 1.8,
+    "signal_wavelength_nm": 830.0,
+    "idler_wavelength_nm": 830.0,
+    "phase_matching_type": "Type-II",
+    "reported_purity": 0.88,
+    "notes": "Asymmetric group velocity matching in bulk KDP producing unheralded pure single photons"
+  }
+]
