@@ -74,3 +74,73 @@
   axes:
     o: {lig_um: 0.0652, G: [-19.3007], H: [-34.9683]}
     e: {lig_um: 0.0730, G: [-141.421], H: [110.8630]}
+
+- material: LiB3O5
+  source: Kato-1994
+  doc_id: 10.1088_1555_6611_aac9df
+  cite: "Katō, Grechin, Umemura (2018)"
+  pdf_page: 3
+  where: "Eq. (1): dn/dT = (a·λ + b) × 10⁻⁵ /°C; 0.266–1.908 µm; combined with Kato (1994) Sellmeier equations"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.266, 1.908], terms: [[-0.3760, 1], [0.2300, 0]]}]
+    y: [{range_um: [0.266, 1.908], terms: [[0.5779, 1], [-1.9318, 0]]}]
+    z: [{range_um: [0.266, 1.908], terms: [[0.4073, 1], [-1.1569, 0]]}]
+
+- material: CsLiB6O10
+  source: Sasaki
+  doc_id: 10.1364_assl.1999.pd15
+  cite: "Umemura et al. (1999/2001)"
+  pdf_page: 4
+  where: "Eq. (2): dno/dT = (-12.48 - 0.328/λ) × 10⁻⁶ /°C, dne/dT = (-8.36 + 0.047/λ + 0.039/λ² - 0.014/λ³) × 10⁻⁶ /°C"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.2128, 1.3382], terms: [[-1.248, 0], [-0.0328, -1]]}]
+    e: [{range_um: [0.2128, 1.3382], terms: [[-0.836, 0], [0.0047, -1], [0.0039, -2], [-0.0014, -3]]}]
+
+- material: RbBe2BO3F2
+  source: Zhai-2013
+  doc_id: 10.1016_j.optmat.2013.09.017
+  cite: "Zhai et al. (2013)"
+  pdf_page: 3
+  where: "Eq. (2): dno/dT = (0.099911/λ³ - 0.553474/λ² + 1.454609/λ - 13.260115) × 10⁻⁶ /°C; dne/dT = (0.285633/λ³ - 2.482927/λ² + 6.916728/λ - 16.153736) × 10⁻⁶ /°C"
+  t0_c: 24
+  form: kato
+  axes:
+    o: [{range_um: [0.194, 1.014], terms: [[-1.3260115, 0], [0.1454609, -1], [-0.0553474, -2], [0.0099911, -3]]}]
+    e: [{range_um: [0.194, 1.014], terms: [[-1.6153736, 0], [0.6916728, -1], [-0.2482927, -2], [0.0285633, -3]]}]
+
+- material: MgO-LiNbO3
+  source: Gayer-5
+  doc_id: 10.1007_s00340-008-2998-2
+  cite: "Gayer et al. (2008; erratum 2010)"
+  pdf_page: 1
+  where: "Table 1 (5% MgO CLN): Sellmeier eq. (2) with f = (T − 24.5)·(T + 570.82)"
+  t0_c: 24.5
+  form: gayer
+  axes:
+    o:
+      a: [5.6533, 0.1185, 0.2091, 89.61, 10.85, 0.0197]
+      b: [7.941e-7, 3.134e-8, -4.641e-9, -2.188e-6, 0]
+    e:
+      a: [5.756, 0.0983, 0.2020, 189.32, 12.52, 0.0132]
+      b: [2.860e-6, 4.700e-8, 6.113e-8, 1.516e-4, 0]
+
+- material: Mg-LiTaO3
+  source: Dolev-2009
+  doc_id: 10.1007_s00340-009-3547-4
+  cite: "Dolev et al. (2009)"
+  pdf_page: 6
+  where: "Table 3 (0.5% MgO SLT): Sellmeier eq. (4) with f = (T − 24.5)·(T + 570.82)"
+  t0_c: 24.5
+  form: gayer
+  axes:
+    o:
+      a: [4.5082, 0.084888, 0.19552, 1.1570, 8.2517, 0.0237]
+      b: [2.0704e-8, 1.4449e-8, 1.5978e-8, 4.7686e-6, 1.1127e-5]
+    e:
+      a: [4.5615, 0.08488, 0.1927, 5.5832, 8.3067, 0.021696]
+      b: [4.782e-7, 3.0913e-8, 2.7326e-8, 1.4837e-5, 1.3647e-7]
+
