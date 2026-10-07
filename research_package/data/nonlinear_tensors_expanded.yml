@@ -1,0 +1,443 @@
+# Comprehensive Second-Order Nonlinear Optical Tensors (d_ij in pm/V)
+# Standalone Research Package: Expanded to 70 Crystals
+#
+# Contracted index notation: 1=xx, 2=yy, 3=zz, 4=yz, 5=xz, 6=xy.
+# Symmetry classes (Point Groups):
+#   -43m: d14 = d25 = d36
+#   -42m: d36, d14=d25 (=d36 by Kleinman)
+#   3m:   d33, d31=d32=d15=d24, d22=-d21=-d16
+#   6mm:  d33, d31=d32, d15=d24
+#   mm2:  d31, d32, d33, d15, d24
+#   32:   d11=-d12=-d26, d14=-d25
+#   -62m: d22=-d21=-d16
+#   m:    10 independent elements in dielectric principal frame
+#   2:    8 independent elements in principal frame
+
+- material: BaB2O4
+  point_group: 3m
+  d: {22: 2.2, 21: -2.2, 16: -2.2, 31: 0.1, 32: 0.1, 15: 0.1, 24: 0.1, 33: 0.04}
+  sources:
+    - {cite: "Eckardt et al. (1990)", doc_id: 10.1109_3.55534, what: "|d22| = 2.2 pm/V"}
+    - {cite: "Shoji et al. (1999)", doc_id: 10.1364_josab.16.000620, what: "absolute d22 = 2.2, d33 = 0.04 pm/V"}
+
+- material: LiNbO3
+  point_group: 3m
+  d: {33: -25.2, 31: -4.6, 32: -4.6, 15: -4.6, 24: -4.6, 22: 2.1, 21: -2.1, 16: -2.1}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "|d33|=25.2, |d31|=4.6 pm/V"}
+
+- material: MgO-LiNbO3
+  point_group: 3m
+  d: {33: -25.0, 31: -4.4, 32: -4.4, 15: -4.4, 24: -4.4, 22: 2.1, 21: -2.1, 16: -2.1}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "5% MgO:LiNbO3, |d33|=25.0 pm/V"}
+
+- material: LiTaO3
+  point_group: 3m
+  d: {33: 13.8, 31: 0.85, 32: 0.85, 15: 0.85, 24: 0.85}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "|d33|=13.8, |d31|=0.85 pm/V"}
+
+- material: KH2PO4
+  point_group: -42m
+  d: {36: 0.39, 14: 0.39, 25: 0.39}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "d36 = 0.39 pm/V @ 1064 nm"}
+
+- material: CsLiB6O10
+  point_group: -42m
+  d: {36: 0.73, 14: 0.73, 25: 0.73}
+  sources:
+    - {cite: "Zhang et al. (2007)", doc_id: 10.1364_josab.24.002877, what: "d36 = 0.73 pm/V"}
+
+- material: CdSiP2
+  point_group: -42m
+  d: {36: 84.5, 14: 84.5, 25: 84.5}
+  sources:
+    - {cite: "Kato, Umemura, Petrov (2011)", doc_id: 10.1063_1.3590136, what: "d36 = 84.5 pm/V"}
+
+- material: ZnGeP2
+  point_group: -42m
+  d: {36: 69.0, 14: 69.0, 25: 69.0}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "d36 = 69 pm/V @ 10.6 um"}
+
+- material: AgGaS2
+  point_group: -42m
+  d: {36: 13.0, 14: 13.0, 25: 13.0}
+  sources:
+    - {cite: "Zondy et al. (1997)", doc_id: 10.1364_josab.14.002481, what: "d36 = 13 ± 2 pm/V"}
+
+- material: AgGaSe2
+  point_group: -42m
+  d: {36: 33.0, 14: 33.0, 25: 33.0}
+  sources:
+    - {cite: "Petrov et al. (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "d36 = 33 pm/V"}
+
+- material: CH4N2O - urea
+  point_group: -42m
+  d: {36: 1.2, 14: 1.2, 25: 1.2}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "d36 = 1.2 pm/V"}
+
+- material: KBe2BO3F2
+  point_group: "32"
+  d: {11: 0.47, 12: -0.47, 26: -0.47}
+  sources:
+    - {cite: "Chen et al. (2009)", doc_id: 10.1007_s00340_009_3554_4, what: "d11 = 0.47 pm/V"}
+
+- material: SiO2
+  point_group: "32"
+  d: {11: 0.30, 12: -0.30, 26: -0.30}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "alpha-quartz d11 = 0.30 pm/V"}
+
+- material: LiIO3
+  point_group: "6"
+  d: {31: -4.1, 32: -4.1, 15: -4.1, 24: -4.1}
+  sources:
+    - {cite: "Eckardt et al. (1990)", doc_id: 10.1109_3.55534, what: "d31 = -4.1 pm/V"}
+
+- material: KTiOPO4
+  point_group: mm2
+  d: {15: 2.02, 24: 3.75, 31: 2.10, 32: 3.75, 33: 15.4}
+  sources:
+    - {cite: "Pack, Armstrong, Smith (2004)", doc_id: 10.1364_ao.43.003319, what: "Table 6: separated beams"}
+
+- material: KTiOAsO4
+  point_group: mm2
+  d: {15: 2.30, 24: 3.64, 31: 2.30, 32: 3.66, 33: 15.5}
+  sources:
+    - {cite: "Pack, Armstrong, Smith (2004)", doc_id: 10.1364_ao.43.003319, what: "Table 6"}
+
+- material: RbTiOAsO4
+  point_group: mm2
+  d: {15: 2.17, 24: 3.92, 31: 2.25, 32: 3.89, 33: 15.9}
+  sources:
+    - {cite: "Pack, Armstrong, Smith (2004)", doc_id: 10.1364_ao.43.003319, what: "Table 6"}
+
+- material: RbTiOPO4
+  point_group: mm2
+  d: {15: 1.98, 24: 3.98, 31: 2.05, 32: 3.82, 33: 15.6}
+  sources:
+    - {cite: "Pack, Armstrong, Smith (2004)", doc_id: 10.1364_ao.43.003319, what: "Table 6"}
+
+- material: LiB3O5
+  point_group: mm2
+  d: {23: 0.85, 34: 0.85, 21: -0.67, 16: -0.67, 22: 0.04}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "0.85, -0.67, 0.04 pm/V"}
+
+- material: CsB3O5
+  point_group: "222"
+  d: {14: 1.15, 25: 1.15, 36: 1.15}
+  sources:
+    - {cite: "Zhang et al. (2007)", doc_id: 10.1364_josab.24.002877, what: "d14 = 1.15 pm/V"}
+
+- material: TmCa4O(BO3)3
+  point_group: m
+  d: {12: 0.24, 26: 0.24, 32: 1.70, 24: 1.70}
+  sources:
+    - {cite: "Liu et al. (2014)", doc_id: 10.1039_c4ce00869c, what: "d12=0.24, d32=1.70 pm/V"}
+
+- material: NH4H2PO4
+  point_group: -42m
+  d: {36: 0.47, 14: 0.47, 25: 0.47}
+  sources:
+    - {cite: "Jerphagnon & Kurtz (1970)", doc_id: 10.1103_physrevb.1.1739, what: "d36 = 0.47 pm/V"}
+
+- material: KNbO3
+  point_group: mm2
+  d: {11: 21.9, 12: 8.9, 26: 9.2, 13: 12.4, 35: 13.0}
+  sources:
+    - {cite: "Pack, Armstrong, Smith (2003)", doc_id: 10.1364_josab.20.002109, what: "Table 5"}
+
+- material: GdCa4O(BO3)3
+  point_group: m
+  d: {11: 0.28, 12: 0.21, 26: 0.23, 13: -0.58, 35: -0.61, 15: -0.36, 31: -0.32, 24: 1.66, 32: 1.67, 33: -1.20}
+  sources:
+    - {cite: "Pack, Armstrong, Smith (2005)", doc_id: 10.1364_josab.22.000417, what: "Table 2"}
+
+- material: YCa4O(BO3)3
+  point_group: m
+  d: {11: 0.155, 12: 0.235, 26: 0.24, 13: -0.59, 35: -0.59, 15: -0.30, 31: -0.30, 24: 1.62, 32: 1.62, 33: -1.195}
+  sources:
+    - {cite: "Pack, Armstrong, Smith (2005)", doc_id: 10.1364_josab.22.000417, what: "Table 2"}
+
+- material: BiB3O6
+  point_group: "2"
+  d: {11: 2.53, 12: 2.926, 13: -1.926, 14: -1.627, 25: -1.669, 26: 3.479, 35: -1.579, 36: -1.669}
+  sources:
+    - {cite: "Hellwig, Liebertz, Bohaty (1998)", doc_id: 10.1016_s0038_1098_98_00538_9, what: "Table 1"}
+
+- material: La2CaB10O19
+  point_group: "2"
+  d: {22: 1.04, 21: -0.58, 16: -0.58, 23: 0.25, 34: 0.25, 14: 0.70, 25: 0.70, 36: 0.70}
+  sources:
+    - {cite: "Li et al. (2016)", doc_id: 10.1016_j.optmat.2016.10.023, what: "Table 1"}
+
+- material: LiInS2
+  point_group: mm2
+  d: {32: 7.25, 24: 7.25, 31: 5.66, 15: 5.66, 33: -16.0}
+  sources:
+    - {cite: "Fossier et al. (2004)", doc_id: 10.1364_josab.21.001981, what: "d31=7.25, d24=5.66 pm/V"}
+
+- material: LiInSe2
+  point_group: mm2
+  d: {32: 11.78, 24: 11.78, 31: 8.17, 15: 8.17, 33: -16.0}
+  sources:
+    - {cite: "Petrov et al. (2010)", doc_id: 10.1364_josab.27.001902, what: "Table 6: d31=11.78, d24=8.17 pm/V"}
+
+- material: LiGaS2
+  point_group: mm2
+  d: {32: 5.8, 24: 5.8, 31: 5.1, 15: 5.1}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: d31=5.8, d24=5.1 pm/V"}
+
+- material: CdS
+  point_group: 6mm
+  d: {33: 19.1, 31: -10.1, 32: -10.1, 15: -10.7, 24: -10.7}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "Table 11: absolute"}
+
+- material: CdSe
+  point_group: 6mm
+  d: {33: 36.0, 31: -18.0, 32: -18.0, 15: -18.0, 24: -18.0}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "Table V: 10.6 um"}
+
+- material: CdGeAs2
+  point_group: -42m
+  d: {36: 186.0, 14: 186.0, 25: 186.0}
+  sources:
+    - {cite: "Zakel et al. (2002)", doc_id: 10.1364_ao.41.002299, what: "d36 = 186 pm/V"}
+
+- material: HgGa2S4
+  point_group: "-4"
+  d: {36: 22.9, 14: 22.9, 25: 22.9, 31: 7.6, 32: -7.6, 15: 7.6, 24: -7.6}
+  sources:
+    - {cite: "Petrov et al. (2004)", doc_id: 10.1364_ao.43.004590, what: "Table 1: 5.3 um"}
+
+- material: GaSe
+  point_group: -62m
+  d: {22: 57.7, 21: -57.7, 16: -57.7}
+  sources:
+    - {cite: "Petrov et al. (2004)", doc_id: 10.1364_ao.43.004590, what: "Table 1: 5.3 um"}
+
+- material: CsTiOAsO4
+  point_group: mm2
+  d: {31: 2.1, 15: 2.1, 32: 3.4, 24: 3.4, 33: 18.1}
+  sources:
+    - {cite: "Cheng et al. (1993)", doc_id: 10.1063_1.110424, what: "Maker fringes @ 1064 nm"}
+
+- material: Te
+  point_group: "32"
+  d: {11: 670.0, 12: -670.0, 26: -670.0}
+  sources:
+    - {cite: "Kaindl et al. (2000)", doc_id: 10.1364_josab.17.002086, what: "Table 1: 10 um"}
+
+# --- Expanded Crystals (Petrov 2015, Shoji 1997, Tzankov 2005) ---
+
+- material: LiGaSe2
+  point_group: mm2
+  d: {32: 9.9, 24: 9.9, 31: 7.7, 15: 7.7}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: d31=9.9, d24=7.7 pm/V @ 2.3 um"}
+
+- material: LiGaTe2
+  point_group: -42m
+  d: {36: 43.0, 14: 43.0, 25: 43.0}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: d36=43 pm/V @ 4.6 um"}
+
+- material: BaGa4S7
+  point_group: mm2
+  d: {31: 5.1, 15: 5.1, 32: 4.8, 24: 4.8}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: d31=5.1 pm/V @ 2.26 um"}
+
+- material: BaGa4Se7
+  point_group: m
+  d: {11: 24.3, 13: 20.4, 35: 14.1, 15: 14.1, 31: 20.4}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: monoclinic chalcogenide"}
+
+- material: InPS4
+  point_group: "-4"
+  d: {31: 27.87, 32: -27.87, 15: 27.87, 24: -27.87, 36: 21.53, 14: 21.53, 25: 21.53}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: delta_31=0.39, delta_36=0.30"}
+
+- material: GaS0.4Se0.6
+  point_group: -62m
+  d: {22: 44.1, 21: -44.1, 16: -44.1}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: d22=44.1 pm/V @ 4.65 um"}
+
+- material: AgGaGeS4
+  point_group: mm2
+  d: {32: 6.2, 24: 6.2, 31: 10.2, 15: 10.2}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: d32=6.2, d31=10.2 pm/V @ 1.064 um"}
+
+- material: Ag3AsS3
+  point_group: 3m
+  d: {31: 10.4, 32: 10.4, 15: 10.4, 24: 10.4, 22: 16.6, 21: -16.6, 16: -16.6}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: Proustite @ 10.6 um"}
+
+- material: Ag3SbS3
+  point_group: 3m
+  d: {31: 7.8, 32: 7.8, 15: 7.8, 24: 7.8, 22: 8.2, 21: -8.2, 16: -8.2}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 2: Pyrargyrite @ 10.6 um"}
+
+- material: GaAs
+  point_group: -43m
+  d: {14: 84.0, 25: 84.0, 36: 84.0}
+  sources:
+    - {cite: "Shoji et al. (1997) & Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 3: d14 = 83-86 pm/V (OPGaAs)"}
+
+- material: GaP
+  point_group: -43m
+  d: {36: 37.0, 14: 37.0, 25: 37.0}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 3: d14 = 37 pm/V (OPGaP)"}
+
+- material: ZnSe
+  point_group: -43m
+  d: {36: 26.4, 14: 26.4, 25: 26.4}
+  sources:
+    - {cite: "Shoji et al. (1997) & Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "Table 3: d14 = 26.4 pm/V"}
+
+- material: ZnTe
+  point_group: -43m
+  d: {36: 68.5, 14: 68.5, 25: 68.5}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "Table 11: d14 = 68.5 pm/V"}
+
+- material: InP
+  point_group: -43m
+  d: {36: 35.0, 14: 35.0, 25: 35.0}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "d14 = 35 pm/V"}
+
+- material: InAs
+  point_group: -43m
+  d: {36: 72.0, 14: 72.0, 25: 72.0}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "cubic mid-IR semiconductor"}
+
+- material: CdTe
+  point_group: -43m
+  d: {36: 70.0, 14: 70.0, 25: 70.0}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "Table 11: d14 = 70 pm/V"}
+
+- material: CuCl
+  point_group: -43m
+  d: {36: 5.6, 14: 5.6, 25: 5.6}
+  sources:
+    - {cite: "Jerphagnon & Kurtz (1970)", doc_id: 10.1103_physrevb.1.1739, what: "d14 = 5.6 pm/V"}
+
+- material: KD2PO4
+  point_group: -42m
+  d: {36: 0.38, 14: 0.38, 25: 0.38}
+  sources:
+    - {cite: "Eckardt et al. (1990)", doc_id: 10.1109_3.55534, what: "DKDP d36 = 0.38 pm/V"}
+
+- material: KH2AsO4
+  point_group: -42m
+  d: {36: 0.42, 14: 0.42, 25: 0.42}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "KDA d36 = 0.42 pm/V"}
+
+- material: CsH2AsO4
+  point_group: -42m
+  d: {36: 0.45, 14: 0.45, 25: 0.45}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "CDA d36 = 0.45 pm/V"}
+
+- material: RbH2AsO4
+  point_group: -42m
+  d: {36: 0.41, 14: 0.41, 25: 0.41}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "RDA d36 = 0.41 pm/V"}
+
+- material: RbH2PO4
+  point_group: -42m
+  d: {36: 0.38, 14: 0.38, 25: 0.38}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "RDP d36 = 0.38 pm/V"}
+
+- material: CsH2PO4
+  point_group: -42m
+  d: {36: 0.40, 14: 0.40, 25: 0.40}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "CDP d36 = 0.40 pm/V"}
+
+- material: Li2B4O7
+  point_group: 4mm
+  d: {31: 0.16, 32: 0.16, 15: 0.16, 24: 0.16}
+  sources:
+    - {cite: "Sugawara et al. (1998)", doc_id: 10.1016_s0921_5107_98_00234_7, what: "d31 = 0.16 pm/V @ 532 nm"}
+
+- material: SrB4O7
+  point_group: mm2
+  d: {31: 1.1, 15: 1.1, 32: 1.1, 24: 1.1}
+  sources:
+    - {cite: "Petrov et al. (1999)", doc_id: 10.1109_2944.755431, what: "SBO deep-UV"}
+
+- material: KB5O8.4H2O
+  point_group: mm2
+  d: {31: 0.05, 15: 0.05, 32: 0.04, 24: 0.04}
+  sources:
+    - {cite: "Roberts (1992)", doc_id: 10.1109_3.159516, what: "KB5 UV cutoff"}
+
+- material: LaBGeO5
+  point_group: "3"
+  d: {33: 2.8, 31: 0.95, 32: 0.95, 15: 0.95, 24: 0.95}
+  sources:
+    - {cite: "Kaminskii et al. (1994)", doc_id: 10.1002_pssa.2211410227, what: "LBGO stilwellite"}
+
+- material: Bi4Ge3O12
+  point_group: -43m
+  d: {14: 0.8, 25: 0.8, 36: 0.8}
+  sources:
+    - {cite: "Williams et al. (1996)", doc_id: 10.1364_ao.35.003562, what: "BGO d14 = 0.8 pm/V"}
+
+- material: ZnO
+  point_group: 6mm
+  d: {33: -14.2, 31: 2.1, 32: 2.1, 15: 2.1, 24: 2.1}
+  sources:
+    - {cite: "Shoji et al. (1997)", doc_id: 10.1364_josab.14.002268, what: "Table 11"}
+
+- material: GaN
+  point_group: 6mm
+  d: {33: -20.6, 31: 10.3, 32: 10.3, 15: 10.3, 24: 10.3}
+  sources:
+    - {cite: "Miragliotta et al. (1993)", doc_id: 10.1103_physrevb.48.14364, what: "wurtzite GaN"}
+
+- material: AlN
+  point_group: 6mm
+  d: {33: -18.2, 31: 8.8, 32: 8.8, 15: 8.8, 24: 8.8}
+  sources:
+    - {cite: "Guo et al. (2012)", doc_id: 10.1063_1.4746758, what: "AlN on sapphire"}
+
+- material: Sn2P2S6
+  point_group: m
+  d: {11: 160.0, 12: 14.0, 13: 18.0, 31: 18.0}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "SPS huge nonlinearity in mid-IR"}
+
+- material: Ba2NaNb5O15
+  point_group: mm2
+  d: {31: -15.0, 15: -15.0, 32: -15.0, 24: -15.0, 33: -20.0}
+  sources:
+    - {cite: "Singh et al. (1970)", doc_id: 10.1063_1.1653229, what: "Banana crystal @ 1064 nm"}
+
+- material: AgGa(S0.5Se0.5)2
+  point_group: -42m
+  d: {36: 22.0, 14: 22.0, 25: 22.0}
+  sources:
+    - {cite: "Petrov (2015)", doc_id: 10.1016_j.pquantelec.2015.04.001, what: "mixed quaternary chalcopyrite"}
