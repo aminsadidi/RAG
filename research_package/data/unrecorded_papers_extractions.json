@@ -1,0 +1,361 @@
+{
+  "metadata": {
+    "title": "Unrecorded Optical & Physical Parameters Extracted from 32 Core Literature Papers",
+    "description": "Comprehensive structured extraction of physical constants, damage thresholds, thermal conductivities, low-symmetry tensors, acceptance bandwidths, and quantum SPDC operating benchmarks not yet committed to production web files.",
+    "extracted_at": "2026-10-08T13:26:00Z",
+    "source_folder": "papers_core/",
+    "total_papers_analyzed": 32
+  },
+  "damage_thresholds": [
+    {
+      "crystal": "Li2B4O7 (LTB/LB4)",
+      "point_group": "4mm",
+      "lidt_gw_per_cm2": 40.0,
+      "test_conditions": "1064 nm, 10 ns pulses",
+      "notes": "4x higher than fused silica (10 GW/cm2). One of the highest damage thresholds among all borates.",
+      "sources": [
+        {"doc_id": "10.1063/1.119210", "cite": "Komatsu et al. (1997)", "page": 4},
+        {"doc_id": "10.1016/s0038-1098(98)00190-2", "cite": "Sugawara et al. (1998)", "page": 5}
+      ]
+    },
+    {
+      "crystal": "La2CaB10O19 (LCB)",
+      "point_group": "2",
+      "lidt_gw_per_cm2": 11.5,
+      "test_conditions": "1064 nm, 8 ns pulses",
+      "notes": "Higher than KTP and non-hygroscopic, excellent candidate for high-power THG.",
+      "sources": [
+        {"doc_id": "10.1016/j.optmat.2016.10.023", "cite": "Li et al. (2016)", "page": 1}
+      ]
+    },
+    {
+      "crystal": "BiB3O6 (BiBO)",
+      "point_group": "2",
+      "lidt_gw_per_cm2": 5.6,
+      "test_conditions": "1064 nm, 10 ns pulses",
+      "notes": "Enhanced damage tolerance compared to organic and chalcogenide crystals.",
+      "sources": [
+        {"doc_id": "10.1364/opex.12.006002", "cite": "Ghotbi & Ebrahim-Zadeh (2004)", "page": 2}
+      ]
+    },
+    {
+      "crystal": "4H-SiC (Silicon Carbide)",
+      "point_group": "6mm",
+      "lidt_gw_per_cm2": 3.0,
+      "test_conditions": "1064 nm, 5 ns pulses",
+      "notes": "Extremely high damage threshold for non-oxide semiconductor; usable for mid-IR DFG up to 4 µm.",
+      "sources": [
+        {"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 83}
+      ]
+    },
+    {
+      "crystal": "0.5% MgO:LiTaO3 (PPMgSLT)",
+      "point_group": "3m",
+      "lidt_gw_per_cm2": 0.01,
+      "test_conditions": "cw 532 nm and pulsed (>10 MW/cm2)",
+      "notes": "Photorefractive damage resistance orders of magnitude higher than congruent LiTaO3.",
+      "sources": [
+        {"doc_id": "10.1007/s00340-009-3502-3", "cite": "Dolev et al. (2009)", "page": 1}
+      ]
+    }
+  ],
+  "thermal_conductivity_and_expansion": [
+    {
+      "crystal": "LiInS2 (LIS)",
+      "thermal_conductivity_W_m_K": {"k_x": 6.2, "k_y": 6.0, "k_z": 7.6},
+      "band_gap_eV": 3.57,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "crystal": "LiInSe2 (LISe)",
+      "thermal_conductivity_W_m_K": {"k_x": 4.6, "k_y": 4.75, "k_z": 5.65},
+      "band_gap_eV": 2.86,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "crystal": "BaGa4S7 (BGS)",
+      "thermal_conductivity_W_m_K": {"k_x": 1.68, "k_y": 1.58, "k_z": 1.45},
+      "band_gap_eV": 3.54,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "crystal": "BaGa4Se7 (BGSe)",
+      "thermal_conductivity_W_m_K": {"average": 0.65},
+      "band_gap_eV": 2.64,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "crystal": "GaS0.4Se0.6",
+      "thermal_conductivity_W_m_K": {"k_parallel_c": 1.3, "k_perp_c": 10.0},
+      "band_gap_eV": 2.40,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "crystal": "GaAs (cubic)",
+      "thermal_conductivity_W_m_K": {"isotropic": 55.0},
+      "band_gap_eV": 1.43,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 33}]
+    },
+    {
+      "crystal": "GaP (cubic)",
+      "thermal_conductivity_W_m_K": {"isotropic": 110.0},
+      "band_gap_eV": 2.26,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 33}]
+    },
+    {
+      "crystal": "ZnSe (cubic)",
+      "thermal_conductivity_W_m_K": {"isotropic": 18.5},
+      "band_gap_eV": 2.65,
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 33}]
+    },
+    {
+      "crystal": "0.5% MgO:LiTaO3 (PPMgSLT)",
+      "thermal_expansion_dL_over_L": {
+        "XY_plane": "alpha_1 = 1.43e-5, beta_1 = 8.5e-9",
+        "Z_axis": "alpha_3 = 0.54e-5, beta_3 = 6.2e-9"
+      },
+      "sources": [{"doc_id": "10.1007/s00340-009-3502-3", "cite": "Dolev et al. (2009)", "page": 4}]
+    }
+  ],
+  "unregistered_new_infrared_crystals": [
+    {
+      "material": "BaGa4S7 (BGS)",
+      "formula": "BaGa4S7",
+      "point_group": "mm2",
+      "band_gap_eV": 3.54,
+      "d_coefficients_pm_V": {"d31": 5.07},
+      "phase_matching_1064_to_6450nm": {
+        "plane": "XZ",
+        "angle_deg": 10.47,
+        "type": "oo-e",
+        "deff_pm_V": 4.99
+      },
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "material": "BaGa4Se7 (BGSe)",
+      "formula": "BaGa4Se7",
+      "point_group": "m",
+      "band_gap_eV": 2.64,
+      "phase_matching_1064_to_6450nm": {
+        "plane": "YZ",
+        "angle_deg": 30.30,
+        "type": "oe-o"
+      },
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "material": "InPS4",
+      "formula": "InPS4",
+      "point_group": "-4",
+      "band_gap_eV": 3.20,
+      "d_coefficients_pm_V": {"d31": 27.87, "d36": 21.53},
+      "phase_matching_1064_to_6450nm": {
+        "angle_deg": 38.80,
+        "type": "ee-o",
+        "deff_pm_V": 34.40
+      },
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "material": "CdxHg1-xGa2S4 (x=0.55)",
+      "formula": "Cd0.55Hg0.45Ga2S4",
+      "point_group": "-4",
+      "band_gap_eV": 3.22,
+      "d_coefficients_pm_V": {"d36": 24.94},
+      "phase_matching_1064_to_6450nm": {
+        "angle_deg": 90.0,
+        "type": "oo-e (NCPM)",
+        "deff_pm_V": 24.94
+      },
+      "notes": "Enables 1064 nm non-critical phase-matching with very high effective nonlinearity.",
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "material": "LiGaTe2",
+      "formula": "LiGaTe2",
+      "point_group": "-42m",
+      "band_gap_eV": 2.41,
+      "d_coefficients_pm_V": {"d36": 48.37},
+      "phase_matching_1064_to_6450nm": {
+        "angle_deg": 36.38,
+        "type": "ee-o",
+        "deff_pm_V": 46.20
+      },
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    },
+    {
+      "material": "GaS0.4Se0.6",
+      "formula": "GaS0.4Se0.6",
+      "point_group": "-6m2",
+      "band_gap_eV": 2.40,
+      "d_coefficients_pm_V": {"d22": 49.51},
+      "phase_matching_1064_to_6450nm": {
+        "angle_deg": 22.31,
+        "type": "oo-e",
+        "deff_pm_V": 45.80
+      },
+      "sources": [{"doc_id": "10.1016/j.pquantelec.2015.04.001", "cite": "Petrov (2015)", "page": 30}]
+    }
+  ],
+  "high_precision_tensors_and_signs": [
+    {
+      "crystal": "KTiOPO4 (KTP)",
+      "point_group": "mm2",
+      "measurement_technique": "Maker fringes at 1064 nm relative to quartz d11=0.30 pm/V",
+      "tensor_pm_V": {"d15": 2.02, "d24": 3.75, "d31": 2.10, "d32": 3.75, "d33": 15.4},
+      "sources": [{"doc_id": "10.1364/ao.43.003319", "cite": "Pack et al. (2004)", "page": 5}]
+    },
+    {
+      "crystal": "KTiOAsO4 (KTA)",
+      "point_group": "mm2",
+      "measurement_technique": "Maker fringes at 1064 nm relative to quartz d11=0.30 pm/V",
+      "tensor_pm_V": {"d15": 2.30, "d24": 3.64, "d31": 2.30, "d32": 3.66, "d33": 15.5},
+      "sources": [{"doc_id": "10.1364/ao.43.003319", "cite": "Pack et al. (2004)", "page": 5}]
+    },
+    {
+      "crystal": "RbTiOPO4 (RTP)",
+      "point_group": "mm2",
+      "measurement_technique": "Maker fringes at 1064 nm relative to quartz d11=0.30 pm/V",
+      "tensor_pm_V": {"d15": 1.98, "d24": 3.98, "d31": 2.05, "d32": 3.82, "d33": 15.6},
+      "sources": [{"doc_id": "10.1364/ao.43.003319", "cite": "Pack et al. (2004)", "page": 5}]
+    },
+    {
+      "crystal": "RbTiOAsO4 (RTA)",
+      "point_group": "mm2",
+      "measurement_technique": "Maker fringes at 1064 nm relative to quartz d11=0.30 pm/V",
+      "tensor_pm_V": {"d15": 2.17, "d24": 3.92, "d31": 2.25, "d32": 3.89, "d33": 15.9},
+      "sources": [{"doc_id": "10.1364/ao.43.003319", "cite": "Pack et al. (2004)", "page": 5}]
+    },
+    {
+      "crystal": "GdCa4O(BO3)3 (GdCOB)",
+      "point_group": "m",
+      "measurement_technique": "Phase-matched Maker fringes with relative signs",
+      "tensor_pm_V": {
+        "d_xxx": 0.28, "d_xyy": 0.22, "d_yyx": 0.23,
+        "d_xzz": -0.58, "d_zxz": -0.61, "d_xxz": -0.36, "d_zxx": -0.32,
+        "d_yyz": 1.66, "d_zyy": 1.67, "d_zzz": -1.19
+      },
+      "sources": [{"doc_id": "10.1364/josab.22.000417", "cite": "Pack et al. (2005)", "page": 4}]
+    },
+    {
+      "crystal": "YCa4O(BO3)3 (YCOB)",
+      "point_group": "m",
+      "measurement_technique": "Phase-matched Maker fringes with relative signs",
+      "tensor_pm_V": {
+        "d_xxx": 0.155, "d_xyy": 0.235, "d_yyx": 0.24,
+        "d_xzz": -0.59, "d_yyz": 1.62, "d_zyy": 1.62, "d_zzz": -1.19
+      },
+      "sources": [{"doc_id": "10.1364/josab.22.000417", "cite": "Pack et al. (2005)", "page": 4}]
+    },
+    {
+      "crystal": "BiB3O6 (BiBO)",
+      "point_group": "2",
+      "measurement_technique": "Complete 8-component Maker fringe measurement with relative signs",
+      "tensor_pm_V": {
+        "d_222": 2.53, "d_211": 2.30, "d_233": -1.30, "d_231": 2.30,
+        "d_112": 2.80, "d_332": -0.90, "d_312": 2.40, "d_132": 2.40
+      },
+      "ncpm_wavelength_nm": 1180.0,
+      "sources": [{"doc_id": "10.1016/s0038-1098(98)00538-9", "cite": "Hellwig et al. (1998)", "page": 2}]
+    },
+    {
+      "crystal": "La2CaB10O19 (LCB)",
+      "point_group": "2",
+      "relative_signs": {"d21": -1, "d22": 1, "d23": 1, "d14": -1},
+      "optimal_thg_355nm": {
+        "type_I": {"theta_deg": 48.7, "phi_deg": 72.5, "deff_pm_V": 0.89},
+        "type_I_practical": {"theta_deg": 49.4, "phi_deg": 0.0, "deff_pm_V": 0.88},
+        "type_II": {"theta_deg": 65.3, "phi_deg": 37.5, "deff_pm_V": 0.76}
+      },
+      "sources": [{"doc_id": "10.1016/j.optmat.2016.10.023", "cite": "Li et al. (2016)", "page": 5}]
+    }
+  ],
+  "pure_chi3_third_harmonic_generation": {
+    "crystal": "BiB3O6 (BiBO)",
+    "physics": "Along principal x-axis (theta=90°, phi=0°), all second-order chi(2) terms vanish by 2-fold rotation symmetry (chi(2):chi(2)=0).",
+    "processes": [
+      {"type": "Direct Type-1 THG", "polarization": "y,y,y -> z and z,z,z -> y", "d_lambda_dT": "0.019 nm/°C"},
+      {"type": "Direct Type-2 THG", "polarization": "y,z,z -> y", "d_lambda_dT": "0.021 nm/°C"}
+    ],
+    "application": "Direct non-cascaded triplet photon generation (3w -> w + w + w) for GHZ state quantum optics.",
+    "sources": [{"doc_id": "10.1364/ol.34.000500", "cite": "Miyata et al. (2009)", "page": 1}]
+  },
+  "acceptance_bandwidths_and_walkoff": [
+    {
+      "crystal": "BiB3O6 (BiBO)",
+      "process": "Type I (e+e -> o) SHG @ 800 nm in yz plane (phi=90°)",
+      "angular_acceptance_mrad_cm": 0.34,
+      "spectral_acceptance_nm_cm": 2.52,
+      "octant_asymmetry": "deff = 3.2 pm/V at theta=152.3° vs 0.54 pm/V at theta=27.7° (6x efficiency difference)",
+      "sources": [{"doc_id": "10.1364/opex.12.006002", "cite": "Ghotbi & Ebrahim-Zadeh (2004)", "page": 13}]
+    },
+    {
+      "crystal": "LiB3O5 (LBO)",
+      "process": "Temperature-tuned 90° NCPM SHG",
+      "bandwidths_degC_cm": {
+        "1064 nm (148°C)": 4.7,
+        "1318.8 nm (43°C)": 4.1,
+        "1047 nm (174°C)": 4.8,
+        "1206 nm (23.6°C)": 4.3
+      },
+      "sources": [{"doc_id": "10.1109/3.362711", "cite": "Kato (1994)", "page": 2}]
+    },
+    {
+      "crystal": "Li2B4O7 (LB4)",
+      "process": "FHG (532 -> 266 nm)",
+      "angular_acceptance_deg_cm": 0.029,
+      "spectral_acceptance_nm_cm": 0.11,
+      "walk_off_deg": 1.66,
+      "comparison_to_BBO": "3x larger angular acceptance, 1.5x larger spectral acceptance, and 3x lower walk-off than BBO",
+      "sources": [{"doc_id": "10.1016/s0038-1098(98)00190-2", "cite": "Sugawara et al. (1998)", "page": 5}]
+    },
+    {
+      "crystal": "RbBe2BO3F2 (RBBF)",
+      "process": "FHG (532 -> 266 nm)",
+      "temperature_drift_rate": "< 0.0013 deg/°C from 20°C to 160°C",
+      "notes": "PM angle only shifts by 0.18° over 140°C temperature rise, enabling high-power DUV operation without thermal drift.",
+      "sources": [{"doc_id": "10.1016/j.optmat.2013.09.017", "cite": "Zhai et al. (2013)", "page": 4}]
+    }
+  ],
+  "quantum_spdc_benchmarks": [
+    {
+      "experiment": "Evans et al. (2010)",
+      "crystal": "PPKTP",
+      "configuration": "Type-II collinear, poling period = 10.0 µm, length = 22 mm",
+      "pump_wavelength_nm": 775.1,
+      "signal_idler_wavelength_nm": 1550.2,
+      "pump_waist_um": 45.0,
+      "heralded_single_photon_purity": 0.81,
+      "schmidt_number": "1.07 - 1.16",
+      "coincidence_count_rate": "26,000 /s / mW",
+      "polarization_visibility_percent": 94.7,
+      "sources": [{"doc_id": "10.1103/physrevlett.105.253601", "cite": "Evans et al. (2010)", "page": 3}]
+    },
+    {
+      "experiment": "Bennink (2010)",
+      "system": "Theoretical & Numerical Scaling Laws for SPDC Fiber Coupling",
+      "max_collection_efficiency_percent": 92.0,
+      "optimal_waist_ratio": "w_collection / w_pump = sqrt(2) ≈ 1.414",
+      "optimal_boyd_kleinman_focusing_xi": 1.5,
+      "peak_spectral_purity": 0.94,
+      "sources": [{"doc_id": "10.1103/physreva.81.053805", "cite": "Bennink (2010)", "page": 8}]
+    },
+    {
+      "experiment": "Fedrizzi et al. (2007)",
+      "crystal": "PPKTP in Sagnac Interferometer",
+      "pump_waist_um": 27.0,
+      "pair_production_rate": "273,000 pairs / (s * mW * nm)",
+      "heralded_visibility_percent": 99.2,
+      "state_fidelity": 0.993,
+      "sources": [{"doc_id": "10.1364/oe.15.015377", "cite": "Fedrizzi et al. (2007)", "page": 8}]
+    },
+    {
+      "experiment": "Mosley et al. (2008)",
+      "crystal": "KDP Type-II Collinear",
+      "heralded_purity_percent": 98.0,
+      "hom_dip_visibility_percent": 94.4,
+      "sources": [{"doc_id": "10.1103/physrevlett.100.133601", "cite": "Mosley et al. (2008)", "page": 4}]
+    }
+  ]
+}
