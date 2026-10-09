@@ -5,6 +5,8 @@
 # equations, the same paper's) and gives n(λ, T) = n(λ, t0) + Δn(λ, T):
 #   form "kato":  dn/dT = Σ c·λ^p × 10⁻⁵ /°C, constant in T, so Δn = (T − t0)·dn/dT; `pieces` cover
 #                 wavelength ranges (outside them the nearest piece is used).
+#   form "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient linear in T − t0 (c and dc).
+#   form "gayer": Gayer et al. (2008) / Dolev et al. (2009), coefficients times f = (T − t0)(T + t0 + 546.32).
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
 #                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8).
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
@@ -145,3 +147,16 @@
       a: [4.5615, 0.08488, 0.1927, 5.5832, 8.3067, 0.021696]
       b: [4.782e-7, 3.0913e-8, 2.7326e-8, 1.4837e-5, 1.3647e-7]
 
+- material: CsB3O5
+  source: Zhang-2013
+  prefer: true
+  doc_id: 10.1364_ol.38.001594
+  cite: "Zhang et al. (2013)"
+  pdf_page: 2
+  where: "Eq. (3) and Table 4: n² = A + (T − 140)E − [B + (T − 140)F]/[C + (T − 140)G − λ²] − [D + (T − 140)H]·λ², fitted to the indices of Table 1 at 40–190 °C (0.266–1.338 µm). The paper calculates its THG angles with this form; its dn/dT polynomial Eq. (2) gives the same index changes to 1e-4"
+  t0_c: 140
+  form: sellmeier
+  axes:
+    x: {c: [2.3388, 0.011440, 0.012620, 0.008561], dc: [-5.538e-5, -7.274e-8, -2.364e-6, 7.787e-7]}
+    y: {c: [2.3939, 0.012088, 0.013598, 0.009746], dc: [-5.719e-5, -2.551e-6, 7.467e-6, 6.316e-6]}
+    z: {c: [2.4779, 0.013080, 0.013050, 0.013040], dc: [-7.056e-5, -1.752e-6, 5.700e-6, 1.481e-6]}
