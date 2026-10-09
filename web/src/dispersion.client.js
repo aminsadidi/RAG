@@ -69,7 +69,8 @@ export function entryIndex(entry, lam) {
 // piece covering λ, else the nearest); "ghosh": 2n·dn/dT = G(T)·R + H(T)·R², R = λ²/(λ² − λig²),
 // G and H in 10⁻⁶ /°C, polynomials in T (°C) integrated from t0 (Ghosh 1995).
 // "gayer": the Sellmeier equation of Gayer et al. (2008) and Dolev et al. (2009), whose coefficients
-// carry f = (T − t0)(T + t0 + 546.32); "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient
+// carry f = (T − t0)(T + t0 + 546.32) (Hobden & Warner's form; Edwards & Lawrence (1984) and Abedin & Ito
+// (1996) write 546, given as spec.f_c); "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient
 // linear in T − t0, spec {c: [A, B, C, D], dc: [dA, dB, dC, dD]} (Zhang et al. 2013, CBO).
 export function thermoShift(form, spec, t0, n0, lam, T) {
   if (T === t0 || !Number.isFinite(T)) return 0;
@@ -88,8 +89,12 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const t = T - t0, [A, B, C, D] = spec.c.map((v, i) => v + (spec.dc[i] || 0) * t), l2 = lam * lam;
     return Math.sqrt(A + B / (l2 - C) - D * l2) - n0;
   }
+  if (form === "bhar") { // n² = A + B/(1 − C/λ²) + D/(1 − E/λ²), A..D = m·T + c (T in °C), E constant (Bhar & Ghosh 1979)
+    const l2 = lam * lam, n2 = (t) => { const [A, B, C, D] = spec.c.map((c, i) => c + spec.m[i] * t); return A + B / (1 - C / l2) + D / (1 - spec.E / l2); };
+    return Math.sqrt(n2(T)) - Math.sqrt(n2(t0));
+  }
   if (form === "gayer") {
-    const f = (T - t0) * (T + t0 + 546.32);
+    const f = (T - t0) * (T + t0 + (spec.f_c ?? 546.32));
     const { a, b } = spec;
     const l2 = lam * lam;
     const p1 = (a[1] + (b[1] || 0) * f) / (l2 - (a[2] + (b[2] || 0) * f) ** 2);

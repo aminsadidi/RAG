@@ -7,7 +7,11 @@
 #                 wavelength ranges (outside them the nearest piece is used).
 #                 A piece may carry t_coef: dn/dT = (Σ c·λ^p)(1 + t_coef·ΔT) × 10⁻⁵, integrated from t0.
 #   form "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient linear in T − t0 (c and dc).
-#   form "gayer": Gayer et al. (2008) / Dolev et al. (2009), coefficients times f = (T − t0)(T + t0 + 546.32).
+#   form "gayer": Gayer et al. (2008) / Dolev et al. (2009), coefficients times f = (T − t0)(T + t0 + 546.32):
+#                 n² = a0 + b0·f + (a1 + b1·f)/(λ² − (a2 + b2·f)²) + (a3 + b3·f)/(λ² − (a4 + b4·f)²) − a5·λ²;
+#                 f_c replaces 546.32 (Edwards & Lawrence 1984 write 546).
+#   form "bhar":  n² = A + B/(1 − C/λ²) + D/(1 − E/λ²) with A, B, C, D = m·T + c (T in °C) and E constant
+#                 (Bhar & Ghosh 1979); Δn = n(T) − n(t0) of that equation.
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
 #                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8).
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
@@ -227,3 +231,84 @@
     x: [{range_um: [0.5321, 3.1842], terms: [[0.1227, -3], [-0.3064, -2], [0.4469, -1], [0.0941, 0]]}]
     y: [{range_um: [0.5321, 3.1842], terms: [[0.5487, -3], [-1.7317, -2], [1.9380, -1], [0.1057, 0]]}]
     z: [{range_um: [0.5321, 3.1842], terms: [[1.1823, -3], [-2.8099, -2], [2.6613, -1], [0.1415, 0]]}]
+
+- material: BaGa4Se7
+  source: Kato
+  prefer: true
+  doc_id: 10.1364_ao.57.002935
+  cite: "Katō, Miyata, Badikov, Petrov (2018)"
+  pdf_page: 2
+  where: "Eq. (2), 0.901–10.591 µm, with the Sellmeier equations of Eq. (1) at 20 °C (the refractiveindex.info 'Kato' entry, identical); reproduces the temperature bandwidths of Table 1, column (K)"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.901, 10.591], terms: [[6.0868, -3], [-12.6368, -2], [10.5624, -1], [1.9583, 0]]}]
+    y: [{range_um: [0.901, 10.591], terms: [[6.3935, -3], [-13.1762, -2], [10.8950, -1], [2.4079, 0]]}]
+    z: [{range_um: [0.901, 10.591], terms: [[6.3141, -3], [-13.0790, -2], [10.8486, -1], [2.0758, 0]]}]
+
+- material: LiNbO3
+  source: Edwards-1984
+  doc_id: 10.1007_bf00620081
+  cite: "Edwards & Lawrence (1984)"
+  pdf_page: 2
+  where: "Table I and Eq. (1) (congruent LiNbO3, Hobden & Warner's form) with F = (T − 24.5)(T + 24.5 + 546), fitted to 0–500 °C; reproduces the calculated NCPM temperatures of Table II"
+  t0_c: 24.5
+  form: gayer
+  axes:
+    o:
+      a: [4.9048, 0.11775, 0.21802, 0, 0, 0.027153]
+      b: [2.1429e-8, 2.2314e-8, -2.9671e-8, 0, 0]
+      f_c: 546
+    e:
+      a: [4.5820, 0.09921, 0.21090, 0, 0, 0.021940]
+      b: [2.2971e-7, 5.2716e-8, -4.9143e-8, 0, 0]
+      f_c: 546
+
+- material: KNbO3
+  source: Ghosh-1994
+  doc_id: 10.1063_1.112444
+  cite: "Ghosh (1994)"
+  pdf_page: 2
+  where: "Table II (G, λig) and Eq. (3) (H quadratic in T, fitted at 22, 50, 75, 100 and 140 °C), with the Sellmeier equations of Table I at 22 °C; n_c, n_a, n_b are nx, ny, nz. Eq. (3) at 22 °C gives the H of Table II"
+  t0_c: 22
+  form: ghosh
+  axes:
+    x: {lig_um: 0.2541, G: [-5.04307], H: [241.79441, 0.96897, 0.0035473]}
+    y: {lig_um: 0.2846, G: [-52.63636], H: [143.04726, 0.38005, 0.0014781]}
+    z: {lig_um: 0.3486, G: [-152.53160], H: [11.92604, 0.76106, -0.00412735]}
+
+- material: ZnGeP2
+  source: Boyd-20C
+  doc_id: 10.1364_josa.69.000730
+  cite: "Bhar & Ghosh (1979)"
+  pdf_page: 3
+  where: "Table II: A, B, C, D linear in T from 20 to 70 °C, fitted to the dn/dT of Boyd et al.; it reproduces the coefficients of Table I at 20 and 70 °C (the refractiveindex.info 'Boyd' entries, A − 1 written as their C1)"
+  t0_c: 20
+  form: bhar
+  axes:
+    o: {m: [-0.4812e-3, 1.361e-3, 2.994e-5, -3.459e-4], c: [4.483, 5.238, 0.1332, 1.498], E: 662.55}
+    e: {m: [-1.23e-3, 2.184e-3, 1.855e-5, -6.353e-4], c: [4.658, 5.298, 0.1422, 1.471], E: 662.55}
+
+- material: CdGeP2
+  source: Boyd-20
+  doc_id: 10.1364_josa.69.000730
+  cite: "Bhar & Ghosh (1979)"
+  pdf_page: 3
+  where: "Table II: A, B, C, D linear in T from 20 to 118 °C, fitted to the dn/dT of Boyd et al.; it reproduces the coefficients of Table I at 20 and 118 °C (the refractiveindex.info 'Boyd' entries, A − 1 written as their C1)"
+  t0_c: 20
+  form: bhar
+  axes:
+    o: {m: [4.132e-3, -3.056e-3, 25.357e-5, 3.413e-4], c: [5.900, 4.275, 0.1974, 1.629], E: 671.33}
+    e: {m: [7.831e-3, -6.628e-3, 48.144e-5, 6.026e-4], c: [6.036, 4.194, 0.2244, 1.481], E: 671.33}
+
+- material: CuGaS2
+  source: Boyd-20
+  doc_id: 10.1364_josa.69.000730
+  cite: "Bhar & Ghosh (1979)"
+  pdf_page: 3
+  where: "Table II: A, B, C, D linear in T from 20 to 120 °C, fitted to the dn/dT of Boyd et al.; it reproduces the coefficients of Table I at 20 and 120 °C (the refractiveindex.info 'Boyd' entries, A − 1 written as their C1)"
+  t0_c: 20
+  form: bhar
+  axes:
+    o: {m: [1.919e-3, -1.645e-3, 7.607e-5, 2.756e-4], c: [3.871, 2.337, 0.1134, 1.542], E: 738.43}
+    e: {m: [1.668e-3, -1.376e-3, 8.928e-5, 2.096e-4], c: [4.285, 1.894, 0.1346, 1.753], E: 738.43}
