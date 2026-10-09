@@ -403,3 +403,19 @@
     - {page: Kato-2017, direction: y, type: 4, coefficients: [6.54026, 0.18644, 0, 0.07627, 1, 848.02, 0, 637.06, 1], range_um: [1.026, 10.591]}
     - {page: Kato-2017, direction: z, type: 4, coefficients: [6.66464, 0.18813, 0, 0.08649, 1, 977.03, 0, 677.33, 1], range_um: [1.026, 10.591]}
   checks: []  # checked in the test against the "Calculated (K)" angles of Table 1 (p. 2)
+
+- material: CsB3O5
+  name: CsB3O5 (Cesium triborate, CBO)
+  doc_id: 10.1364_ol.38.001594
+  reference: "Zhang, Liu, Huang, Zhang, Wu (2013). Thermal refractive index coefficients of nonlinear optical crystal CsB3O5. Opt. Lett. 38, 1594. doi:10.1364/OL.38.001594"
+  doi: 10.1364/ol.38.001594
+  pdf_page: 2
+  where: "Eq. (3) with Table 4 at T = 140 °C (the T − 140 terms vanish): n² = A − B/(C − λ²) − D·λ², fitted to the indices of Table 1 (0.266–1.338 µm, 40–190 °C); x = c, y = a, z = b. Thermo-optic formula Eq. (2) in thermo_optic.yml"
+  entries:
+    - {page: Zhang-2013, direction: x, type: 4, coefficients: [2.3388, 0.011440, 0, 0.012620, 1, 0, 0, 0, 1, -0.008561, 2], range_um: [0.266, 1.338]}
+    - {page: Zhang-2013, direction: y, type: 4, coefficients: [2.3939, 0.012088, 0, 0.013598, 1, 0, 0, 0, 1, -0.009746, 2], range_um: [0.266, 1.338]}
+    - {page: Zhang-2013, direction: z, type: 4, coefficients: [2.4779, 0.013080, 0, 0.013050, 1, 0, 0, 0, 1, -0.013040, 2], range_um: [0.266, 1.338]}
+  checks:  # Table 1, measured at 140 °C
+    - {direction: x, points: [[0.266, 1.5921], [0.532, 1.5424], [1.064, 1.5295]], tol: 4.0e-4}
+    - {direction: y, points: [[0.266, 1.6140], [0.532, 1.5607], [1.064, 1.5472]], tol: 4.0e-4}
+    - {direction: z, points: [[0.266, 1.6443], [0.532, 1.5884], [1.064, 1.5732]], tol: 4.0e-4}
