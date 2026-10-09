@@ -556,7 +556,7 @@ def run_audit():
                 rec["quote"] = "KB5 (mm2): d31 = 0.05 pm/V, d32 = 0.04 pm/V"
                 rec["values"] = {"d31": 0.05, "d32": 0.04, "unit": "pm/V", "wavelength_um": 1.064}
             rec["frame_quote"] = "Roberts (1992) standardized reference crystal axes"
-            rec["note"] = f"match: Roberts (1992) IEEE JQE 28, 857 Table V"
+            rec["note"] = f"match: Roberts (1992) IEEE J. Quantum Electron. 28, 2057–2074 Table V"
 
         elif mat in ["KTiOPO4", "KTiOAsO4", "RbTiOAsO4", "RbTiOPO4"]:
             rec["pdf_file"] = "pack2004.pdf"
