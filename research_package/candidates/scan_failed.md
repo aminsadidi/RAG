@@ -650,3 +650,4 @@
 | `1mXAu8CyBynD4pPAQDVSuOt4jCgI5RFhj` | `10.1364-josa.64.000039.pdf` | Exception: Failed to retrieve file url:
 
 	Cannot retrieve the public link of the file. You  |
+| `1-UI69PPTePj5cKdXaBRy5bz6huJfQpGA` | `10.1143-jjap.33.1959.pdf` | No extractable text found in any page (likely scanned image) |
