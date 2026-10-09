@@ -112,6 +112,8 @@ test("IR crystals: d_eff against the expressions of Petrov et al. 2004 and Kaind
   check("CdSe", "opo", 2.8, 4.0, "IIa", (t) => 18 * Math.sin(t), 0.01);
   // Te (32): d_eeo = d11 cos²θ sin3φ
   check("Te", "shg", 10.6, 0, "I", (t) => 670 * Math.cos(t) ** 2, 0.05, "Caldwell");
+  // Ag3AsS3 (3m), Petrov 2012: d_ooe = d31 sin θ − d22 cos θ sin3φ, best φ: d31 sin θ + d22 cos θ
+  check("Ag3AsS3", "shg", 4.0, 0, "I", (t) => 10.4 * Math.sin(t) + 16.6 * Math.cos(t), 0.03);
   // CdGeAs2 (−42m): d_eeo = d36 sin2θ cos2φ
   check("CdGeAs2", "shg", 10.6, 0, "I", (t) => 186 * Math.sin(2 * t), 0.03);
   // CTA, Cheng et al. 1993: type-II SHG of 1.32 µm in the x-y plane, φ = 62.8° calculated, 64.5° measured
