@@ -116,6 +116,9 @@ test("IR crystals: d_eff against the expressions of Petrov et al. 2004 and Kaind
   check("Ag3AsS3", "shg", 4.0, 0, "I", (t) => 10.4 * Math.sin(t) + 16.6 * Math.cos(t), 0.03);
   // CdGeAs2 (−42m): d_eeo = d36 sin2θ cos2φ
   check("CdGeAs2", "shg", 10.6, 0, "I", (t) => 186 * Math.sin(2 * t), 0.03);
+  // RBBF (32), Chen et al. 2009: d_ooe = d11 cos θ cos3φ; Li2B4O7 (4mm), Sugawara et al. 1998: d_ooe = d31 sin θ
+  check("RbBe2BO3F2", "shg", 0.532, 0, "I", (t) => 0.45 * Math.cos(t), 0.06); // walk-off ≈ 3°
+  check("Li2B4O7", "shg", 0.532, 0, "I", (t) => 0.15 * Math.sin(t), 0.03);
   // CTA, Cheng et al. 1993: type-II SHG of 1.32 µm in the x-y plane, φ = 62.8° calculated, 64.5° measured
   assert.ok(Math.abs(angle("CsTiOAsO4", null, "shg", 1.32, 0, "xy", "IIa") - 63.5) < 2);
 });
@@ -253,3 +256,36 @@ test("thermo-optic formulas: PPSLT (Dolev et al. 2009) and PPLN (Gayer et al. 20
     assert.ok(lo > 1.52 && lo < 1.58, `Gayer ${T} °C: ${lo}`);
   }
 });
+
+test("Li2B4O7, AgGaGeS4 and LiGaSe2: the papers' angles and d_eff", () => {
+  // Li2B4O7, Sugawara et al. 1998: type-1 SHG of 532 nm at 65.0° (calculated); 243.8 nm, the shortest SHG, at 90°
+  assert.ok(Math.abs(angle("Li2B4O7", null, "shg", 0.532, 0, "xz", "I") - 65.0) < 0.3);
+  assert.ok(angle("Li2B4O7", null, "shg", 0.4890, 0, "xz", "I") > 80);
+  assert.equal(angle("Li2B4O7", null, "shg", 0.4860, 0, "xz", "I"), undefined);
+  // LiGaSe2, Miyata, Petrov, Kato 2017, Table 1 "Calculated (K)", 20 °C
+  const lgse = [["shg", 9.5525, 0, "xz", "I", 25.18], ["shg", 5.2955, 0, "xz", "I", 55.06], ["shg", 5.2955, 0, "xy", "IIa", 46.51],
+    ["shg", 3.5303, 0, "xz", "I", 55.34], ["shg", 3.5303, 0, "xy", "IIa", 45.58], ["shg", 2.0520, 0, "xz", "I", 36.0],
+    ["sfg", 10.591, 5.2955, "xy", "IIb", 59.09], ["sfg", 10.591, 3.5303, "xz", "I", 48.76],
+    ["sfg", 5.2955, 3.5303, "xy", "IIb", 38.41], ["sfg", 5.2955, 3.5303, "xy", "IIa", 51.40]];
+  for (const [p, a, b, plane, type, ref] of lgse) {
+    const v = angle("LiGaSe2", null, p, a, b, plane, type);
+    assert.ok(Math.abs(v - ref) < 0.1, `LiGaSe2 ${p} ${a} ${b} ${plane} ${type}: ${v} vs ${ref}`);
+  }
+  // Petrov 2012 Table 2: d_eff for 1.064 µm pumping to 6.45 µm with the Miller-corrected tensors. LiGaSe2:
+  // 7.82 (x-z, oo-e) and 9.31 pm/V (x-y, eo-e); AgGaGeS4: 3.32 (x-z) and 5.43 pm/V (x-y), which fix its frame
+  // (polar axis x; the other assignment gives ~5.2 pm/V in the x-z plane). The review used other Sellmeier
+  // equations (AgGaGeS4 angles 54.0° and 35.7° against 56.2° and 37.2° here), hence the tolerances.
+  const sig = 1 / (1 / 1.064 - 1 / 6.45);
+  const deffWith = (mat, plane, type, d) => {
+    const s = source(mat), sol = solveAll(nAt(s), s.kind, "opo", 1.064, sig).find((r) => r.plane === plane && r.type === type);
+    return effectiveD(nAt(s), s.kind, sol, d).deff;
+  };
+  const scale = (mat, f) => Object.fromEntries(Object.entries(D[mat].d).map(([k, v]) => [k, v * f(k)]));
+  const lg = scale("LiGaSe2", (k) => (["32", "24"].includes(k) ? 10 / 9.9 : 8.16 / 7.7));
+  assert.ok(Math.abs(deffWith("LiGaSe2", "xz", "I", lg) - 7.82) < 0.05 * 7.82);
+  assert.ok(Math.abs(deffWith("LiGaSe2", "xy", "IIa", lg) - 9.31) < 0.03 * 9.31);
+  const ag = scale("AgGaGeS4", (k) => (["12", "26"].includes(k) ? 5.65 / 6.2 : 9.30 / 10.2));
+  assert.ok(Math.abs(deffWith("AgGaGeS4", "xz", "I", ag) - 3.32) < 0.1 * 3.32);
+  assert.ok(Math.abs(deffWith("AgGaGeS4", "xy", "I", ag) - 5.43) < 0.1 * 5.43);
+});
+

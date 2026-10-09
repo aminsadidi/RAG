@@ -290,3 +290,32 @@
   sources:
     - {doc_id: 10.1016_j.optmat.2011.03.042, doi: 10.1016/j.optmat.2011.03.042, cite: "Petrov (2012)", pdf_page: 6, what: "proustite, d31 = 10.4, d22 = 16.6 pm/V for SHG at 10.6 µm (Table 2, column 6; 12.34 and 19.70 pm/V after Miller's correction to 1064 → 6.45 µm)"}
   notes: "3m: d21 = d16 = −d22, Kleinman d15 = d24 = d31 = d32; values for 10.6 µm SHG. d_ooe = d31 sin θ − d22 cos θ sin3φ"
+
+- material: AgGaGeS4
+  point_group: mm2
+  d: {12: 6.2, 26: 6.2, 13: 10.2, 35: 10.2}
+  sources:
+    - {doc_id: 10.1016_j.optmat.2011.03.042, doi: 10.1016/j.optmat.2011.03.042, cite: "Petrov (2012)", pdf_page: 6, what: "d32 = 6.2 (x-z plane, oo-e) and d31 = 10.2 pm/V (x-y plane, oo-e) for SHG at 1064 nm; d_eff = 3.32 and 5.43 pm/V at θ = 53.99° and φ = 35.74° for 1.064 → 6.45 µm with the Miller-corrected 5.65 and 9.30 pm/V (Table 2)"}
+    - {doc_id: 10.1016_j.optmat.2004.04.007, cite: "Petrov et al. (2004)", pdf_page: 3, what: "the frame: xyz = cab with c the two-fold polar axis; d_eff(x-y, oo-e) = d32 sin φ, d_eff(x-z, oo-e) = d31 cos θ in the abc labels (Table 2). Its earlier Maker-fringe values (d31 = 15, d32 = 8, d33 = 8 pm/V, relative signs unknown) are superseded by the 2012 review"}
+  notes: "mm2 with the polar axis along x of the formula's frame (x = c): the papers' d_il are written in abc, so d_x,yy (12) is the element of the x-z plane and d_x,zz (13) that of the x-y plane; Petrov 2012 labels them d32 and d31, the opposite of its 2004 Table 2, and the assignment here is the one that reproduces its d_eff values. Kleinman: d26 = d12, d35 = d13; d11 (d33 in abc) is not given in 2012 and is left out"
+
+- material: LiGaSe2
+  point_group: mm2
+  d: {32: 9.9, 24: 9.9, 31: 7.7, 15: 7.7}
+  sources:
+    - {doc_id: 10.1016_j.optmat.2011.03.042, doi: 10.1016/j.optmat.2011.03.042, cite: "Petrov (2012)", pdf_page: 6, what: "d31 = 9.9, d24 = 7.7 pm/V for SHG at 2300 nm; d_eff(x-z, oo-e) = 7.82 at θ = 51.45° and d_eff(x-y, eo-e) = 9.31 pm/V at φ = 37.61° for 1.064 → 6.45 µm with the Miller-corrected 10 and 8.16 pm/V (Table 2)"}
+  notes: "mm2, polar axis z, x = b, y = a (Miyata et al. 2017): as for LiInS2 and LiInSe2 the quoted d31 and d24 are d32 and d15 in the principal frame. Kleinman: d24 = d32, d15 = d31; d33 is not given and is left out"
+
+- material: RbBe2BO3F2
+  point_group: "32"
+  d: {11: 0.45, 12: -0.45, 26: -0.45}
+  sources:
+    - {doc_id: 10.1364_josab.26.001519, cite: "Chen et al. (2009)", pdf_page: 5, what: "d11 = (0.45 ± 0.01) pm/V, Maker fringes at 1064.2 nm relative to d36(KDP) = 0.39 pm/V; d14 does not enter d_eff (Section 5)"}
+  notes: "32: d12 = d26 = −d11; d14 ≈ 0 (Kleinman), as for KBBF"
+
+- material: Li2B4O7
+  point_group: 4mm
+  d: {31: 0.15, 32: 0.15, 15: 0.15, 24: 0.15}
+  sources:
+    - {doc_id: 10.1016_s0038_1098_98_00190_2, cite: "Sugawara, Komatsu, Uda (1998)", pdf_page: 4, what: "d31 = 0.15 pm/V at 1064 nm (quoted from Furusawa et al. 1991); only d31 enters type-I angle phase matching, d_eff = d31 sin θ (Eq. 4)"}
+  notes: "4mm: d31 = d32, d15 = d24; Kleinman d15 = d31. d33 is not given and is left out (it enters only e-ee interactions)"
