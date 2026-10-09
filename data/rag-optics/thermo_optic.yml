@@ -5,6 +5,7 @@
 # equations, the same paper's) and gives n(λ, T) = n(λ, t0) + Δn(λ, T):
 #   form "kato":  dn/dT = Σ c·λ^p × 10⁻⁵ /°C, constant in T, so Δn = (T − t0)·dn/dT; `pieces` cover
 #                 wavelength ranges (outside them the nearest piece is used).
+#                 A piece may carry t_coef: dn/dT = (Σ c·λ^p)(1 + t_coef·ΔT) × 10⁻⁵, integrated from t0.
 #   form "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient linear in T − t0 (c and dc).
 #   form "gayer": Gayer et al. (2008) / Dolev et al. (2009), coefficients times f = (T − t0)(T + t0 + 546.32).
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
@@ -160,3 +161,17 @@
     x: {c: [2.3388, 0.011440, 0.012620, 0.008561], dc: [-5.538e-5, -7.274e-8, -2.364e-6, 7.787e-7]}
     y: {c: [2.3939, 0.012088, 0.013598, 0.009746], dc: [-5.719e-5, -2.551e-6, 7.467e-6, 6.316e-6]}
     z: {c: [2.4779, 0.013080, 0.013050, 0.013040], dc: [-7.056e-5, -1.752e-6, 5.700e-6, 1.481e-6]}
+
+- material: BiB3O6
+  source: Umemura
+  doc_id: 10.1016_j.optmat.2006.12.014
+  cite: "Umemura, Miyata, Kato (2007)"
+  pdf_page: 1
+  where: "Eq. (2), 0.4740–3.083 µm, with the Sellmeier equations of Eq. (1) (the refractiveindex.info 'Umemura' entry): dn/dT = (a/λ³ − b/λ² + c/λ + d) × 10⁻⁵ [1 − k × 10⁻³ ΔT] /°C, T0 = 20 °C. The PDF text loses the minus signs; these are the ones that reproduce the nine x-z plane temperature bandwidths of Table 1 (1 %). The y-z plane also rotates with T (Eq. 3), which is not modelled"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.474, 3.083], t_coef: -5.020e-3, terms: [[0.3826, -3], [-1.0868, -2], [2.1546, -1], [3.9343, 0]]}]
+    y: [{range_um: [0.474, 3.083], t_coef: -6.664e-3, terms: [[0.6614, -3], [-1.7119, -2], [2.0856, -1], [3.7731, 0]]}]
+    z: [{range_um: [0.474, 3.083], t_coef: -11.622e-3, terms: [[0.9861, -3], [-3.7512, -2], [5.5064, -1], [4.6591, 0]]}]
+
