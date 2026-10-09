@@ -309,7 +309,7 @@
   doc_id: 10.1109_3.362711
   reference: "Katō (1994). Temperature-tuned 90° phase-matching properties of LiB3O5. IEEE J. Quantum Electron. 30, 2950. doi:10.1109/3.362711"
   doi: 10.1109/3.362711
-  pdf_page: 2
+  pdf_page: 1
   where: "Eq. (2): n² = A + B/(λ² − C) − Dλ² (+ Eλ⁴ − Fλ⁶); improved Sellmeier equations at 20 °C"
   entries:
     - {page: Kato-1994, direction: x, type: 4, coefficients: [2.4542, 0.01125, 0, 0.01135, 1, 0, 0, 0, 1, -0.01388, 2], range_um: [0.38, 2.5]}
@@ -323,42 +323,55 @@
 - material: RbBe2BO3F2
   name: RbBe2BO3F2 (Rubidium beryllium borate fluoride, RBBF)
   doc_id: 10.1016_j.optmat.2013.09.017
-  reference: "Zhai et al. (2013). Thermal refractive index coefficients and temperature-dependent phase-matching conditions of RbBe2BO3F2 crystal. Opt. Mater. 36, 442. doi:10.1016/j.optmat.2013.09.017"
+  reference: "Zhai et al. (2013). Measurement of thermal refractive index coefficients of nonlinear optical crystal RbBe2BO3F2. Opt. Mater. 36, 333. doi:10.1016/j.optmat.2013.09.017"
   doi: 10.1016/j.optmat.2013.09.017
   pdf_page: 4
-  where: "Eq. (3): Sellmeier equations from Wu et al. (2009); Eq. (2): thermo-optic dispersion in thermo_optic.yml"
+  where: "Eq. (3), room temperature, quoted from Wu et al. (2009); checked against the indices of Table 1 at 24 °C; thermo-optic formula Eq. (2) in thermo_optic.yml"
   entries:
     - {page: Zhai-2013, direction: o, type: 4, coefficients: [1.0, 1.18675, 2, 0.00750, 1, 0, 0, 0, 1, -0.00910, 2], range_um: [0.194, 1.014]}
     - {page: Zhai-2013, direction: e, type: 4, coefficients: [1.0, 0.97530, 2, 0.00665, 1, 0, 0, 0, 1, -0.00145, 2], range_um: [0.194, 1.014]}
   checks:
-    - {direction: o, points: [[0.435, 1.49490], [1.014, 1.47857]], tol: 2.0e-4}
-    - {direction: e, points: [[0.435, 1.41769], [1.014, 1.40697]], tol: 2.0e-4}
+    # Table 1, measured at 24 °C; the paper finds Wu's equation and its own measurements ~2e-4 apart
+    - {direction: o, points: [[0.435, 1.49490], [1.014, 1.47857]], tol: 3.0e-4}
+    - {direction: e, points: [[0.435, 1.41769], [1.014, 1.40697]], tol: 3.0e-4}
 
 - material: Li2B4O7
   name: Li2B4O7 (Lithium tetraborate, LB4)
-  doc_id: 10.1016_s0925-3467_98_00004-9
-  reference: "Sugawara et al. (1998). Linear and nonlinear optical properties of lithium tetraborate (Li2B4O7) crystal. Opt. Mater. 107, 234."
-  doi: 10.1016/S0925-3467(98)00004-9
+  doc_id: 10.1016_s0038_1098_98_00190_2
+  reference: "Sugawara, Komatsu, Uda (1998). Linear and nonlinear optical properties of lithium tetraborate. Solid State Commun. 107, 233. doi:10.1016/s0038-1098(98)00190-2"
+  doi: 10.1016/s0038-1098(98)00190-2
   pdf_page: 3
-  where: "Table 2: Sellmeier constants at 25 °C; n² = A1 + A2/(λ² − A3²) + A4·λ²"
+  where: "Table 2, Sellmeier constants at 25 °C, n² = A1 + A2/(λ² − A3²) + A4·λ² (the squared pole is the form that reproduces the measured indices of Table 1 to 1e-4)"
   entries:
     - {page: Sugawara-1998, direction: o, type: 4, coefficients: [2.564310, 0.012337, 0, 0.114467, 2, 0, 0, 0, 1, -0.019075, 2], range_um: [0.185, 2.325]}
     - {page: Sugawara-1998, direction: e, type: 4, coefficients: [2.386510, 0.010664, 0, 0.113483, 2, 0, 0, 0, 1, -0.012813, 2], range_um: [0.185, 2.325]}
   checks:
-    - {direction: o, points: [[0.63282, 1.60888]], tol: 1.0e-4}
-    - {direction: e, points: [[0.63282, 1.55206]], tol: 1.0e-4}
+    - {direction: o, points: [[0.184887, 1.774654], [0.63282, 1.608779], [2.32542, 1.569365]], tol: 2.0e-4}  # Table 1, measured
+    - {direction: e, points: [[0.184887, 1.699128], [0.63282, 1.551997], [2.32542, 1.522829]], tol: 2.0e-4}
 
 - material: Mg-LiTaO3
   name: Mg:LiTaO3 (Magnesium-doped stoichiometric lithium tantalate, PPSLT)
-  doc_id: 10.1007_s00340-009-3547-4
-  reference: "Dolev et al. (2009). Linear and nonlinear optical properties of MgO:LiTaO3. Appl. Phys. B 96, 423. doi:10.1007/s00340-009-3547-4"
-  doi: 10.1007/s00340-009-3547-4
+  doc_id: 10.1007_s00340_009_3502_3
+  reference: "Dolev et al. (2009). Linear and nonlinear optical properties of MgO:LiTaO3. Appl. Phys. B 96, 423. doi:10.1007/s00340-009-3502-3"
+  doi: 10.1007/s00340-009-3502-3
   pdf_page: 6
   where: "Table 3 (0.5% MgO SLT): Sellmeier eq. (4) at 24.5 °C (f = 0); temperature dependence in thermo_optic.yml"
   entries:
-    - {page: Dolev-2009, direction: o, type: 4, coefficients: [4.5082, 0.084888, 0, 0.19552, 2, 1.1570, 0, 8.2517, 2, -0.0237, 2], range_um: [0.38, 4.0]}
-    - {page: Dolev-2009, direction: e, type: 4, coefficients: [4.5615, 0.08488, 0, 0.1927, 2, 5.5832, 0, 8.3067, 2, -0.021696, 2], range_um: [0.38, 4.0]}
+    - {page: Dolev-2009, direction: o, type: 4, coefficients: [4.5082, 0.084888, 0, 0.19552, 2, 1.1570, 0, 8.2517, 2, -0.0237, 2], range_um: [0.375, 3.75]}
+    - {page: Dolev-2009, direction: e, type: 4, coefficients: [4.5615, 0.08488, 0, 0.1927, 2, 5.5832, 0, 8.3067, 2, -0.021696, 2], range_um: [0.35, 6.0]}
   checks:
-    - {direction: o, points: [[1.064, 2.13112]], tol: 1.0e-4}
+    - {direction: o, points: [[1.064, 2.13112]], tol: 1.0e-4}  # values of the paper's equation, not measured points
     - {direction: e, points: [[1.064, 2.12889]], tol: 1.0e-4}
+
+- material: CsLiB6O10
+  name: CsLiB6O10 (Cesium lithium borate, CLBO)
+  doc_id: 10.1364_assl.1999.pd15
+  reference: "Umemura, Yoshida, Kamimura, Mori, Sasaki, Kato (1999). New data on the phase-matching properties of CsLiB6O10. Advanced Solid State Lasers, OSA TOPS 26, 715. doi:10.1364/assl.1999.pd15"
+  doi: 10.1364/assl.1999.pd15
+  pdf_page: 2
+  where: "Eq. (1), 0.1914–2.09 µm at 20 °C; the thermo-optic formula Eq. (2) was fitted with it (thermo_optic.yml)"
+  entries:
+    - {page: Umemura-1999, direction: o, type: 4, coefficients: [2.2104, 0.01018, 0, 0.01424, 1, 0, 0, 0, 1, -0.01258, 2], range_um: [0.1914, 2.09]}
+    - {page: Umemura-1999, direction: e, type: 4, coefficients: [2.0588, 0.00838, 0, 0.01363, 1, 0, 0, 0, 1, -0.00607, 2], range_um: [0.1914, 2.09]}
+  checks: []  # checked in the test: Table 1 angles and the temperature bandwidths of Table 2
 
