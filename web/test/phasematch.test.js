@@ -122,7 +122,7 @@ test("IR crystals: d_eff against the expressions of Petrov et al. 2004 and Kaind
   check("RbBe2BO3F2", "shg", 0.532, 0, "I", (t) => 0.45 * Math.cos(t), 0.06); // walk-off ≈ 3°
   check("Li2B4O7", "shg", 0.532, 0, "I", (t) => 0.15 * Math.sin(t), 0.03);
   // CTA, Cheng et al. 1993: type-II SHG of 1.32 µm in the x-y plane, φ = 62.8° calculated, 64.5° measured
-  assert.ok(Math.abs(angle("CsTiOAsO4", null, "shg", 1.32, 0, "xy", "IIa") - 63.5) < 2);
+  assert.ok(Math.abs(angle("CsTiOAsO4", "Feve-2000", "shg", 1.32, 0, "xy", "IIa") - 63.5) < 2);
 });
 
 test("LiInS2 and LiInSe2: the papers' calculated angles and d_eff", () => {
@@ -393,6 +393,21 @@ test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (
   // AgGaSe2, Tanaka & Katō 1998, Table 1 "Calculated" ΔT·l (angles rounded to 0.1° in the paper)
   check("AgGaSe2", "Harasaki", [["shg", 10.591, 0, "xz", 55.5, 351, 0.03], ["shg", 5.2955, 0, "xz", 41.3, 225, 0.03],
     ["sfg", 10.591, 5.2955, "xz", 42.4, 390, 0.03], ["sfg", 10.591, 3.5303, "xz", 41.3, 225, 0.03]].map((r) => [...r.slice(0, 4), null, ...r.slice(5)]));
+  // CsTiOAsO4, Mikami, Okamoto, Katō 2011, Tables I and II ("Calculated"); type-2 SHG and SFG
+  check("CsTiOAsO4", "Mikami-2011", [["shg", 1.3188, 0, "yz", 77.4, 8.9, 0.03], ["shg", 1.3188, 0, "xy", null, 8.9, 0.03],
+    ["shg", 1.5556, 0, "xy", null, 10.4, 0.03], ["sfg", 1.9059, 0.7382, "xy", null, 8.6, 0.03], ["sfg", 1.3408, 1.0642, "xy", null, 7.5, 0.03]]);
+  { // the remaining calculated loci of Table I, to 0.3° (66.01° vs 66.2°, 12.74° vs 13.0°, 72.49° vs 72.5°)
+    const s = source("CsTiOAsO4", "Mikami-2011"), at = (p, a, b, plane) => solveAll(nAtTemp(s, 20), s.kind, p, a, b).find((x) => x.plane === plane && x.type !== "I").angle;
+    for (const [p, a, b, plane, ref] of [["shg", 1.3188, 0, "xy", 66.2], ["sfg", 1.9059, 0.7382, "xy", 13.0], ["sfg", 1.8645, 1.0642, "xz", 72.5]]) {
+      assert.ok(Math.abs(at(p, a, b, plane) - ref) < 0.3, `CTA ${p} ${a} ${b}: ${at(p, a, b, plane)} vs ${ref}`);
+    }
+  }
+  // AgGaS2, Katō, Okamoto, Grechin, Umemura 2019, Table 1 "Calculated" (angles rounded to 0.1° in the paper),
+  // and the type-1 90° SHG of 1.7718 µm at 20 °C (p. 2)
+  check("AgGaS2", "Kato-2019", [["shg", 10.591, 0, "xz", null, 35.5, 0.02], ["shg", 5.2955, 0, "xz", null, 20.8, 0.02],
+    ["shg", 3.5303, 0, "xz", null, 15.2, 0.02], ["sfg", 10.591, 5.2955, "xz", null, 28.5, 0.02]]);
+  { const s = source("AgGaS2", "Kato-2019"), T = ncpmTemperatures((t) => nAtTemp(s, t), s.kind, "shg", 1.7718, 0, null, [-50, 200])[0].T;
+    assert.ok(Math.abs(T - 20) < 1, `AgGaS2 90° SHG of 1.7718 µm at ${T} °C`); }
   // GaS0.4Se0.6, Katō & Mikami 2014, Table 1: type-1 SHG, calculated external angles from the c axis at 20 °C
   // (sin θext = no(λ1) sin θint). The SFG rows are not checked: their two inputs, collinear outside, refract to
   // different internal angles (non-collinear inside), which this collinear engine does not model.

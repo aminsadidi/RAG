@@ -562,3 +562,28 @@
     - {direction: o, points: [[1.553, 3.443], [3.365, 3.337], [5.3, 3.326]], tol: 6.0e-3}
     - {direction: e, points: [[1.553, 3.248], [3.365, 3.155], [5.3, 3.142]], tol: 6.0e-3}
 
+- material: CsTiOAsO4
+  name: CsTiOAsO4 (Cesium titanyl arsenate, CTA)
+  doc_id: 10.1063_1.3525800
+  reference: "Mikami, Okamoto, Kato (2011). Sellmeier and thermo-optic dispersion formulas for CsTiOAsO4. J. Appl. Phys. 109, 023108. doi:10.1063/1.3525800"
+  doi: 10.1063/1.3525800
+  pdf_page: 1
+  where: "Eq. (1), 0.5321–3.183 µm at 20.0 °C, n² = A + Bλ²/(λ² − C) + Dλ²/(λ² − E), fitted to type-2 OPO, SHG and SFG data (Table I); nz > ny > nx"
+  entries:
+    - {page: Mikami-2011, direction: x, type: 2, coefficients: [0.91529, 1.47442, 0.03636, 3.34240, 256.3489], range_um: [0.5321, 3.183]}
+    - {page: Mikami-2011, direction: y, type: 2, coefficients: [1.17626, 1.25709, 0.04516, 3.57582, 268.5551], range_um: [0.5321, 3.183]}
+    - {page: Mikami-2011, direction: z, type: 2, coefficients: [1.46519, 1.16730, 0.06049, 3.69079, 278.8889], range_um: [0.5321, 3.183]}
+  checks: []  # checked in the test: the calculated loci of Table I and ΔT·l of Table II
+
+- material: AgGaS2
+  name: AgGaS2 (Silver thiogallate, AGS)
+  doc_id: 10.3390_cryst9030129
+  reference: "Kato, Okamoto, Grechin, Umemura (2019). New Sellmeier and thermo-optic dispersion formulas for AgGaS2. Crystals 9, 129. doi:10.3390/cryst9030129"
+  doi: 10.3390/cryst9030129
+  pdf_page: 2
+  where: "Eq. (2), 0.661–10.591 µm at 20 °C, fitted to the 90° SHG at 1.7718 µm and the 90° DFG at 5.333 µm; temperature dependence in thermo_optic.yml"
+  entries:
+    - {page: Kato-2019, direction: o, type: 4, coefficients: [5.79495, 0.22799, 0, 0.07963, 1, 0, 0, 0, 1, -2.4534e-3, 2, 3.1814e-7, 4, -9.7051e-9, 6], range_um: [0.661, 10.591]}
+    - {page: Kato-2019, direction: e, type: 4, coefficients: [5.54077, 0.22223, 0, 0.09670, 1, 0, 0, 0, 1, -2.5240e-3, 2, 2.0930e-6, 4, -2.2984e-8, 6], range_um: [0.661, 10.591]}
+  checks: []  # checked in the test: Table 1 and the 90° SHG of 1.7718 µm
+
