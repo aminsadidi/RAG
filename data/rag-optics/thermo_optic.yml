@@ -338,3 +338,52 @@
   axes:
     o: {C: 225, E: 0.09568646, c0: [250.1026057, 2406.32090, 48.75282651, 5.609705868], c1: [0.3411234962, 17.00833765, 0.07450567060, 0.008044041187]}
     e: {C: 225, E: 0.09214633, c0: [249.6347255, 2767.177716, 59.09023583, 1.480643361], c1: [0.2922118196, 6.789324599, 0.02183814714, 0.02258799232]}
+
+- material: HgGa2S4
+  source: Kato
+  prefer: true
+  doc_id: 10.1016_j.optcom.2016.10.054
+  cite: "Kato, Umemura, Petrov (2017)"
+  pdf_page: 3
+  where: "Eq. (5), 0.6328–10.591 µm (the formula of their earlier HgGa2S4 papers, refs. 1, 2), with the Sellmeier equations of Eq. (2) at 20 °C, identical to this source"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.6328, 10.591], terms: [[1.3102, -3], [-1.1212, -2], [1.1135, -1], [4.7271, 0]]}]
+    e: [{range_um: [0.6328, 10.591], terms: [[1.0056, -3], [-0.7689, -2], [1.2671, -1], [4.7189, 0]]}]
+
+- material: CdGa2S4
+  source: Kato-2017
+  doc_id: 10.1016_j.optcom.2016.10.054
+  cite: "Kato, Umemura, Petrov (2017)"
+  pdf_page: 2
+  where: "Eq. (4), measured on a CdGa2S4 prism at 0.6328–3.3913 µm, 20–120 °C, with the Sellmeier equations of Eq. (3) at 20 °C"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.6328, 3.3913], terms: [[0.7081, -3], [-0.8506, -2], [0.3364, -1], [4.6396, 0]]}]
+    e: [{range_um: [0.6328, 3.3913], terms: [[0.9379, -3], [-1.505, -2], [1.0087, -1], [4.6728, 0]]}]
+
+- material: Hg0.35Cd0.65Ga2S4
+  source: Kato-2017
+  doc_id: 10.1016_j.optcom.2016.10.054
+  cite: "Kato, Umemura, Petrov (2017)"
+  pdf_page: 3
+  where: "dn/dT = x·Eq. (4) + (1 − x)·Eq. (5), which the paper says is nearly identical to the temperature derivative of Eq. (1); reproduces the calculated ΔT·ℓ of Table 1 (Eq. (4) extrapolated beyond 3.3913 µm, as in the paper)"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.6328, 10.591], terms: [[0.918835, -3], [-0.94531, -2], [0.608385, -1], [4.670225, 0]]}]
+    e: [{range_um: [0.6328, 10.591], terms: [[0.961595, -3], [-1.247365, -2], [1.09914, -1], [4.688935, 0]]}]
+
+- material: Hg0.51Cd0.49Ga2S4
+  source: Kato-2017
+  doc_id: 10.1016_j.optcom.2016.10.054
+  cite: "Kato, Umemura, Petrov (2017)"
+  pdf_page: 3
+  where: "dn/dT = x·Eq. (4) + (1 − x)·Eq. (5), which the paper says is nearly identical to the temperature derivative of Eq. (1); reproduces the calculated ΔT·ℓ of Table 1 (Eq. (4) extrapolated beyond 3.3913 µm, as in the paper)"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.6328, 10.591], terms: [[1.015171, -3], [-0.988606, -2], [0.732721, -1], [4.684225, 0]]}]
+    e: [{range_um: [0.6328, 10.591], terms: [[0.972427, -3], [-1.129589, -2], [1.140484, -1], [4.696311, 0]]}]

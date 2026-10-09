@@ -382,6 +382,14 @@ test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (
   check("BaGa4Se7", "Kato", [["shg", 10.591, 0, "xz", 52.01, 42.6, 0.02], ["shg", 10.591, 0, "yz", 57.04, 82.2, 0.02],
     ["shg", 5.2955, 0, "xz", 39.34, 17.0, 0.02], ["shg", 5.2955, 0, "xz", 49.04, 20.4, 0.02], ["shg", 5.2955, 0, "yz", 21.85, 33.4, 0.02],
     ["shg", 3.5303, 0, "xz", 43.30, 11.5, 0.02], ["shg", 3.5303, 0, "xz", 57.10, 13.9, 0.02], ["shg", 3.5303, 0, "yz", 34.33, 21.9, 0.02]]);
+  // Hg1−xCdxGa2S4, Katō, Umemura, Petrov 2017, Table 1 "cal": Eqs. (1)–(5) (the mixed-crystal formula of HgGa2S4
+  // and CdGa2S4 Sellmeier and thermo-optic equations), angles and ΔT·l at 20 °C
+  // (SHG of 5.2955 µm phase-matches near 90°, where the angle is most sensitive: 78.63° here, 78.73° in the paper)
+  check("Hg0.35Cd0.65Ga2S4", "Kato-2017", [["shg", 5.2955, 0, "xz", null, 110, 0.02], ["sfg", 5.2955, 3.5303, "xz", 65.96, 84.0, 0.02],
+    ["shg", 3.5303, 0, "xz", 66.41, 59.1, 0.02]]);
+  const hc = source("Hg0.35Cd0.65Ga2S4", "Kato-2017");
+  assert.ok(Math.abs(solveAll(nAtTemp(hc, 20), hc.kind, "shg", 5.2955, 0).find((r) => r.type === "I").angle - 78.73) < 0.15);
+  check("Hg0.51Cd0.49Ga2S4", "Kato-2017", [["sfg", 10.591, 2.6478, "xz", 72.29, 84.4, 0.02], ["shg", 2.6478, 0, "xz", 68.71, 27.4, 0.02]]);
   // GaS0.4Se0.6, Katō & Mikami 2014, Table 1: type-1 SHG, calculated external angles from the c axis at 20 °C
   // (sin θext = no(λ1) sin θint). The SFG rows are not checked: their two inputs, collinear outside, refract to
   // different internal angles (non-collinear inside), which this collinear engine does not model.
