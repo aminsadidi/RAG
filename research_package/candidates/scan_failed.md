@@ -657,3 +657,6 @@
 | `1kOKpwRwoOADpnQur6JPSRImOG3-EZGc1` | `10.1111-j.1151-2916.1995.tb08060.x.pdf` | No extractable text found in any page (likely scanned image) |
 | `1FI-jTfH8jRuG2vRd2ByPNr6DxreSFql3` | `10.1103-physrevb.2.4896.pdf` | No extractable text found in any page (likely scanned image) |
 | `1jjJzc5-0MNwY7YYXAEkWC2NnigwAm4ab` | `10.1103-physrevb.4.3437.pdf` | No extractable text found in any page (likely scanned image) |
+| `1qaaj0nn34CRL7Ps9vp5jEEidq3G_Mx2b` | `10.1111-j.1151-2916.1995.tb08433.x.pdf` | No extractable text found in any page (likely scanned image) |
+| `1FqcEacrb6x6u5sL8FJT2oOfJcv_qDiRx` | `10.1103-physrevb.1.3494.pdf` | No extractable text found in any page (likely scanned image) |
+| `1Aatq6ivdO0JzeRsT7M1VG7zqgqZgvfha` | `10.1103-physrevb.2.2709.pdf` | No extractable text found in any page (likely scanned image) |
