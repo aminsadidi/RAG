@@ -1,42 +1,43 @@
 # راهنمای جامع رونویسی‌های بستهٔ پژوهشی (Transcriptions Index)
 
-این پوشه حاوی رونویسی کاملاً عینی و کلمه به کلمه (Verbatim Transcription) از مقالات علمی و فصول کتاب مرجع Nikogosyan (2005) برای بلورهای اپتیک غیرخطی است. تمامی داده‌ها صرفاً از روی تصاویر و متون منابع چاپ‌شده استخراج شده‌اند و هیچ عددی محاسبه، تبدیل، گرد، اصلاح یا حدس زده نشده است.
+این پوشه حاوی رونویسی کاملاً عینی و کلمه به کلمه (Verbatim Transcription) از مقالات علمی و کتاب‌های مرجع Nikogosyan (2005) و Dmitriev et al. (1999) برای بلورهای اپتیک غیرخطی است. تمامی داده‌ها صرفاً از روی تصاویر و متون منابع چاپ‌شده استخراج شده‌اند و هیچ عددی محاسبه، تبدیل، گرد، اصلاح یا حدس زده نشده است.
 
 ## جدول خلاصهٔ پرونده‌ها، جدول‌ها و معادلات
 
 | ردیف | نام فایل | نوع منبع | ماده / بلور | تعداد جدول‌ها | تعداد معادلات | تعداد [?] | تعداد [MISMATCH] |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 1 | [kato2019.md](./kato2019.md) | مقاله | AgGaS2 | 1 | 9 | 0 | 0 |
-| 2 | [loiko2015.md](./loiko2015.md) | مقاله | YCOB, GdCOB | 6 | 4 | 0 | 0 |
-| 3 | [mikami2011.md](./mikami2011.md) | مقاله | CsTiOAsO4 (CTA) | 2 | 11 | 0 | 2 |
-| 4 | [nikogosyan_Ag3SbS3.md](./nikogosyan_Ag3SbS3.md) | کتاب Nikogosyan (2005) | Ag3SbS3 | 0 | 0 | 0 | 0 |
-| 5 | [nikogosyan_AlN.md](./nikogosyan_AlN.md) | کتاب Nikogosyan (2005) | AlN | 0 | 0 | 0 | 0 |
-| 6 | [nikogosyan_BaGa2GeSe6.md](./nikogosyan_BaGa2GeSe6.md) | کتاب Nikogosyan (2005) | BaGa2GeSe6 | 0 | 0 | 0 | 0 |
-| 7 | [nikogosyan_BaGa4S7.md](./nikogosyan_BaGa4S7.md) | کتاب Nikogosyan (2005) | BaGa4S7 | 0 | 0 | 0 | 0 |
-| 8 | [nikogosyan_BaGa4Se7.md](./nikogosyan_BaGa4Se7.md) | کتاب Nikogosyan (2005) | BaGa4Se7 | 0 | 0 | 0 | 0 |
-| 9 | [nikogosyan_CdGa2S4.md](./nikogosyan_CdGa2S4.md) | کتاب Nikogosyan (2005) | CdGa2S4 | 0 | 0 | 0 | 0 |
-| 10 | [nikogosyan_CdGeP2.md](./nikogosyan_CdGeP2.md) | کتاب Nikogosyan (2005) | CdGeP2 | 0 | 0 | 0 | 0 |
-| 11 | [nikogosyan_CuGaS2.md](./nikogosyan_CuGaS2.md) | کتاب Nikogosyan (2005) | CuGaS2 | 0 | 0 | 0 | 0 |
-| 12 | [nikogosyan_GaN.md](./nikogosyan_GaN.md) | کتاب Nikogosyan (2005) | GaN | 0 | 0 | 0 | 0 |
-| 13 | [nikogosyan_GdCa4O(BO3)3.md](./nikogosyan_GdCa4O(BO3)3.md) | کتاب Nikogosyan (2005) | GdCa4O(BO3)3 | 7 | 11 | 0 | 0 |
-| 14 | [nikogosyan_HgS.md](./nikogosyan_HgS.md) | کتاب Nikogosyan (2005) | HgS | 0 | 0 | 0 | 0 |
-| 15 | [nikogosyan_InPS4.md](./nikogosyan_InPS4.md) | کتاب Nikogosyan (2005) | InPS4 | 0 | 0 | 0 | 0 |
-| 16 | [nikogosyan_KD2PO4.md](./nikogosyan_KD2PO4.md) | کتاب Nikogosyan (2005) | KD2PO4 | 22 | 12 | 0 | 1 |
-| 17 | [nikogosyan_KH2PO4.md](./nikogosyan_KH2PO4.md) | کتاب Nikogosyan (2005) | KH2PO4 | 27 | 12 | 0 | 1 |
-| 18 | [nikogosyan_KTiOAsO4.md](./nikogosyan_KTiOAsO4.md) | کتاب Nikogosyan (2005) | KTiOAsO4 | 7 | 16 | 0 | 2 |
-| 19 | [nikogosyan_LiGaS2.md](./nikogosyan_LiGaS2.md) | کتاب Nikogosyan (2005) | LiGaS2 | 0 | 7 | 0 | 0 |
-| 20 | [nikogosyan_LiGaTe2.md](./nikogosyan_LiGaTe2.md) | کتاب Nikogosyan (2005) | LiGaTe2 | 0 | 0 | 0 | 0 |
-| 21 | [nikogosyan_LiIO3.md](./nikogosyan_LiIO3.md) | کتاب Nikogosyan (2005) | LiIO3 | 15 | 4 | 0 | 1 |
-| 22 | [nikogosyan_LiTaO3.md](./nikogosyan_LiTaO3.md) | کتاب Nikogosyan (2005) | LiTaO3 | 11 | 6 | 0 | 0 |
-| 23 | [nikogosyan_RbTiOAsO4.md](./nikogosyan_RbTiOAsO4.md) | کتاب Nikogosyan (2005) | RbTiOAsO4 | 8 | 14 | 0 | 1 |
-| 24 | [nikogosyan_Se.md](./nikogosyan_Se.md) | کتاب Nikogosyan (2005) | Se | 0 | 0 | 0 | 0 |
-| 25 | [nikogosyan_Tl3AsSe3.md](./nikogosyan_Tl3AsSe3.md) | کتاب Nikogosyan (2005) | Tl3AsSe3 | 4 | 8 | 0 | 0 |
-| 26 | [nikogosyan_YCa4O(BO3)3.md](./nikogosyan_YCa4O(BO3)3.md) | کتاب Nikogosyan (2005) | YCa4O(BO3)3 | 11 | 15 | 0 | 0 |
-| 27 | [nikogosyan_ZnO.md](./nikogosyan_ZnO.md) | کتاب Nikogosyan (2005) | ZnO | 0 | 0 | 0 | 0 |
-| 28 | [nikogosyan_ZnSiAs2.md](./nikogosyan_ZnSiAs2.md) | کتاب Nikogosyan (2005) | ZnSiAs2 | 0 | 0 | 0 | 0 |
-| 29 | [tanaka1998.md](./tanaka1998.md) | مقاله | AgGaSe2 | 1 | 6 | 3 | 2 |
-| 30 | [wei2018.md](./wei2018.md) | مقاله | GaP | 2 | 8 | 0 | 0 |
-| **مجموع** | **30 فایل** | - | - | **124** | **143** | **3** | **10** |
+| 1 | [dmitriev1999.md](./dmitriev1999.md) | کتاب Dmitriev (1999) | کتاب کامل (۷۷ بلور) | 0 | 0 | 0 | 0 |
+| 2 | [kato2019.md](./kato2019.md) | مقاله | AgGaS2 | 1 | 9 | 0 | 0 |
+| 3 | [loiko2015.md](./loiko2015.md) | مقاله | YCOB, GdCOB | 6 | 4 | 0 | 0 |
+| 4 | [mikami2011.md](./mikami2011.md) | مقاله | CsTiOAsO4 (CTA) | 2 | 11 | 0 | 2 |
+| 5 | [nikogosyan_Ag3SbS3.md](./nikogosyan_Ag3SbS3.md) | کتاب Nikogosyan (2005) | Ag3SbS3 | 0 | 0 | 0 | 0 |
+| 6 | [nikogosyan_AlN.md](./nikogosyan_AlN.md) | کتاب Nikogosyan (2005) | AlN | 0 | 0 | 0 | 0 |
+| 7 | [nikogosyan_BaGa2GeSe6.md](./nikogosyan_BaGa2GeSe6.md) | کتاب Nikogosyan (2005) | BaGa2GeSe6 | 0 | 0 | 0 | 0 |
+| 8 | [nikogosyan_BaGa4S7.md](./nikogosyan_BaGa4S7.md) | کتاب Nikogosyan (2005) | BaGa4S7 | 0 | 0 | 0 | 0 |
+| 9 | [nikogosyan_BaGa4Se7.md](./nikogosyan_BaGa4Se7.md) | کتاب Nikogosyan (2005) | BaGa4Se7 | 0 | 0 | 0 | 0 |
+| 10 | [nikogosyan_CdGa2S4.md](./nikogosyan_CdGa2S4.md) | کتاب Nikogosyan (2005) | CdGa2S4 | 0 | 0 | 0 | 0 |
+| 11 | [nikogosyan_CdGeP2.md](./nikogosyan_CdGeP2.md) | کتاب Nikogosyan (2005) | CdGeP2 | 0 | 0 | 0 | 0 |
+| 12 | [nikogosyan_CuGaS2.md](./nikogosyan_CuGaS2.md) | کتاب Nikogosyan (2005) | CuGaS2 | 0 | 0 | 0 | 0 |
+| 13 | [nikogosyan_GaN.md](./nikogosyan_GaN.md) | کتاب Nikogosyan (2005) | GaN | 0 | 0 | 0 | 0 |
+| 14 | [nikogosyan_GdCa4O(BO3)3.md](./nikogosyan_GdCa4O(BO3)3.md) | کتاب Nikogosyan (2005) | GdCa4O(BO3)3 | 7 | 11 | 0 | 0 |
+| 15 | [nikogosyan_HgS.md](./nikogosyan_HgS.md) | کتاب Nikogosyan (2005) | HgS | 0 | 0 | 0 | 0 |
+| 16 | [nikogosyan_InPS4.md](./nikogosyan_InPS4.md) | کتاب Nikogosyan (2005) | InPS4 | 0 | 0 | 0 | 0 |
+| 17 | [nikogosyan_KD2PO4.md](./nikogosyan_KD2PO4.md) | کتاب Nikogosyan (2005) | KD2PO4 | 22 | 12 | 0 | 1 |
+| 18 | [nikogosyan_KH2PO4.md](./nikogosyan_KH2PO4.md) | کتاب Nikogosyan (2005) | KH2PO4 | 27 | 12 | 0 | 1 |
+| 19 | [nikogosyan_KTiOAsO4.md](./nikogosyan_KTiOAsO4.md) | کتاب Nikogosyan (2005) | KTiOAsO4 | 7 | 16 | 0 | 2 |
+| 20 | [nikogosyan_LiGaS2.md](./nikogosyan_LiGaS2.md) | کتاب Nikogosyan (2005) | LiGaS2 | 0 | 7 | 0 | 0 |
+| 21 | [nikogosyan_LiGaTe2.md](./nikogosyan_LiGaTe2.md) | کتاب Nikogosyan (2005) | LiGaTe2 | 0 | 0 | 0 | 0 |
+| 22 | [nikogosyan_LiIO3.md](./nikogosyan_LiIO3.md) | کتاب Nikogosyan (2005) | LiIO3 | 15 | 4 | 0 | 1 |
+| 23 | [nikogosyan_LiTaO3.md](./nikogosyan_LiTaO3.md) | کتاب Nikogosyan (2005) | LiTaO3 | 11 | 6 | 0 | 0 |
+| 24 | [nikogosyan_RbTiOAsO4.md](./nikogosyan_RbTiOAsO4.md) | کتاب Nikogosyan (2005) | RbTiOAsO4 | 8 | 14 | 0 | 1 |
+| 25 | [nikogosyan_Se.md](./nikogosyan_Se.md) | کتاب Nikogosyan (2005) | Se | 0 | 0 | 0 | 0 |
+| 26 | [nikogosyan_Tl3AsSe3.md](./nikogosyan_Tl3AsSe3.md) | کتاب Nikogosyan (2005) | Tl3AsSe3 | 4 | 8 | 0 | 0 |
+| 27 | [nikogosyan_YCa4O(BO3)3.md](./nikogosyan_YCa4O(BO3)3.md) | کتاب Nikogosyan (2005) | YCa4O(BO3)3 | 11 | 15 | 0 | 0 |
+| 28 | [nikogosyan_ZnO.md](./nikogosyan_ZnO.md) | کتاب Nikogosyan (2005) | ZnO | 0 | 0 | 0 | 0 |
+| 29 | [nikogosyan_ZnSiAs2.md](./nikogosyan_ZnSiAs2.md) | کتاب Nikogosyan (2005) | ZnSiAs2 | 0 | 0 | 0 | 0 |
+| 30 | [tanaka1998.md](./tanaka1998.md) | مقاله | AgGaSe2 | 1 | 6 | 3 | 2 |
+| 31 | [wei2018.md](./wei2018.md) | مقاله | GaP | 2 | 8 | 0 | 0 |
+| **مجموع** | **31 فایل** | - | - | **124** | **143** | **3** | **10** |
 
 ---
 
@@ -74,4 +75,4 @@
 - **کتاب Nikogosyan (کار ۲):** از ۲۵ بلور درخواستی:
   - ۱۰ بلور دارای بخش اختصاصی در کتاب بودند (`Tl3AsSe3`, `KTiOAsO4`, `RbTiOAsO4`, `LiIO3`, `KH2PO4`, `KD2PO4`, `LiTaO3`, `YCa4O(BO3)3`, `GdCa4O(BO3)3`, `LiGaS2`) که تمامی اطلاعات آن‌ها شامل گروه نقطه‌ای، قرارداد محورها، ضرایب غیرخطی $d_{il}$، معادلات سلمایر، فرمول‌های ترمواپتیک $dn/dT$، جدول‌های عددی و مراجع کامل رونویسی شدند.
   - ۱۵ بلور فاقد بخش اختصاصی در کتاب بودند (`BaGa4S7`, `BaGa4Se7`, `BaGa2GeSe6`, `CuGaS2`, `ZnO`, `GaN`, `AlN`, `HgS`, `Se`, `CdGa2S4`, `ZnSiAs2`, `CdGeP2`, `Ag3SbS3`, `InPS4`, `LiGaTe2`) که برای هر کدام پرونده‌ای مجزا ایجاد شده و وضعیت تمامی بخش‌ها به صورت «در منبع نیست» ثبت گردید.
-- **کتاب دوم Dmitriev (1999):** فایل منبع `dmitriev1999.pdf` در پوشهٔ `proDownloads` دانلود و نگهداری شده است.
+- **کتاب دوم Dmitriev (1999):** کل کتاب ۴۲۶ صفحه‌ای دیمیتریف (*Handbook of Nonlinear Optical Crystals*, 1999) شامل فصول ۱ تا ۴، خواص کامل ۷۷ بلور اپتیک غیرخطی، مراجع و پیوست‌ها در قالب یک پروندهٔ جامع در `dmitriev1999.md` رونویسی و بازخوانی شد.
