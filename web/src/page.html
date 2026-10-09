@@ -250,7 +250,7 @@ body{overflow-x:hidden}
 <section id="tab-pm" hidden class="viz-root">
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
-    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۴۲ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
+    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۴۵ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
@@ -1236,6 +1236,14 @@ function fitWaves(c, proc) {
 function pick(mat, label, fit = true) {
   const c = PM.list.find((x) => key(x) === mat); if (!c) return;
   let { proc, a, b, w } = inputs(); PM.moved = "";
+  if (c.sources[0].isotropic) { // cubic: no angle phase matching; keep the wavelengths in the formula's range
+    if (!c.sources.some((s) => covers(s, w))) {
+      const line = LINES[proc].find(([x, y]) => covers(c.sources[0], waves(proc, x, y)));
+      if (line) { $("pma").value = line[0]; if (proc !== "shg") $("pmb").value = line[1]; ({ w } = inputs()); }
+    }
+    PM.moved = "بلور مکعبی است و تطبیق فاز زاویه‌ای ندارد؛ دوره‌ی QPM آن در پایین جدول آمده است.";
+    fit = false;
+  }
   if (fit && !label && !c.sources.some((s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, a, b).length)) {
     const fit = fitWaves(c, proc), [na, nb] = fit || [a, b];
     if (!fit) PM.moved = `این بلور با فرمول‌های موجود در هیچ طول موجی از بازه‌اش برای ${proc === "shg" ? "SHG" : proc === "sfg" ? "SFG" : "OPO"} تطبیق فاز زاویه‌ای (در صفحه‌های اصلی) ندارد؛ دوشکستی آن کم است و در عمل با قطبش تناوبی (QPM) به کار می‌رود.`;
@@ -1248,7 +1256,7 @@ function pick(mat, label, fit = true) {
   const cur = PM.crystal === c && !label ? c.sources[+$("pmsrc").value] : null;
   const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, +$("pma").value, +$("pmb").value).length;
   const best = (cur && has(cur) ? cur : null) || c.sources.find(has) || (cur && covers(cur, w) ? cur : null) || c.sources.find((s) => covers(s, w)) || c.sources[0];
-  $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · ${s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
+  $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · ${s.isotropic ? "همسان‌گرد" : s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
   $("pmsrc").value = String(c.sources.indexOf(label ? c.sources.find((s) => s.label === label) || best : best));
   PM.crystal = c; $("pmmat").value = mat;
   run();
@@ -1262,7 +1270,7 @@ function run() {
   const ref = Object.values(src.axes)[0];
   const moved = PM.moved; PM.moved = "";
   showTemp(src); $("pmncpm").innerHTML = "";
-  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "") + `${esc(c.name || c.material)} — ${src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
+  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "") + `${esc(c.name || c.material)} — ${src.isotropic ? "همسان‌گرد (مکعبی)" : src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
         + PM.dij[c.material].sources.map((s) => (s.doc_id
@@ -1321,6 +1329,7 @@ function ncpmRun() {
 // first order, period Λ = 1 / (n3/λ3 − n1/λ1 − n2/λ2), d_eff = (2/π)·d33.
 const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
 function qpm(c, src, w) {
+  if (src.isotropic) return qpmCubic(c, src, w);
   const d33 = PM.dij[c.material]?.d["33"];
   if (!POLED.has(c.material) || d33 == null) { $("pmqpm").innerHTML = ""; return; }
   if (!covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
@@ -1329,6 +1338,18 @@ function qpm(c, src, w) {
   $("pmqpm").innerHTML = `<b>تطبیق فاز شبه‌فازی (QPM)</b> در بلور قطبیده‌ی تناوبی (مثل PPLN/PPKTP)، هر سه موج قطبیده در امتداد z (ضریب d<sub>33</sub>)، مرتبه‌ی اول، دمای اتاق: `
     + `<bdi dir="ltr">Λ = <b>${period.toFixed(2)} µm</b>, n<sub>z</sub> = ${[n1, n2, n3].map((x) => x.toFixed(4)).join(", ")}, d<sub>eff</sub> = (2/π)·|d33| = <b>${deff.toFixed(1)} pm/V</b>, d<sub>eff</sub>²/n³ = ${(deff ** 2 / (n1 * n2 * n3)).toFixed(1)} pm²/V²</bdi>`
     + ` — بدون walk-off. دوره‌ی واقعی با دما و ترکیب بلور کمی جابه‌جا می‌شود؛ این عدد از همان فرمول پاشندگی منبع انتخاب‌شده است.`;
+}
+
+// Orientation-patterned cubic semiconductors (OP-GaAs, OP-GaP): optically isotropic, so only QPM; first order,
+// d_eff = (2/π)·d14 as in the figure of merit of Petrov (2015), Table 3.
+function qpmCubic(c, src, w) {
+  const d14 = PM.dij[c.material]?.d["14"];
+  if (d14 == null || !covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
+  const n = (l) => nAt(src)(l)[0], [n1, n2, n3] = [n(w.l1), n(w.l2), n(w.l3)];
+  const period = 1 / (n3 / w.l3 - n1 / w.l1 - n2 / w.l2), deff = (2 / Math.PI) * Math.abs(d14);
+  $("pmqpm").innerHTML = `<b>بلور مکعبی و همسان‌گرد:</b> تطبیق فاز دوشکستی ندارد و فقط با الگودهی جهت بلور (OP-${esc(c.material)}) و QPM کار می‌کند. مرتبه‌ی اول، دمای اتاق: `
+    + `<bdi dir="ltr">Λ = <b>${period.toFixed(2)} µm</b>, n = ${[n1, n2, n3].map((x) => x.toFixed(4)).join(", ")}, d<sub>eff</sub> = (2/π)·d14 = <b>${deff.toFixed(1)} pm/V</b>, d<sub>eff</sub>²/n³ = ${(deff ** 2 / (n1 * n2 * n3)).toFixed(1)} pm²/V²</bdi>`
+    + ` — d14 برای SHG در 10.6 µm است (Petrov 2015، جدول ۳) و نزدیک گاف انرژی بزرگ‌تر می‌شود؛ جذب دوفوتونی پمپ را در GaAs به بالای ~1.75 µm محدود می‌کند.`;
 }
 
 // The curve takes ~100 solutions (30 ms each in a biaxial crystal): computed in slices after the table is shown,
