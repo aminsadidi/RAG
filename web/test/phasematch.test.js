@@ -390,6 +390,9 @@ test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (
   const hc = source("Hg0.35Cd0.65Ga2S4", "Kato-2017");
   assert.ok(Math.abs(solveAll(nAtTemp(hc, 20), hc.kind, "shg", 5.2955, 0).find((r) => r.type === "I").angle - 78.73) < 0.15);
   check("Hg0.51Cd0.49Ga2S4", "Kato-2017", [["sfg", 10.591, 2.6478, "xz", 72.29, 84.4, 0.02], ["shg", 2.6478, 0, "xz", 68.71, 27.4, 0.02]]);
+  // AgGaSe2, Tanaka & Katō 1998, Table 1 "Calculated" ΔT·l (angles rounded to 0.1° in the paper)
+  check("AgGaSe2", "Harasaki", [["shg", 10.591, 0, "xz", 55.5, 351, 0.03], ["shg", 5.2955, 0, "xz", 41.3, 225, 0.03],
+    ["sfg", 10.591, 5.2955, "xz", 42.4, 390, 0.03], ["sfg", 10.591, 3.5303, "xz", 41.3, 225, 0.03]].map((r) => [...r.slice(0, 4), null, ...r.slice(5)]));
   // GaS0.4Se0.6, Katō & Mikami 2014, Table 1: type-1 SHG, calculated external angles from the c axis at 20 °C
   // (sin θext = no(λ1) sin θint). The SFG rows are not checked: their two inputs, collinear outside, refract to
   // different internal angles (non-collinear inside), which this collinear engine does not model.
