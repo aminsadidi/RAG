@@ -598,3 +598,16 @@
     - {page: Wei-2018, direction: "", type: 4, coefficients: [11.14949, 0.571225, 0, 0.0911014, 1, 1559.9828, 0, 758.048, 1], range_um: [0.7, 12.5]}
   checks: []  # checked in the test: the OP-GaP grating periods of Table 1
 
+- material: RbTiOAsO4
+  name: RbTiOAsO4 (Rubidium titanyl arsenate, RTA)
+  doc_id: 10.1143_jjap.42.6420
+  reference: "Kato, Takaoka, Umemura (2003). Thermo-optic dispersion formula for RbTiOAsO4. Jpn. J. Appl. Phys. 42, 6420. doi:10.1143/jjap.42.6420 — read from Nikogosyan, Nonlinear Optical Crystals: A Complete Survey (2005), p. 192, ref. [10]; the original paper is not in the collection (abstract only)"
+  doi: 10.1143/jjap.42.6420
+  pdf_page: 201
+  where: "Sellmeier equations at 293 K as quoted in the book (p. 192 = PDF p. 201). nz equals the one given in Mikami et al. 2011, ref. 10, which also gives improved IR terms for nx, ny; these are the original ones the thermo-optic formula was fitted with"
+  entries:
+    - {page: Kato-2003, direction: x, type: 4, coefficients: [3.21992, 0.04763, 0, 0.04063, 1, 0, 0, 0, 1, -0.01035, 2], range_um: [0.45, 3.2]}
+    - {page: Kato-2003, direction: y, type: 4, coefficients: [3.24185, 0.05056, 0, 0.04532, 1, 0, 0, 0, 1, -0.01062, 2], range_um: [0.45, 3.2]}
+    - {page: Kato-2003, direction: z, type: 4, coefficients: [7.00229, 0.06787, 0, 0.05241, 1, 917.9906, 0, 261.3629, 1], range_um: [0.45, 3.2]}
+  checks: []  # source: a handbook; not tested against the original paper's tables
+

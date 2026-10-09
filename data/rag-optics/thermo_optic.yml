@@ -492,3 +492,17 @@
     x: [{range_um: [0.4, 2.0], terms: [[-0.41, 0], [0.01937, -2], [0.00087, -4], [0.00034, -6]]}]
     y: [{range_um: [0.4, 2.0], terms: [[-0.5, 0], [0.01808, -2], [-0.00082, -4], [0.00077, -6]]}]
     z: [{range_um: [0.4, 2.0], terms: [[-0.4, 0], [0.02243, -2], [0.00058, -4], [0.00043, -6]]}]
+
+- material: RbTiOAsO4
+  source: Kato-2003
+  doc_id: 10.1143_jjap.42.6420
+  cite: "Kato, Takaoka, Umemura (2003), via Nikogosyan (2005)"
+  pdf_page: 201
+  where: "dn/dT formulas for 293–393 K as quoted by Nikogosyan (2005), p. 192, ref. [10]: x and y for 0.45–1.62 µm, z for 0.45–3.2 µm. Source is the handbook; the original paper (abstract only in the collection) was not checked and no test against measured data is available"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.45, 1.62], terms: [[0.4287, -3], [-0.9181, -2], [0.6685, -1], [1.9687, 0]]}]
+    y: [{range_um: [0.45, 1.62], terms: [[0.5138, -3], [-1.1054, -2], [0.8035, -1], [1.9591, 0]]}]
+    z: [{range_um: [0.45, 3.2], terms: [[1.5905, -3], [-4.2423, -2], [4.2161, -1], [1.7355, 0]]}]
+
