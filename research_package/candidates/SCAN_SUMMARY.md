@@ -1,6 +1,6 @@
 # خلاصه اسکن جامع مقالات اپتیک غیرخطی (Task 3 Summary)
 
-گزارش استخراج کاندیداها از مجموعه مقالات MatRAG (تعداد مقالات اسکن شده: 1613).
+گزارش استخراج کاندیداها از مجموعه مقالات MatRAG (تعداد مقالات اسکن شده: 1773).
 
 ## ۱. آمار قطعات کاندید به تفکیک بلورها
 
@@ -9,23 +9,27 @@
 | `LiNbO3_LN_PPLN` | 71 | 147 | 79 | 95 | **321** |
 | `KTP_KTiOPO4` | 53 | 114 | 44 | 96 | **254** |
 | `BBO_beta-BaB2O4` | 65 | 130 | 24 | 48 | **202** |
+| `Seeds_general` | 39 | 26 | 66 | 102 | **194** |
 | `Nonlinear_coefficients_Miller_rule` | 35 | 153 | 4 | 33 | **190** |
 | `AgGaS2` | 50 | 102 | 33 | 31 | **166** |
+| `Sellmeier_equation_fitting` | 24 | 9 | 40 | 100 | **149** |
+| `Reviews_NLO_crystals_databases` | 29 | 117 | 17 | 11 | **145** |
 | `KDP_DKDP_KH2PO4` | 45 | 86 | 11 | 46 | **143** |
 | `BiBO_BiB3O6` | 39 | 87 | 22 | 29 | **138** |
 | `YAG_YVO4_GdVO4_hosts` | 45 | 21 | 72 | 43 | **136** |
 | `LiInS2_LiGaS2_LiInSe2` | 35 | 59 | 40 | 32 | **131** |
 | `ZGP_ZnGeP2` | 45 | 66 | 21 | 43 | **130** |
+| `Phase_matching_theory_birefringence` | 53 | 77 | 19 | 30 | **126** |
 | `Fluorides_CaF2_MgF2_BaF2_LiF` | 46 | 4 | 59 | 61 | **124** |
 | `LiTaO3_LT_PPLT` | 48 | 49 | 35 | 39 | **123** |
 | `KNbO3` | 49 | 65 | 29 | 27 | **121** |
 | `AgGaSe2` | 43 | 77 | 20 | 22 | **119** |
 | `Si_Ge` | 49 | 10 | 72 | 30 | **112** |
+| `Thermo-optic_coefficients` | 23 | 1 | 79 | 30 | **110** |
 | `CLBO_CsLiB6O10` | 35 | 48 | 19 | 26 | **93** |
 | `LiIO3_alpha-HIO3` | 49 | 67 | 9 | 14 | **90** |
 | `AgGaGeS4_HgGa2S4_others` | 37 | 46 | 17 | 23 | **86** |
 | `GaP_OP-GaP` | 47 | 30 | 17 | 38 | **85** |
-| `Phase_matching_theory_birefringence` | 33 | 43 | 15 | 25 | **83** |
 | `DAST_DSTMS_OH1` | 34 | 61 | 2 | 11 | **74** |
 | `ZnSe_ZnTe` | 45 | 14 | 37 | 22 | **73** |
 | `Quartz_SiO2` | 46 | 31 | 20 | 22 | **73** |
@@ -42,6 +46,7 @@
 | `GaN_AlN` | 48 | 25 | 9 | 16 | **50** |
 | `Calcite_TeO2_TiO2_birefringent` | 45 | 21 | 8 | 21 | **50** |
 | `petrov2015` | 1 | 26 | 13 | 4 | **43** |
+| `Refractive_index_measurement_methods` | 24 | 2 | 8 | 25 | **35** |
 | `Sapphire_Al2O3` | 38 | 9 | 2 | 23 | **34** |
 | `dolev2009` | 1 | 7 | 5 | 10 | **22** |
 | `CdSe_CdS_ZnS` | 51 | 3 | 10 | 7 | **20** |
@@ -76,6 +81,7 @@
 | `law2000` | 1 | 0 | 0 | 0 | **0** |
 | `main` | 1 | 0 | 0 | 0 | **0** |
 | `mosley2008` | 1 | 0 | 0 | 0 | **0** |
+| `fatahi2018.pdf` | 1 | 0 | 0 | 0 | **0** |
 
 ---
 
@@ -108,6 +114,15 @@
 | `1ECkTuyJ_ke4dfNaUvKqmr94vMjhg2jDH` | `10.1021-acs.chemmater.8b03310.pdf` | ص 1, 3, 5, 7 | 53 |
 | `1MeAb3AF-xYHMqtz7r7RPdkPnL0cu8-ju` | `10.1021-acs.cgd.7b00677.pdf` | ص 3, 4, 7, 12, 13, 15 | 47 |
 
+### بلور `Seeds_general`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `11P5JQaMbB1Dq5TbD9Oi1V3OIkVtGX_aS` | `10.1063-1.555536.pdf` | ص 2, 3, 4, 5, 6, 7, 9, 10 | 117 |
+| `17e3pgAfnICCo-rIKkW9cUT0bhORnqeWw` | `10.1103-physrevb.39.3337.pdf` | ص 2, 4, 5, 6, 7, 8, 10, 11 | 35 |
+| `1rrr8NfdLcR0FWyKfTuueaTx1rLEWBO38` | `10.1039-d3cp03158f.pdf` | ص 4, 5, 7 | 28 |
+| `16-9y3O8EocVn6Lqa4gx_9R2iefenSwk0` | `10.1016-j.jcrysgro.2005.03.029.pdf` | ص 1, 2, 4, 5, 6 | 24 |
+| `10jaSTb8ziT-FAXXIRPXNQt-jr10F1Th4` | `10.1063-1.339536.pdf` | ص 2, 4, 5, 6, 10, 11, 12, 15 | 15 |
+
 ### بلور `Nonlinear_coefficients_Miller_rule`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
@@ -125,6 +140,24 @@
 | `16NxEFwa7bImqWgeZkGf-6avAbWpVkkuC` | `10.1364-josab.14.001331.pdf` | ص 1, 2, 3, 4, 5, 6, 7 | 33 |
 | `1LYVDflEYGZMzGfe41I4ZxwyVaR8uI1T_` | `10.1364-ao.57.002935.pdf` | ص 1, 2, 3, 4 | 32 |
 | `1m4k4-VwK9g0ziY1MFGuUV4YAU2AH2ayR` | `10.1021-ja4074084.pdf` | ص 3, 5, 6 | 29 |
+
+### بلور `Sellmeier_equation_fitting`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1hYs-GIt_sWEDpZl6iygNF7CDgHMyUTXE` | `10.1364-ao.57.004839.pdf` | ص 1, 2, 5, 6, 7 | 47 |
+| `1WOSkErZ7ZFEsmK3EIMBIGkCwtxiHNsLe` | `10.1364-josab.14.003299.pdf` | ص 1, 5, 6, 7, 11, 14, 15, 20 | 39 |
+| `1J1UN0hvxfsWAVuVKuekF4pGnqRbm59zI` | `10.1364-ao.40.005439.pdf` | ص 1, 2, 3, 4, 5, 6, 7 | 30 |
+| `1UrHUEYQq4QNdJHBbwwZ-GZjOlKKjGnQr` | `10.1109-50.730361.pdf` | ص 1, 2, 3, 4 | 27 |
+| `1ytuT21GUtXeaQUTq8IcHHftIN2XnfkyK` | `10.1364-ao.35.003562.pdf` | ص 1, 2, 3 | 27 |
+
+### بلور `Reviews_NLO_crystals_databases`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1rCJVXmJGM-FvULl8fvkCGms_UucIT6xf` | `10.1016_j.pquantelec.2015.04.001.pdf` | ص 5, 6, 7, 8, 10, 11, 13, 14 | 127 |
+| `1lhgi7bKAnAWe1oVxxL9VM486F6sZPxXk` | `10.1007-s00340-004-1645-9.pdf` | ص 2, 3, 4, 5, 6, 7, 8, 9 | 79 |
+| `1bgrBtcmrZYllB8tSa-TrVf-YrZ7xaRwh` | `10.1039-c9qi01589b.pdf` | ص 3, 4, 5, 6, 7, 8, 9, 10 | 72 |
+| `1ZDOwfS6fFhP1K9bh6147P0MI5cZzGUQO` | `10.1016-j.ccr.2018.07.013.pdf` | ص 3, 4, 10, 12, 21, 28, 29 | 43 |
+| `11WYC49sconj9pvR9bTe_xEkBbr4-ooU_` | `10.1039-d3cs01136d.pdf` | ص 3, 5, 8, 14, 16, 17, 22, 23 | 40 |
 
 ### بلور `KDP_DKDP_KH2PO4`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
@@ -171,6 +204,15 @@
 | `1bYyeitGbBTmVi_uUq7qDc0BHwBEUUa-m` | `10.1007-s00340-019-7347-0.pdf` | ص 1, 4, 5 | 17 |
 | `17nKABKFc_1A8jbzlmedfA_Im3UcmaG7Z` | `10.1063-1.364075.pdf` | ص 1, 2, 5, 6, 7 | 17 |
 
+### بلور `Phase_matching_theory_birefringence`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1PaOynzQEtiKKDNCA_tFxsAFWLjXvBSxp` | `2007_Bergé_Ultrashort_filaments_of_light_in_weakly_ionized_optically_transparent_1fde8c.pdf` | ص 3, 6, 10, 11, 12, 13, 15, 18 | 50 |
+| `1kuTH61rpAtKvVQHQSITkjhogKsIMu-XU` | `10.1109-3.159516.pdf` | ص 1, 2, 3, 7, 8, 10, 11, 12 | 35 |
+| `1gWztUvZQTDmgs3ZohrqxE1-B1-eLy6oL` | `2020_Lu_Efficient_photoinduced_second-harmonic_generation_in_silicon_nitride_p_49c96a.pdf` | ص 1, 2, 3, 5, 6, 7, 8, 9 | 34 |
+| `1UMHvG04UnW2oOhAFlkeFJdh18AKGJXno` | `10.1364-josab.17.000304.pdf` | ص 5, 6, 12, 13, 14, 15 | 27 |
+| `1LRJkVFuDHrWHDKEtrFExUMNauMzMRBl8` | `2024_Zograf_Combining_ultrahigh_index_with_exceptional_nonlinearity_in_resonant_tr_9648ba.pdf` | ص 1, 2, 3, 4, 5, 6, 8, 9 | 27 |
+
 ### بلور `Fluorides_CaF2_MgF2_BaF2_LiF`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
@@ -216,6 +258,15 @@
 | `1qNQtWKc9D_Bmt_RC1I6qOIqBYGE2UZjn` | `10.1021-jacs.5b01025.pdf` | ص 3, 19, 20, 34 | 20 |
 | `1OJymBmjHZkrfHHuCQP0Ck5mMOS5ZNKM1` | `2014_Harris_Efficient_compact_and_low_loss_thermo-optic_phase_shifter_in_silicon_280f68.pdf` | ص 1, 2, 3, 4, 5, 6 | 17 |
 
+### بلور `Thermo-optic_coefficients`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1zYZfjTvsWEVYJ30by-8j77RicWW2wIpd` | `2016_Melati_Wavelength_and_composition_dependence_of_the_thermo-optic_coefficient_965e88.pdf` | ص 1, 2, 4, 5, 6, 8, 9 | 29 |
+| `1JbEi_0NpGUceo5JPm4HQxgGsG2s8vqp9` | `10.1063-1.4868576.pdf` | ص 1, 2, 3, 4, 5 | 28 |
+| `1njW-sim3xBCxvM4F9m7dj-wojq9t4oyL` | `10.1016-j.ijleo.2021.167021.pdf` | ص 1, 2, 6, 7, 9, 10, 11 | 27 |
+| `1rCtb2pGNNvdqq4JK-k4XqtGZU8XTI2oi` | `2015_Liu_Photonic_Crystal_Fiber_Temperature_Sensor_Based_on_Coupling_Between_Li_87c171.pdf` | ص 3, 9 | 23 |
+| `1xeIPPztOXLDBAVzeBfr7icjHj7vKwtQ5` | `2018_Arosa_Modeling_the_Temperature-Dependent_Material_Dispersion_of_Imidazolium-_c527f6.pdf` | ص 2, 9, 14, 15, 16, 18, 19, 23 | 18 |
+
 ### بلور `CLBO_CsLiB6O10`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
@@ -251,15 +302,6 @@
 | `1jTmhInA0SGcXWot1fAv3hWnbzKlppp2E` | `10.1063-1.1992666.pdf` | ص 20, 22, 23, 29, 50, 51, 54, 60 | 61 |
 | `1GcF-ald0pJGYLMvgaK4udRj3XEq3j1ws` | `10.1016-j.ijleo.2020.164641.pdf` | ص 5, 11 | 23 |
 | `1V7wmrgs93h4cazuR93MT3MAxDNKwnhUV` | `10.1364-ao.36.001540.pdf` | ص 1, 2, 3, 4, 6, 7 | 20 |
-
-### بلور `Phase_matching_theory_birefringence`
-| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
-| :--- | :--- | :--- | :---: |
-| `1PaOynzQEtiKKDNCA_tFxsAFWLjXvBSxp` | `2007_Bergé_Ultrashort_filaments_of_light_in_weakly_ionized_optically_transparent_1fde8c.pdf` | ص 3, 6, 10, 11, 12, 13, 15, 18 | 50 |
-| `1kuTH61rpAtKvVQHQSITkjhogKsIMu-XU` | `10.1109-3.159516.pdf` | ص 1, 2, 3, 7, 8, 10, 11, 12 | 35 |
-| `1UMHvG04UnW2oOhAFlkeFJdh18AKGJXno` | `10.1364-josab.17.000304.pdf` | ص 5, 6, 12, 13, 14, 15 | 27 |
-| `1HhXD3Bk17fiJsJYDK_h9F9KSQ9YSJkHD` | `10.1021-acs.chemmater.7b00243.pdf` | ص 3, 4, 7, 9, 10, 11, 13 | 14 |
-| `1ZSIBo9BogLun3ES8v8EYCZktfYivbRc1` | `10.1063-1.1709130.pdf` | ص 2, 6, 7 | 13 |
 
 ### بلور `DAST_DSTMS_OH1`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
@@ -400,6 +442,15 @@
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
 | `petrov2015` | `petrov2015.pdf` | ص 5, 6, 7, 8, 10, 11, 13, 14 | 127 |
+
+### بلور `Refractive_index_measurement_methods`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1-xVBankDSZ4WXLESMSu8sThB7Ph3aAfa` | `10.1063-1.339341.pdf` | ص 2, 4, 5, 6, 7, 8, 11 | 32 |
+| `1ebDnRd5zkM4QjoNWdHaHcoywhGJKT_sy` | `10.1016-j.cjsc.2023.100017.pdf` | ص 1, 2, 3, 4, 6, 8, 9, 10 | 21 |
+| `1T-3gWhP5GGBXyxAbFaYM5eT9JjLwiE1z` | `10.1364-ao.22.003177.pdf` | ص 2, 5 | 15 |
+| `1JqE7WHANw5MD3msAZXsFwwec4BCEzxHH` | `10.1021-acs.cgd.7b01594.pdf` | ص 2, 4, 5, 10, 13 | 10 |
+| `1vxNkrMiCwkHwG5PgYJm3QSBqTDmBvYKX` | `2010_Weber_Optical_constants_of_graphene_measured_by_spectroscopic_ellipsometry_4639ea.pdf` | ص 3 | 6 |
 
 ### بلور `Sapphire_Al2O3`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |

@@ -660,3 +660,4 @@
 | `1qaaj0nn34CRL7Ps9vp5jEEidq3G_Mx2b` | `10.1111-j.1151-2916.1995.tb08433.x.pdf` | No extractable text found in any page (likely scanned image) |
 | `1FqcEacrb6x6u5sL8FJT2oOfJcv_qDiRx` | `10.1103-physrevb.1.3494.pdf` | No extractable text found in any page (likely scanned image) |
 | `1Aatq6ivdO0JzeRsT7M1VG7zqgqZgvfha` | `10.1103-physrevb.2.2709.pdf` | No extractable text found in any page (likely scanned image) |
+| `1_iYaj3X3GVKZLRs74uaawHLkc_JEl07X` | `10.1364-ao.29.001281.pdf` | No extractable text found in any page (likely scanned image) |
