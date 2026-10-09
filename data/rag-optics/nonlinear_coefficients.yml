@@ -389,3 +389,10 @@
     - {doc_id: 10.1364_josab.24.002556, doi: 10.1364/josab.24.002556, cite: "Mutter et al. (2007)", pdf_page: 4, what: "DAST d111 = 210 ± 55, d122 = 32 ± 4, d212 = 25 ± 3 pm/V at 1.9 µm (Table 2, from their ref. 20), frame x1, x2, x3 with n1 > n2 > n3"}
   notes: "m, mirror ⊥ x2; d111 → d11, d122 → d12, d212 → d26; the other allowed elements are left out"
 
+- material: GaS0.4Se0.6
+  point_group: -62m
+  d: {22: 44.1, 21: -44.1, 16: -44.1}
+  sources:
+    - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 30, what: "d22 = 44.1 pm/V for SHG at 4.65 µm (Table 2; 49.51 with Miller's correction for 1.064 → 6.45 µm)"}
+  notes: "−6m2 as GaSe: d21 = d16 = −d22"
+

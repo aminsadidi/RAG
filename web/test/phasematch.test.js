@@ -382,6 +382,15 @@ test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (
   check("BaGa4Se7", "Kato", [["shg", 10.591, 0, "xz", 52.01, 42.6, 0.02], ["shg", 10.591, 0, "yz", 57.04, 82.2, 0.02],
     ["shg", 5.2955, 0, "xz", 39.34, 17.0, 0.02], ["shg", 5.2955, 0, "xz", 49.04, 20.4, 0.02], ["shg", 5.2955, 0, "yz", 21.85, 33.4, 0.02],
     ["shg", 3.5303, 0, "xz", 43.30, 11.5, 0.02], ["shg", 3.5303, 0, "xz", 57.10, 13.9, 0.02], ["shg", 3.5303, 0, "yz", 34.33, 21.9, 0.02]]);
+  // GaS0.4Se0.6, Katō & Mikami 2014, Table 1: type-1 SHG, calculated external angles from the c axis at 20 °C
+  // (sin θext = no(λ1) sin θint). The SFG rows are not checked: their two inputs, collinear outside, refract to
+  // different internal angles (non-collinear inside), which this collinear engine does not model.
+  const gs = source("GaS0.4Se0.6");
+  for (const [lam, ext] of [[10.591, 56.21], [5.2955, 31.12], [3.5303, 35.06]]) {
+    const th = solveAll(nAtTemp(gs, 20), gs.kind, "shg", lam, 0).find((r) => r.type === "I").angle * rad;
+    const v = Math.asin(nAtTemp(gs, 20)(lam)[0] * Math.sin(th)) / rad;
+    assert.ok(Math.abs(v - ext) < 0.03, `GaS0.4Se0.6 SHG ${lam} µm: ${v}° vs ${ext}°`);
+  }
   // GaSe, Katō, Tanno, Umemura 2013, p. 3: type-1 SHG of 9.5862 µm at θint = 13.61° (20 °C), 13.51° (225 °C), 13.71° (−165 °C)
   const g = source("GaSe", "Kato");
   for (const [T, th] of [[20, 13.61], [225, 13.51], [-165, 13.71]]) {
