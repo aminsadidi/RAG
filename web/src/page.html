@@ -108,25 +108,81 @@ body{overflow-x:hidden}
 .prow .meta{flex:1;direction:ltr;text-align:left;font-size:13px}
 .prow .meta b{font-size:14px}
 .prow .yr{flex:none;width:44px;color:var(--muted);font-size:13px}
+
+/* ===== redesign 2026-10 ===== */
+section>.card:first-child>h2:first-child{display:none}
+:root{--bg:#f6f7f9;--card:#fff;--ink:#0f1720;--muted:#5d6b7a;--line:#e3e7ec;--soft:#f1f3f6;--accent:#2f5bd3;--accent-ink:#fff;
+--accent-soft:#e9effc;--side:#0f1b2d;--side-ink:#c9d3e0;--side-on:#ffffff;--shadow:0 1px 2px rgba(16,24,40,.04),0 2px 8px rgba(16,24,40,.04);--r:12px}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1117;--card:#141b23;--ink:#e7edf3;--muted:#93a1b0;--line:#25303c;--soft:#1a232d;--accent:#6b93ff;
+--accent-soft:#1c2a45;--side:#0a0f15;--side-ink:#a9b5c3;--side-on:#fff;--shadow:none}}
+body{font-size:14.5px;line-height:1.7;display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+#side{position:sticky;top:0;height:100vh;background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;padding:18px 12px;gap:6px}
+#side .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;color:#fff}
+#side .brand b{display:block;font-size:16px;letter-spacing:.2px}#side .brand small{display:block;color:var(--side-ink);font-size:12px;font-weight:400;margin:0}
+#side .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#2f5bd3);display:grid;place-items:center;font-weight:700;color:#fff}
+#side nav{display:flex;flex-direction:column;gap:2px;margin:0;overflow:visible;max-width:none}
+#side nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:start;color:var(--side-ink);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500}
+#side nav button svg{width:18px;height:18px;fill:currentColor;flex:none;opacity:.85}
+#side nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+#side nav button.on{background:rgba(79,124,255,.22);color:var(--side-on);font-weight:600}
+#side nav button.minor{margin-top:6px;font-size:13px}
+#side .navsec{font-size:11px;letter-spacing:.6px;color:#6f7f93;padding:14px 10px 4px}
+#side .logout{margin-top:auto;color:var(--side-ink);font-size:13px;padding:8px 10px;text-decoration:none;border-radius:8px}
+#side .logout:hover{background:rgba(255,255,255,.06)}
+main{max-width:1180px;width:100%;margin:0;padding:26px 32px 70px}
+#pagehead{margin:0 0 18px}#pagehead h1{font-size:22px;margin:0;font-weight:700;letter-spacing:-.2px}#pagehead p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.card{border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+section>.card+.card,section>.card+div,section>div+.card{margin-top:14px}
+h2{font-size:15.5px;font-weight:600;margin:0 0 12px}
+textarea,input,select{border-radius:8px;padding:7px 10px;min-height:36px;transition:border-color .15s,box-shadow .15s}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input[type=checkbox]{min-height:0;accent-color:var(--accent)}
+button.main,button.alt{font:inherit;font-size:14px;border-radius:8px;padding:7px 16px;min-height:36px;cursor:pointer}
+.row>button:not([class]){font:inherit;font-size:14px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:7px 16px;min-height:36px;cursor:pointer;font-weight:600}
+button.main{box-shadow:0 1px 2px rgba(47,91,211,.25)}
+button.alt{border-color:var(--line);color:var(--ink);background:var(--card)}button.alt:hover{border-color:var(--accent);color:var(--accent)}
+.row{gap:12px 16px;margin-top:12px}.row label{font-size:13.5px}
+.hint{font-size:12.5px}
+details.about{margin:0 0 4px;color:var(--muted);font-size:13px}
+details.about summary{cursor:pointer;color:var(--accent);font-size:12.5px;list-style:none;display:inline-block}
+details.about summary::-webkit-details-marker{display:none}
+details.about summary::before{content:"ⓘ ";}
+details.about[open] p{margin:6px 0 0}
+table{font-size:13.5px}th{background:var(--soft);font-weight:600;color:var(--muted);font-size:12.5px}
+th,td{padding:7px 10px}
+.examples button{background:var(--card);border-color:var(--line);font-size:12.5px;padding:3px 12px}
+.examples button:hover{border-color:var(--accent);color:var(--accent)}
+.tile{background:var(--card);border:1px solid var(--line)}
+@media (max-width:900px){
+ body{display:block}
+ #side{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;padding:8px 10px;z-index:10;gap:8px}
+ #side .brand{padding:0}#side .brand div,#side .navsec{display:none}
+ #side nav{flex-direction:row;overflow-x:auto;flex:1;gap:2px}
+ #side nav button{width:auto;white-space:nowrap;padding:7px 10px;font-size:13px}
+ #side nav button svg{display:none}#side nav button.minor{margin:0}
+ #side .logout{margin:0;white-space:nowrap}
+ main{padding:16px 16px 60px}
+}
 </style>
 </head>
 <body>
-<header><div class="bar">
-  <div class="brand">MatRAG Optics <small>بازیابی ثابت‌های نوری از مقاله‌ها</small></div>
+<aside id="side">
+  <div class="brand"><span class="logo">M</span><div><b>MatRAG</b><small>اپتیک غیرخطی</small></div></div>
   <nav>
-    <button data-tab="search" class="on">جست‌وجو</button>
-    <button data-tab="paper">مقاله</button>
-    <button data-tab="index">ضریب شکست</button>
-    <button data-tab="pm">تطبیق فاز</button>
-    <button data-tab="spdc">جفت فوتون (SPDC)</button>
-    <button data-tab="library">مجموعه</button>
-    <button data-tab="eval">ارزیابی</button>
-    <button data-tab="about">راهنما</button>
+    <button data-tab="search" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 0 4.03 11.6l4.43 4.44 1.06-1.06-4.44-4.43A6.5 6.5 0 0 0 10.5 4Zm0 1.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"/></svg><span>جست‌وجو</span></button>
+    <div class="navsec">ابزارها</div>
+    <button data-tab="index"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19h18v1.5H3V19Zm1.2-2.2 4.6-8 3.6 5 3.2-4.6 4.2 7.6-1.3.7-3-5.3-3.1 4.4-3.5-4.9-3.4 5.8-1.3-.7Z"/></svg><span>ضریب شکست</span></button>
+    <button data-tab="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 1.5a7.5 7.5 0 0 1 7.42 6.37L4.6 13.45A7.5 7.5 0 0 1 12 4.5Zm-7.03 10.4 14.6-2.55A7.5 7.5 0 0 1 4.97 14.9Z"/></svg><span>تطبیق فاز</span></button>
+    <button data-tab="spdc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a2.5 2.5 0 1 0 0 .01ZM19 6a2 2 0 1 0 0 .01ZM19 18a2 2 0 1 0 0 .01ZM7.3 11.3l9.6-4.6.6 1.3-9.6 4.6-.6-1.3Zm0 1.4.6-1.3 9.6 4.6-.6 1.3-9.6-4.6Z"/></svg><span>جفت فوتون</span></button>
+    <div class="navsec">داده</div>
+    <button data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4V4Zm5.5 0h4v16h-4V4Zm6.2.6 3.8-1 4 15.5-3.8 1-4-15.5Z"/></svg><span>مجموعه و ارزیابی</span></button>
+    <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
-  <a href="/logout" class="hint">خروج</a>
-</div></header>
+  <a href="/logout" class="logout">خروج</a>
+</aside>
 
 <main>
+<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p></div>
 <section id="tab-search">
   <div class="card">
     <textarea id="q" placeholder="سؤال را به فارسی یا انگلیسی بنویسید، مثلاً: ضرایب سلمایر بلور LBO"></textarea>
@@ -306,8 +362,8 @@ body{overflow-x:hidden}
       <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
     </div>
     <div class="row">
-      <label>طول موج پمپ <input id="splp" type="number" step="any" value="0.405" style="width:84px"> µm</label>
-      <label>طول موج فوتون ۱ <input id="spl1" type="number" step="any" value="0.81" style="width:84px"> µm</label>
+      <label>طول موج پمپ <input id="splp" type="number" step="any" value="0.775" style="width:84px"> µm</label>
+      <label>طول موج فوتون ۱ <input id="spl1" type="number" step="any" value="1.55" style="width:84px"> µm</label>
       <span id="spl2" class="hint" style="direction:ltr"></span>
       <label>طول بلور <input id="spL" type="number" step="any" value="10" style="width:70px"> mm</label>
     </div>
@@ -350,34 +406,7 @@ body{overflow-x:hidden}
     <div id="spfibres" style="direction:ltr" class="hint"></div>
   </div>
 </section>
-<section id="tab-eval" hidden class="viz-root">
-  <div class="card" id="evbig" hidden>
-    <h2>ارزیابی بزرگ</h2>
-    <p class="hint">برای هر سؤال مقاله‌ی درست (و اگر معلوم است صفحه‌ی درست) از پیش معلوم است. پنج گروه: سؤال‌هایی که مدل زبانی qwen3 روی کارت گرافیک کولب از روی یک بخش متن یا یک جدول از خود مقاله‌ها نوشت (سؤال‌های کپی‌شده از متن یا بدون نام ماده خودکار کنار گذاشته شدند)؛ هر ماده‌ی refractiveindex.info به سه شکل (فرمول، نام، نام کوتاه)؛ مقاله‌های ضرایب غیرخطی؛ و فرمول‌هایی که از خود مقاله‌ها خوانده شد. «سایت» جست‌وجوی Qdrant با یکسان‌سازی فرمول‌ها و جست‌وجوی جداگانه‌ی نام ماده است.</p>
-    <div class="tiles" id="evbigtiles"></div>
-    <div style="overflow-x:auto"><table id="evbigtable" style="margin-top:10px;min-width:640px"></table></div>
-    <p class="hint" id="evbignote"></p>
-  </div>
-  <div class="card" style="margin-top:14px">
-    <h2>ارزیابی اولیه (۸۶ سؤال)</h2>
-    <p class="hint">سؤال‌ها خودکار از refractiveindex.info ساخته شده‌اند: «فرمول پاشندگی ماده‌ی X» باید مقاله‌ای را پیدا کند که پایگاه فرمول آن ماده را از آن برداشته است. این معیار سخت‌گیر است: مقاله‌های دیگرِ همان ماده که در مجموعه هستند، درست حساب نمی‌شوند.</p>
-    <div class="tiles" id="evtiles"></div>
-  </div>
-  <div class="card" style="margin-top:14px">
-    <div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0">بازیابی: برنامه‌ی کولب در برابر سایت</h2>
-      <div class="seg" id="evmetric"></div></div>
-    <p class="hint">«سایت بعد از OCR و معادله‌ها»: متن ۵۴ مقاله‌ی اسکن‌شده یا بی‌متن با OCR (RapidOCR) خوانده شد، معادله‌های ۴۶ مقاله‌ی ارزیابی فرمول با مدل CodeFormula (GPU کولب) به LaTeX درآمد و ۶ مقاله که PDF آن‌ها در مجموعه مقاله‌ی دیگری بود فقط با چکیده نمایه شدند (اجرای کامل در کولب).</p>
-    <p class="hint">MRR: میانگین ۱/رتبه‌ی اولین مقاله‌ی درست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
-    <div id="evchart"><svg id="evsvg" role="img" aria-label="retrieval comparison"></svg></div>
-    <div id="evlegend" class="chips" style="direction:ltr"></div>
-    <table id="evtable" style="margin-top:10px"></table>
-  </div>
-  <div class="card" style="margin-top:14px">
-    <h2>استخراج فرمول پاشندگی از متن مقاله (نتیجه‌ی اولیه)</h2>
-    <p class="hint" id="evfnote"></p>
-    <table id="evformulas"></table>
-  </div>
-</section>
+
 
 <section id="tab-library" hidden>
   <div class="grid2">
@@ -408,6 +437,34 @@ body{overflow-x:hidden}
     <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
     <input type="file" id="dirinput" webkitdirectory multiple hidden>
     <input type="file" id="fileinput" accept="application/pdf,.pdf" hidden>
+  </div>
+</section>
+<section id="tab-eval" hidden class="viz-root">
+  <div class="card" id="evbig" hidden>
+    <h2>ارزیابی بزرگ</h2>
+    <p class="hint">برای هر سؤال مقاله‌ی درست (و اگر معلوم است صفحه‌ی درست) از پیش معلوم است. پنج گروه: سؤال‌هایی که مدل زبانی qwen3 روی کارت گرافیک کولب از روی یک بخش متن یا یک جدول از خود مقاله‌ها نوشت (سؤال‌های کپی‌شده از متن یا بدون نام ماده خودکار کنار گذاشته شدند)؛ هر ماده‌ی refractiveindex.info به سه شکل (فرمول، نام، نام کوتاه)؛ مقاله‌های ضرایب غیرخطی؛ و فرمول‌هایی که از خود مقاله‌ها خوانده شد. «سایت» جست‌وجوی Qdrant با یکسان‌سازی فرمول‌ها و جست‌وجوی جداگانه‌ی نام ماده است.</p>
+    <div class="tiles" id="evbigtiles"></div>
+    <div style="overflow-x:auto"><table id="evbigtable" style="margin-top:10px;min-width:640px"></table></div>
+    <p class="hint" id="evbignote"></p>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>ارزیابی اولیه (۸۶ سؤال)</h2>
+    <p class="hint">سؤال‌ها خودکار از refractiveindex.info ساخته شده‌اند: «فرمول پاشندگی ماده‌ی X» باید مقاله‌ای را پیدا کند که پایگاه فرمول آن ماده را از آن برداشته است. این معیار سخت‌گیر است: مقاله‌های دیگرِ همان ماده که در مجموعه هستند، درست حساب نمی‌شوند.</p>
+    <div class="tiles" id="evtiles"></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0">بازیابی: برنامه‌ی کولب در برابر سایت</h2>
+      <div class="seg" id="evmetric"></div></div>
+    <p class="hint">«سایت بعد از OCR و معادله‌ها»: متن ۵۴ مقاله‌ی اسکن‌شده یا بی‌متن با OCR (RapidOCR) خوانده شد، معادله‌های ۴۶ مقاله‌ی ارزیابی فرمول با مدل CodeFormula (GPU کولب) به LaTeX درآمد و ۶ مقاله که PDF آن‌ها در مجموعه مقاله‌ی دیگری بود فقط با چکیده نمایه شدند (اجرای کامل در کولب).</p>
+    <p class="hint">MRR: میانگین ۱/رتبه‌ی اولین مقاله‌ی درست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
+    <div id="evchart"><svg id="evsvg" role="img" aria-label="retrieval comparison"></svg></div>
+    <div id="evlegend" class="chips" style="direction:ltr"></div>
+    <table id="evtable" style="margin-top:10px"></table>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>استخراج فرمول پاشندگی از متن مقاله (نتیجه‌ی اولیه)</h2>
+    <p class="hint" id="evfnote"></p>
+    <table id="evformulas"></table>
   </div>
 </section>
 
@@ -461,16 +518,39 @@ const fa = (n) => Number(n).toLocaleString("fa-IR");
 const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده", metadata_only: "فقط عنوان" };
 
 // ---------- tabs
+const TAB_GROUP = { library: ["library", "eval"], paper: ["paper"] };
+const TAB_TITLE = {
+  search: ["جست‌وجو در مقاله‌ها", "پرسش به فارسی یا انگلیسی؛ پاسخ با ارجاع به صفحه‌ی مقاله"],
+  paper: ["مقاله", "همه‌ی بخش‌های یک مقاله"],
+  index: ["ضریب شکست", "فرمول‌های پاشندگی، مقایسه‌ی منابع و جدول مقادیر"],
+  pm: ["تطبیق فاز", "زاویه، walk-off، پهنای پذیرش، QPM و d_eff برای SHG، SFG و OPO"],
+  spdc: ["جفت فوتون (SPDC)", "طیف مشترک، خلوص، عدد اشمیت، HOM، کانونی‌کردن و جفت‌شدن به فیبر"],
+  library: ["مجموعه و ارزیابی", "مقاله‌های مجموعه و کیفیت بازیابی"],
+  about: ["راهنما", ""],
+};
 function showTab(name) {
-  for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === name);
-  for (const s of document.querySelectorAll("main > section")) s.hidden = s.id !== "tab-" + name;
-  if (name === "library") { loadFacets(); loadPapers(); }
+  const nav = name === "paper" ? "search" : name;
+  for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === nav);
+  const show = TAB_GROUP[name] || [name];
+  for (const s of document.querySelectorAll("main > section")) s.hidden = !show.includes(s.id.slice(4));
+  const [tt, st] = TAB_TITLE[name] || ["", ""];
+  $("ptitle").textContent = tt; $("psub").textContent = st;
+  if (name === "library") { loadFacets(); loadPapers(); loadEval(); }
   if (name === "index") loadFormulas();
   if (name === "pm") window.loadPM?.();
   if (name === "spdc") window.loadSPDC?.();
-  if (name === "eval") loadEval();
+  window.scrollTo(0, 0);
+  document.querySelector("nav button.on")?.scrollIntoView({ block: "nearest", inline: "center" });
 }
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => showTab(b.dataset.tab);
+showTab("search");
+// long introductory notes collapse behind an "about" toggle
+for (const p of document.querySelectorAll("main section > .card > p.hint")) {
+  if (p.textContent.length < 160 || p.id) continue;
+  const d = document.createElement("details"); d.className = "about";
+  d.innerHTML = "<summary>توضیح ابزار و منابع</summary>"; p.replaceWith(d); p.classList.remove("hint"); d.append(p);
+}
+
 
 // ---------- search
 const EXAMPLES = ["ضرایب سلمایر بلور LBO", "ضریب شکست LiNbO3 در طول موج 1064 نانومتر", "Sellmeier equation for ZnGeP2",
@@ -1702,6 +1782,9 @@ function fillCfg() {
   }
   SP.cfg = opts;
   $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("") || `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول است</option>`;
+  // default: type-II QPM along x (the usual PPKTP-type source), else the first option
+  const pick = opts.findIndex((o) => o.qpm && o.plane === "xy" && o.angle === 0 && o.pols[1] !== o.pols[2]);
+  if (pick >= 0) $("spcfg").value = String(pick);
 }
 function run() {
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
