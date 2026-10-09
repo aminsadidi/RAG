@@ -283,3 +283,10 @@
   sources:
     - {doc_id: 10.1364_josab.17.002086, cite: "Kaindl et al. (2000)", pdf_page: 2, what: "d11 = 670 pm/V at 10 µm; d_eeo = d11 cos²θ sin3φ, d_oeo = d11 cos θ cos3φ (Table 1)"}
   notes: "32: d12 = d26 = −d11; d14 = −d25 vanishes under Kleinman symmetry"
+
+- material: Ag3AsS3
+  point_group: 3m
+  d: {31: 10.4, 32: 10.4, 15: 10.4, 24: 10.4, 22: 16.6, 21: -16.6, 16: -16.6}
+  sources:
+    - {doc_id: 10.1016_j.optmat.2011.03.042, doi: 10.1016/j.optmat.2011.03.042, cite: "Petrov (2012)", pdf_page: 6, what: "proustite, d31 = 10.4, d22 = 16.6 pm/V for SHG at 10.6 µm (Table 2, column 6; 12.34 and 19.70 pm/V after Miller's correction to 1064 → 6.45 µm)"}
+  notes: "3m: d21 = d16 = −d22, Kleinman d15 = d24 = d31 = d32; values for 10.6 µm SHG. d_ooe = d31 sin θ − d22 cos θ sin3φ"
