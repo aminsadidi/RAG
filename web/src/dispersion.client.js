@@ -100,6 +100,11 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const l2 = lam * lam, c = (k) => (k[0] + k[1] / (l2 - spec.C) + k[2] / (l2 - spec.E) + k[3] / (l2 - spec.E) ** 2) / (2 * n0 * n0);
     return n0 * Math.expm1((c(spec.c0) * (T - t0) + c(spec.c1) * (T * T - t0 * t0) / 2) * 1e-6);
   }
+  if (form === "skauli") { // n² = g0 + Σ gi/(λi⁻² − λ⁻²), each gi, λi a polynomial in T − t0 (Skauli et al. 2003, Eq. 13)
+    const poly = (c, d) => c.reduce((s, v, k) => s + v * d ** k, 0);
+    const n2 = (d) => poly(spec.g[0], d) + [1, 2, 3].reduce((s, i) => s + poly(spec.g[i], d) / (poly(spec.lam[i - 1], d) ** -2 - lam ** -2), 0);
+    return Math.sqrt(n2(T - t0)) - Math.sqrt(n2(0));
+  }
   if (form === "gayer") {
     const f = (T - t0) * (T + t0 + (spec.f_c ?? 546.32));
     const { a, b } = spec;

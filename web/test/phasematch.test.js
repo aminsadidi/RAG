@@ -454,3 +454,26 @@ test("thermo-optic formula of HgGa2S4, Mangin et al. (2009): Table 1 and the OPO
     assert.ok(Math.abs(v - sig) < 3, `HGS ${th}°: signal ${v} vs ${sig} nm`);
   }
 });
+
+test("GaAs, Skauli et al. 2003: temperature-dependent Sellmeier (Table II) against their QPM SHG data and dn/dT", () => {
+  const s = source("GaAs", "Skauli"), n = (lam, T) => nAtTemp(s, T)(lam)[0];
+  // Table I: equivalent first-order periods and SHG wavelengths at 21 °C, Λ = λω / (2(n2ω − nω))
+  for (const [per, l2] of [[61.2, 2.0659], [38.6, 1.7575], [26.3, 1.5468], [20.40, 1.4273], [12.24, 1.2203], [6.80, 1.0314], [5.56, 0.9791]]) {
+    const v = 2 * l2 / (2 * (n(l2, 21) - n(2 * l2, 21)));
+    assert.ok(Math.abs(v / per - 1) < 0.007, `GaAs Λ ${v} vs ${per} µm`);
+  }
+  // Fig. 5 at 22 °C: dn/dT ≈ 2.92e-4 at 1.064 µm and ≈ 1.97e-4 at 10 µm; d²n/dT² ≈ 3.4e-7 at 1.064 µm
+  const d1 = (l) => (n(l, 23) - n(l, 21)) / 2, d2 = (l) => (n(l, 32) - 2 * n(l, 22) + n(l, 12)) / 100;
+  assert.ok(Math.abs(d1(1.064) / 2.92e-4 - 1) < 0.02 && Math.abs(d1(10) / 1.97e-4 - 1) < 0.03 && Math.abs(d2(1.064) / 3.4e-7 - 1) < 0.1);
+});
+
+test("CdSe, Bhar & Ghosh 1980: the straight-line fit reproduces the Sellmeier rows of Table I", () => {
+  const s = source("CdSe", "Lisitsa"), E = 1800;
+  const row = { o: { 300: [3.9090, 2.1605, 0.2129, 1.4533], [-200]: [4.1428, 1.7785, 0.2129, 1.4540] },
+    e: { 300: [3.8585, 2.3128, 0.2033, 1.5663], [-200]: [4.0374, 1.9738, 0.1977, 1.5670] } };
+  const nr = ([A, B, C, D], l) => Math.sqrt(A + B / (1 - C / (l * l)) + D / (1 - E / (l * l)));
+  for (const [i, ax] of [[0, "o"], [2, "e"]]) for (const l of [2, 5, 10]) {
+    const shift = nAtTemp(s, 300)(l)[i] - nAtTemp(s, -200)(l)[i], ref = nr(row[ax][300], l) - nr(row[ax][-200], l);
+    assert.ok(Math.abs(shift - ref) < 1e-4, `CdSe ${ax} ${l} µm: ${shift} vs ${ref}`);
+  }
+});

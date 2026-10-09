@@ -547,3 +547,18 @@
     - {page: Kato-2017, direction: o, type: 2, coefficients: [0.129012, 1.13464884, 0.10209, 0.78700654, 706.14, 3.48235561, 0.02424, 0.4706353, 328.19], range_um: [0.6328, 10.591]}
     - {page: Kato-2017, direction: e, type: 2, coefficients: [0.68717055, 1.03341572, 0.10074, 0.7785434, 719.62, 2.91290865, 0.02912, 0.48778868, 332.38], range_um: [0.6328, 10.591]}
   checks: []  # checked in the test: the calculated angles and temperature bandwidths of Table 1
+
+- material: Tl3AsSe3
+  name: Tl3AsSe3 (Thallium arsenic selenide, TAS)
+  doc_id: 10.1364_ao.11.000993
+  reference: "Feichtner, Roland (1972). Optical properties of a new nonlinear optical material: Tl3AsSe3. Applied Optics 11, 993. doi:10.1364/ao.11.000993"
+  doi: 10.1364/ao.11.000993
+  pdf_page: 4
+  where: "Sellmeier equations p. 4, fitted to the prism indices of Table II (1.553–5.3 µm, ±0.005); the paper calls them reliable in the 2–5 µm region"
+  entries:
+    - {page: Feichtner-1972, direction: o, type: 1, coefficients: [0, 9.977, 0.435, 0.067, 20], range_um: [1.553, 5.3]}
+    - {page: Feichtner-1972, direction: e, type: 1, coefficients: [0, 8.783, 0.435, -0.051, 20], range_um: [1.553, 5.3]}
+  checks:  # Table II, measured indices
+    - {direction: o, points: [[1.553, 3.443], [3.365, 3.337], [5.3, 3.326]], tol: 6.0e-3}
+    - {direction: e, points: [[1.553, 3.248], [3.365, 3.155], [5.3, 3.142]], tol: 6.0e-3}
+
