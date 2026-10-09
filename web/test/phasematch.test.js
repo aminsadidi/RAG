@@ -413,3 +413,25 @@ test("thermo-optic formula of ADP, Ghosh & Bhar (1982): Table III, 'Our calculat
     assert.ok(Math.abs(v - ang) < 1.5, `ADP SHG ${lam} µm: ${v}° vs ${ang}°`);
   }
 });
+
+test("thermo-optic formula of HgGa2S4, Mangin et al. (2009): Table 1 and the OPO tuning of Figs. 4 and 6", () => {
+  const s = source("HgGa2S4", "Mangin-2009"), rad = Math.PI / 180;
+  // β = (1/n)dn/dT = a0 + a1·T (Table 1), o and e
+  for (const [lam, o0, o1, e0, e1] of [[0.6328, 3.43, 4.45, 3.46, 4.44], [1.064, 2.37, 2.80, 2.49, 2.56], [3.39, 2.05, 2.26, 2.11, 2.29], [10.6, 2.03, 1.69, 2.07, 2.13]]) {
+    for (const T of [0, 100]) {
+      const b = (i) => { const n = (t) => nAtTemp(s, t)(lam)[i]; return (n(T + 0.5) - n(T - 0.5)) / n(T) * 1e5; };
+      assert.ok(Math.abs(b(0) - (o0 + o1 * T / 1000)) < 0.02 && Math.abs(b(2) - (e0 + e1 * T / 1000)) < 0.02, `HGS β at ${lam} µm, ${T} °C`);
+    }
+  }
+  // type-I OPO pumped at 1.0642 µm: signal at 20 °C (Fig. 4a) and idler slope from 20 to 80 °C (Fig. 6, "this work")
+  const opo = (th, T) => { let lo = 1.2, hi = 2.1; const f = (sg) => deltaK(nAtTemp(s, T), "xz", th * rad, waves("opo", 1.0642, sg), "I");
+    for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if (Math.sign(f(m)) === Math.sign(f(lo))) lo = m; else hi = m; } return 1 / (1 / 1.0642 - 2 / (lo + hi)); };
+  for (const [th, slope] of [[50.94, 1.99], [51.48, 1.96], [51.95, 1.935], [52.51, 1.905], [53.05, 1.88], [53.69, 1.86], [54.27, 1.84], [55.30, 1.815]]) {
+    const v = (opo(th, 80) - opo(th, 20)) / 60 * 1000;
+    assert.ok(Math.abs(v - slope) < 0.015, `HGS ${th}°: ${v} vs ${slope} nm/K`);
+  }
+  for (const [th, sig] of [[50.94, 1388], [55.30, 1489]]) {
+    const v = 1 / (1 / 1.0642 - 1 / opo(th, 20)) * 1000;
+    assert.ok(Math.abs(v - sig) < 3, `HGS ${th}°: signal ${v} vs ${sig} nm`);
+  }
+});

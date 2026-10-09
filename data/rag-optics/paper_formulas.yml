@@ -485,3 +485,15 @@
     - {page: Ghosh-1982, direction: o, type: 4, coefficients: [1.446791, 0.854884, 2, 0.013094, 1, 1.071368, 2, 30.0, 1, 0, 2], range_um: [0.2138, 1.529]}
     - {page: Ghosh-1982, direction: e, type: 4, coefficients: [1.417093, 0.746071, 2, 0.012929, 1, 0.420032, 2, 30.0, 1, 0, 2], range_um: [0.2138, 1.529]}
   checks: []  # checked in the test: the calculated NCPM temperatures of Table III
+
+- material: HgGa2S4
+  name: HgGa2S4 (Mercury thiogallate, HGS)
+  doc_id: 10.1364_josab.26.001702
+  reference: "Mangin, Mennerat, Gadret, Badikov, de Miscault (2009). Comprehensive formulation of temperature-dependent dispersion of optical materials: illustration with case of temperature tuning of a mid-IR HgGa2S4 OPO. J. Opt. Soc. Am. B 26, 1702. doi:10.1364/josab.26.001702"
+  doi: 10.1364/josab.26.001702
+  pdf_page: 4
+  where: "Table 2 (orange phase, from Badikov et al. 1979), n² = A + B/(λ² − C) + D/(λ² − E), taken at 20 °C; temperature dependence in thermo_optic.yml"
+  entries:
+    - {page: Mangin-2009, direction: o, type: 4, coefficients: [6.20815221, 63.70629851, 0, 225, 1, 0.23698804, 0, 0.09568646, 1], range_um: [0.55, 11.0]}
+    - {page: Mangin-2009, direction: e, type: 4, coefficients: [6.00902670, 63.28065920, 0, 225, 1, 0.21489656, 0, 0.09214633, 1], range_um: [0.55, 11.0]}
+  checks: []  # checked in the test: β of Table 1 and the OPO tuning slopes of Fig. 6
