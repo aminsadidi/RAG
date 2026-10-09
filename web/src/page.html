@@ -1237,7 +1237,7 @@ function pick(mat, label, fit = true) {
   const c = PM.list.find((x) => key(x) === mat); if (!c) return;
   let { proc, a, b, w } = inputs(); PM.moved = "";
   if (c.sources[0].isotropic) { // cubic: no angle phase matching; keep the wavelengths in the formula's range
-    if (!c.sources.some((s) => covers(s, w))) {
+    if (!covers(c.sources[0], w)) { // the first (preferred) formula, inside the transparency range
       const line = LINES[proc].find(([x, y]) => covers(c.sources[0], waves(proc, x, y)));
       if (line) { $("pma").value = line[0]; if (proc !== "shg") $("pmb").value = line[1]; ({ w } = inputs()); }
     }
