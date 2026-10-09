@@ -173,6 +173,22 @@ test("thermo-optic formulas: the 90° phase-matching temperatures the papers cal
   // LBO, Ghosh 1995: type-I SHG of 1.064 µm along x at 148.7 °C (measured 148.1–149.5); his model, as
   // implemented here, gives 153.7 °C (the paper states ±4 °C agreement for its NCPM temperatures)
   assert.ok(Math.abs(at(ncpm("LiB3O5", "Ghosh-1995", "shg", 1.064, 0), "zzy") - 148.7) < 6);
+  // KNbO3, Ghosh 1994: 2n·dn/dT = G·R + H·R² with the G and H of Table II at 22 °C (n_c, n_a, n_b = x, y, z), and
+  // Fig. 1 for the a axis at 3 µm, ≈ 100 (22 °C) and ≈ 170 ×10⁻⁶ /°C (140 °C)
+  const kn = source("KNbO3", "Ghosh-1994");
+  const twoNdn = (i, lam, T) => { const n = (t) => nAtTemp(kn, t)(lam)[i]; return 2 * n(T) * (n(T + 0.5) - n(T - 0.5)) * 1e6; };
+  for (const [i, G, H, lig] of [[0, -5.04307, 264.82864, 0.2541], [1, -52.63636, 152.12376, 0.2846], [2, -152.5316, 26.6716, 0.3486]]) {
+    const R = 1 / (1 - lig ** 2);
+    assert.ok(Math.abs(twoNdn(i, 1, 22) - (G * R + H * R * R)) < 0.5, `KNbO3 axis ${i}: ${twoNdn(i, 1, 22)}`);
+  }
+  assert.ok(Math.abs(twoNdn(1, 3, 22) / 100 - 1) < 0.15 && Math.abs(twoNdn(1, 3, 140) / 170 - 1) < 0.15);
+  // Congruent LiNbO3, Edwards & Lawrence 1984, Table II "T (calculated)": type-1 DFG of 488 nm and a dye laser
+  const ln = source("LiNbO3", "Edwards-1984");
+  for (const [ir, T] of [[2.159, 176.4], [2.249, 200.1], [2.337, 221.3], [2.432, 242.2], [2.541, 264.0], [2.643, 282.6],
+    [2.771, 303.7], [2.901, 323.0], [3.049, 342.6], [3.235, 364.5]]) {
+    const rows = ncpmTemperatures((t) => nAtTemp(ln, t), ln.kind, "opo", 0.488, 1 / (1 / 0.488 - 1 / ir), null, [0, 500]);
+    assert.ok(Math.abs(at(rows, "yyz") - T) < 0.8, `LiNbO3 ${ir} µm: ${at(rows, "yyz")} vs ${T} °C`);
+  }
 });
 
 test("thermo-optic formulas: BBO angle drift and the CdSiP2 isotropic point", () => {
@@ -332,7 +348,7 @@ test("cubic semiconductors for QPM: Petrov 2015 Table 3", () => {
   assert.ok(period("GaP") > period("GaAs") && period("ZnSe") > period("GaAs"));
 });
 
-test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (2009), GaSe (2013)", () => {
+test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (2009), BGSe (2018), GaSe (2013)", () => {
   const rad = Math.PI / 180;
   // Calculated temperature bandwidths ΔT·l (FWHM, °C·cm) at 20 °C; a row gives process, wavelengths, plane, the
   // paper's angle (or null: the solution of the plane closest in bandwidth), ΔT·l and the tolerance
@@ -360,10 +376,25 @@ test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (
   check("RbTiOPO4", "Mikami-2009", [["shg", 1.0642, 0, "xy", null, 153, 0.05], ["shg", 1.0642, 0, "yz", null, 70.9, 0.02],
     ["shg", 1.3382, 0, "xz", null, 52.5, 0.02], ["shg", 3.1842, 0, "yz", null, 79.9, 0.02], ["shg", 3.1842, 0, "xy", null, 154, 0.02],
     ["sfg", 1.5710, 1.0642, "xz", null, 35.5, 0.02], ["sfg", 1.9079, 1.0642, "yz", null, 89.3, 0.02]]);
+  // BaGa4Se7, Katō, Miyata, Badikov, Petrov 2018, Table 1 (angles and ΔT·l, column K)
+  check("BaGa4Se7", "Kato", [["shg", 10.591, 0, "xz", 52.01, 42.6, 0.02], ["shg", 10.591, 0, "yz", 57.04, 82.2, 0.02],
+    ["shg", 5.2955, 0, "xz", 39.34, 17.0, 0.02], ["shg", 5.2955, 0, "xz", 49.04, 20.4, 0.02], ["shg", 5.2955, 0, "yz", 21.85, 33.4, 0.02],
+    ["shg", 3.5303, 0, "xz", 43.30, 11.5, 0.02], ["shg", 3.5303, 0, "xz", 57.10, 13.9, 0.02], ["shg", 3.5303, 0, "yz", 34.33, 21.9, 0.02]]);
   // GaSe, Katō, Tanno, Umemura 2013, p. 3: type-1 SHG of 9.5862 µm at θint = 13.61° (20 °C), 13.51° (225 °C), 13.71° (−165 °C)
   const g = source("GaSe", "Kato");
   for (const [T, th] of [[20, 13.61], [225, 13.51], [-165, 13.71]]) {
     const v = solveAll(nAtTemp(g, T), g.kind, "shg", 9.5862, 0).find((r) => r.type === "I").angle;
     assert.ok(Math.abs(v - th) < 0.03, `GaSe ${T} °C: ${v} vs ${th}`);
+  }
+});
+
+test("thermo-optic formulas of Bhar & Ghosh (1979): Table II reproduces the high-temperature Sellmeier rows of Table I", () => {
+  for (const [mat, lo, hi, T] of [["ZnGeP2", "Boyd-20C", "Boyd-70C", 70], ["CdGeP2", "Boyd-20", "Boyd-118", 118], ["CuGaS2", "Boyd-20", "Boyd-120", 120]]) {
+    const s = source(mat, lo), h = source(mat, hi);
+    for (const ax of ["o", "e"]) for (const lam of [1, 2, 4, 8, 10.6]) {
+      const n0 = entryIndex(s.axes[ax], lam), d = thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, n0, lam, T);
+      const ref = entryIndex(h.axes[ax], lam) - n0;
+      assert.ok(Math.abs(d - ref) < 0.02 * ref, `${mat} ${ax} ${lam} µm: Δn ${d} vs ${ref}`);
+    }
   }
 });
