@@ -90,7 +90,8 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     return Math.sqrt(A + B / (l2 - C) - D * l2) - n0;
   }
   if (form === "bhar") { // n² = A + B/(1 − C/λ²) + D/(1 − E/λ²), A..D = m·T + c (T in °C), E constant (Bhar & Ghosh 1979)
-    const l2 = lam * lam, n2 = (t) => { const [A, B, C, D] = spec.c.map((c, i) => c + spec.m[i] * t); return A + B / (1 - C / l2) + D / (1 - spec.E / l2); };
+    const l2 = lam * lam, k = spec.kelvin ? 273.15 : 0; // Ghosh & Bhar (1982) fit in kelvin
+    const n2 = (t) => { const [A, B, C, D] = spec.c.map((c, i) => c + spec.m[i] * (t + k)); return A + B / (1 - C / l2) + D / (1 - spec.E / l2); };
     return Math.sqrt(n2(T)) - Math.sqrt(n2(t0));
   }
   if (form === "gayer") {
