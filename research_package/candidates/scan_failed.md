@@ -654,3 +654,4 @@
 | `1GqtGqP9FUpo6IlHR0-vKHgSmJdlCTjlc` | `10.1021-jacs.6b13234.pdf` | Download failed or non-PDF response from Drive |
 | `1tkuhBKBbTeLFo2z3EPkoSeVJ-dgVCYlD` | `10.1063-1.373414.pdf` | Download failed or non-PDF response from Drive |
 | `1zMzv2VogwzBa_akqSSYIoDZFZvpwwKTc` | `10.1364-ol.34.000262.pdf` | Download failed or non-PDF response from Drive |
+| `1kOKpwRwoOADpnQur6JPSRImOG3-EZGc1` | `10.1111-j.1151-2916.1995.tb08060.x.pdf` | No extractable text found in any page (likely scanned image) |
