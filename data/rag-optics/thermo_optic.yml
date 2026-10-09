@@ -426,3 +426,30 @@
   axes:
     o: [{range_um: [2.052, 10.591], terms: [[0.046, 1], [7.514, 0]]}]
     e: [{range_um: [2.052, 10.591], terms: [[0.061, 1], [7.984, 0]]}]
+
+- material: CsTiOAsO4
+  source: Mikami-2011
+  prefer: true
+  doc_id: 10.1063_1.3525800
+  cite: "Mikami, Okamoto, Kato (2011)"
+  pdf_page: 4
+  where: "Eq. (2), 0.5321–2.023 µm, measured by minimum deviation at 20–120 °C, with the Sellmeier equations of Eq. (1); reproduces the calculated ΔT·l of Table II"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.5321, 2.023], terms: [[0.3436, -3], [-0.4197, -2], [0.3161, -1], [0.8231, 0]]}]
+    y: [{range_um: [0.5321, 2.023], terms: [[0.5958, -3], [-0.8120, -2], [0.6376, -1], [0.8546, 0]]}]
+    z: [{range_um: [0.5321, 2.023], terms: [[1.5170, -3], [-2.7879, -2], [2.5353, -1], [2.5586, 0]]}]
+
+- material: AgGaS2
+  source: Kato-2019
+  doc_id: 10.3390_cryst9030129
+  cite: "Kato, Okamoto, Grechin, Umemura (2019)"
+  pdf_page: 3
+  where: "Eq. (3), 0.6328–10.591 µm (measured at 0.6328–3.3913 µm on a prism at 20–140 °C, then adjusted to the measured ΔT·l of Table 1), with the Sellmeier equations of Eq. (2)"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.6328, 10.591], terms: [[5.4715, -3], [-13.1712, -2], [11.1658, -1], [2.6459, 0]]}]
+    e: [{range_um: [0.6328, 10.591], terms: [[4.8348, -3], [-11.6335, -2], [9.8950, -1], [3.5135, 0]]}]
+
