@@ -337,6 +337,18 @@ body{overflow-x:hidden}
         <figcaption class="hint" id="sphomcap">احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر (فقط حالت تبهگن).</figcaption></figure>
     </div>
   </div>
+  <div class="card" style="margin-top:14px">
+    <h2>جفت‌شدن به فیبر تک‌مُد</h2>
+    <p class="hint">پمپ تک‌فام گاوسی و تطبیق فاز هم‌خط (Δk = 0 روی محور)، مُدهای هم‌خوان با فیبر گاوسی، کمر همه در وسط بلور (Ljunggren &amp; Tengner 2005). ξ = L/z<sub>R</sub> با z<sub>R</sub> = k w²/2 (k درون بلور). γ₁ و γ₂: سهم فوتون‌های هر بازو که در فیبر می‌افتند؛ γc: سهم جفت‌هایی که هر دو فوتونشان در فیبرند؛ μ: احتمال شرطی (نسبت اعلام). مقاله فقط بخش متقارن چرخشی (l = 0) حالت را نگه داشته و برای همین عددهایش بزرگ‌تر است؛ هر دو حساب نشان داده می‌شود. از پیکربندی و طول موج‌های بالا استفاده می‌کند.</p>
+    <div class="row">
+      <label>ξ پمپ <input id="spxp" type="number" step="any" value="1.7" style="width:64px"></label>
+      <label>ξ فیبر ۱ <input id="spxs" type="number" step="any" value="2.3" style="width:64px"></label>
+      <label>ξ فیبر ۲ <input id="spxi" type="number" step="any" value="2.3" style="width:64px"></label>
+      <button id="spfib">محاسبه</button>
+      <button class="alt" id="spfibopt">بهینه‌سازی کانونی</button>
+    </div>
+    <div id="spfibres" style="direction:ltr" class="hint"></div>
+  </div>
 </section>
 <section id="tab-eval" hidden class="viz-root">
   <div class="card" id="evbig" hidden>
@@ -1642,7 +1654,7 @@ new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).o
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
 import { entryIndex } from "/dispersion.js";
 import { eigenIndices, direction, solveAll } from "/phasematch.js";
-import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, C_UM_PS } from "/spdc.js";
+import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, C_UM_PS } from "/spdc.js";
 
 const SP = { list: null };
 const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
@@ -1660,6 +1672,8 @@ window.loadSPDC = async () => {
   for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
   $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(+$("splp").value, t).toFixed(4); };
   $("spgo").onclick = run;
+  $("spfib").onclick = () => fiber(false);
+  $("spfibopt").onclick = () => fiber(true);
   fillSrc(); fillCfg();
 };
 function fillSrc() {
@@ -1722,6 +1736,32 @@ function run() {
     drawJSI(I.jsi, j.n, lam1, lam2);
     drawHOM(j, l1, l2);
     $("spinfo").textContent = `شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`;
+  }, 20);
+}
+// Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
+function fiber(optimize) {
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  const dir = direction(o.plane, o.angle), pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
+  const k = (lam, pol) => { const [sl, fa] = eigenIndices(spNAt(s)(lam), dir); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
+  const base = { kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]), L_mm: +$("spL").value };
+  $("spfibres").textContent = "در حال محاسبه…";
+  setTimeout(() => {
+    if (optimize) { // pump and the two fibre foci on a grid, for the largest pair coupling (all modes)
+      let best = null;
+      for (const xp of [0.5, 0.8, 1.1, 1.4, 1.7, 2.1, 2.6, 3.2, 4, 5]) for (const xf of [1.4, 1.8, 2.3, 2.8, 3.4, 4.2]) {
+        const r = fiberCoupling({ ...base, xiP: xp, xiS: xf, xiI: xf, n: 56 });
+        if (!best || r.gammaC > best.r.gammaC) best = { xp, xf, r };
+      }
+      $("spxp").value = best.xp; $("spxs").value = best.xf; $("spxi").value = best.xf;
+    }
+    const args = { ...base, xiP: +$("spxp").value, xiS: +$("spxs").value, xiI: +$("spxi").value };
+    const f = fiberCoupling({ ...args, n: 100 }), z = fiberCoupling({ ...args, azimuthal: false, n: 100 });
+    const pc = (v) => (v * 100).toFixed(1) + "%";
+    $("spfibres").innerHTML = `w<sub>p</sub> = ${f.wp.toFixed(1)} µm, w₁ = ${f.ws.toFixed(1)} µm, w₂ = ${f.wi.toFixed(1)} µm<br>`
+      + `<b>all modes:</b> γ₁ = ${pc(f.gammaS)}, γ₂ = ${pc(f.gammaI)}, γc = ${pc(f.gammaC)}, μ₂|₁ = ${pc(f.muIgS)}, μ₁|₂ = ${pc(f.muSgI)}<br>`
+      + `l = 0 only (as Ljunggren &amp; Tengner): γ₁ = ${pc(z.gammaS)}, γ₂ = ${pc(z.gammaI)}, γc = ${pc(z.gammaC)}`
+      + (optimize ? `<br>best pair coupling on the grid at ξp = ${$("spxp").value}, ξ fibres = ${$("spxs").value}` : "");
   }, 20);
 }
 // viridis-like ramp

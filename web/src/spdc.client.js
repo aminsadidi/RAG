@@ -153,3 +153,82 @@ export function focusing({ xi, L_mm, kp, ks, ki }) {
 export function transformLimitedNm(lam, tauPs) {
   return 2 * LN2 / Math.PI / tauPs * lam * lam / C_UM_PS * 1000;
 }
+
+// Coupling of a pair into single-mode fibres (Ljunggren & Tengner 2005): a monochromatic Gaussian pump of waist wp
+// and collinear phase matching (Δk = 0 on axis), the fibre-matched modes Gaussian beams of waists ws, wi, all
+// focused at the crystal centre. In the paraxial angular spectrum (transverse wavevectors q, µm⁻¹),
+// Ψ(qs, qi) = exp(−wp²|qs + qi|²/4) sinc(ΔL/2), Δ = qs²/(2ks) + qi²/(2ki) − |qs + qi|²/(2kp) (k in the medium),
+// G(q) = (w/√(2π)) exp(−w²q²/4). Returns the single couplings γs, γi (Eq. 19: the fraction of the photons, at
+// these frequencies, found in the fibre mode), the pair coupling γc (Eq. 26) and the conditional coincidences
+// μ_i|s = γc/γs, μ_s|i = γc/γi. ξ = L/zR with zR = k w²/2 (Ljunggren's focusing parameter), so w = √(2L/(kξ)).
+// With azimuthal: false only the rotationally symmetric (l = 0) part of Ψ is kept, as Ljunggren & Tengner do by
+// writing the amplitude in the polar angles alone (Sec. II A); that drops the l ≠ 0 Schmidt modes from the total
+// and raises the couplings (their 98 %, 93 % against 82 %, 80 % with all modes, 10 mm PPKTP 532 → 810 + 1550 nm).
+export function fiberCoupling(opts) {
+  return opts.azimuthal === false ? fiberCouplingL0(opts) : fiberCouplingFull(opts);
+}
+
+function fiberCouplingL0({ kp, ks, ki, L_mm, xiP, xiS, xiI, n = 120, nphi = 64 }) {
+  const L = L_mm * 1000, w = (k, xi) => Math.sqrt(2 * L / (k * xi));
+  const wp = w(kp, xiP), ws = w(ks, xiS), wi = w(ki, xiI);
+  const G = (wv, q) => wv / Math.sqrt(2 * Math.PI) * Math.exp(-wv * wv * q * q / 4);
+  const qm = 4.5 * Math.max(2 / wp, 2 / Math.min(ws, wi), Math.sqrt(4 * Math.PI * Math.min(ks, ki) / L)), h = qm / n;
+  const rad = (i) => (i + 0.5) * h, ring = (i) => 2 * Math.PI * rad(i) * h;
+  let tot = 0, nS = 0, nI = 0, pair = 0;
+  const As = new Float64Array(n), Ai = new Float64Array(n);
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    const a = rad(i), b = rad(j);
+    let p0 = 0; // Ψ averaged over the angle between qs and qi
+    for (let m = 0; m < nphi; m++) {
+      const p2 = a * a + b * b + 2 * a * b * Math.cos((m + 0.5) * 2 * Math.PI / nphi);
+      const x = (a * a / (2 * ks) + b * b / (2 * ki) - p2 / (2 * kp)) * L / 2;
+      p0 += Math.exp(-wp * wp * p2 / 4) * (Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x);
+    }
+    p0 /= nphi;
+    tot += p0 * p0 * ring(i) * ring(j); As[j] += G(ws, a) * p0 * ring(i); Ai[i] += G(wi, b) * p0 * ring(j);
+  }
+  for (let j = 0; j < n; j++) { nS += As[j] ** 2 * ring(j); pair += G(wi, rad(j)) * As[j] * ring(j); nI += Ai[j] ** 2 * ring(j); }
+  const gs = nS / tot, gi = nI / tot, gc = pair * pair / tot;
+  return { wp, ws, wi, gammaS: gs, gammaI: gi, gammaC: gc, muIgS: gc / gs, muSgI: gc / gi };
+}
+
+function fiberCouplingFull({ kp, ks, ki, L_mm, xiP, xiS, xiI, n = 64 }) {
+  const L = L_mm * 1000, w = (k, xi) => Math.sqrt(2 * L / (k * xi));
+  const wp = w(kp, xiP), ws = w(ks, xiS), wi = w(ki, xiI);
+  const G = (wv, q2) => wv / Math.sqrt(2 * Math.PI) * Math.exp(-wv * wv * q2 / 4);
+  const psi = (sx, sy, ix) => {
+    const px = sx + ix, p2 = px * px + sy * sy, s2 = sx * sx + sy * sy, i2 = ix * ix;
+    const x = (s2 / (2 * ks) + i2 / (2 * ki) - p2 / (2 * kp)) * L / 2;
+    return Math.exp(-wp * wp * p2 / 4) * (Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x);
+  };
+  // extents: the narrowest of the pump, fibre and phase-matching widths in q
+  const qm = 4.5 * Math.max(2 / wp, 2 / Math.min(ws, wi), Math.sqrt(4 * Math.PI * Math.min(ks, ki) / L));
+  const h = 2 * qm / (n - 1), hr = qm / (n - 1);
+  let tot = 0, numS = 0, pair = 0;
+  const A = new Float64Array(n); // ∫ Gs(qs) Ψ(qs, qi) d²qs for qi = (r, 0)
+  for (let r = 0; r < n; r++) {
+    const ix = (r + 0.5) * hr, wr = 2 * Math.PI * ix * hr; // midpoint ring (∫ d²qi over a ring)
+    let a = 0, t = 0;
+    for (let u = 0; u < n; u++) for (let v = 0; v < n; v++) {
+      const sx = -qm + u * h, sy = -qm + v * h, p = psi(sx, sy, ix);
+      a += G(ws, sx * sx + sy * sy) * p; t += p * p;
+    }
+    A[r] = a * h * h; tot += t * h * h * wr; numS += A[r] * A[r] * wr; pair += G(wi, ix * ix) * A[r] * wr;
+  }
+  // γi by symmetry: the same with the roles of s and i exchanged
+  let numI = 0;
+  for (let r = 0; r < n; r++) {
+    const sx0 = (r + 0.5) * hr, wr = 2 * Math.PI * sx0 * hr;
+    let a = 0;
+    for (let u = 0; u < n; u++) for (let v = 0; v < n; v++) {
+      const ix = -qm + u * h, iy = -qm + v * h;
+      // Ψ is symmetric under a joint rotation, so Ψ(qs = (sx0, 0), qi) = Ψ evaluated with roles of the vectors
+      const px = sx0 + ix, p2 = px * px + iy * iy, i2 = ix * ix + iy * iy, s2 = sx0 * sx0;
+      const x = (s2 / (2 * ks) + i2 / (2 * ki) - p2 / (2 * kp)) * L / 2;
+      a += G(wi, i2) * Math.exp(-wp * wp * p2 / 4) * (Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x);
+    }
+    a *= h * h; numI += a * a * wr;
+  }
+  const gs = numS / tot, gi = numI / tot, gc = pair * pair / tot;
+  return { wp, ws, wi, gammaS: gs, gammaI: gi, gammaC: gc, muIgS: gc / gs, muSgI: gc / gi };
+}
