@@ -15,7 +15,8 @@ export function refractiveIndex(type, coefficients, lam) {
       for (let i = 2; i < 17; i += 2) if (C(i)) n2 += C(i) * lam ** C(i + 1);
       return Math.sqrt(n2);
     case 4: // RefractiveIndex.INFO
-      n2 = C(1) + C(2) * lam ** C(3) / (l2 - C(4) ** C(5)) + C(6) * lam ** C(7) / (l2 - C(8) ** C(9));
+      n2 = C(1); // a term with C2 or C6 = 0 is absent (its pole 0^0 = 1 would give 0/0 at λ = 1 µm)
+      for (const i of [2, 6]) if (C(i)) n2 += C(i) * lam ** C(i + 1) / (l2 - C(i + 2) ** C(i + 3));
       for (let i = 10; i < 17; i += 2) if (C(i)) n2 += C(i) * lam ** C(i + 1);
       return Math.sqrt(n2);
     case 5: { // Cauchy
