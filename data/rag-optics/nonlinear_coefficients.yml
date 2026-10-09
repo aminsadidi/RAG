@@ -344,3 +344,34 @@
   sources:
     - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 33, what: "d14 = 26.4 pm/V for SHG at 10.6 µm (cubic form); FM = 20 pm²/V² (Table 3)"}
   notes: "−43m: d14 = d25 = d36; no viable template technology for orientation patterning yet (Petrov 2015)"
+
+- material: ZnSiAs2
+  point_group: -42m
+  d: {36: 68.4, 14: 68.4, 25: 68.4}
+  sources:
+    - {doc_id: 10.1109_jqe.1972.1076982, doi: 10.1109/jqe.1972.1076982, cite: "Boyd et al. (1972)", pdf_page: 7, what: "d36/d36(GaAs) = 0.81 ± 15 % from SHG at 10.6 µm (Table VI); 109 × 10⁻¹² m/V ± 30 % on the paper's scale d36(GaAs) = 134 pm/V"}
+    - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 33, what: "d14(GaAs) = 83–86 pm/V at 10.6 µm (Table 3), the scale used here"}
+  notes: "−42m, Kleinman; 0.81 × 84.5 pm/V. The same ratio for ZnGeP2 (0.83, Table VI) gives 70 pm/V, Roberts' 69"
+
+- material: CdGeP2
+  point_group: -42m
+  d: {36: 102.2, 14: 102.2, 25: 102.2}
+  sources:
+    - {doc_id: 10.1109_jqe.1972.1076982, doi: 10.1109/jqe.1972.1076982, cite: "Boyd et al. (1972)", pdf_page: 7, what: "d36/d36(GaAs) = 1.21 ± 15 % from SHG at 10.6 µm (Table VI); 162 × 10⁻¹² m/V ± 30 % on the paper's scale d36(GaAs) = 134 pm/V"}
+    - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 33, what: "d14(GaAs) = 83–86 pm/V at 10.6 µm (Table 3), the scale used here"}
+  notes: "−42m, Kleinman; 1.21 × 84.5 pm/V"
+
+- material: CdTe
+  point_group: -43m
+  d: {14: 73, 25: 73, 36: 73}
+  sources:
+    - {doc_id: 10.1364_josab.14.002268, doi: 10.1364/josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 20, what: "d36 = 73 pm/V at 1.548 µm and 109 pm/V at 1.064 µm (Table 11 and text, wedge technique; the SH is absorbed at both)"}
+  notes: "−43m: d14 = d25 = d36. The 1.548 µm value is used, the one farther from the band gap; d falls further into the mid-IR (Miller's rule), so the QPM d_eff here is an upper estimate"
+
+- material: Mg-LiTaO3
+  point_group: 3m
+  d: {33: 12.9, 31: 0.45, 32: 0.45, 15: 0.46, 24: 0.46, 22: 1.54, 21: -1.54, 16: -1.54}
+  sources:
+    - {doc_id: 10.1007_s00340_009_3502_3, doi: 10.1007/s00340-009-3502-3, cite: "Dolev et al. (2009)", pdf_page: 5, what: "lower limits d33 = 12.9, d22 = 1.54, d24 = 0.46, d32 = 0.45 pm/V, from first-order QPM SHG (e-ee, o-oo, o-eo, e-oo) of 1.55–1.58 µm in a 21.2 µm grating (pp. 5–6); d24 = d32 by Kleinman, the difference is experimental"}
+  notes: "3m, 0.5 % MgO stoichiometric LiTaO3; magnitudes only (the paper gives no signs), d31 = d32 and d15 = d24 as measured; lower limits, Shoji's undoped LiTaO3 has d33 = 13.8"
+
