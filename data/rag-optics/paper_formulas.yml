@@ -497,3 +497,18 @@
     - {page: Mangin-2009, direction: o, type: 4, coefficients: [6.20815221, 63.70629851, 0, 225, 1, 0.23698804, 0, 0.09568646, 1], range_um: [0.55, 11.0]}
     - {page: Mangin-2009, direction: e, type: 4, coefficients: [6.00902670, 63.28065920, 0, 225, 1, 0.21489656, 0, 0.09214633, 1], range_um: [0.55, 11.0]}
   checks: []  # checked in the test: β of Table 1 and the OPO tuning slopes of Fig. 6
+
+- material: GaS0.4Se0.6
+  name: GaS0.4Se0.6 (Gallium sulfide selenide, GaSSe)
+  doc_id: 10.1364_ao.53.002177
+  reference: "Katō, Mikami (2014). Set of Sellmeier equations for GaS and GaSe and its applications to the nonlinear optics in GaSxSe1−x. Applied Optics 53, 2177. doi:10.1364/ao.53.002177"
+  doi: 10.1364/ao.53.002177
+  pdf_page: 2
+  where: "Eq. (1), 0.8–10.591 µm at 20 °C, built from the GaSe and GaS equations (Eqs. 2, 3) with n²(GaSxSe1−x) = x n²(GaS) + (1 − x) n²(GaSe), Eq. (4); reproduces the measured angles of Table 1 to ±0.06°"
+  entries:
+    - {page: Kato-2014, direction: o, type: 4, coefficients: [10.1030, 0.3202, 0, 0.1021, 1, 4074.0, 0, 1369.5, 1], range_um: [0.8, 10.591]}
+    - {page: Kato-2014, direction: e, type: 4, coefficients: [7.7615, 0.2492, 0, 0.1381, 1, 3021.6, 0, 1311.6, 1], range_um: [0.8, 10.591]}
+  checks:  # the indices the paper gives at 5.2955 µm (p. 2): no − ne = 2.66035 − 2.32731
+    - {direction: o, points: [[5.2955, 2.66035]], tol: 1.0e-4}
+    - {direction: e, points: [[5.2955, 2.32731]], tol: 1.0e-4}
+
