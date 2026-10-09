@@ -512,3 +512,38 @@
     - {direction: o, points: [[5.2955, 2.66035]], tol: 1.0e-4}
     - {direction: e, points: [[5.2955, 2.32731]], tol: 1.0e-4}
 
+- material: CdGa2S4
+  name: CdGa2S4 (Cadmium thiogallate, CGS)
+  doc_id: 10.1016_j.optcom.2016.10.054
+  reference: "Kato, Umemura, Petrov (2017). Sellmeier and thermo-optic dispersion formulas for CdGa2S4 and their application to the nonlinear optics of Hg1−xCdxGa2S4. Opt. Commun. 386, 49. doi:10.1016/j.optcom.2016.10.054"
+  doi: 10.1016/j.optcom.2016.10.054
+  pdf_page: 2
+  where: "Eq. (3), 0.49–7.519 µm at 20 °C, derived from SHG data in Hg1−xCdxGa2S4 with Eq. (1); temperature dependence in thermo_optic.yml"
+  entries:
+    - {page: Kato-2017, direction: o, type: 4, coefficients: [6.49757, 0.17227, 0, 0.02424, 1, 315.22, 0, 328.19, 1], range_um: [0.49, 7.519]}
+    - {page: Kato-2017, direction: e, type: 4, coefficients: [6.50983, 0.17311, 0, 0.02912, 1, 330.88, 0, 332.38, 1], range_um: [0.49, 7.519]}
+  checks: []  # checked in the test, through the mixed crystals of Table 1
+
+- material: Hg0.35Cd0.65Ga2S4
+  name: Hg0.35Cd0.65Ga2S4 (Mercury cadmium thiogallate, x = 0.65)
+  doc_id: 10.1016_j.optcom.2016.10.054
+  reference: "Kato, Umemura, Petrov (2017). Sellmeier and thermo-optic dispersion formulas for CdGa2S4 and their application to the nonlinear optics of Hg1−xCdxGa2S4. Opt. Commun. 386, 49. doi:10.1016/j.optcom.2016.10.054"
+  doi: 10.1016/j.optcom.2016.10.054
+  pdf_page: 2
+  where: "Eq. (1), n² = (1 − x) n²(HgGa2S4) + x n²(CdGa2S4) with Eqs. (2) and (3), written as one type-2 Sellmeier formula (B/(λ² − C) = (B/C)λ²/(λ² − C) − B/C); the paper uses it up to 10.591 µm (Table 1), beyond the 7.519 µm of Eq. (3)"
+  entries:
+    - {page: Kato-2017, direction: o, type: 2, coefficients: [-0.71766106, 0.77868058, 0.10209, 0.54010253, 706.14, 4.61945132, 0.02424, 0.62431214, 328.19], range_um: [0.6328, 10.591]}
+    - {page: Kato-2017, direction: e, type: 2, coefficients: [0.02284453, 0.70920687, 0.10074, 0.53429449, 719.62, 3.8640625, 0.02912, 0.64706661, 332.38], range_um: [0.6328, 10.591]}
+  checks: []  # checked in the test: the calculated angles and temperature bandwidths of Table 1
+
+- material: Hg0.51Cd0.49Ga2S4
+  name: Hg0.51Cd0.49Ga2S4 (Mercury cadmium thiogallate, x = 0.49)
+  doc_id: 10.1016_j.optcom.2016.10.054
+  reference: "Kato, Umemura, Petrov (2017). Sellmeier and thermo-optic dispersion formulas for CdGa2S4 and their application to the nonlinear optics of Hg1−xCdxGa2S4. Opt. Commun. 386, 49. doi:10.1016/j.optcom.2016.10.054"
+  doi: 10.1016/j.optcom.2016.10.054
+  pdf_page: 2
+  where: "Eq. (1), n² = (1 − x) n²(HgGa2S4) + x n²(CdGa2S4) with Eqs. (2) and (3), written as one type-2 Sellmeier formula (B/(λ² − C) = (B/C)λ²/(λ² − C) − B/C); the paper uses it up to 10.591 µm (Table 1), beyond the 7.519 µm of Eq. (3)"
+  entries:
+    - {page: Kato-2017, direction: o, type: 2, coefficients: [0.129012, 1.13464884, 0.10209, 0.78700654, 706.14, 3.48235561, 0.02424, 0.4706353, 328.19], range_um: [0.6328, 10.591]}
+    - {page: Kato-2017, direction: e, type: 2, coefficients: [0.68717055, 1.03341572, 0.10074, 0.7785434, 719.62, 2.91290865, 0.02912, 0.48778868, 332.38], range_um: [0.6328, 10.591]}
+  checks: []  # checked in the test: the calculated angles and temperature bandwidths of Table 1
