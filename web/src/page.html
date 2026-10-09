@@ -118,6 +118,7 @@ body{overflow-x:hidden}
     <button data-tab="paper">مقاله</button>
     <button data-tab="index">ضریب شکست</button>
     <button data-tab="pm">تطبیق فاز</button>
+    <button data-tab="spdc">جفت فوتون (SPDC)</button>
     <button data-tab="library">مجموعه</button>
     <button data-tab="eval">ارزیابی</button>
     <button data-tab="about">راهنما</button>
@@ -296,6 +297,43 @@ body{overflow-x:hidden}
   </div>
 </section>
 
+<section id="tab-spdc" hidden class="viz-root">
+  <div class="card">
+    <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
+    <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط، پمپ موج تخت، بدون کانونی‌کردن). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است.</p>
+    <div class="row">
+      <label>بلور <select id="spmat" style="max-width:300px"></select></label>
+      <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
+    </div>
+    <div class="row">
+      <label>طول موج پمپ <input id="splp" type="number" step="any" value="0.405" style="width:84px"> µm</label>
+      <label>طول موج فوتون ۱ <input id="spl1" type="number" step="any" value="0.81" style="width:84px"> µm</label>
+      <span id="spl2" class="hint" style="direction:ltr"></span>
+      <label>طول بلور <input id="spL" type="number" step="any" value="10" style="width:70px"> mm</label>
+    </div>
+    <div class="row">
+      <label>پهنای طیف پمپ (FWHM) <input id="spdp" type="number" step="any" value="1" style="width:96px"> nm</label>
+      <label>یا پالس محدود به تبدیل <input id="sptau" type="number" step="any" placeholder="—" style="width:70px"> ps</label>
+      <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="number" step="any" placeholder="بدون" style="width:70px"> nm</label>
+      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option></select></label>
+    </div>
+    <div class="row">
+      <label>پیکربندی <select id="spcfg" style="max-width:420px"></select></label>
+      <button id="spgo">محاسبه</button>
+    </div>
+    <p class="hint" id="spinfo"></p>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>نتیجه</h2>
+    <div id="spres" style="direction:ltr"></div>
+    <div class="row" style="align-items:flex-start;gap:18px;margin-top:10px">
+      <figure style="margin:0"><canvas id="spjsi" width="360" height="360" style="max-width:100%;border:1px solid var(--line, #ccc)"></canvas>
+        <figcaption class="hint">شدت طیفی مشترک |f|²؛ افقی: فوتون ۱، عمودی: فوتون ۲ (nm).</figcaption></figure>
+      <figure style="margin:0;flex:1;min-width:260px"><svg id="sphom" role="img" style="display:block;width:100%;height:220px;direction:ltr"></svg>
+        <figcaption class="hint" id="sphomcap">احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر (فقط حالت تبهگن).</figcaption></figure>
+    </div>
+  </div>
+</section>
 <section id="tab-eval" hidden class="viz-root">
   <div class="card" id="evbig" hidden>
     <h2>ارزیابی بزرگ</h2>
@@ -413,6 +451,7 @@ function showTab(name) {
   if (name === "library") { loadFacets(); loadPapers(); }
   if (name === "index") loadFormulas();
   if (name === "pm") window.loadPM?.();
+  if (name === "spdc") window.loadSPDC?.();
   if (name === "eval") loadEval();
 }
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => showTab(b.dataset.tab);
@@ -1594,6 +1633,129 @@ function drawYears() {
   svg.onmouseleave = () => { tip.style.display = "none"; };
 }
 new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).observe($("yrchart"));
+</script>
+<script type="module">
+// ---------- SPDC tab (web/src/spdc.client.js does the physics)
+import { entryIndex } from "/dispersion.js";
+import { eigenIndices, direction, solveAll } from "/phasematch.js";
+import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, C_UM_PS } from "/spdc.js";
+
+const SP = { list: null };
+const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
+const spNAt = (s) => (lam) => (s.kind === "uniaxial" ? ["o", "o", "e"] : ["x", "y", "z"]).map((a) => entryIndex(s.axes[a], lam));
+const AXIS = { x: ["xy", 0], y: ["xy", Math.PI / 2], z: ["xz", 0] };
+const POLS = [["s", "s", "s", "نوع ۰"], ["f", "f", "f", "نوع ۰"], ["f", "s", "s", "نوع I"], ["f", "s", "f", "نوع II"], ["f", "f", "s", "نوع II"]];
+
+window.loadSPDC = async () => {
+  if (SP.list) return;
+  SP.list = (await fetch("/ri/aniso.json").then((r) => r.json())).filter((c) => !c.sources[0].isotropic);
+  $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
+  $("spmat").value = SP.list.some((c) => c.material === "KTiOPO4") ? "KTiOPO4" : SP.list[0].material;
+  $("spmat").onchange = () => { fillSrc(); fillCfg(); };
+  $("spsrc").onchange = fillCfg;
+  for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
+  $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(+$("splp").value, t).toFixed(4); };
+  $("spgo").onclick = run;
+  fillSrc(); fillCfg();
+};
+function fillSrc() {
+  const c = SP.list.find((x) => x.material === $("spmat").value);
+  $("spsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} (${s.range_um[0]}–${s.range_um[1]} µm)</option>`).join("");
+}
+// Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
+function fillCfg() {
+  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  $("spl2").textContent = Number.isFinite(l2) && l2 > 0 ? `λ₂ = ${l2.toFixed(4)} µm` : "";
+  const opts = [];
+  try {
+    for (const r of solveAll(nAt, s.kind, "opo", lp, l1)) opts.push({ label: `تطبیق فاز زاویه‌ای: صفحه‌ی ${r.plane}، ${r.type}، زاویه ${r.angle.toFixed(2)}°`, plane: r.plane, angle: r.angle * Math.PI / 180, type: r.type });
+  } catch { /* outside the formula's range */ }
+  const axes = s.kind === "uniaxial" ? ["x", "z"] : ["x", "y", "z"];
+  for (const ax of axes) {
+    const [plane, angle] = AXIS[ax], dir = direction(plane, angle), [ns, nf] = eigenIndices(nAt(lp), dir);
+    const others = { x: ["y", "z"], y: ["x", "z"], z: ["x", "y"] }[ax], idx = { x: 0, y: 1, z: 2 };
+    // the transverse axis with the larger index at the pump is the slow (s) polarization
+    const [a, b] = others, sAx = nAt(lp)[idx[a]] >= nAt(lp)[idx[b]] ? a : b, fAx = sAx === a ? b : a;
+    if (!Number.isFinite(ns + nf)) continue;
+    for (const [p, q, r, name] of POLS) {
+      const nameAx = (x) => (x === "s" ? sAx : fAx);
+      opts.push({ label: `QPM در امتداد ${ax}، ${name}: ${nameAx(p)} → ${nameAx(q)} + ${nameAx(r)}`, plane, angle, pols: [p, q, r], qpm: true });
+    }
+  }
+  SP.cfg = opts;
+  $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("") || `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول است</option>`;
+}
+function run() {
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
+  $("spinfo").textContent = "در حال محاسبه…";
+  setTimeout(() => {
+    const j = jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
+      L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value,
+      filterNm: fil > 0 ? [fil, fil] : null, n: 120 });
+    const { purity: P, schmidt: K } = purity(j), I = intensity(j);
+    // the unfiltered sinc has long tails: also give P on a window twice as wide (same resolution)
+    let P2 = null;
+    if ($("sppm").value === "sinc" && !(fil > 0)) {
+      const nm = (nu) => Math.abs(C_UM_PS / nu[0] - C_UM_PS / nu[j.n - 1]) * 1000;
+      P2 = purity(jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
+        L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: "sinc",
+        spanNm: [2 * nm(j.nu1), 2 * nm(j.nu2)], n: 2 * j.n - 1 })).purity;
+    }
+    const lam1 = j.nu1.map((v) => C_UM_PS / v * 1000), lam2 = j.nu2.map((v) => C_UM_PS / v * 1000);
+    const w1 = fwhm(lam1, I.m1), w2 = fwhm(lam2, I.m2);
+    const off = !o.qpm && Math.abs(j.dk0) * +$("spL").value * 1000 / 2 > 0.5;
+    $("spres").innerHTML = `<b>P = ${P.toFixed(4)}</b>${P2 !== null ? ` (پنجره‌ی دوبرابر: ${P2.toFixed(4)})` : ""} &nbsp; K = ${K.toFixed(3)} &nbsp; FWHM₁ = ${w1.toFixed(3)} nm &nbsp; FWHM₂ = ${w2.toFixed(3)} nm`
+      + (j.periodUm ? ` &nbsp; Λ = ${j.periodUm.toFixed(3)} µm` : "") + (off ? ` <span style="color:#c33">(در مرکز طیف Δk·L/2 = ${(j.dk0 * +$("spL").value * 500).toFixed(2)}؛ زاویه را بازبینی کنید)</span>` : "");
+    drawJSI(I.jsi, j.n, lam1, lam2);
+    drawHOM(j, l1, l2);
+    $("spinfo").textContent = `شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`;
+  }, 20);
+}
+// viridis-like ramp
+const RAMP = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
+const color = (v) => { const x = Math.max(0, Math.min(1, v)) * 4, i = Math.min(3, Math.floor(x)), f = x - i; return RAMP[i].map((c, k) => Math.round(c + f * (RAMP[i + 1][k] - c))); };
+function drawJSI(jsi, n, lam1, lam2) {
+  const cv = $("spjsi"), ctx = cv.getContext("2d"), W = cv.width, pad = 46, S = W - pad - 8;
+  ctx.fillStyle = getComputedStyle(document.body).backgroundColor || "#fff"; ctx.fillRect(0, 0, W, W);
+  let max = 0; for (const v of jsi) max = Math.max(max, v);
+  // show the part where |f|² exceeds 1 % of its peak, with a margin
+  let i0 = n, i1 = -1, j0 = n, j1 = -1;
+  for (let i = 0; i < n; i++) for (let jj = 0; jj < n; jj++) if (jsi[i * n + jj] > 0.01 * max) { i0 = Math.min(i0, i); i1 = Math.max(i1, i); j0 = Math.min(j0, jj); j1 = Math.max(j1, jj); }
+  const half = Math.ceil(Math.max(i1 - i0, j1 - j0) * 0.7) + 2, ci = (i0 + i1) >> 1, cj = (j0 + j1) >> 1;
+  const a0 = Math.max(0, ci - half), a1 = Math.min(n - 1, ci + half), b0 = Math.max(0, cj - half), b1 = Math.min(n - 1, cj + half);
+  const ni = a1 - a0 + 1, nj = b1 - b0 + 1, img = ctx.createImageData(ni, nj);
+  // ν increases with the index, λ decreases: λ₁ increases to the right, λ₂ upwards
+  for (let i = a0; i <= a1; i++) for (let jj = b0; jj <= b1; jj++) {
+    const [r, g, b] = color(jsi[i * n + jj] / max), px = ((jj - b0) * ni + (a1 - i)) * 4;
+    img.data[px] = r; img.data[px + 1] = g; img.data[px + 2] = b; img.data[px + 3] = 255;
+  }
+  const tmp = document.createElement("canvas"); tmp.width = ni; tmp.height = nj; tmp.getContext("2d").putImageData(img, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.drawImage(tmp, pad, 4, S, S);
+  ctx.fillStyle = getComputedStyle(document.body).color || "#000"; ctx.font = "11px sans-serif";
+  const lo1 = lam1[a1], hi1 = lam1[a0], lo2 = lam2[b1], hi2 = lam2[b0];
+  ctx.textAlign = "center"; ctx.fillText(lo1.toFixed(1), pad + 12, W - 22); ctx.fillText(hi1.toFixed(1), pad + S - 12, W - 22); ctx.fillText("λ₁ (nm)", pad + S / 2, W - 8);
+  ctx.textAlign = "right"; ctx.fillText(hi2.toFixed(1), pad - 3, 14); ctx.fillText(lo2.toFixed(1), pad - 3, S); ctx.save(); ctx.translate(12, S / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.fillText("λ₂ (nm)", 0, 0); ctx.restore();
+}
+function drawHOM(j, l1, l2) {
+  const svg = $("sphom");
+  if (Math.abs(l1 - l2) > 1e-9) { svg.innerHTML = ""; $("sphomcap").textContent = "فرورفتگی هنگ–او–مندل فقط برای جفت تبهگن (λ₁ = λ₂) رسم می‌شود."; return; }
+  const period = 1 / (j.nu1[1] - j.nu1[0]), taus = Array.from({ length: 241 }, (_, k) => (k / 240 - 0.5) * period * 0.9);
+  const c = hom(j, taus); if (!c) { svg.innerHTML = ""; return; }
+  // keep the part around the dip
+  let k0 = 0; c.forEach((v, k) => { if (v < c[k0]) k0 = k; });
+  let a = k0, b = k0; while (a > 0 && c[a] < 0.499) a--; while (b < c.length - 1 && c[b] < 0.499) b++;
+  const w = Math.max(b - a, 10), lo = Math.max(0, a - w), hi = Math.min(c.length - 1, b + w);
+  const W = svg.clientWidth || 360, H = 220, px = (t) => 40 + (t - taus[lo]) / (taus[hi] - taus[lo]) * (W - 50), py = (v) => 10 + (1 - v / 0.55) * (H - 40);
+  const d = c.slice(lo, hi + 1).map((v, k) => `${k ? "L" : "M"}${px(taus[lo + k]).toFixed(1)},${py(v).toFixed(1)}`).join("");
+  const V = (0.5 - c[k0]) / 0.5;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = `<path d="${d}" fill="none" stroke="currentColor" stroke-width="1.6"/>`
+    + `<line x1="40" x2="${W - 10}" y1="${py(0.5)}" y2="${py(0.5)}" stroke="currentColor" stroke-dasharray="3,3" opacity="0.4"/>`
+    + `<text x="40" y="${H - 6}" font-size="11" fill="currentColor">${taus[lo].toFixed(2)} ps</text><text x="${W - 10}" y="${H - 6}" font-size="11" text-anchor="end" fill="currentColor">${taus[hi].toFixed(2)} ps</text>`
+    + `<text x="4" y="${py(0.5) + 4}" font-size="11" fill="currentColor">½</text><text x="4" y="${py(0) + 4}" font-size="11" fill="currentColor">0</text>`;
+  $("sphomcap").textContent = `احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر؛ کمینه در ${taus[k0].toFixed(2)} ps، نمایانی ${(V * 100).toFixed(1)}٪.`;
+}
 </script>
 </body>
 </html>

@@ -6,6 +6,9 @@ import PAGE from "./page.html";
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
 import PHASEMATCH_JS from "./phasematch.client.js";
+import SPDC_JS from "./spdc.client.js";
+// the module imports the phase-matching module by its file name; the browser loads it as /phasematch.js
+const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "/phasematch.js"');
 import PAPERS from "./papers.json";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
@@ -192,6 +195,9 @@ async function handle(request, env) {
   if (url.pathname === "/") return html(PAGE);
   if (url.pathname === "/phasematch.js") {
     return new Response(PHASEMATCH_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
+  }
+  if (url.pathname === "/spdc.js") {
+    return new Response(SPDC_BROWSER_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
   }
   if (url.pathname === "/dispersion.js") {
     return new Response(DISPERSION_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
