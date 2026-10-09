@@ -12,6 +12,8 @@
 #                 f_c replaces 546.32 (Edwards & Lawrence 1984 write 546).
 #   form "bhar":  n² = A + B/(1 − C/λ²) + D/(1 − E/λ²) with A, B, C, D = m·T + c (T in °C) and E constant
 #                 (Bhar & Ghosh 1979); Δn = n(T) − n(t0) of that equation. kelvin: true when T is in K.
+#   form "mangin": (1/n)dn/dT = (c0 + c1·T) × 10⁻⁶ (T in °C), each c = [a + b/(λ² − C) + d/(λ² − E) + e/(λ² − E)²]/(2n0²)
+#                 with [a, b, d, e] given; n(T) = n0·exp(∫ from t0) (Mangin et al. 2009).
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
 #                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8).
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
@@ -324,3 +326,15 @@
   axes:
     o: {m: [-0.87835e-3, 0.72007e-3, -1.40526e-5, -1.179e-4], c: [1.69960, 0.64955, 0.01723, 1.10624], E: 30.0, kelvin: true}
     e: {m: [-0.01089e-3, 0.00514e-3, -0.02471e-5, -0.00999e-4], c: [1.42036, 0.74453, 0.01300, 0.42033], E: 30.0, kelvin: true}
+
+- material: HgGa2S4
+  source: Mangin-2009
+  doc_id: 10.1364_josab.26.001702
+  cite: "Mangin, Mennerat, Gadret, Badikov, de Miscault (2009)"
+  pdf_page: 4
+  where: "Eqs. (7)–(9) and the c0, c1 of p. 4 (1705), fitted to the normalized thermo-optic coefficients of Table 1 (0.6328–10.6 µm, −20 to 120 °C), with the Sellmeier equations of Table 2 at T0 = 20 °C; reproduces the idler tuning slopes of the type-I HgGa2S4 OPO (Fig. 6, 'this work')"
+  t0_c: 20
+  form: mangin
+  axes:
+    o: {C: 225, E: 0.09568646, c0: [250.1026057, 2406.32090, 48.75282651, 5.609705868], c1: [0.3411234962, 17.00833765, 0.07450567060, 0.008044041187]}
+    e: {C: 225, E: 0.09214633, c0: [249.6347255, 2767.177716, 59.09023583, 1.480643361], c1: [0.2922118196, 6.789324599, 0.02183814714, 0.02258799232]}
