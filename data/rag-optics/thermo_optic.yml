@@ -414,3 +414,15 @@
     o: {m: [-4.67576e-4, 7.64017e-4, 3.38983e-8, -1.42373e-6], c: [4.04926, 1.93117, 0.21285, 1.45374], E: 1800.0}
     e: {m: [-3.57814e-4, 6.78068e-4, 1.12034e-5, -1.37288e-6], c: [3.96602, 2.10910, 0.19999, 1.56676], E: 1800.0}
 
+
+- material: AgGaSe2
+  source: Harasaki
+  doc_id: 10.1364_ao.37.000561
+  cite: "Tanaka & Kato (1998)"
+  pdf_page: 2
+  where: "Eq. (2), dn/dT = (aλ + b)×10⁻⁵ /°C, measured at 2.052–10.591 µm, with the Sellmeier equations of Eq. (1) (the refractiveindex.info 'Harasaki' entry; its ne B = 0.4598 against the paper's 0.4597); reproduces the calculated ΔT·l of Table 1"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [2.052, 10.591], terms: [[0.046, 1], [7.514, 0]]}]
+    e: [{range_um: [2.052, 10.591], terms: [[0.061, 1], [7.984, 0]]}]
