@@ -68,7 +68,7 @@ def build(out: Path, thermo_path: Path | None = None, isotropic: tuple[str, ...]
         if m["shelf"] == "specs":
             continue
         found = sources(json.loads((out / "m" / f"{m['i']}.json").read_text(encoding="utf-8")))
-        if not found and m["material"] in isotropic and m["shelf"] == "main":
+        if not found and m["material"] in isotropic and m["shelf"] in ("main", "papers"):
             found = isotropic_sources(json.loads((out / "m" / f"{m['i']}.json").read_text(encoding="utf-8")))
         if not found:
             continue
