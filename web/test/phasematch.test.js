@@ -518,3 +518,13 @@ test("YCOB and GdCOB, Loiko et al. 2015: Eq. (2) gives the thermo-optic coeffici
     }
   }
 });
+
+test("handbook data (Dmitriev et al. 1999) checked against the book's and Petrov's own numbers", () => {
+  // Ag3SbS3: the book's Sellmeier equations give its θtheor = 23.34° (SHG 10.59 µm) and Petrov 2015's Table 2
+  // angles for 1.064 µm → 6.45 µm, 47.14° (oo-e) and 52.84° (eo-e)
+  const s = source("Ag3SbS3"), nAt = nAtTemp(s, 20);
+  assert.ok(Math.abs(solveAll(nAt, s.kind, "shg", 10.59, 0).find((r) => r.type === "I").angle - 23.34) < 0.02);
+  const opo = solveAll(nAt, s.kind, "opo", 1.064, 1 / (1 / 1.064 - 1 / 6.45));
+  assert.ok(Math.abs(opo.find((r) => r.type === "I").angle - 47.14) < 0.02 && Math.abs(opo.find((r) => r.type === "IIa").angle - 52.84) < 0.02);
+  for (const m of ["HgS", "Se", "Ag3SbS3"]) assert.ok(D[m], m);
+});

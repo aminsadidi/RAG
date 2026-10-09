@@ -611,3 +611,15 @@
     - {page: Kato-2003, direction: z, type: 4, coefficients: [7.00229, 0.06787, 0, 0.05241, 1, 917.9906, 0, 261.3629, 1], range_um: [0.45, 3.2]}
   checks: []  # source: a handbook; not tested against the original paper's tables
 
+- material: Ag3SbS3
+  name: Ag3SbS3 (Pyrargyrite)
+  doc_id: dmitriev1999
+  reference: "Sellmeier equations of ref. 3.573 as quoted in Dmitriev, Gurzadyan, Nikogosyan (1999), Handbook of Nonlinear Optical Crystals, 3rd ed., Springer, p. 235. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 235
+  where: "n² = 1 + Aλ²/(λ² − 0.16) + Bλ²/(λ² − 225), 20 °C; transparency 0.7–14 µm; the book's θtheor = 23.34° for SHG of 10.59 µm comes from the same equations"
+  entries:
+    - {page: Dmitriev-1999, direction: o, type: 2, coefficients: [0, 6.585, 0.16, 0.1133, 225], range_um: [0.7, 14.0]}
+    - {page: Dmitriev-1999, direction: e, type: 2, coefficients: [0, 5.845, 0.16, 0.0202, 225], range_um: [0.7, 14.0]}
+  checks: []  # checked in the test: θtheor of the book's table
+
