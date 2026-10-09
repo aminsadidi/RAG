@@ -375,3 +375,31 @@
     - {page: Umemura-1999, direction: e, type: 4, coefficients: [2.0588, 0.00838, 0, 0.01363, 1, 0, 0, 0, 1, -0.00607, 2], range_um: [0.1914, 2.09]}
   checks: []  # checked in the test: Table 1 angles and the temperature bandwidths of Table 2
 
+- material: AgGaGeS4
+  name: AgGaGeS4 (Silver gallium germanium sulfide, AGGS)
+  doc_id: 10.1016_j.optmat.2004.04.007
+  reference: "Petrov, Badikov, Shevyrdyaeva, Panyutin, Chizhikov (2004). Phase-matching properties and optical parametric amplification in single crystals of AgGaGeS4. Opt. Mater. 26, 217. doi:10.1016/j.optmat.2004.04.007"
+  doi: 10.1016/j.optmat.2004.04.007
+  pdf_page: 3
+  where: "Eq. (1): n² = A − B/(C − λ²) − D/(E − λ²), fitted to the prism indices of Table 1 (0.5–11.5 µm); xyz = cab, so x is the two-fold polar axis c and nx < ny < nz only above 7.565 µm"
+  entries:
+    - {page: Petrov-2004, direction: x, type: 4, coefficients: [11.14357, 0.16361483, 0, 0.06081829, 1, 24267.167, 0, 4000, 1], range_um: [0.5, 11.5]}
+    - {page: Petrov-2004, direction: y, type: 4, coefficients: [12.64467, 0.17736979, 0, 0.07099873, 1, 21966.269, 0, 3000, 1], range_um: [0.5, 11.5]}
+    - {page: Petrov-2004, direction: z, type: 4, coefficients: [11.94767, 0.18261602, 0, 0.06821353, 1, 19915.432, 0, 3000, 1], range_um: [0.5, 11.5]}
+  checks:  # Table 1, measured (x = c, y = a, z = b)
+    - {direction: x, points: [[1.064, 2.2866], [10.6, 2.2139]], tol: 1.5e-3}
+    - {direction: y, points: [[1.064, 2.3421], [10.6, 2.2448]], tol: 1.5e-3}
+    - {direction: z, points: [[1.064, 2.3411], [10.6, 2.2472]], tol: 1.5e-3}
+
+- material: LiGaSe2
+  name: LiGaSe2 (Lithium gallium selenide, LGSe)
+  doc_id: 10.1364_ao.56.006126
+  reference: "Miyata, Petrov, Kato (2017). Phase-matching properties of LiGaSe2 for SHG and SFG in the 1.026–10.5910 μm range. Appl. Opt. 56, 6126. doi:10.1364/ao.56.006126"
+  doi: 10.1364/ao.56.006126
+  pdf_page: 2
+  where: "Eq. (1), 1.026–10.591 µm at 20 °C: n² = A + B/(λ² − C) + D/(λ² − E); x = b, y = a, z = c (polar), as for LiInS2"
+  entries:
+    - {page: Kato-2017, direction: x, type: 4, coefficients: [6.25263, 0.17189, 0, 0.06718, 1, 801.07, 0, 633.39, 1], range_um: [1.026, 10.591]}
+    - {page: Kato-2017, direction: y, type: 4, coefficients: [6.54026, 0.18644, 0, 0.07627, 1, 848.02, 0, 637.06, 1], range_um: [1.026, 10.591]}
+    - {page: Kato-2017, direction: z, type: 4, coefficients: [6.66464, 0.18813, 0, 0.08649, 1, 977.03, 0, 677.33, 1], range_um: [1.026, 10.591]}
+  checks: []  # checked in the test against the "Calculated (K)" angles of Table 1 (p. 2)
