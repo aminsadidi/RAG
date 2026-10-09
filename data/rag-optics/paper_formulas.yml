@@ -419,3 +419,29 @@
     - {direction: x, points: [[0.266, 1.5921], [0.532, 1.5424], [1.064, 1.5295]], tol: 4.0e-4}
     - {direction: y, points: [[0.266, 1.6140], [0.532, 1.5607], [1.064, 1.5472]], tol: 4.0e-4}
     - {direction: z, points: [[0.266, 1.6443], [0.532, 1.5884], [1.064, 1.5732]], tol: 4.0e-4}
+
+- material: LiInS2
+  name: LiInS2 (Lithium thioindate, LIS)
+  doc_id: 10.1364_ao.53.007998
+  reference: "Katō, Umemura (2014). Sellmeier and thermo-optic dispersion formulas for LiInS2. Appl. Opt. 53, 7998. doi:10.1364/ao.53.007998"
+  doi: 10.1364/ao.53.007998
+  pdf_page: 2
+  where: "Eq. (1), 0.717–10.591 µm at 20 °C: n² = A + B/(λ² − C) + D/(λ² − E); xy = ba plane, as Fossier et al. 2004. Thermo-optic formula Eq. (2) in thermo_optic.yml"
+  entries:
+    - {page: Kato-2014, direction: x, type: 4, coefficients: [6.70276, 0.13853, 0, 0.05712, 1, 2164.01, 0, 942.06, 1], range_um: [0.717, 10.591]}
+    - {page: Kato-2014, direction: y, type: 4, coefficients: [7.09598, 0.14240, 0, 0.06514, 1, 2511.13, 0, 988.03, 1], range_um: [0.717, 10.591]}
+    - {page: Kato-2014, direction: z, type: 4, coefficients: [7.55716, 0.15063, 0, 0.06604, 1, 3241.54, 0, 1090.62, 1], range_um: [0.717, 10.591]}
+  checks: []  # checked in the test against Table 1 "Calculated (K)" and Table 2
+
+- material: RbTiOPO4
+  name: RbTiOPO4 (Rubidium titanyl phosphate, RTP)
+  doc_id: 10.1016_j.optmat.2009.03.012
+  reference: "Mikami, Okamoto, Katō (2009). Sellmeier and thermo-optic dispersion formulas for RbTiOPO4. Opt. Mater. 31, 1628. doi:10.1016/j.optmat.2009.03.012"
+  doi: 10.1016/j.optmat.2009.03.012
+  pdf_page: 1
+  where: "Eq. (1), 0.5321–3.1842 µm at 20 °C: n² = A + B/(λ² − C) + D/(λ² − E). Thermo-optic formula Eq. (2) in thermo_optic.yml"
+  entries:
+    - {page: Mikami-2009, direction: x, type: 4, coefficients: [4.65575, 0.04068, 0, 0.04750, 1, 204.2586, 0, 130.7684, 1], range_um: [0.5321, 3.1842]}
+    - {page: Mikami-2009, direction: y, type: 4, coefficients: [4.76892, 0.04490, 0, 0.05130, 1, 221.3309, 0, 134.2832, 1], range_um: [0.5321, 3.1842]}
+    - {page: Mikami-2009, direction: z, type: 4, coefficients: [7.97109, 0.06079, 0, 0.05968, 1, 1234.6913, 0, 269.8094, 1], range_um: [0.5321, 3.1842]}
+  checks: []  # checked in the test against the temperature bandwidths of Table 1

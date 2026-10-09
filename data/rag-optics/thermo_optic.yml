@@ -175,3 +175,55 @@
     y: [{range_um: [0.474, 3.083], t_coef: -6.664e-3, terms: [[0.6614, -3], [-1.7119, -2], [2.0856, -1], [3.7731, 0]]}]
     z: [{range_um: [0.474, 3.083], t_coef: -11.622e-3, terms: [[0.9861, -3], [-3.7512, -2], [5.5064, -1], [4.6591, 0]]}]
 
+- material: AgGaS2
+  source: Takaoka
+  prefer: true
+  doc_id: 10.1364_ao.38.004577
+  cite: "Takaoka, Katō (1999)"
+  pdf_page: 2
+  where: "Eq. (2), 0.56–10.59 µm, with the Sellmeier equations of Eq. (1) (the refractiveindex.info 'Takaoka' entry, identical); reproduces the (T/K) temperature bandwidths of Table 1"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.56, 10.59], terms: [[0.3180, -3], [2.8968, -2], [-0.8685, -1], [15.2679, 0]]}]
+    e: [{range_um: [0.56, 10.59], terms: [[6.1742, -3], [-12.0868, -2], [8.2485, -1], [14.4365, 0]]}]
+
+- material: GaSe
+  source: Kato
+  doc_id: 10.1364_ao.52.002325
+  cite: "Katō, Tanno, Umemura (2013)"
+  pdf_page: 2
+  where: "Eq. (2), 1.7652–10.591 µm, with the Sellmeier equations of Eq. (1) at 20 °C (the refractiveindex.info 'Kato' entry, identical); reproduces the internal angles of type-1 SHG at 9.5862 µm at −165, 20 and 225 °C (p. 3) to 0.02°. The temperature bandwidths of Tables 1–2 are reproduced only to 10–40 %: for these processes dθ/dT nearly vanishes and ΔT·l is very sensitive"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [1.7652, 10.591], terms: [[3.8764, -3], [-4.9338, -2], [2.8974, -1], [9.1979, 0]]}]
+    e: [{range_um: [1.7652, 10.591], terms: [[30.3257, -3], [-7.4499, -2], [3.3385, -1], [4.8576, 0]]}]
+
+- material: LiInS2
+  source: Kato-2014
+  prefer: true
+  doc_id: 10.1364_ao.53.007998
+  cite: "Katō, Umemura (2014)"
+  pdf_page: 3
+  where: "Eq. (2), 1.0642–10.591 µm, with the Sellmeier equations of Eq. (1) at 20 °C (the second line, printed dnx/dT, is dny/dT)"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [1.0642, 10.591], terms: [[1.2899, -3], [-2.7837, -2], [2.7327, -1], [2.5423, 0]]}]
+    y: [{range_um: [1.0642, 10.591], terms: [[1.6719, -3], [-3.5215, -2], [3.4060, -1], [3.0173, 0]]}]
+    z: [{range_um: [1.0642, 10.591], terms: [[1.6051, -3], [-3.4040, -2], [3.3096, -1], [2.9708, 0]]}]
+
+- material: RbTiOPO4
+  source: Mikami-2009
+  prefer: true
+  doc_id: 10.1016_j.optmat.2009.03.012
+  cite: "Mikami, Okamoto, Katō (2009)"
+  pdf_page: 2
+  where: "Eq. (2), 0.5321–3.1842 µm, with the Sellmeier equations of Eq. (1) at 20 °C; fitted to the temperature bandwidths of Table 1"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.5321, 3.1842], terms: [[0.1227, -3], [-0.3064, -2], [0.4469, -1], [0.0941, 0]]}]
+    y: [{range_um: [0.5321, 3.1842], terms: [[0.5487, -3], [-1.7317, -2], [1.9380, -1], [0.1057, 0]]}]
+    z: [{range_um: [0.5321, 3.1842], terms: [[1.1823, -3], [-2.8099, -2], [2.6613, -1], [0.1415, 0]]}]
