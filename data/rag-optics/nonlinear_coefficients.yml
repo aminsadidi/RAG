@@ -319,3 +319,28 @@
   sources:
     - {doc_id: 10.1016_s0038_1098_98_00190_2, cite: "Sugawara, Komatsu, Uda (1998)", pdf_page: 4, what: "d31 = 0.15 pm/V at 1064 nm (quoted from Furusawa et al. 1991); only d31 enters type-I angle phase matching, d_eff = d31 sin θ (Eq. 4)"}
   notes: "4mm: d31 = d32, d15 = d24; Kleinman d15 = d31. d33 is not given and is left out (it enters only e-ee interactions)"
+
+# Cubic semiconductors, used only for quasi-phase matching in orientation-patterned crystals (OP-GaAs,
+# OP-GaP): Petrov (2015) Table 3 gives d14 for SHG at 10.6 µm and FM = (2·d14/π)²/n³, i.e. d_eff = (2/π)·d14.
+- material: GaAs
+  point_group: -43m
+  d: {14: 84.5, 25: 84.5, 36: 84.5}
+  sources:
+    - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 33, what: "d14 = 83–86 pm/V for SHG at 10.6 µm, refined from SHG in OP-GaAs; FM = (2 d14/π)²/n³ = 78–83 pm²/V² (Table 3)"}
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 20, what: "d36 = 119 pm/V at 1.533 µm and 170 pm/V at 1.064 µm (Table 11), the dispersion towards the band gap"}
+  notes: "−43m: d14 = d25 = d36; 84.5 is the middle of Petrov's range, for the mid-IR"
+
+- material: GaP
+  point_group: -43m
+  d: {14: 37, 25: 37, 36: 37}
+  sources:
+    - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 33, what: "d14 = 37 pm/V for SHG at 10.6 µm; FM = 20.6 pm²/V² (Table 3)"}
+    - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 20, what: "d36 = 36.8 pm/V at 1.313 µm, 70.6 pm/V at 1.064 µm (Table 11)"}
+  notes: "−43m: d14 = d25 = d36"
+
+- material: ZnSe
+  point_group: -43m
+  d: {14: 26.4, 25: 26.4, 36: 26.4}
+  sources:
+    - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 33, what: "d14 = 26.4 pm/V for SHG at 10.6 µm (cubic form); FM = 20 pm²/V² (Table 3)"}
+  notes: "−43m: d14 = d25 = d36; no viable template technology for orientation patterning yet (Petrov 2015)"

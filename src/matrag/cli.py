@@ -356,8 +356,10 @@ def export_formulas(
     added = paper_formulas.add_to_site(out, Settings().data_dir / Settings().corpus / "paper_formulas.yml")
     typer.echo(f"{added} more materials from formulas read in the collection's papers (paper_formulas.yml)")
     thermo = Settings().data_dir / Settings().corpus / "thermo_optic.yml"
-    typer.echo(f"{anisotropic.build(out, thermo)} birefringent crystals written to aniso.json (phase-matching tab)")
     dij = Settings().data_dir / Settings().corpus / "nonlinear_coefficients.yml"
+    cubic = anisotropic.cubic_crystals(dij)
+    typer.echo(f"{anisotropic.build(out, thermo, cubic)} crystals written to aniso.json (phase-matching tab; "
+               f"{len(cubic)} cubic, for QPM only)")
     typer.echo(f"{anisotropic.build_nonlinear(out, dij)} crystals with nonlinear coefficients written to dij.json")
 
 

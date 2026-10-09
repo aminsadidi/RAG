@@ -315,3 +315,19 @@ test("thermo-optic formulas: BiBO, Umemura, Miyata, Kato 2007", () => {
     assert.ok(Math.abs(v - ref) < 0.03 * ref, `BiBO ${p} ${a} ${b}: ${v} vs ${ref}`);
   }
 });
+
+test("cubic semiconductors for QPM: Petrov 2015 Table 3", () => {
+  // Isotropic sources: no angle phase matching at all
+  const gaas = source("GaAs");
+  assert.ok(gaas.isotropic);
+  assert.equal(solveAll(nAt(gaas), gaas.kind, "opo", 2.09, 3.0).length, 0);
+  // FM = (2·d14/π)²/n³ at 10.6 µm: 78–83 (GaAs), 20.6 (GaP), 20 pm²/V² (ZnSe)
+  const fm = (mat) => { const s = source(mat), n = entryIndex(s.axes.o, 10.6); return (2 * D[mat].d["14"] / Math.PI) ** 2 / n ** 3; };
+  assert.ok(fm("GaAs") > 78 && fm("GaAs") < 84, `GaAs FM ${fm("GaAs")}`);
+  assert.ok(Math.abs(fm("ZnSe") - 20) < 1.5, `ZnSe FM ${fm("ZnSe")}`);
+  assert.ok(Math.abs(fm("GaP") - 20.6) < 0.12 * 20.6, `GaP FM ${fm("GaP")}`);
+  // "GaP and ZnSe ... will require larger grating periods in QPM structures compared to GaAs": OPO 2.09 → 3.5 µm
+  const period = (mat) => { const s = source(mat), w = waves("opo", 2.09, 3.5), n = (l) => entryIndex(s.axes.o, l);
+    return 1 / (n(w.l3) / w.l3 - n(w.l1) / w.l1 - n(w.l2) / w.l2); };
+  assert.ok(period("GaP") > period("GaAs") && period("ZnSe") > period("GaAs"));
+});

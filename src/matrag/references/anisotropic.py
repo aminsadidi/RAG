@@ -44,18 +44,32 @@ def sources(entries: list[dict]) -> list[dict]:
     return out
 
 
-def build(out: Path, thermo_path: Path | None = None) -> int:
+def isotropic_sources(entries: list[dict]) -> list[dict]:
+    """Each index set of an optically isotropic (cubic) crystal as a source with o = e, for quasi-phase
+    matching in orientation-patterned crystals (OP-GaAs, OP-GaP): no birefringent solution exists."""
+    out = [{"label": e["page"], "kind": "uniaxial", "isotropic": True, "range_um": list(e["range_um"]),
+            "axes": {a: {k: e[k] for k in KEEP if k in e} for a in ("o", "e")}}
+           for e in entries if not e.get("direction") and e["range_um"][1] > e["range_um"][0]]
+    # formulas first, then the sets covering most of the 1–12 µm range where these crystals are used
+    cover = lambda s: max(0.0, min(s["range_um"][1], 12.0) - max(s["range_um"][0], 1.0))
+    return sorted((s for s in out if cover(s) > 0), key=lambda s: (s["axes"]["o"]["type"] == "tab", -cover(s)))
+
+
+def build(out: Path, thermo_path: Path | None = None, isotropic: tuple[str, ...] = ()) -> int:
     """Write ``aniso.json`` next to the site's ``index.json``; returns the number of crystals.
 
     A crystal listed on several shelves (e.g. LBO in refractiveindex.info and in the papers of the
     collection) is one entry with all its sources. ``thermo_path`` (thermo_optic.yml) adds the
-    temperature dependence to the sources it names."""
+    temperature dependence to the sources it names. ``isotropic`` names cubic crystals (from the
+    main shelf) added for quasi-phase matching."""
     index = json.loads((out / "index.json").read_text(encoding="utf-8"))
     crystals: dict[str, dict] = {}
     for m in index:
         if m["shelf"] == "specs":
             continue
         found = sources(json.loads((out / "m" / f"{m['i']}.json").read_text(encoding="utf-8")))
+        if not found and m["material"] in isotropic and m["shelf"] == "main":
+            found = isotropic_sources(json.loads((out / "m" / f"{m['i']}.json").read_text(encoding="utf-8")))
         if not found:
             continue
         if m["material"] in crystals:
@@ -89,6 +103,17 @@ def add_thermo(crystals: dict[str, dict], path: Path) -> None:
         if block.get("prefer"):
             crystal["sources"].remove(src)
             crystal["sources"].insert(0, src)
+
+
+CUBIC = ("-43m", "43m", "23", "432")
+
+
+def cubic_crystals(path: Path) -> tuple[str, ...]:
+    """The crystals of nonlinear_coefficients.yml with a cubic point group."""
+    import yaml
+
+    rows = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else []
+    return tuple(r["material"] for r in rows or [] if str(r["point_group"]) in CUBIC)
 
 
 def build_nonlinear(out: Path, path: Path) -> int:
