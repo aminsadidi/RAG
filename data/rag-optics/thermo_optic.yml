@@ -12,6 +12,8 @@
 #                 f_c replaces 546.32 (Edwards & Lawrence 1984 write 546).
 #   form "bhar":  n² = A + B/(1 − C/λ²) + D/(1 − E/λ²) with A, B, C, D = m·T + c (T in °C) and E constant
 #                 (Bhar & Ghosh 1979); Δn = n(T) − n(t0) of that equation. kelvin: true when T is in K.
+#   form "skauli": n² = g0 + Σ gi/(λi⁻² − λ⁻²), i = 1..3, every gi and λi a polynomial in T − t0 (coefficients of
+#                 ΔT⁰, ΔT¹, ΔT²), Skauli et al. (2003).
 #   form "mangin": (1/n)dn/dT = (c0 + c1·T) × 10⁻⁶ (T in °C), each c = [a + b/(λ² − C) + d/(λ² − E) + e/(λ² − E)²]/(2n0²)
 #                 with [a, b, d, e] given; n(T) = n0·exp(∫ from t0) (Mangin et al. 2009).
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
@@ -387,3 +389,28 @@
   axes:
     o: [{range_um: [0.6328, 10.591], terms: [[1.015171, -3], [-0.988606, -2], [0.732721, -1], [4.684225, 0]]}]
     e: [{range_um: [0.6328, 10.591], terms: [[0.972427, -3], [-1.129589, -2], [1.140484, -1], [4.696311, 0]]}]
+
+- material: GaAs
+  source: Skauli
+  doc_id: 10.1063_1.1621740
+  cite: "Skauli et al. (2003)"
+  pdf_page: 7
+  where: "Table II, Sellmeier form Eq. (13), ΔT from 22 °C (fitted to dn/dT and d²n/dT² from FTIR and laser interferometry, 1.064–17 µm, 25–95 °C); at 22 °C it equals the refractiveindex.info 'Skauli' entry"
+  t0_c: 22
+  form: skauli
+  axes:
+    o: {g: [[5.372514], [27.83972], [0.031764, 4.350e-5, 4.664e-7], [0.00143636]], lam: [[0.4431307, 0.000050564], [0.8746453, 0.0001913, -4.882e-7], [36.9166, -0.011622]]}
+    e: {g: [[5.372514], [27.83972], [0.031764, 4.350e-5, 4.664e-7], [0.00143636]], lam: [[0.4431307, 0.000050564], [0.8746453, 0.0001913, -4.882e-7], [36.9166, -0.011622]]}
+
+- material: CdSe
+  source: Lisitsa
+  doc_id: 10.1109_jqe.1980.1070580
+  cite: "Bhar & Ghosh (1980)"
+  pdf_page: 2
+  where: "Table I: Sellmeier coefficients A, B, C, D at −200, −100, 100 and 300 °C (E = 1800 µm² fixed), fitted here by straight lines in T (the paper finds dn/dT constant over −173 to 327 °C); the lines reproduce every row of the table to 5×10⁻⁵ in n at 1.5–14 µm. Applied as a change of index to the Lisitsa equations at 20 °C"
+  t0_c: 20
+  form: bhar
+  axes:
+    o: {m: [-4.67576e-4, 7.64017e-4, 3.38983e-8, -1.42373e-6], c: [4.04926, 1.93117, 0.21285, 1.45374], E: 1800.0}
+    e: {m: [-3.57814e-4, 6.78068e-4, 1.12034e-5, -1.37288e-6], c: [3.96602, 2.10910, 0.19999, 1.56676], E: 1800.0}
+
