@@ -125,8 +125,8 @@ test("IR crystals: d_eff against the expressions of Petrov et al. 2004 and Kaind
 
 test("LiInS2 and LiInSe2: the papers' calculated angles and d_eff", () => {
   // Fossier et al. 2004, Table IV ("Calculated"): YZ type-II SHG of 2.5527 µm at θ = 34.684°, X-Y DFG 0.77022 − 0.87224 µm at φ = 42.170°
-  assert.ok(Math.abs(angle("LiInS2", null, "shg", 2.5527, 0, "yz", "IIa") - 34.684) < 0.05);
-  assert.ok(Math.abs(angle("LiInS2", null, "opo", 0.77022, 0.87224, "xy", "IIa") - 42.17) < 0.1);
+  assert.ok(Math.abs(angle("LiInS2", "Fossier-2004", "shg", 2.5527, 0, "yz", "IIa") - 34.684) < 0.05);
+  assert.ok(Math.abs(angle("LiInS2", "Fossier-2004", "opo", 0.77022, 0.87224, "xy", "IIa") - 42.17) < 0.1);
   // Petrov et al. 2010, Table 4: X-Y DFG 0.7754523 − 0.8856533 µm at φ = 54.4285°
   assert.ok(Math.abs(angle("LiInSe2", "Petrov-2010", "opo", 0.7754523, 0.8856533, "xy", "IIa") - 54.4285) < 0.1);
   // d_eff in the X-Y plane: 6.54 pm/V for LIS at φ = 42° and 9.35 pm/V for LISe at φ = 55° (Petrov et al. 2010, p. 18–19)
@@ -330,4 +330,40 @@ test("cubic semiconductors for QPM: Petrov 2015 Table 3", () => {
   const period = (mat) => { const s = source(mat), w = waves("opo", 2.09, 3.5), n = (l) => entryIndex(s.axes.o, l);
     return 1 / (n(w.l3) / w.l3 - n(w.l1) / w.l1 - n(w.l2) / w.l2); };
   assert.ok(period("GaP") > period("GaAs") && period("ZnSe") > period("GaAs"));
+});
+
+test("thermo-optic formulas of Katō et al.: AgGaS2 (1999), LiInS2 (2014), RTP (2009), GaSe (2013)", () => {
+  const rad = Math.PI / 180;
+  // Calculated temperature bandwidths ΔT·l (FWHM, °C·cm) at 20 °C; a row gives process, wavelengths, plane, the
+  // paper's angle (or null: the solution of the plane closest in bandwidth), ΔT·l and the tolerance
+  const check = (mat, label, rows) => {
+    const s = source(mat, label);
+    for (const [p, a, b, plane, ang, ref, tol] of rows) {
+      const w = waves(p, a, b);
+      const bw = (r) => { const dk = (T) => deltaK(nAtTemp(s, T), plane, r.angle * rad, w, r.type); return 2 * 2.78312 / Math.abs((dk(21) - dk(19)) / 2) / 1e4; };
+      const sols = solveAll(nAtTemp(s, 20), s.kind, p, a, b).filter((r) => r.plane === plane);
+      const sol = sols.reduce((m, r) => (ang !== null ? Math.abs(r.angle - ang) < Math.abs(m.angle - ang) : Math.abs(bw(r) / ref - 1) < Math.abs(bw(m) / ref - 1)) ? r : m);
+      if (ang !== null) assert.ok(Math.abs(sol.angle - ang) < 0.05, `${mat} ${p} ${a} ${b}: angle ${sol.angle} vs ${ang}`);
+      assert.ok(Math.abs(bw(sol) - ref) < tol * ref, `${mat} ${p} ${a} ${b}: ΔT·l ${bw(sol)} vs ${ref}`);
+    }
+  };
+  // AgGaS2, Takaoka & Katō 1999, Table 1, column (T/K)
+  check("AgGaS2", "Takaoka", [["shg", 10.2466, 0, "xz", 64.3, 131, 0.02], ["shg", 9.5525, 0, "xz", 57.4, 121, 0.02],
+    ["shg", 9.2714, 0, "xz", 55.0, 118, 0.02], ["shg", 5.2955, 0, "xz", 33.2, 57.6, 0.02], ["shg", 3.5303, 0, "xz", 33.7, 22.7, 0.02]]);
+  // LiInS2, Katō & Umemura 2014, Tables 1 (angles, "Calculated (K)") and 2 (ΔT·l, column K)
+  check("LiInS2", "Kato-2014", [["shg", 5.2955, 0, "xy", 60.98, 233, 0.02], ["shg", 3.5303, 0, "xy", 49.95, 87.3, 0.06],
+    ["sfg", 10.591, 5.2955, "xz", 16.28, 103, 0.02], ["sfg", 10.591, 3.5303, "xy", 55.60, 547, 0.02],
+    ["sfg", 5.2955, 3.5303, "xy", 43.29, 102, 0.02], ["sfg", 5.2955, 3.5303, "xy", 65.30, 144, 0.02],
+    ["sfg", 5.2955, 3.5303, "yz", 10.43, 332, 0.02]]);
+  // RTP, Mikami, Okamoto, Katō 2009, Table 1 "Cal" (the two SFG rows at 0.4461 µm, which the paper says it does
+  // not reproduce, are left out)
+  check("RbTiOPO4", "Mikami-2009", [["shg", 1.0642, 0, "xy", null, 153, 0.05], ["shg", 1.0642, 0, "yz", null, 70.9, 0.02],
+    ["shg", 1.3382, 0, "xz", null, 52.5, 0.02], ["shg", 3.1842, 0, "yz", null, 79.9, 0.02], ["shg", 3.1842, 0, "xy", null, 154, 0.02],
+    ["sfg", 1.5710, 1.0642, "xz", null, 35.5, 0.02], ["sfg", 1.9079, 1.0642, "yz", null, 89.3, 0.02]]);
+  // GaSe, Katō, Tanno, Umemura 2013, p. 3: type-1 SHG of 9.5862 µm at θint = 13.61° (20 °C), 13.51° (225 °C), 13.71° (−165 °C)
+  const g = source("GaSe", "Kato");
+  for (const [T, th] of [[20, 13.61], [225, 13.51], [-165, 13.71]]) {
+    const v = solveAll(nAtTemp(g, T), g.kind, "shg", 9.5862, 0).find((r) => r.type === "I").angle;
+    assert.ok(Math.abs(v - th) < 0.03, `GaSe ${T} °C: ${v} vs ${th}`);
+  }
 });
