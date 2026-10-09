@@ -495,3 +495,16 @@ test("CdSe, Bhar & Ghosh 1980: the straight-line fit reproduces the Sellmeier ro
     assert.ok(Math.abs(shift - ref) < 1e-4, `CdSe ${ax} ${l} µm: ${shift} vs ${ref}`);
   }
 });
+
+test("GaP, Wei et al. 2018: temperature-dependent Sellmeier against the OP-GaP grating periods of Table 1", () => {
+  const s = source("GaP", "Wei-2018"), n = (l) => nAtTemp(s, 20)(l)[0];
+  // first-order QPM: 1/Λ = n_p/λp − n_s/λs − n_i/λi; Table 1 "Λ Exp." with the measured wavelengths. The table's
+  // third row prints signal 8.236 µm (the idler of row 2; 1/2.09 ≠ 1/8.236 + 1/5.1): the text (p. 2) gives (3.54, 5.1)
+  // (the idler follows from 1/λi = 1/λp − 1/λs; its rounded printed value moves Λ by several per cent)
+  for (const [p, sg, per] of [[1.064, 1.385, 20.8], [1.559, 1.923, 61.1], [2.09, 3.54, 92.7]]) {
+    const id = 1 / (1 / p - 1 / sg), v = 1 / (n(p) / p - n(sg) / sg - n(id) / id);
+    assert.ok(Math.abs(v / per - 1) < 0.01, `GaP Λ ${v} vs ${per} µm`);
+  }
+  // n increases with temperature (Fig. 3)
+  assert.ok(nAtTemp(s, 150)(5)[0] > nAtTemp(s, 20)(5)[0]);
+});
