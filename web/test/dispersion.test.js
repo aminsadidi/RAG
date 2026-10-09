@@ -46,3 +46,8 @@ test("formulas read from papers: the site computes what the Python tests checked
   const no = kbbf.find((e) => e.direction === "o" && e.type !== "tab");
   assert.ok(Math.abs(refractiveIndex(no.type, no.coefficients, 0.4047) - 1.49148) < 2e-5); // Chen et al. 2009, Table 2
 });
+
+test("type 4 with one pole is finite at 1 µm (the unused term is not 0/(λ² − 0⁰))", () => {
+  const n = refractiveIndex(4, [4.104676, 0.410385, 0, 0.532, 2], 1.0); // DSTMS n1, Mutter et al. 2007
+  assert.ok(Math.abs(n - Math.sqrt(4.104676 + 0.410385 / (1 - 0.532 ** 2))) < 1e-12);
+});

@@ -156,7 +156,8 @@ def refractiveindex_info(formula_type: int, coefficients, wavelength_um) -> np.n
         n2 = C(1) + sum(C(i) * lam ** C(i + 1) for i in range(2, 17, 2) if C(i))
         return np.sqrt(n2)
     if formula_type == 4:  # RefractiveIndex.INFO
-        n2 = C(1) + C(2) * lam ** C(3) / (l2 - C(4) ** C(5)) + C(6) * lam ** C(7) / (l2 - C(8) ** C(9))
+        # a term with C2 or C6 = 0 is absent (its pole C4^C5 or C8^C9 would be 0^0 = 1, a 0/0 at λ = 1 µm)
+        n2 = C(1) + sum(C(i) * lam ** C(i + 1) / (l2 - C(i + 2) ** C(i + 3)) for i in (2, 6) if C(i))
         n2 = n2 + sum(C(i) * lam ** C(i + 1) for i in range(10, 17, 2) if C(i))
         return np.sqrt(n2)
     if formula_type == 5:  # Cauchy

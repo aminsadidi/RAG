@@ -375,3 +375,17 @@
     - {doc_id: 10.1007_s00340_009_3502_3, doi: 10.1007/s00340-009-3502-3, cite: "Dolev et al. (2009)", pdf_page: 5, what: "lower limits d33 = 12.9, d22 = 1.54, d24 = 0.46, d32 = 0.45 pm/V, from first-order QPM SHG (e-ee, o-oo, o-eo, e-oo) of 1.55–1.58 µm in a 21.2 µm grating (pp. 5–6); d24 = d32 by Kleinman, the difference is experimental"}
   notes: "3m, 0.5 % MgO stoichiometric LiTaO3; magnitudes only (the paper gives no signs), d31 = d32 and d15 = d24 as measured; lower limits, Shoji's undoped LiTaO3 has d33 = 13.8"
 
+- material: DSTMS
+  point_group: m
+  d: {11: 214, 12: 31, 26: 35}
+  sources:
+    - {doc_id: 10.1364_josab.24.002556, doi: 10.1364/josab.24.002556, cite: "Mutter et al. (2007)", pdf_page: 4, what: "d111 = 214 ± 20, d122 = 31 ± 4, d212 = 35 ± 4 pm/V at 1.9 µm, Maker fringes, dielectric frame x1, x2, x3 with n1 > n2 > n3 (Table 2)"}
+  notes: "m, mirror ⊥ x2 (the paper's list of nonzero elements, p. 3); d111 → d11, d122 → d12, d212 → d26; the other allowed elements (d13, d15, d24, d31, d32, d33, d35) were not measured and are left out. Measured at 1.9 µm, beyond the 0.6–1.6 µm range of the Sellmeier equation"
+
+- material: DAST
+  point_group: m
+  d: {11: 210, 12: 32, 26: 25}
+  sources:
+    - {doc_id: 10.1364_josab.24.002556, doi: 10.1364/josab.24.002556, cite: "Mutter et al. (2007)", pdf_page: 4, what: "DAST d111 = 210 ± 55, d122 = 32 ± 4, d212 = 25 ± 3 pm/V at 1.9 µm (Table 2, from their ref. 20), frame x1, x2, x3 with n1 > n2 > n3"}
+  notes: "m, mirror ⊥ x2; d111 → d11, d122 → d12, d212 → d26; the other allowed elements are left out"
+
