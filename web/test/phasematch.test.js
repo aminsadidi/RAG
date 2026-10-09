@@ -508,3 +508,13 @@ test("GaP, Wei et al. 2018: temperature-dependent Sellmeier against the OP-GaP g
   // n increases with temperature (Fig. 3)
   assert.ok(nAtTemp(s, 150)(5)[0] > nAtTemp(s, 20)(5)[0]);
 });
+
+test("YCOB and GdCOB, Loiko et al. 2015: Eq. (2) gives the thermo-optic coefficients of Table 3 near 1 µm", () => {
+  for (const [mat, label, ref] of [["YCa4O(BO3)3", "Segonds-2004", [-1.2, -3.7, -2.5]], ["GdCa4O(BO3)3", "Aka-1997", [-3.8, -4.8, -3.7]]]) {
+    const s = source(mat, label);
+    for (let i = 0; i < 3; i++) {
+      const v = (nAtTemp(s, 21)(1.03)[i] - nAtTemp(s, 19)(1.03)[i]) / 2 * 1e6;
+      assert.ok(Math.abs(v - ref[i]) < 0.15, `${mat} axis ${i}: ${v} vs ${ref[i]}`);
+    }
+  }
+});

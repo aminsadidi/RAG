@@ -467,3 +467,28 @@
     o: {A: [10.926, 7.0787e-4, 1.8594e-7], B: [0.53718, 5.8035e-5, 1.9819e-7], C: 0.0911014, D: [1504, 0.25935, -0.00023326], E: 758.048}
     e: {A: [10.926, 7.0787e-4, 1.8594e-7], B: [0.53718, 5.8035e-5, 1.9819e-7], C: 0.0911014, D: [1504, 0.25935, -0.00023326], E: 758.048}
 
+- material: YCa4O(BO3)3
+  source: Segonds-2004
+  doc_id: 10.1364_ome.5.001089
+  cite: "Loiko et al. (2015)"
+  pdf_page: 7
+  where: "Table 4, Eq. (2): dn/dT = A0 + A1/λ² + A2/λ⁴ + A3/λ⁶ in 10⁻⁶ /K (stored ×0.1 in the kato form's 10⁻⁵ unit), fitted to measured thermo-optic coefficients near 1 µm and extrapolated to ~2 µm; X, Y, Z with nX < nY < nZ as the Sellmeier source. Gives the TOC* of Table 3 at 1 µm"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.4, 2.0], terms: [[-0.15, 0], [0.0329, -2], [0.00137, -4], [0.00027, -6]]}]
+    y: [{range_um: [0.4, 2.0], terms: [[-0.39, 0], [0.02483, -2], [-0.00063, -4], [0.00059, -6]]}]
+    z: [{range_um: [0.4, 2.0], terms: [[-0.28, 0], [0.03006, -2], [0.00027, -4], [0.00044, -6]]}]
+
+- material: GdCa4O(BO3)3
+  source: Aka-1997
+  doc_id: 10.1364_ome.5.001089
+  cite: "Loiko et al. (2015)"
+  pdf_page: 7
+  where: "Table 4, Eq. (2): dn/dT = A0 + A1/λ² + A2/λ⁴ + A3/λ⁶ in 10⁻⁶ /K (stored ×0.1 in the kato form's 10⁻⁵ unit), fitted to measured thermo-optic coefficients near 1 µm and extrapolated to ~2 µm; X, Y, Z with nX < nY < nZ as the Sellmeier source. Gives the TOC* of Table 3 at 1 µm"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.4, 2.0], terms: [[-0.41, 0], [0.01937, -2], [0.00087, -4], [0.00034, -6]]}]
+    y: [{range_um: [0.4, 2.0], terms: [[-0.5, 0], [0.01808, -2], [-0.00082, -4], [0.00077, -6]]}]
+    z: [{range_um: [0.4, 2.0], terms: [[-0.4, 0], [0.02243, -2], [0.00058, -4], [0.00043, -6]]}]
