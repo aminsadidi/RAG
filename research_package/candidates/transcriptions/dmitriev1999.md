@@ -6042,1339 +6042,608 @@ Ie = 3.5 W /mK.
 
 ### [PDF Page 93]
 
-```text
-78 
-3 Properties of Nonlinear Optical Crystals 
-3.1.2 KH:zP04, Potassium Dihydrogen Phosphate (KDP) 
-Negative uniaxial crystal: no > ne ; 
-Point group: 42m; 
-Mass density: 2.3383 g/cm3 at 293 K [3.59]; 
-Mohs hardness: 2.5; 
-Transparency range at "0" transmittance level: 0.174 - 1.57 J.1ID [3.60, 59]; 
-Transparency range at 0.5 transmittance level for a 0.8 em long crystal: 
-0.178 - 1.45 J.1ID [3.60, 59]; 
-Linear absorption coefficient ex: 
-A [J.1ID] 
-ex [em-I] 
-Ref. 
-Note 
-0.212 
-0.2 
-3.61 
-0.25725 
-0.01-0.2 
-3.62 
-e - wave, ..L c 
-0.007 
-3.63 
-e - wave, ..L c 
-0.3-1.15 
-< 0.07 
-3.64 
-0.3513 
-0.003 
-3.65 
-e - wave, ..L c 
-0.5145 
-0.00005 
-3.62 
-0- wave 
-0.5265 
-0.01 
-3.66 
-0- wave 
-0.94 
-0.01 
-3.67 
-1.053 
-0.05 
-3.66 
-0- wave 
-1.054 
-0.058 
-3.65 
-0- wave 
-0.02 
-3.65 
-e - wave, ..L c 
-1.22 
-0.1 
-3.68 
-0- wave 
-1.3152 
-0.3 
-3.69 
-1.32 
-0.1 
-3.68 
-e - wave, ..L c 
-Two-photon absorption coefficient 13: 
-A[J.1ID] 
-13 x 1013 [mjW] 
-Ref. 
-Note 
-0.216 
-60±5 
-3.70 
-0.2661 
-27 ± 8.1 
-3.71 
-() = 41°,4> = 45° 
-40--80 
-3.72 
-0.3547 
-0.59 ±0.21 
-3.71 
-e - wave, ..L c 
-Experimental values of refractive indices at T = 298 K [3.73]: 
-A [~m] 
-no 
-ne 
-A [~m] 
-no 
-ne 
-0.2138560 1.60177 
-1.54615 
-0.2980628 1.54618 
-1.49824 
-0.2288018 1.58546 
-0.3021499 1.54433 
-1.49708 
-0.2446905 1.57228 
-0.3035781 
-1.49667 
-0.2464068 1.57105 
-0.3125663 1.54117 
-1.49434 
-0.2536519 1.56631 
-1.51586 
-0.3131545 1.54098 
-1.49419 
-0.2800869 1.55263 
-1.50416 
-0.3341478 
-1.48954
-```
+**78 — 3 Properties of Nonlinear Optical Crystals**
+
+#### 3.1.2 KH2PO4, Potassium Dihydrogen Phosphate (KDP)
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$;
+- **Point group:** $\bar{4}2m$;
+- **Mass density:** $2.3383\ \text{g/cm}^3$ at 293 K [3.59];
+- **Mohs hardness:** 2.5;
+- **Transparency range:** at "0" transmittance level: $0.174 - 1.57\ \mu\text{m}$ [3.60, 59];
+- **Transparency range:** at 0.5 transmittance level for a 0.8 cm long crystal: $0.178 - 1.45\ \mu\text{m}$ [3.60, 59];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.212 | 0.2 | 3.61 | |
+| 0.25725 | 0.01–0.2 | 3.62 | e – wave, $\perp c$ |
+| | 0.007 | 3.63 | e – wave, $\perp c$ |
+| 0.3–1.15 | < 0.07 | 3.64 | |
+| 0.3513 | 0.003 | 3.65 | e – wave, $\perp c$ |
+| 0.5145 | 0.00005 | 3.62 | o – wave |
+| 0.5265 | 0.01 | 3.66 | o – wave |
+| 0.94 | 0.01 | 3.67 | |
+| 1.053 | 0.05 | 3.66 | o – wave |
+| 1.054 | 0.058 | 3.65 | o – wave |
+| | 0.02 | 3.65 | e – wave, $\perp c$ |
+| 1.22 | 0.1 | 3.68 | o – wave |
+| 1.3152 | 0.3 | 3.69 | |
+| 1.32 | 0.1 | 3.68 | e – wave, $\perp c$ |
+
+**Two-photon absorption coefficient $\beta$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\beta \times 10^{13}\ [\text{m/W}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.216 | $60 \pm 5$ | 3.70 | |
+| 0.2661 | $27 \pm 8.1$ | 3.71 | $\theta = 41^\circ,\ \phi = 45^\circ$ |
+| | 40–80 | 3.72 | |
+| 0.3547 | $0.59 \pm 0.21$ | 3.71 | e – wave, $\perp c$ |
+
+**Experimental values of refractive indices at $T = 298\ \text{K}$ [3.73]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|---|---|---|
+| 0.2138560 | 1.60177 | 1.54615 | 0.2980628 | 1.54618 | 1.49824 |
+| 0.2288018 | 1.58546 | | 0.3021499 | 1.54433 | 1.49708 |
+| 0.2446905 | 1.57228 | | 0.3035781 | | 1.49667 |
+| 0.2464068 | 1.57105 | | 0.3125663 | 1.54117 | 1.49434 |
+| 0.2536519 | 1.56631 | 1.51586 | 0.3131545 | 1.54098 | 1.49419 |
+| 0.2800869 | 1.55263 | 1.50416 | 0.3341478 | | 1.48954 |
 
 ### [PDF Page 94]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-79 
-0.3650146 1.52932 
-1.48432 
-0.5769580 1.50987 
-0.3654833 1.52923 
-1.48423 
-0.5790654 1.50977 
-1.46856 
-0.3662878 1.52909 
-1.48409 
-0.6328160 1.50737 
-1.46685 
-0.3906410 
-1.48089 
-1.0139750 1.49535 
-1.46041 
-0.4046561 1.52341 
-1.47927 
-1.1287040 1.49205 
-1.45917 
-0.4077811 1.52301 
-1.47898 
-1.1522760 1.49135 
-1.45893 
-0.4358350 1.51990 
-1.47640 
-1.3570700 1.48455 
-0.4916036 
-1.47254 
-1.5231000 
-1.45521 
-0.5460740 1.51152 
-1.46982 
-1.5295250 
-1.45512 
-Temperature derivative of refractive indices [3.74]: 
-A. bun] 
-dno/dT x 105 [K-'] dne/dT x 105 [K-'] 
-0.405 
--3.27 
--3.15 
-0.436 
--3.27 
--2.88 
-0.546 
--3.28 
--2.90 
-0.578 
--3.25 
--2.87 
-0.633 
--3.94 
--2.54 
-Temperature dependences of refractive indices upon cooling from room tem-
-perature to T [K]. 
-for the spectral range 0.365 - 0.690 ~ 
-[3.75]: 
-no(T) = no(298) + 0.402 x 10-4 {[no(298)]2 - 1.432 }(298 - T) ; 
-ne(T) = ne(298) + 0.221 x 10-4 ([ne(298)]2 - 1.l05}(298 - T) ; 
-for the spectral range 0.436 - 0.589 ~ 
-[3.76]: 
-no(T) = no(300) + 10-4(143.3 - 0.618T + 4.81 x 10-4 T2) , 
-ne(T) = ne(300) + 10-4(153.3 - 0.969T + 1.57 x 10-3 T2) . 
-Experimental values of phase-matching angle (T = 293 K) and comparison 
-between different sets of dispersion relations: 
-Interacting 
-(Jexp [deg] 
-(Jtheor [deg] 
-wavelengths [~] 
-[3.73] 
-[3.77] 
-[3.78]K 
-SHG, 0+0 =>e 
-0.517 => 0.2585 
-90 [3.74] 
-no pm no pm 73.6 
-0.6576 => 0.3288 
-53.6 [3.69] 
-53.6 
-53.6 
-53.2 
-0.6943 => 0.34715 
-50.4 [3.79] 
-50.6 
-50.6 
-50.4 
-0.8707 => 0.43535 
-42.4 [3.80] 
-42.8 
-42.7 
-42.8 
-1.06 => 0.53 
-41 [3.81] 
-41.2 
-41.0 
-40.9 
-41 [3.82]
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 79)
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|---|---|---|
+| 0.3650146 | 1.52932 | 1.48432 | 0.5769580 | 1.50987 | |
+| 0.3654833 | 1.52923 | 1.48423 | 0.5790654 | 1.50977 | 1.46856 |
+| 0.3662878 | 1.52909 | 1.48409 | 0.6328160 | 1.50737 | 1.46685 |
+| 0.3906410 | | 1.48089 | 1.0139750 | 1.49535 | 1.46041 |
+| 0.4046561 | 1.52341 | 1.47927 | 1.1287040 | 1.49205 | 1.45917 |
+| 0.4077811 | 1.52301 | 1.47898 | 1.1522760 | 1.49135 | 1.45893 |
+| 0.4358350 | 1.51990 | 1.47640 | 1.3570700 | 1.48455 | |
+| 0.4916036 | | 1.47254 | 1.5231000 | | 1.45521 |
+| 0.5460740 | 1.51152 | 1.46982 | 1.5295250 | | 1.45512 |
+
+**Temperature derivative of refractive indices [3.74]:**
+
+| $\lambda\ [\mu\text{m}]$ | $dn_o/dT \times 10^5\ [\text{K}^{-1}]$ | $dn_e/dT \times 10^5\ [\text{K}^{-1}]$ |
+|---|---|---|
+| 0.405 | -3.27 | -3.15 |
+| 0.436 | -3.27 | -2.88 |
+| 0.546 | -3.28 | -2.90 |
+| 0.578 | -3.25 | -2.87 |
+| 0.633 | -3.94 | -2.54 |
+
+**Temperature dependences of refractive indices upon cooling from room temperature to $T\ [\text{K}]$.**
+for the spectral range $0.365 - 0.690\ \mu\text{m}$ [3.75]:
+$$n_o(T) = n_o(298) + 0.402 \times 10^{-4}\{[n_o(298)]^2 - 1.432\}(298 - T)\ ;$$
+$$n_e(T) = n_e(298) + 0.221 \times 10^{-4}\{[n_e(298)]^2 - 1.105\}(298 - T)\ ;$$
+for the spectral range $0.436 - 0.589\ \mu\text{m}$ [3.76]:
+$$n_o(T) = n_o(300) + 10^{-4}(143.3 - 0.618T + 4.81 \times 10^{-4}\ T^2)\ ,$$
+$$n_e(T) = n_e(300) + 10^{-4}(153.3 - 0.969T + 1.57 \times 10^{-3}\ T^2)\ .$$
+
+**Experimental values of phase-matching angle ($T = 293\ \text{K}$) and comparison between different sets of dispersion relations:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.73] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.77] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.78]K |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $0.517 \Rightarrow 0.2585$ | 90 [3.74] | no pm | no pm | 73.6 |
+| $0.6576 \Rightarrow 0.3288$ | 53.6 [3.69] | 53.6 | 53.6 | 53.2 |
+| $0.6943 \Rightarrow 0.34715$ | 50.4 [3.79] | 50.6 | 50.6 | 50.4 |
+| $0.8707 \Rightarrow 0.43535$ | 42.4 [3.80] | 42.8 | 42.7 | 42.8 |
+| $1.06 \Rightarrow 0.53$ | 41 [3.81]<br>41 [3.82] | 41.2 | 41.0 | 40.9 |
 
 ### [PDF Page 95]
 
-```text
-80 
-3 Properties of Nonlinear Optical Crystals 
-1.3152 ~ 0.6576 
-44.3 [3.69] 
-44.6 
-44.7 
-44.1 
-SFG, o+o~e 
-1.415 + 0.22027 ~ 
-~ 0.1906 
-88.7 [3.83] 
-83.7 
-83.6 
-54.3 
-1.3648 + 0.6943 ~ 
-~ 0.46019 
-40.9 [3.80] 
-41.7 
-41.7 
-41.6 
-1.3152 + 0.6576 ~ 
-~ 0.4384 
-42.2 [3.69] 
-42.1 
-42.1 
-42.0 
-1.0642 + 0.2707 ~ 
-~ 0.21581 
-87.6 [3.84] 
-87.5 
-87.3 
-62.9 
-1.0642 + 0.5321 ~ 
-~ 0.35473 
-47.3 [3.85] 
-47.3 
-47.3 
-47.1 
-1.06 + 0.53 ~ 
-~ 0.35333 
-47.5 [3.82] 
-47.4 
-47.4 
-47.3 
-0.6576 + 0.4384 ~ 
-~ 0.26304 
-74 [3.86] 
-75.2 
-75.4 
-68.6 
-SHG, e+o ~ e 
-1.3152 ~ 0.6576 
-61.4 [3.69] 
-61.8 
-61.8 
-60.7 
-1.06 ~ 0.53 
-59 [3.82] 
-59.0 
-58.8 
-58.6 
-SFG, e+o ~ e 
-1.0642 + 0.5321 ~ 
-~ 0.35473 
-58.3 [3.85] 
-58.2 
-58.3 
-57.9 
-1.06 +0.53 ~ 
-~ 0.35333 
-59.3 [3.82] 
-58.5 
-58.5 
-58.1 
-Note: The other sets of dispersion relations from [3.74] and [3, 78]E show worse 
-agreement with the experiment. 
-[3.78]K ~ see [3.78], data of Kirby et at.; 
-[3.78]E ~ see [3.78], data of Eimer/. 
-Experimental values of NCPM temperature: 
-Interacting 
-T [0C] 
-Ref. 
-wavelengths [J.llTIl 
-SHG, 0+0 ~ e 
-0.5145 ~ 0.25725 
--13.7 
-3.63 
--11 
-3.62 
-0.517 ~ 0.2585 
-20 
-3.74 
-0.5321 ~ 0.26605 
-177 
-3.87 
-177 
-3.88 
-SFG, 0+0 ~e 
-1.06 + 0.265 ~ 0.212 
--70 
-3.61 
-1.0642 + 0.26605 ~ 0.21284 --40 
-3.89 
--35 
-3.90
-```
+**80 — 3 Properties of Nonlinear Optical Crystals**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.73] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.77] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.78]K |
+|---|---|---|---|---|
+| $1.3152 \Rightarrow 0.6576$ | 44.3 [3.69] | 44.6 | 44.7 | 44.1 |
+| **SFG, $o+o \Rightarrow e$** | | | | |
+| $1.415 + 0.22027 \Rightarrow 0.1906$ | 88.7 [3.83] | 83.7 | 83.6 | 54.3 |
+| $1.3648 + 0.6943 \Rightarrow 0.46019$ | 40.9 [3.80] | 41.7 | 41.7 | 41.6 |
+| $1.3152 + 0.6576 \Rightarrow 0.4384$ | 42.2 [3.69] | 42.1 | 42.1 | 42.0 |
+| $1.0642 + 0.2707 \Rightarrow 0.21581$ | 87.6 [3.84] | 87.5 | 87.3 | 62.9 |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 47.3 [3.85] | 47.3 | 47.3 | 47.1 |
+| $1.06 + 0.53 \Rightarrow 0.35333$ | 47.5 [3.82] | 47.4 | 47.4 | 47.3 |
+| $0.6576 + 0.4384 \Rightarrow 0.26304$ | 74 [3.86] | 75.2 | 75.4 | 68.6 |
+| **SHG, $e+o \Rightarrow e$** | | | | |
+| $1.3152 \Rightarrow 0.6576$ | 61.4 [3.69] | 61.8 | 61.8 | 60.7 |
+| $1.06 \Rightarrow 0.53$ | 59 [3.82] | 59.0 | 58.8 | 58.6 |
+| **SFG, $e+o \Rightarrow e$** | | | | |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 58.3 [3.85] | 58.2 | 58.3 | 57.9 |
+| $1.06 + 0.53 \Rightarrow 0.35333$ | 59.3 [3.82] | 58.5 | 58.5 | 58.1 |
+
+Note: The other sets of dispersion relations from [3.74] and [3, 78]E show worse agreement with the experiment.
+[3.78]K $\Rightarrow$ see [3.78], data of *Kirby et al.*;
+[3.78]E $\Rightarrow$ see [3.78], data of *Eimerl*.
+
+**Experimental values of NCPM temperature:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | Ref. |
+|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | |
+| $0.5145 \Rightarrow 0.25725$ | -13.7 | 3.63 |
+| | -11 | 3.62 |
+| $0.517 \Rightarrow 0.2585$ | 20 | 3.74 |
+| $0.5321 \Rightarrow 0.26605$ | 177 | 3.87 |
+| | 177 | 3.88 |
+| **SFG, $o+o \Rightarrow e$** | | |
+| $1.06 + 0.265 \Rightarrow 0.212$ | -70 | 3.61 |
+| $1.0642 + 0.26605 \Rightarrow 0.21284$ | -40 | 3.89 |
+| | -35 | 3.90 |
 
 ### [PDF Page 96]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-81 
-Best set of dispersion relations (II. in 11m, T = 20°C) [3.74] : 
-n2 = 2.259276 + 13.0052211.2 + 
-0.01008956 
-o 
-11.2 _ 400 
-11.2 - (77.26408r l 
-' 
-n2 = 2.132668 + 3.227992411.2 + 
-0.008637494 
-. 
-e 
-11.2 _ 400 
-11.2 _ (81.42631)-1 
-Temperature-dependent Sellmeier equations (II. in 11m, Tin K) [3.77] : 
-n2 =(1.44896 + 3.185 x 1O-5T) 
-(0.84181 - 1.4114 x 10-4 T)1I.2 
-o 
-+ 11.2 _ (0.0128 - 2.13 x 10-7T) 
-(0.90793 + 5.75 x 10-7 T)1I.2 
-+ 
-11.2 - 30 
-' 
-n2 =(1.42691 _ 1.152 x 10-5 T) + (0.72722 - 6.139 x 10-5 T)1I.2 
-e 
-11.2 _ (0.01213 + 3.104 x 10-7 T) 
-(0.22543 - 1.98 x 10-7 T)1I.2 
-+ 
-11.2 - 30 
-Calculated values of phase-matching and "walk-off" angles: 
-Interacting wavelengths [11m] 
-(Jpm [deg] 
-PI [deg] 
-P3 [deg] 
-SHG, 0 + 0 => e 
-0.5321 => 0.26605 
-76.60 
-0.808 
-0.5782 => 0.2891 
-64.03 
-1.391 
-0.6328 => 0.3164 
-56.15 
-1.611 
-0.6594 => 0.3297 
-53.43 
-1.657 
-0.6943 => 0.34715 
-50.55 
-1.687 
-1.0642 => 0.5321 
-41.21 
-1.603 
-1.3188 => 0.6594 
-44.70 
-1.549 
-SFG, 0 +0 => e 
-0.5782 + 0.5105 => 0.27112 
-72.46 
-1.025 
-1.0642 + 0.5321 => 0.35473 
-47.28 
-1.712 
-1.3188 + 0.6594 => 0.4396 
-42.05 
-1.657 
-SHG, e+o => e 
-1.0642 => 0.5321 
-58.98 
-1.149 
-1.404 
-1.3188 => 0.6594 
-61.85 
-0.922 
-1.269 
-SFG, e + 0 => e 
-1.0642 + 0.5321 => 0.35473 
-58.23 
-1.166 
-1.521 
-1.3188 + 0.6594 => 0.4396 
-49.42 
-1.104 
-1.634
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 81)
+
+**Best set of dispersion relations ($\lambda$ in $\mu\text{m}$, $T = 20\ ^\circ\text{C}$) [3.74]:**
+$$n_o^2 = 2.259276 + \frac{13.00522\lambda^2}{\lambda^2 - 400} + \frac{0.01008956}{\lambda^2 - (77.26408)^{-1}}\ ,$$
+$$n_e^2 = 2.132668 + \frac{3.2279924\lambda^2}{\lambda^2 - 400} + \frac{0.008637494}{\lambda^2 - (81.42631)^{-1}}\ .$$
+
+**Temperature-dependent Sellmeier equations ($\lambda$ in $\mu\text{m}$, $T$ in K) [3.77]:**
+$$n_o^2 = (1.44896 + 3.185 \times 10^{-5}T) + \frac{(0.84181 - 1.4114 \times 10^{-4}\ T)\lambda^2}{\lambda^2 - (0.0128 - 2.13 \times 10^{-7}T)} + \frac{(0.90793 + 5.75 \times 10^{-7}\ T)\lambda^2}{\lambda^2 - 30}\ ,$$
+$$n_e^2 = (1.42691 - 1.152 \times 10^{-5}\ T) + \frac{(0.72722 - 6.139 \times 10^{-5}\ T)\lambda^2}{\lambda^2 - (0.01213 + 3.104 \times 10^{-7}\ T)} + \frac{(0.22543 - 1.98 \times 10^{-7}\ T)\lambda^2}{\lambda^2 - 30}\ .$$
+
+**Calculated values of phase-matching and "walk-off" angles:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_1\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | |
+| $0.5321 \Rightarrow 0.26605$ | 76.60 | | 0.808 |
+| $0.5782 \Rightarrow 0.2891$ | 64.03 | | 1.391 |
+| $0.6328 \Rightarrow 0.3164$ | 56.15 | | 1.611 |
+| $0.6594 \Rightarrow 0.3297$ | 53.43 | | 1.657 |
+| $0.6943 \Rightarrow 0.34715$ | 50.55 | | 1.687 |
+| $1.0642 \Rightarrow 0.5321$ | 41.21 | | 1.603 |
+| $1.3188 \Rightarrow 0.6594$ | 44.70 | | 1.549 |
+| **SFG, $o+o \Rightarrow e$** | | | |
+| $0.5782 + 0.5105 \Rightarrow 0.27112$ | 72.46 | | 1.025 |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 47.28 | | 1.712 |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 42.05 | | 1.657 |
+| **SHG, $e+o \Rightarrow e$** | | | |
+| $1.0642 \Rightarrow 0.5321$ | 58.98 | 1.149 | 1.404 |
+| $1.3188 \Rightarrow 0.6594$ | 61.85 | 0.922 | 1.269 |
+| **SFG, $e+o \Rightarrow e$** | | | |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 58.23 | 1.166 | 1.521 |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 49.42 | 1.104 | 1.634 |
 
 ### [PDF Page 97]
 
-```text
-82 
-3 Properties of Nonlinear Optical Crystals 
-Calculated values of inverse group-velocity mismatch for SHG process in 
-KDP: 
-Interacting 
-Opm [deg] 
-P [fs/mm] 
-wavelengths [~ml 
-SHG, 0+0 => e 
-1.2 => 0.6 
-42.45 
-42 
-1.1 => 0.55 
-41.38 
-17 
-1.0 => 0.5 
-41.22 
-9 
-0.9 => 0.45 
-42.24 
-40 
-0.8 => 0.4 
-44.91 
-77 
-0.7 => 0.35 
-50.14 
-128 
-0.6 => 0.3 
-60.40 
-208 
-SHG, e+o => e 
-1.2 => 0.6 
-59.54 
-89 
-1.1 => 0.55 
-58.87 
-67 
-1.0=>0.5 
-59.75 
-89 
-0.9 => 0.45 
-62.97 
-118 
-0.8 => 0.4 
-70.71 
-158 
-Experimental values of internal angular and temperature bandwidths: 
-Interacting 
-T 
-Opm 
-.10int 
-.1T 
-Ref. 
-wavelengths [~ml 
-[0C] 
-[deg] 
-[deg] 
-[0C] 
-SHG, 0+0 => e 
-1.1523 => 0.57615 
-20 
-41 
-0.074 
-3.91 
-1.0642 => 0.5321 
-20 
-41 
-0.070 
-3.92 
-25 
-23 
-3.93 
-1.064 => 0.532 
-20 
-41 
-0.069 
-3.94 
-1.06 => 0.53 
-20 
-41 
-0.063 
-3.81 
-1.054 => 0.527 
-25 
-41 
-0.060 
-3.95 
-0.5321 => 0.26605 
-25 
-1.7 
-3.93 
-177 
-90 
-1.9 
-3.87 
-177 
-90 
-2 
-3.88 
-0.53 => 0.265 
-20 
-77 
-0.059 
-3.96 
-20 
-77 
-0.066 
-3.97 
-SFG, 0+0 => e 
-1.0642 + 0.5321 => 
-=> 0.35473 
-25 
-5.5 
-3.93 
-1.054 + 0.527 => 
-=> 0.35133 
-25 
-48 
-0.046 
-3.95 
-SHG, e+o => e 
-1.0642 => 0.5321 
-25 
-18.3 
-3.93 
-1.06 => 0.53 
-20 
-59 
-0.129 
-3.96
-```
+**82 — 3 Properties of Nonlinear Optical Crystals**
+
+**Calculated values of inverse group-velocity mismatch for SHG process in KDP:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\beta\ [\text{fs/mm}]$ |
+|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | |
+| $1.2 \Rightarrow 0.6$ | 42.45 | 42 |
+| $1.1 \Rightarrow 0.55$ | 41.38 | 17 |
+| $1.0 \Rightarrow 0.5$ | 41.22 | 9 |
+| $0.9 \Rightarrow 0.45$ | 42.24 | 40 |
+| $0.8 \Rightarrow 0.4$ | 44.91 | 77 |
+| $0.7 \Rightarrow 0.35$ | 50.14 | 128 |
+| $0.6 \Rightarrow 0.3$ | 60.40 | 208 |
+| **SHG, $e+o \Rightarrow e$** | | |
+| $1.2 \Rightarrow 0.6$ | 59.54 | 89 |
+| $1.1 \Rightarrow 0.55$ | 58.87 | 67 |
+| $1.0 \Rightarrow 0.5$ | 59.75 | 89 |
+| $0.9 \Rightarrow 0.45$ | 62.97 | 118 |
+| $0.8 \Rightarrow 0.4$ | 70.71 | 158 |
+
+**Experimental values of internal angular and temperature bandwidths:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\theta^{\text{int}}\ [\text{deg}]$ | $\Delta T\ [^\circ\text{C}]$ | Ref. |
+|---|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | | |
+| $1.1523 \Rightarrow 0.57615$ | 20 | 41 | 0.074 | | 3.91 |
+| $1.0642 \Rightarrow 0.5321$ | 20 | 41 | 0.070 | | 3.92 |
+| | 25 | | | 23 | 3.93 |
+| $1.064 \Rightarrow 0.532$ | 20 | 41 | 0.069 | | 3.94 |
+| $1.06 \Rightarrow 0.53$ | 20 | 41 | 0.063 | | 3.81 |
+| $1.054 \Rightarrow 0.527$ | 25 | 41 | 0.060 | | 3.95 |
+| $0.5321 \Rightarrow 0.26605$ | 25 | | | 1.7 | 3.93 |
+| | 177 | 90 | | 1.9 | 3.87 |
+| | 177 | 90 | | 2 | 3.88 |
+| $0.53 \Rightarrow 0.265$ | 20 | 77 | 0.059 | | 3.96 |
+| | 20 | 77 | 0.066 | | 3.97 |
+| **SFG, $o+o \Rightarrow e$** | | | | | |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 25 | | | 5.5 | 3.93 |
+| $1.054 + 0.527 \Rightarrow 0.35133$ | 25 | 48 | 0.046 | | 3.95 |
+| **SHG, $e+o \Rightarrow e$** | | | | | |
+| $1.0642 \Rightarrow 0.5321$ | 25 | | | 18.3 | 3.93 |
+| $1.06 \Rightarrow 0.53$ | 20 | 59 | 0.129 | | 3.96 |
 
 ### [PDF Page 98]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-83 
-1.054 =} 0.527 
-25 
-59 
-0.126 
-3.95 
-SFG, e+o =} e 
-1.0642 + 0.5321 =} 
-=} 0.35473 
-25 
-5.2 
-3.93 
-1.06 + 0.53 =} 
-=} 0.35333 
-20 
-59 
-0.062 
-3.97 
-1.054 + 0.527 =} 
-=} 0.35133 
-25 
-59 
-0.059 
-3.95 
-Experimental values of spectral bandwidth: 
-Interacting 
-T 
-Opm 
-~v 
-Ref. 
-wavelengths [J.l1D] 
-[0C] [deg] [em-I] 
-SHG, 0+0 =} e 
-1.06 =} 0.53 
-20 
-41 
-178 
-3.81 
-0.53 =} 0.265 
-20 
-77 
-1.2 
-3.96 
-SHG, e+o =} e 
-1.06 =} 0.53 
-20 
-59 
-101.5 
-3.96 
-Temperature variation of phase-matching angle: 
-Interacting 
-T 
-Opm 
-dOpm/dT 
-Ref. 
-wavelengths [/lm] 
-[0C] 
-[deg] 
-[degjK] 
-SHG, 0+0 =} e 
-1.0642 =} 0.5321 
-25 
-0.0028 
-3.93 
-1.054 =} 0.527 
-25 
-41 
-0.0046 
-3.95 
-0.5321 =} 0.26605 
-25 
-0.0382 
-3.93 
-SFG, 0+0 =} e 
-1.0642 + 0.5321 =} 0.35473 25 
-0.0073 
-3.93 
-1.054 + 0.527 =} 0.35133 
-25 
-59 
-0.0046 
-3.95 
-SHG, e+ 0 =} e 
-1.0642 =} 0.5321 
-25 
-59 
-0.0069 
-3.98 
-25 
-0.0069 
-3.93 
-1.06 =} 0.53 
-20 
-59 
-0.0057 
-3.96 
-1.054 =} 0.527 
-25 
-59 
-0.0086 
-3.95 
-20 
-59 
-0.0069 
-3.65 
-SFG, e + 0 :=} e 
-1.0642 + 0.5321 =} 0.35473 25 
-58 
-0.0106 
-3.98 
-25 
-0.0117 
-3.93 
-1.054 + 0.527 =} 0.35133 
-25 
-59 
-0.0152 
-3.95 
-20 
-59 
-0.0075 
-3.65
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 83)
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\theta^{\text{int}}\ [\text{deg}]$ | $\Delta T\ [^\circ\text{C}]$ | Ref. |
+|---|---|---|---|---|---|
+| $1.054 \Rightarrow 0.527$ | 25 | 59 | 0.126 | | 3.95 |
+| **SFG, $e+o \Rightarrow e$** | | | | | |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 25 | | | 5.2 | 3.93 |
+| $1.06 + 0.53 \Rightarrow 0.35333$ | 20 | 59 | 0.062 | | 3.97 |
+| $1.054 + 0.527 \Rightarrow 0.35133$ | 25 | 59 | 0.059 | | 3.95 |
+
+**Experimental values of spectral bandwidth:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\nu\ [\text{cm}^{-1}]$ | Ref. |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $1.06 \Rightarrow 0.53$ | 20 | 41 | 178 | 3.81 |
+| $0.53 \Rightarrow 0.265$ | 20 | 77 | 1.2 | 3.96 |
+| **SHG, $e+o \Rightarrow e$** | | | | |
+| $1.06 \Rightarrow 0.53$ | 20 | 59 | 101.5 | 3.96 |
+
+**Temperature variation of phase-matching angle:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $d\theta_{\text{pm}}/dT\ [\text{deg/K}]$ | Ref. |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $1.0642 \Rightarrow 0.5321$ | 25 | | 0.0028 | 3.93 |
+| $1.054 \Rightarrow 0.527$ | 25 | 41 | 0.0046 | 3.95 |
+| $0.5321 \Rightarrow 0.26605$ | 25 | | 0.0382 | 3.93 |
+| **SFG, $o+o \Rightarrow e$** | | | | |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 25 | | 0.0073 | 3.93 |
+| $1.054 + 0.527 \Rightarrow 0.35133$ | 25 | 59 | 0.0046 | 3.95 |
+| **SHG, $e+o \Rightarrow e$** | | | | |
+| $1.0642 \Rightarrow 0.5321$ | 25 | 59 | 0.0069 | 3.98 |
+| | 25 | | 0.0069 | 3.93 |
+| $1.06 \Rightarrow 0.53$ | 20 | 59 | 0.0057 | 3.96 |
+| $1.054 \Rightarrow 0.527$ | 25 | 59 | 0.0086 | 3.95 |
+| | 20 | 59 | 0.0069 | 3.65 |
+| **SFG, $e+o \Rightarrow e$** | | | | |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 25 | 58 | 0.0106 | 3.98 |
+| | 25 | | 0.0117 | 3.93 |
+| $1.054 + 0.527 \Rightarrow 0.35133$ | 25 | 59 | 0.0152 | 3.95 |
+| | 20 | 59 | 0.0075 | 3.65 |
 
 ### [PDF Page 99]
 
-```text
-84 
-3 Properties of Nonlinear Optical Crystals 
-Temperature tuning of noncritical SHG [3.74]: 
-Interacting wavelengths [J.Im] 
-dAI/dT [nm/K] 
-SHG, 0+0 ~ e 
-0.517 ~ 0.2585 
-0.048 
-Temperature variation of birefringence for noncritical SHG process: 
-Interacting wavelengths [J.Im] 
-0.5145 ~ 0.25725 
-0.5321 ~ 0.26605 
-1.745 
-1.2 
-Ref. 
-3.99 
-3.87 
-Effective nonlinearity expressions in the phase-matching direction [3.100]: 
-dooe = d36 sin 0 sin 24> , 
-deoe = doce = d36 sin 20 cos 24> . 
-Nonlinear coefficient [3.37]: 
-d36(1.064 I'm) = 0.39 pm/V , 
-Laser-induced bulk-damage threshold: 
-0.52 
-0.5265 
-0.527 
-0.53 
-0.5321 
-0.596 
-0.6943 
-1.053 
-1.054 
-1.06 
-1.064 
-t"p [ns] 
-330 
-20 
-0.6 
-0.5 
-0.2 
-0.005 
-0.6 
-0.03 
-330 
-20 
-20 
-25 
-1 
-1 
-0.14 
-60 
-12-25 
-0.5 
-0.2 
-20 
-1.3 
-Ithr X 10-12 [W 1m2] 
-2 
-30 
-90 
-> 140 
-170 
-10000(?) 
-> 80 
-300 
-2.4 
-30 
->4 
-40 
-180 
-200 
-> 70 
-2 
-2.5 
-> 30 
-230 
-3-6 
-80 
-Ref. 
-3.101 
-3.66 
-3.66 
-3.102 
-3.103 
-3.104 
-3.72 
-3.105 
-3.101 
-3.101 
-3.106 
-3.66 
-3.66 
-3.107 
-3.108 
-3.109 
-3.81 
-3.110 
-3.103 
-3.111 
-3.33
-```
+**84 — 3 Properties of Nonlinear Optical Crystals**
+
+**Temperature tuning of noncritical SHG [3.74]:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $d\lambda_1/dT\ [\text{nm/K}]$ |
+|---|---|
+| **SHG, $o+o \Rightarrow e$** | |
+| $0.517 \Rightarrow 0.2585$ | 0.048 |
+
+**Temperature variation of birefringence for noncritical SHG process:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $d(n_2^e - n_1^o)/dT \times 10^5\ [\text{K}^{-1}]$ | Ref. |
+|---|---|---|
+| $0.5145 \Rightarrow 0.25725$ | 1.745 | 3.99 |
+| $0.5321 \Rightarrow 0.26605$ | 1.2 | 3.87 |
+
+**Effective nonlinearity expressions in the phase-matching direction [3.100]:**
+$$d_{\text{ooe}} = d_{36}\sin\theta\sin 2\phi\ ,$$
+$$d_{\text{eoe}} = d_{\text{oee}} = d_{36}\sin 2\theta\cos 2\phi\ .$$
+
+**Nonlinear coefficient [3.37]:**
+$$d_{36}(1.064\ \mu\text{m}) = 0.39\ \text{pm/V}\ ,$$
+
+**Laser-induced bulk-damage threshold:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. |
+|---|---|---|---|
+| 0.52 | 330 | 2 | 3.101 |
+| 0.5265 | 20 | 30 | 3.66 |
+| | 0.6 | 90 | 3.66 |
+| 0.527 | 0.5 | > 140 | 3.102 |
+| 0.53 | 0.2 | 170 | 3.103 |
+| | 0.005 | 100 00(?) *[Note: در متن اصلی کتاب علامت سؤال چاپ شده است]* | 3.104 |
+| 0.5321 | 0.6 | > 80 | 3.72 |
+| | 0.03 | 300 | 3.105 |
+| 0.596 | 330 | 2.4 | 3.101 |
+| | 20 | 30 | 3.101 |
+| 0.6943 | 20 | > 4 | 3.106 |
+| 1.053 | 25 | 40 | 3.66 |
+| | 1 | 180 | 3.66 |
+| | 1 | 200 | 3.107 |
+| 1.054 | 0.14 | > 70 | 3.108 |
+| 1.06 | 60 | 2 | 3.109 |
+| | 12–25 | 2.5 | 3.81 |
+| | 0.5 | > 30 | 3.110 |
+| | 0.2 | 230 | 3.103 |
+| 1.064 | 20 | 3–6 | 3.111 |
+| | 1.3 | 80 | 3.33 |
 
 ### [PDF Page 100]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-A [Ilm] 
-'!p [ns] 
-Itbr X 10-12 [W 1m2] 
-Ref. 
-1.064 
-1 
-30-70 
-3.111 
-I 
-50 
-3.112 
-0.1 
-70 
-3.1 
-Thermal conductivity coefficient [3.59]: 
-T[K] 
-K [W/mK], licK [W/mKJ, 1- C 
-302 
-1.21 
-319 
-1.34 
-3.1.3 KD2P04, Deuterated Potassium Dihydrogen Phosphate (DKDP) 
-Negative uniaxial crystal: no > ne ; 
-Point group: 42m; 
-Mass density: 2.355 g/cm3; 
-Mohs hardness: 2.5; 
-Transparency range at "0" transmittance level: 0.2 - 2.1 J.lID [3.113, 114]; 
-Linear absorption coefficient 0(: 
-A [Ilm] 
-0( [em-I] 
-Ref. 
-Note 
-0.266 
-0.035 
-3.115 
-0.5321 
-0.004-0.005 
-3.116 
-98-99% deuteration 
-0.82-1.21 < 0.015 
-3.67 
-0.94 
-0.005 
-3.67 
-1.0642 
-0.004-0.005 
-3.116 
-98-99% deuteration 
-1.315 
-0.025 
-3.117 
-1.57 
-0.1 
-3.68 
-o - wave, 95% deuteration 
-1.74 
-0.1 
-3.68 
-e - wave, 95% deuteration 
-Two-photon absorption coefficient p: 
-A [Ilm] 
-p x 1013 [m/Wl 
-Ref. 
-Note 
-0.2661 
-2.0 ± 1.0 
-3.118 
-2.7 ± 0.7 
-3.115 
-0.3547 
-0.54±0.19 
-3.71 
-e - wave, 1- C 
-Experimental values of refractive indices at T = 298 K [3.95]: 
-A [Ilm] 
-0.4047 
-0.4078 
-1.5189 
-1.5185 
-1.4776 
-1.4772 
-85
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 85)
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. |
+|---|---|---|---|
+| 1.064 | 1 | 30–70 | 3.111 |
+| | 1 | 50 | 3.112 |
+| | 0.1 | 70 | 3.1 |
+
+**Thermal conductivity coefficient [3.59]:**
+
+| $T\ [\text{K}]$ | $\kappa\ [\text{W/mK}],\ \parallel c$ | $\kappa\ [\text{W/mK}],\ \perp c$ |
+|---|---|---|
+| 302 | 1.21 | |
+| 319 | | 1.34 |
+
+---
+
+#### 3.1.3 KD2PO4, Deuterated Potassium Dihydrogen Phosphate (DKDP)
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$;
+- **Point group:** $\bar{4}2m$;
+- **Mass density:** $2.355\ \text{g/cm}^3$;
+- **Mohs hardness:** 2.5;
+- **Transparency range:** at "0" transmittance level: $0.2 - 2.1\ \mu\text{m}$ [3.113, 114];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.266 | 0.035 | 3.115 | |
+| 0.5321 | 0.004–0.005 | 3.116 | 98–99% deuteration |
+| 0.82–1.21 | < 0.015 | 3.67 | |
+| 0.94 | 0.005 | 3.67 | |
+| 1.0642 | 0.004–0.005 | 3.116 | 98–99% deuteration |
+| 1.315 | 0.025 | 3.117 | |
+| 1.57 | 0.1 | 3.68 | o – wave, 95% deuteration |
+| 1.74 | 0.1 | 3.68 | e – wave, 95% deuteration |
+
+**Two-photon absorption coefficient $\beta$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\beta \times 10^{13}\ [\text{m/W}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.2661 | $2.0 \pm 1.0$ | 3.118 | |
+| | $2.7 \pm 0.7$ | 3.115 | |
+| 0.3547 | $0.54 \pm 0.19$ | 3.71 | e – wave, $\perp c$ |
+
+**Experimental values of refractive indices at $T = 298\ \text{K}$ [3.95]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|
+| 0.4047 | 1.5189 | 1.4776 |
+| 0.4078 | 1.5185 | 1.4772 |
 
 ### [PDF Page 101]
 
-```text
-86 
-3 Properties of Nonlinear Optical Crystals 
-0.4358 
-0.4916 
-0.5461 
-0.5779 
-0.6234 
-0.6907 
-1.5155 
-1.5 II 1 
-1.5079 
-1.5063 
-1.5044 
-1.5022 
-1.4747 
-1.4710 
-1.4683 
-1.4670 
-1.4656 
-1.4639 
-Temperature derivative of refractive indices [3.74]: 
-0.405 
-0.436 
-0.546 
-0.578 
-0.633 
--3.00 
--3.37 
--2.99 
--3.00 
--3.16 
--1.86 
--2.13 
--1.95 
--2.52 
--2.03 
-Temperature dependences of refractive indices upon cooling from room tem-
-perature to T [K] 
-for the spectral range 0.365 - 0.690 !lm [3.75] : 
-no(T) = no(298) + 0.228 x 10-4 {[no (298)f - 1.047} (298 - T) 
-ne(T) = ne(298) + 0.955 x 1O-5[ne(298)]2(298 - T) ; 
-for the spectral range 0.436 - 0.589 !lm [3.76]: 
-no(T) = no(300) + 10-4(85.2 - 0.0695 T - 7.25 x 1O-4T2) , 
-ne(T) = ne(300) + 10-4(21.8 - 0.445 T - 1.24 x 1O-3T2) . 
-Experimental values of phase-matching angle (T = 293 K) and comparison 
-between different sets of dispersion relations: 
-Interacting 
-(Jexp [deg] 
-(Jtheor [deg] 
-wavelengths [!lm] 
-[3.77] 
-[3.78]K [3.78]E 
-SHG, 0+0 =? e 
-0.530 =? 0.265 
-90 [3.119] 
-no pm 
-no pm 
-87.4 
-0.6943 =? 0.34715 
-52 [3.79] 
-50.6 
-50.9 
-51.0 
-1.062 =? 0.531 
-37.1 [3.120] 
-38.6 
-36.6 
-36.6 
-SHG, e+o =? e 
-1.3152 =? 0.6576 
-51.3 [3.69] 
-63.2 
-51.7 
-49.4 
-Note: The set of dispersion relations from [3.74] shows worse agreement with 
-the experiment. 
-[3.78]K =? see [3.78], data of Kirby et al.;
-```
+**86 — 3 Properties of Nonlinear Optical Crystals**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|
+| 0.4358 | 1.5155 | 1.4747 |
+| 0.4916 | 1.5111 | 1.4710 |
+| 0.5461 | 1.5079 | 1.4683 |
+| 0.5779 | 1.5063 | 1.4670 |
+| 0.6234 | 1.5044 | 1.4656 |
+| 0.6907 | 1.5022 | 1.4639 |
+
+**Temperature derivative of refractive indices [3.74]:**
+
+| $\lambda\ [\mu\text{m}]$ | $dn_o/dT \times 10^5\ [\text{K}^{-1}]$ | $dn_e/dT \times 10^5\ [\text{K}^{-1}]$ |
+|---|---|---|
+| 0.405 | -3.00 | -1.86 |
+| 0.436 | -3.37 | -2.13 |
+| 0.546 | -2.99 | -1.95 |
+| 0.578 | -3.00 | -2.52 |
+| 0.633 | -3.16 | -2.03 |
+
+**Temperature dependences of refractive indices upon cooling from room temperature to $T\ [\text{K}]$.**
+for the spectral range $0.365 - 0.690\ \mu\text{m}$ [3.75]:
+$$n_o(T) = n_o(298) + 0.228 \times 10^{-4}\{[n_o(298)]^2 - 1.047\}(298 - T)\ ;$$
+$$n_e(T) = n_e(298) + 0.955 \times 10^{-5}[n_e(298)]^2(298 - T)\ ;$$
+for the spectral range $0.436 - 0.589\ \mu\text{m}$ [3.76]:
+$$n_o(T) = n_o(300) + 10^{-4}(85.2 - 0.0695\ T - 7.25 \times 10^{-4}T^2)\ ,$$
+$$n_e(T) = n_e(300) + 10^{-4}(21.8 - 0.445\ T - 1.24 \times 10^{-3}T^2)\ .$$
+
+**Experimental values of phase-matching angle ($T = 293\ \text{K}$) and comparison between different sets of dispersion relations:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.77] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.78]K | $\theta_{\text{theor}}\ [\text{deg}]$ [3.78]E |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $0.530 \Rightarrow 0.265$ | 90 [3.119] | no pm | no pm | 87.4 |
+| $0.6943 \Rightarrow 0.34715$ | 52 [3.79] | 50.6 | 50.9 | 51.0 |
+| $1.062 \Rightarrow 0.531$ | 37.1 [3.120] | 38.6 | 36.6 | 36.6 |
+| **SHG, $e+o \Rightarrow e$** | | | | |
+| $1.3152 \Rightarrow 0.6576$ | 51.3 [3.69] | 63.2 | 51.7 | 49.4 |
+
+Note: The set of dispersion relations from [3.74] shows worse agreement with the experiment.
+[3.78]K $\Rightarrow$ see [3.78], data of *Kirby et al.*;
 
 ### [PDF Page 102]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-[3.78]E::::} see [3.78], data of Eimerl. 
-Experimental values of NCPM temperature: 
-Interacting 
-T 
-Ref. 
-Note 
-wavelengths [~l 
-[0C] 
-SHG, 0+ o::::} e 
-0.528 ::::} 0.264 
--30 
-3.119 
-0.5321 ::::} 0.26605 
-42 
-3.89 
-99% deuteration 
-45 
-3.87 
-95% deuteration 
-46 
-3.90 
-99% deuteration 
-49.8 
-3.121 
-> 95% deuteration 
-60.8 
-3.122 
-90% deuteration 
-0.536::::} 0.268 
-100 
-3.119 
-Best set of dispersion relations (). in Ilm, T = 20°C) [3.78]K : 
-n2 = 2.240921 + 
-2.246956).2 
-+ 
-0.009676 
-, 
-o 
-).2 _ {11.26591)2 
-).2 _ {0.124981)2 
-n2 = 2.126019 + 
-0.784404).2 
-+ 
-0.008578 
-e 
-).2 _ {11.10871)2 
-).2 _ (0.109505)2 
-Temperature-dependent Sellmeier equations (). in Ilm, Tin K) [3.77] : 
-n2 =(1.55934 + 3.3935 x 10-4 T) + {0.71098 - 4.1655 x 10-4 T)).2 
-o 
-).2 _ (0.01407 + 6.4904 x 10-6 T) 
-{0.67671 + 4.8281 x 10-5 T)).2 
-+ 
-).2 _ 30 
-' 
-n2 =(1.68647 + 3.43 x 10-6 T) + 
-{0.46629 - 6.26 x 10-5 T)).2 
-e 
-).2 _ (0.01663 + 1.3626 x 10-6 T) 
-{0.59614 + 2.41 x 10-7 T)).2 
-+ 
-).2 _ 30 
-Calculated values of phase-matching and "walk-off" angles: 
-Interacting wavelengths [~l 
-SHG,o+o::::}e 
-0.5321 ::::} 0.26605 
-0.5782 ::::} 0.2891 
-0.6328 ::::} 0.3164 
-0.6594 ::::} 0.3297 
-1.6943 ::::} 0.34715 
-1.0642 ::::} 0.5321 
-1.3188 ::::} 0.6594 
-Opm [deg] 
-PI [deg] 
-86.20 
-66.87 
-57.53 
-54.31 
-50.86 
-36.60 
-36.36 
-P3 [deg] 
-0.225 
-1.197 
-1.467 
-1.522 
-1.558 
-1.450 
-1.412 
-87
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 87)
+
+[3.78]E $\Rightarrow$ see [3.78], data of *Eimerl*.
+
+**Experimental values of NCPM temperature:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | Ref. | Note |
+|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | |
+| $0.528 \Rightarrow 0.264$ | -30 | 3.119 | |
+| $0.5321 \Rightarrow 0.26605$ | 42 | 3.89 | 99% deuteration |
+| | 45 | 3.87 | 95% deuteration |
+| | 46 | 3.90 | 99% deuteration |
+| | 49.8 | 3.121 | > 95% deuteration |
+| | 60.8 | 3.122 | 90% deuteration |
+| $0.536 \Rightarrow 0.268$ | 100 | 3.119 | |
+
+**Best set of dispersion relations ($\lambda$ in $\mu\text{m}$, $T = 20\ ^\circ\text{C}$) [3.78]K:**
+$$n_o^2 = 2.240921 + \frac{2.246956\lambda^2}{\lambda^2 - (11.26591)^2} + \frac{0.009676}{\lambda^2 - (0.124981)^2}\ ,$$
+$$n_e^2 = 2.126019 + \frac{0.784404\lambda^2}{\lambda^2 - (11.10871)^2} + \frac{0.008578}{\lambda^2 - (0.109505)^2}\ .$$
+
+**Temperature-dependent Sellmeier equations ($\lambda$ in $\mu\text{m}$, $T$ in K) [3.77]:**
+$$n_o^2 = (1.55934 + 3.3935 \times 10^{-4}\ T) + \frac{(0.71098 - 4.1655 \times 10^{-4}\ T)\lambda^2}{\lambda^2 - (0.01407 + 6.4904 \times 10^{-6}\ T)} + \frac{(0.67671 + 4.8281 \times 10^{-5}\ T)\lambda^2}{\lambda^2 - 30}\ ,$$
+$$n_e^2 = (1.68647 + 3.43 \times 10^{-6}\ T) + \frac{(0.46629 - 6.26 \times 10^{-5}\ T)\lambda^2}{\lambda^2 - (0.01663 + 1.3626 \times 10^{-6}\ T)} + \frac{(0.59614 + 2.41 \times 10^{-7}\ T)\lambda^2}{\lambda^2 - 30}\ .$$
+
+**Calculated values of phase-matching and "walk-off" angles:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_1\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | |
+| $0.5321 \Rightarrow 0.26605$ | 86.20 | | 0.225 |
+| $0.5782 \Rightarrow 0.2891$ | 66.87 | | 1.197 |
+| $0.6328 \Rightarrow 0.3164$ | 57.53 | | 1.467 |
+| $0.6594 \Rightarrow 0.3297$ | 54.31 | | 1.522 |
+| $1.6943 \Rightarrow 0.34715$ *[MISMATCH: چاپ کتاب $1.6943$ است در حالی که مقدار متناظر در KDP برابر $0.6943$ است]* | 50.86 | | 1.558 |
+| $1.0642 \Rightarrow 0.5321$ | 36.60 | | 1.450 |
+| $1.3188 \Rightarrow 0.6594$ | 36.36 | | 1.412 |
 
 ### [PDF Page 103]
 
-```text
-88 
-3 Properties of Nonlinear Optical Crystals 
-SFG, 0 + 0 :::} e 
-0.5782 + 0.5105 :::} 0.27112 
-77.88 
-0.595 
-1.0642 + 0.5321 :::} 0.35473 
-46.82 
-1.580 
-1.3188 + 0.6594 :::} 0.4396 
-39.18 
-1.515 
-SHG, e + 0 => e 
-1.0642 :::} 0.5321 
-53.47 
-1.286 
-1.427 
-1.3188 :::} 0.6594 
-51.70 
-1.222 
-1.420 
-SFG, e + 0 :::} e 
-1.0642 + 0.5321 :::} 0.35473 
-59.38 
-1.174 
-1.378 
-1.3188 + 0.6594 :::} 0.4396 
-47.70 
-1.254 
-1.527 
-Calculated values of inverse group-velocity mismatch for SHG process in 
-DKDP: 
-Interacting 
-wavelengths [Jlm] 
-SHG, 0 + 0 :::} e 
-1.2 :::} 0.6 
-1.1 :::} 0.55 
-1.0 :::} 0.5 
-0.9 :::} 0.45 
-0.8 :::} 0.4 
-0.7 :::} 0.35 
-0.6 :::} 0.3 
-SHG, e + 0 :::} e 
-1.2 :::} 0.6 
-1.1 :::} 0.55 
-1.0 :::} 0.5 
-0.9 :::} 0.45 
-0.8 :::} 0.4 
-(Jpm [deg] 
-35.94 
-36.28 
-37.47 
-39.79 
-43.75 
-50.37 
-62.54 
-51.62 
-52.73 
-55.37 
-60.41 
-70.43 
-f3 [fsjmm] 
-< 1 
-18 
-38 
-63 
-96 
-143 
-218 
-55 
-71 
-92 
-120 
-159 
-Experimental values of internal angular and temperature bandwidths: 
-Interacting 
-T 
-(Jpm 
-!i(jnt 
-!iT 
-Ref. 
-wavelengths [Jlm] 
-[0C] 
-[deg] 
-[deg] 
-[0C] 
-SHG, 0 + 0 :::} e 
-1.0642 :::} 0.5321 
-20 
-37 
-0.081 
-3.92 
-0.5321 :::} 0.26605 
-60.8 90 
-1.8 
-3.122 
-45 
-90 
-1.9 
-3.87 
-SHG, e + 0 :::} e 
-1.0642 :::} 0.5321 
-20 
-54 
-0.131 
-3.123 
-20 
-0.126 
-3.124 
-1.06 :::} 0.53 
-20 
-60 
-0.143 
-3.96
-```
+**88 — 3 Properties of Nonlinear Optical Crystals**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_1\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|---|
+| **SFG, $o+o \Rightarrow e$** | | | |
+| $0.5782 + 0.5105 \Rightarrow 0.27112$ | 77.88 | | 0.595 |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 46.82 | | 1.580 |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 39.18 | | 1.515 |
+| **SHG, $e+o \Rightarrow e$** | | | |
+| $1.0642 \Rightarrow 0.5321$ | 53.47 | 1.286 | 1.427 |
+| $1.3188 \Rightarrow 0.6594$ | 51.70 | 1.222 | 1.420 |
+| **SFG, $e+o \Rightarrow e$** | | | |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 59.38 | 1.174 | 1.378 |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 47.70 | 1.254 | 1.527 |
+
+**Calculated values of inverse group-velocity mismatch for SHG process in DKDP:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\beta\ [\text{fs/mm}]$ |
+|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | |
+| $1.2 \Rightarrow 0.6$ | 35.94 | < 1 |
+| $1.1 \Rightarrow 0.55$ | 36.28 | 18 |
+| $1.0 \Rightarrow 0.5$ | 37.47 | 38 |
+| $0.9 \Rightarrow 0.45$ | 39.79 | 63 |
+| $0.8 \Rightarrow 0.4$ | 43.75 | 96 |
+| $0.7 \Rightarrow 0.35$ | 50.37 | 143 |
+| $0.6 \Rightarrow 0.3$ | 62.54 | 218 |
+| **SHG, $e+o \Rightarrow e$** | | |
+| $1.2 \Rightarrow 0.6$ | 51.62 | 55 |
+| $1.1 \Rightarrow 0.55$ | 52.73 | 71 |
+| $1.0 \Rightarrow 0.5$ | 55.37 | 92 |
+| $0.9 \Rightarrow 0.45$ | 60.41 | 120 |
+| $0.8 \Rightarrow 0.4$ | 70.43 | 159 |
+
+**Experimental values of internal angular and temperature bandwidths:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\theta^{\text{int}}\ [\text{deg}]$ | $\Delta T\ [^\circ\text{C}]$ | Ref. |
+|---|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | | |
+| $1.0642 \Rightarrow 0.5321$ | 20 | 37 | 0.081 | | 3.92 |
+| $0.5321 \Rightarrow 0.26605$ | 60.8 | 90 | | 1.8 | 3.122 |
+| | 45 | 90 | | 1.9 | 3.87 |
+| **SHG, $e+o \Rightarrow e$** | | | | | |
+| $1.0642 \Rightarrow 0.5321$ | 20 | 54 | 0.131 | | 3.123 |
+| | 20 | | 0.126 | | 3.124 |
+| $1.06 \Rightarrow 0.53$ | 20 | 60 | 0.143 | | 3.96 |
 
 ### [PDF Page 104]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-89 
-Experimental value of spectral bandwidth [3.96]: 
-Interacting 
-wavelengths [J.lID] 
-SHG, e + 0 ::} e 
-1.06 ::} 0.53 
-20 
-60 
-74.8 
-Temperature variation of phase-matching angle [3.96]: 
-Interacting 
-wavelengths [J.lID] 
-SHG, e + 0 ::} e 
-1.06 ::} 0.53 
-20 
-lJpm 
-[deg] 
-60 
-dlJpm/dT 
-[deg/K] 
-0.0063 
-Temperature tuning of noncritical SHG [3.74]: 
-Interacting wavelengths [J.lID] 
-dlI/dT [nm/K] 
-SHG, 0 + 0 ::} e 
-0.519 ::} 0.2595 
-0.068 
-Effective nonlinearity in the phase-matching direction [3.100]: 
-dooe = d36 sin lJ sin 24> , 
-deoe = doee = d36 sin 2lJcos 24> . 
-Nonlinear coefficient [3.37]: 
-d36(1.064J.lID) = 0.37 pm/V . 
-Laser-induced bulk-damage threshold: 
-l [J.lID] 
-0.266 
-0.532 
-0.6 
-1.062 
-1.064 
-1.315 
-'tp [ns] 
-0.03 
-30 
-8 
-0.6 
-0.03 
-330 
-0.007 
-40 
-18 
-14 
-1 
-0.25 
-1 
-Itbr x 10-12 (W/m2] 
-> 100 
->0.5 
-170 
-> 80 
-> 80 
-3 
->10 
->2.5 
-> 1.0 
-80 
-60 
-> 30 
-15 
-Ref. 
-3.115 
-3.122 
-3.125 
-3.72 
-3.118 
-3.101 
-3.120 
-3.122 
-3.116 
-3.125 
-3.124 
-3.116 
-3.69
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 89)
+
+**Experimental value of spectral bandwidth [3.96]:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\nu\ [\text{cm}^{-1}]$ |
+|---|---|---|---|
+| **SHG, $e+o \Rightarrow e$** | | | |
+| $1.06 \Rightarrow 0.53$ | 20 | 60 | 74.8 |
+
+**Temperature variation of phase-matching angle [3.96]:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $d\theta_{\text{pm}}/dT\ [\text{deg/K}]$ |
+|---|---|---|---|
+| **SHG, $e+o \Rightarrow e$** | | | |
+| $1.06 \Rightarrow 0.53$ | 20 | 60 | 0.0063 |
+
+**Temperature tuning of noncritical SHG [3.74]:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $d\lambda_1/dT\ [\text{nm/K}]$ |
+|---|---|
+| **SHG, $o+o \Rightarrow e$** | |
+| $0.519 \Rightarrow 0.2595$ | 0.068 |
+
+**Effective nonlinearity in the phase-matching direction [3.100]:**
+$$d_{\text{ooe}} = d_{36}\sin\theta\sin 2\phi\ ,$$
+$$d_{\text{eoe}} = d_{\text{oee}} = d_{36}\sin 2\theta\cos 2\phi\ .$$
+
+**Nonlinear coefficient [3.37]:**
+$$d_{36}(1.064\ \mu\text{m}) = 0.37\ \text{pm/V}\ .$$
+
+**Laser-induced bulk-damage threshold:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. |
+|---|---|---|---|
+| 0.266 | 0.03 | > 100 | 3.115 |
+| 0.532 | 30 | > 0.5 | 3.122 |
+| | 8 | 170 | 3.125 |
+| | 0.6 | > 80 | 3.72 |
+| | 0.03 | > 80 | 3.118 |
+| 0.6 | 330 | 3 | 3.101 |
+| 1.062 | 0.007 | > 10 | 3.120 |
+| 1.064 | 40 | > 2.5 | 3.122 |
+| | 18 | > 1.0 | 3.116 |
+| | 14 | 80 | 3.125 |
+| | 1 | 60 | 3.124 |
+| | 0.25 | > 30 | 3.116 |
+| 1.315 | 1 | 15 | 3.69 |
 
 ### [PDF Page 105]
 
-```text
-90 
-3 Properties of Nonlinear Optical Crystals 
-Thermal conductivity coefficient [3.78]: 
-" = 1.86 Wm/K (II c) , 
-" = 2.09 Wm/K (.1 c) . 
-3.1.4 NIlJIzP04, Ammonium Dihydrogen Phosphate (ADP) 
-Negative uniaxial crystal : no > ne ; 
-Point group: 42m; 
-Mass density: 1.803 g/em3 at 293 K [3.59]; 
-Mohs hardness: 2; 
-Transparency range at "0" transmittance level: 0.18 - 1.53 J1Ill [3.60, 126]; 
-Transparency range at 0.5 transmittance level for a 0.8 cm long crystal: 
-0.185 - 1.45 J.1m [3.60, 59] 
-Linear absorption coefficient 0(: 
-). [J1Ill] 
-0( [em-I] 
-Ref. 
-Note 
-0.25725 
-0.002 
-3.62 
-e - wave, .1 c 
-0.265 
-0.07 
-3.127 
-e - wave,.1 c 
-0.266 
-0.035 
-3.115 
-0.3-1.15 
-<0.07 
-3.64 
-0.5145 
-0.00005 
-3.62 
-0- wave,.1 c 
-1.027 
-0.086 
-3.67 
-1.083 
-0.208 
-3.67 
-1.144 
-0.150 
-3.67 
-Two-photon absorption coefficient p: 
-).lJ.tm] 
-p x 1013 [m/W] Ref. 
-Note 
-0.2661 
-6±1 
-3.118 
-11 ±3 
-3.115 
-24±7 
-3.71 
-() = 42°, <p = 45° 
-0.3078 
-23±5 
-3.128 
-0.3547 
-0.68 ±0.24 
-3.71 
-e - wave,.1 c 
-Experimental values of refractive indices at T = 298 K [3.73, 129]: 
-). [J1Ill] 
-). [J1Ill] 
-0.2138560 1.62598 1.56738 0.3021499 1.56270 1.51163 
-0.2288018 1.60785 1.55138 0.3125663 1.55917 1.50853 
-0.2536519 1.58688 1.53289 0.3131545 1.55897 1.50832 
-0.2967278 1.56462 1.51339 0.3341478 1.55300 1.50313
-```
+**90 — 3 Properties of Nonlinear Optical Crystals**
+
+**Thermal conductivity coefficient [3.78]:**
+$$\kappa = 1.86\ \text{Wm/K}\ (\parallel c)\ ,$$
+$$\kappa = 2.09\ \text{Wm/K}\ (\perp c)\ .$$
+
+---
+
+#### 3.1.4 NH4H2PO4, Ammonium Dihydrogen Phosphate (ADP)
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$;
+- **Point group:** $\bar{4}2m$;
+- **Mass density:** $1.803\ \text{g/cm}^3$ at 293 K [3.59];
+- **Mohs hardness:** 2;
+- **Transparency range:** at "0" transmittance level: $0.18 - 1.53\ \mu\text{m}$ [3.60, 126];
+- **Transparency range:** at 0.5 transmittance level for a 0.8 cm long crystal: $0.185 - 1.45\ \mu\text{m}$ [3.60, 59];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.25725 | 0.002 | 3.62 | e – wave, $\perp c$ |
+| 0.265 | 0.07 | 3.127 | e – wave, $\perp c$ |
+| 0.266 | 0.035 | 3.115 | |
+| 0.3–1.15 | < 0.07 | 3.64 | |
+| 0.5145 | 0.00005 | 3.62 | o – wave, $\perp c$ |
+| 1.027 | 0.086 | 3.67 | |
+| 1.083 | 0.208 | 3.67 | |
+| 1.144 | 0.150 | 3.67 | |
+
+**Two-photon absorption coefficient $\beta$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\beta \times 10^{13}\ [\text{m/W}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.2661 | $6 \pm 1$ | 3.118 | |
+| | $11 \pm 3$ | 3.115 | |
+| | $24 \pm 7$ | 3.71 | $\theta = 42^\circ,\ \phi = 45^\circ$ |
+| 0.3078 | $23 \pm 5$ | 3.128 | |
+| 0.3547 | $0.68 \pm 0.24$ | 3.71 | e – wave, $\perp c$ |
+
+**Experimental values of refractive indices at $T = 298\ \text{K}$ [3.73, 129]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|---|---|---|
+| 0.2138560 | 1.62598 | 1.56738 | 0.3021499 | 1.56270 | 1.51163 |
+| 0.2288018 | 1.60785 | 1.55138 | 0.3125663 | 1.55917 | 1.50853 |
+| 0.2536519 | 1.58688 | 1.53289 | 0.3131545 | 1.55897 | 1.50832 |
+| 0.2967278 | 1.56462 | 1.51339 | 0.3341478 | 1.55300 | 1.50313 |
 
 ### [PDF Page 106]
 
@@ -8637,761 +7906,246 @@ surface damage
 
 ### [PDF Page 118]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-103 
-Thermal conductivity coefficient: 
-JC [W jmK] , II c 
-JC [W jmK] , -L c 
-Ref. 
-0.8 
-1.6 
-0.08 
-1.2 
-3.1.6 Lil03, Lithium Iodate 
-Negative uniaxial crystal: no > ne; 
-Point group: 6; 
-Mass density: 4.49 g/cm3 [3.182]; 
-Mohs hardness: 3.5 - 4.0; 
-3.148 
-3.58 
-Transparency range at "0" transmittance level: 0.28 - 6 J.lm [3.183, 184]; 
-Linear absorption coefficient IX: 
-A [J.lm] 
-IX [em-I] 
-Ref. 
-Note 
-0.34715 
-0.1 
-3.185 II c 
-0.3 
-3.185 e - wave, -L c 
-0.5145 
-0.0024 
-3.186 II c 
-0.0025 
-3.186 e - wave, -L c 
-0.5321 
-0.3 
-3.187 e - wave 
-0.5422 
-0.37 
-3.184 
-0.6594 
-0.0007-0.0023 
-3.186 II c 
-0.0006-0.0017 
-3.186 e - wave, -L c 
-1.0642 
-0.1 
-3.187 0 - wave 
-0.25 
-3.187 e - wave 
-< 0.0002 
-3.186 II c 
-0.0008 
-3.186 e - wave, -L c 
-1.0845 
-0.06 
-3.184 
-1.315 
-0.0005 
-3.182 
-1.3188 
-0.0008-0.0036 
-3.186 II c 
-0.0007-0.0010 
-3.186 e - wave, -L c 
-Two-photon absorption coefficient at A = 0.532 J.lm: 
-f3 < 4 X 10-12 mfW [3.188]. 
-Experimental values of refractive indices: 
-A [J.lm] 
-no 
-ne 
-Ref. 
-A [J.lmJ 
-no 
-ne 
-Ref. 
-0.3547 
-1.9822 
-1.8113 
-3.189 
-0.3996 
-1.9464 
-1.7842 
-3.189 
-0.3669 
-1.9706 
-1.8026 
-3.189 
-0.4047 
-1.9443 
-1.7826 
-3.190 
-0.3712 
-1.9671 
-1.8000 
-3.189 
-0.4358 
-1.9275 
-1.7702 
-3.189 
-0.3795 
-1.9600 
-1.7947 
-3.189 
-0.4545 
-1.9184 
-1.7638 
-3.191 
-0.3877 
-1.9544 
-1.7905 
-3.189 
-0.4579 
-1.9170 
-1.7630 
-3.191
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 103)
+
+| $\kappa\ [\text{W/mK}],\ \parallel c$ | $\kappa\ [\text{W/mK}],\ \perp c$ | Ref. |
+|---|---|---|
+| 0.8 | 0.08 | 3.148 |
+| 1.6 | 1.2 | 3.58 |
+
+---
+
+#### 3.1.6 LiIO3, Lithium Iodate
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$;
+- **Point group:** $6$;
+- **Mass density:** $4.49\ \text{g/cm}^3$ [3.182];
+- **Mohs hardness:** $3.5 - 4.0$;
+- **Transparency range:** at "0" transmittance level: $0.28 - 6\ \mu\text{m}$ [3.183, 184];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.34715 | 0.1 | 3.185 | $\parallel c$ |
+| | 0.3 | 3.185 | e – wave, $\perp c$ |
+| 0.5145 | 0.0024 | 3.186 | $\parallel c$ |
+| | 0.0025 | 3.186 | e – wave, $\perp c$ |
+| 0.5321 | 0.3 | 3.187 | e – wave |
+| 0.5422 | 0.37 | 3.184 | |
+| 0.6594 | 0.0007–0.0023 | 3.186 | $\parallel c$ |
+| | 0.0006–0.0017 | 3.186 | e – wave, $\perp c$ |
+| 1.0642 | 0.1 | 3.187 | o – wave |
+| | 0.25 | 3.187 | e – wave |
+| | < 0.0002 | 3.186 | $\parallel c$ |
+| | 0.0008 | 3.186 | e – wave, $\perp c$ |
+| 1.0845 | 0.06 | 3.184 | |
+| 1.315 | 0.0005 | 3.182 | |
+| 1.3188 | 0.0008–0.0036 | 3.186 | $\parallel c$ |
+| | 0.0007–0.0010 | 3.186 | e – wave, $\perp c$ |
+
+**Two-photon absorption coefficient at $\lambda = 0.532\ \mu\text{m}$:**
+$$\beta < 4 \times 10^{-12}\ \text{m/W}\ [3.188].$$
+
+**Experimental values of refractive indices:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | Ref. | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | Ref. |
+|---|---|---|---|---|---|---|---|
+| 0.3547 | 1.9822 | 1.8113 | 3.189 | 0.3996 | 1.9464 | 1.7842 | 3.189 |
+| 0.3669 | 1.9706 | 1.8026 | 3.189 | 0.4047 | 1.9443 | 1.7826 | 3.190 |
+| 0.3712 | 1.9671 | 1.8000 | 3.189 | 0.4358 | 1.9275 | 1.7702 | 3.189 |
+| 0.3795 | 1.9600 | 1.7947 | 3.189 | 0.4545 | 1.9184 | 1.7638 | 3.191 |
+| 0.3877 | 1.9544 | 1.7905 | 3.189 | 0.4579 | 1.9170 | 1.7630 | 3.191 |
 
 ### [PDF Page 119]
 
-```text
-104 
-3 Properties of Nonlinear Optical Crystals 
-;. [Jlllll 
-no 
-ne 
-Ref. 
-;. [Jlllll 
-no 
-ne 
-Ref. 
-0.4658 
-1.9141 
-1.7611 
-3.191 
-0.7000 
-8746 
-1.7300 
-3.96 
-0.4727 
-1.9122 
-1.7600 
-3.191 
-0.7660 
-1.8694 
-1.7261 
-3.96 
-0.4765 
-1.9100 
-1.7583 
-3.191 
-0.8000 
-1.8673 
-1.7245 
-3.96 
-0.4800 
-1.9109 
-1.7579 
-3.189 
-0.8630 
-1.8640 
-1.7220 
-3.96 
-0.4880 
-1.9083 
-1.7556 
-3.191 
-0.9000 
-1.8623 
-1.7207 
-3.96 
-0.5017 
-1.9053 
-1.7537 
-3.191 
-1.0000 
-1.8587 
-1.7180 
-3.96 
-0.5086 
-1.9031 
-1.7514 
-3.189 
-1.1000 
-1.8559 
-1.7160 
-3.96 
-0.5145 
-1.90l2 
-1.7487 
-3.191 
-1.2000 
-1.8536 
-1.7143 
-3.96 
-0.5320 
-1.8975 
-1.7475 
-3.189 
-1.3000 
-1.8517 
-1.7130 
-3.96 
-0.5461 
-1.8950 
-1.7455 
-3.96 
-1.3674 
-1.8508 
-1.7122 
-3.190 
-0.5600 
-1.8921 
-1.7433 
-3.189 
-1.5296 
-1.8482 
-1.7101 
-3.190 
-0.5791 
-1.8894 
-1.7413 
-3.190 
-1.6920 
-1.8464 
-1.7089 
-3.190 
-0.5800 
-1.8889 
-1.7403 
-3.189 
-1.9701 
-1.8431 
-1.7072 
-3.190 
-0.5896 
-1.8875 
-1.7400 
-3.190 
-2.2493 
-1.8385 
-1.7050 
-3.190 
-0.6000 
-1.8859 
-1.7383 
-3.189 
-2.5000 
-1.8378 
-1.7037 
-3.192 
-0.6200 
-1.8828 
-1.7361 
-3.189 
-3.0000 
-1.8319 
-1.7001 
-3.192 
-0.6328 
-1.8815 
-1.7351 
-3.192 
-3.5000 
-1.8266 
-1.6971 
-3.192 
-0.6438 
-1.8807 
-1.7346 
-3.190 
-4.0000 
-1.8140 
-1.6897 
-3.192 
-0.6560 
-1.8789 
-1.7332 
-3.96 
-5.0000 
-1.7940 
-1.6783 
-3.192 
-Optical activity at T = 300 K : 
-;. [Jllll] p [degjmm] Ref. 
-;. [11m] p [degjmm] Ref. 
-0.286 1052.9 
-3.193 
-0.429 
-222.46 
-3.193 
-0.290 
-964.99 
-3.193 
-0.448 
-198.72 
-3.193 
-0.295 
-886.65 
-3.193 
-0.470 
-175.75 
-3.l93 
-0.299 
-814.39 
-3.193 
-0.492 
-153.61 
-3.l93 
-0.304 
-748.76 
-3.193 
-0.520 
-133.02 
-3.l93 
-0.310 
-687.46 
-3.193 
-0.546 
-117.42 
-3.l93 
-0.317 
-630.44 
-3.193 
-0.551 
-113.36 
-3.l93 
-0.324 
-579.01 
-3.193 
-0.600 
-95.27 
-3.193 
-0.331 
-532.44 
-3.193 
-0.628 
-86.80 
-3.193 
-0.339 
-489.47 
-3.193 
-1.084 
-25.0 
-3.184 
-0.347 
-448.42 
-3.193 
-1.1 
-23.83 
-3.194 
-0.355 
-410.37 
-3.193 
-1.6 
-11.00 
-3.194 
-0.363 
-374.34 
-3.193 
-2.1 
-6.33 
-3.194 
-0.374 
-340.18 
-3.193 
-2.6 
-4.12 
-3.194 
-0.386 
-308.07 
-3.193 
-3.1 
-2.89 
-3.194 
-0.399 
-277.45 
-3.193 
-3.6 
-2.32 
-3.194 
-0.412 
-249.32 
-3.193
-```
+**104 — 3 Properties of Nonlinear Optical Crystals**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | Ref. | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | Ref. |
+|---|---|---|---|---|---|---|---|
+| 0.4658 | 1.9141 | 1.7611 | 3.191 | 0.7000 | 8746 *[MISMATCH: چاپ کتاب بدون ممیز `8746` است؛ ظاهراً `1.8746`]* | 1.7300 | 3.96 |
+| 0.4727 | 1.9122 | 1.7600 | 3.191 | 0.7660 | 1.8694 | 1.7261 | 3.96 |
+| 0.4765 | 1.9100 | 1.7583 | 3.191 | 0.8000 | 1.8673 | 1.7245 | 3.96 |
+| 0.4800 | 1.9109 | 1.7579 | 3.189 | 0.8630 | 1.8640 | 1.7220 | 3.96 |
+| 0.4880 | 1.9083 | 1.7556 | 3.191 | 0.9000 | 1.8623 | 1.7207 | 3.96 |
+| 0.5017 | 1.9053 | 1.7537 | 3.191 | 1.0000 | 1.8587 | 1.7180 | 3.96 |
+| 0.5086 | 1.9031 | 1.7514 | 3.189 | 1.1000 | 1.8559 | 1.7160 | 3.96 |
+| 0.5145 | 1.9012 | 1.7487 | 3.191 | 1.2000 | 1.8536 | 1.7143 | 3.96 |
+| 0.5320 | 1.8975 | 1.7475 | 3.189 | 1.3000 | 1.8517 | 1.7130 | 3.96 |
+| 0.5461 | 1.8950 | 1.7455 | 3.96 | 1.3674 | 1.8508 | 1.7122 | 3.190 |
+| 0.5600 | 1.8921 | 1.7433 | 3.189 | 1.5296 | 1.8482 | 1.7101 | 3.190 |
+| 0.5791 | 1.8894 | 1.7413 | 3.190 | 1.6920 | 1.8464 | 1.7089 | 3.190 |
+| 0.5800 | 1.8889 | 1.7403 | 3.189 | 1.9701 | 1.8431 | 1.7072 | 3.190 |
+| 0.5896 | 1.8875 | 1.7400 | 3.190 | 2.2493 | 1.8385 | 1.7050 | 3.190 |
+| 0.6000 | 1.8859 | 1.7383 | 3.189 | 2.5000 | 1.8378 | 1.7037 | 3.192 |
+| 0.6200 | 1.8828 | 1.7361 | 3.189 | 3.0000 | 1.8319 | 1.7001 | 3.192 |
+| 0.6328 | 1.8815 | 1.7351 | 3.192 | 3.5000 | 1.8266 | 1.6971 | 3.192 |
+| 0.6438 | 1.8807 | 1.7346 | 3.190 | 4.0000 | 1.8140 | 1.6897 | 3.192 |
+| 0.6560 | 1.8789 | 1.7332 | 3.96 | 5.0000 | 1.7940 | 1.6783 | 3.192 |
+
+**Optical activity at $T = 300\ \text{K}$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\rho\ [\text{deg/mm}]$ | Ref. | $\lambda\ [\mu\text{m}]$ | $\rho\ [\text{deg/mm}]$ | Ref. |
+|---|---|---|---|---|---|
+| 0.286 | 1052.9 | 3.193 | 0.429 | 222.46 | 3.193 |
+| 0.290 | 964.99 | 3.193 | 0.448 | 198.72 | 3.193 |
+| 0.295 | 886.65 | 3.193 | 0.470 | 175.75 | 3.193 |
+| 0.299 | 814.39 | 3.193 | 0.492 | 153.61 | 3.193 |
+| 0.304 | 748.76 | 3.193 | 0.520 | 133.02 | 3.193 |
+| 0.310 | 687.46 | 3.193 | 0.546 | 117.42 | 3.193 |
+| 0.317 | 630.44 | 3.193 | 0.551 | 113.36 | 3.193 |
+| 0.324 | 579.01 | 3.193 | 0.600 | 95.27 | 3.193 |
+| 0.331 | 532.44 | 3.193 | 0.628 | 86.80 | 3.193 |
+| 0.339 | 489.47 | 3.193 | 1.084 | 25.0 | 3.184 |
+| 0.347 | 448.42 | 3.193 | 1.1 | 23.83 | 3.194 |
+| 0.355 | 410.37 | 3.193 | 1.6 | 11.00 | 3.194 |
+| 0.363 | 374.34 | 3.193 | 2.1 | 6.33 | 3.194 |
+| 0.374 | 340.18 | 3.193 | 2.6 | 4.12 | 3.194 |
+| 0.386 | 308.07 | 3.193 | 3.1 | 2.89 | 3.194 |
+| 0.399 | 277.45 | 3.193 | 3.6 | 2.32 | 3.194 |
+| 0.412 | 249.32 | 3.193 | | | |
 
 ### [PDF Page 120]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-lOS 
-Temperature derivative of refractive indices [3.186]: 
-A. [~] dno/dT X 105 [K-1] 
-dne/dT x 105 (K-I] 
-0.5321 -9.64 
--8.61 
-0.6594 -9.49 
--8.39 
-1.0642 -8.93 
--7.52 
-1.3188 -9.44 
--8.49 
-Experimental values of phase-matching angle (T = 293 K) and comparison 
-between different sets of dispersion relations: 
-Interacting 
-Oexp [deg] 
-Otheor [deg] 
-wavelengths [~] 
-[3.195] 
-[3.192] 
-[3.196] 
-SHG, 0+0 => e 
-0.586 => 0.293 
-90 [3.195] 
-87.7 
-81.0 
-83,6 
-0.5863 => 0.29315 
-90 [3.196] 
-86.9 
-80.7 
-83.2 
-0.6 => 0.3 
-75.6 [3.196] 
-75.5 
-73.5 
-73.7 
-0.62 => 0.31 
-68.2 [3.196] 
-68.0 
-67.0 
-66.3 
-0.6943 => 0.34715 
-52 [3.191] 
-53.5 
-53.4 
-52.0 
-52 [3.198] 
-1.06 => 0.53 
-30 [3.199] 
-30.2 
-30.3 
-29.5 
-1.0642 => 0.5321 
-30.2 [3.200] 
-30.1 
-30.2 
-29.4 
-30.2 [3.92] 
-30 [3.201] 
-30 [3.202] 
-1.0845 => 0.54225 
-28.9 [3.184] 
-29.5 
-29.6 
-28.8 
-1.1523 => 0.57615 
-27.2 [3.184] 
-27.6 
-27.7 
-27.1 
-1.3886 => 0.6943 
-23.1 [3.203] 
-23.2 
-23.2 
-23.1 
-1.746 => 0.873 
-20 [3.204] 
-19.9 
-19.6 
-20.3 
-SFG, 0+0 => e 
-5.33 + 1.32969 => 1.0642 
-21 [3.202] 
-20.1 
-20.0 
-22.1 
-4.44 + 1.39968 => 1.0642 
-20.2 [3.202] 
-19.4 
-19.0 
-21.2 
-5.2 + 0.80129 => 0.6943 
-19.5 [3.205] 
-19.6 
-19.6 
-20.6 
-2.5 + 0.96126 => 0.6943 
-21 [3.206] 
-21.5 
-21.4 
-21.7 
-5.0 + 0.66251 => 0.585 
-20.3 [3.201] 
-20.3 
-20.3 
-20.9 
-2.0 + 0.82686 => 0.585 
-25.1 [3.201] 
-25.1 
-25.1 
-24.8 
-4.16 + 0.61015 => 0.5321 
-21.6 [3.208] 
-21.7 
-21.7 
-22.0 
-2.66 + 0.66514 => 0.5321 
-24.5 [3.208] 
-24.6 
-24.6 
-24.4 
-0.946 + 0.5484 => 0.34715 
-50 [3.209] 
-51.0 
-50.9 
-49.6 
-2.67 + 0.6943 => 0.55102 
-24.4 [3.210] 
-24.1 
-24.1 
-23.9 
-1.98 + 0.6943 => 0.51405 
-27.4 [3.210] 
-27.6 
-27.6 
-27.1 
-1.2013 + 0.6943 => 0.44 
-35.1 [3.203] 
-36.2 
-36.4 
-35.2 
-3.3913 + 0.5145 => 0.44673 
-24 [3.211] 
-25.4 
-25.4 
-25.1 
-2.38 + 0.4880 => 0.40497 
-30.5 [3.212] 
-31.1 
-31.1 
-30.5 
-1.0642 + 0.5321 => 0.35473 
-47.5 [3.200] 
-47.8 
-47.8 
-46.5
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 105)
+
+**Temperature derivative of refractive indices [3.186]:**
+
+| $\lambda\ [\mu\text{m}]$ | $dn_o/dT \times 10^5\ [\text{K}^{-1}]$ | $dn_e/dT \times 10^5\ [\text{K}^{-1}]$ |
+|---|---|---|
+| 0.5321 | -9.64 | -8.61 |
+| 0.6594 | -9.49 | -8.39 |
+| 1.0642 | -8.93 | -7.52 |
+| 1.3188 | -9.44 | -8.49 |
+
+**Experimental values of phase-matching angle ($T = 293\ \text{K}$) and comparison between different sets of dispersion relations:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.195] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.192] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.196] |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $0.586 \Rightarrow 0.293$ | 90 [3.195] | 87.7 | 81.0 | 83.6 |
+| $0.5863 \Rightarrow 0.29315$ | 90 [3.196] | 86.9 | 80.7 | 83.2 |
+| $0.6 \Rightarrow 0.3$ | 75.6 [3.196] | 75.5 | 73.5 | 73.7 |
+| $0.62 \Rightarrow 0.31$ | 68.2 [3.196] | 68.0 | 67.0 | 66.3 |
+| $0.6943 \Rightarrow 0.34715$ | 52 [3.197]<br>52 [3.198] | 53.5 | 53.4 | 52.0 |
+| $1.06 \Rightarrow 0.53$ | 30 [3.199] | 30.2 | 30.3 | 29.5 |
+| $1.0642 \Rightarrow 0.5321$ | 30.2 [3.200]<br>30.2 [3.92]<br>30 [3.201]<br>30 [3.202] | 30.1 | 30.2 | 29.4 |
+| $1.0845 \Rightarrow 0.54225$ | 28.9 [3.184] | 29.5 | 29.6 | 28.8 |
+| $1.1523 \Rightarrow 0.57615$ | 27.2 [3.184] | 27.6 | 27.7 | 27.1 |
+| $1.3886 \Rightarrow 0.6943$ | 23.1 [3.203] | 23.2 | 23.2 | 23.1 |
+| $1.746 \Rightarrow 0.873$ | 20 [3.204] | 19.9 | 19.6 | 20.3 |
+| **SFG, $o+o \Rightarrow e$** | | | | |
+| $5.33 + 1.32969 \Rightarrow 1.0642$ | 21 [3.202] | 20.1 | 20.0 | 22.1 |
+| $4.44 + 1.39968 \Rightarrow 1.0642$ | 20.2 [3.202] | 19.4 | 19.0 | 21.2 |
+| $5.2 + 0.80129 \Rightarrow 0.6943$ | 19.5 [3.205] | 19.6 | 19.6 | 20.6 |
+| $2.5 + 0.96126 \Rightarrow 0.6943$ | 21 [3.206] | 21.5 | 21.4 | 21.7 |
+| $5.0 + 0.66251 \Rightarrow 0.585$ | 20.3 [3.207] | 20.3 | 20.3 | 20.9 |
+| $2.0 + 0.82686 \Rightarrow 0.585$ | 25.1 [3.207] | 25.1 | 25.1 | 24.8 |
+| $4.16 + 0.61015 \Rightarrow 0.5321$ | 21.6 [3.208] | 21.7 | 21.7 | 22.0 |
+| $2.66 + 0.66514 \Rightarrow 0.5321$ | 24.5 [3.208] | 24.6 | 24.6 | 24.4 |
+| $0.946 + 0.5484 \Rightarrow 0.34715$ | 50 [3.209] | 51.0 | 50.9 | 49.6 |
+| $2.67 + 0.6943 \Rightarrow 0.55102$ | 24.4 [3.210] | 24.1 | 24.1 | 23.9 |
+| $1.98 + 0.6943 \Rightarrow 0.51405$ | 27.4 [3.210] | 27.6 | 27.6 | 27.1 |
+| $1.2013 + 0.6943 \Rightarrow 0.44$ | 35.1 [3.203] | 36.2 | 36.4 | 35.2 |
+| $3.3913 + 0.5145 \Rightarrow 0.44673$ | 24 [3.211] | 25.4 | 25.4 | 25.1 |
+| $2.38 + 0.4880 \Rightarrow 0.40497$ | 30.5 [3.212] | 31.1 | 31.1 | 30.5 |
+| $1.0642 + 0.5321 \Rightarrow 0.35473$ | 47.5 [3.200] | 47.8 | 47.8 | 46.5 |
 
 ### [PDF Page 121]
 
-```text
-106 
-3 Properties of Nonlinear Optical Crystals 
-Note: the other sets of dispersion relations from [3.213, 214, 215, 189, 202] 
-show worse agreement with the experiment. 
-Best set of dispersion relations (A, in JlID, T = 20°C) [3.295] (a corrected set 
-from [3.213]): 
-n2 = 3.4132 + 
-0.0476 
-_ 0.0077 A,2 
-o 
-A,2 _ 0.0338 
-' 
-n2 = 2.9211 + 
-0.0346 
-_ 0.0042 A,2 . 
-e 
-A,2 _ 0.0320 
-Calculated values of phase-matching and "walk-off" angles: 
-Interacting wavelengths [!lm] 
-Opm[deg] 
-P3[deg] 
-SHG, o+o::::} e 
-0.6328 ::::} 0.3164 
-64.52 
-3.90 
-0.6943 ::::} 0.34715 
-53.48 
-4.76 
-1.0642 ::::} 0.5321 
-30.08 
-4.23 
-1.3188 ::::} 0.6594 
-24.27 
-3.63 
-2.9365 ::::} 1.46825 
-20.15 
-3.04 
-SFG, 0 + 0 => e 
-1.0642 + 0.5321 ::::} 0.354733 
-47.81 
-5.00 
-1.3188 + 0.6594 ::::} 0.4396 
-35.42 
-4.67 
-Experimental values of internal angular, temperatute and spectral bandwidths 
-(T = 293K): 
-Interacting 
-Opm [deg] 
-Mint [deg] 
-AT [0C] 
-Av [em-I] Ref. 
-wavelengths [!lm] 
-SHG, o+o::::} e 
-0.586::::} 0.293 
-90 
-0.5-0.58 
-2.04 
-3.195 
-0.6943 ::::} 0.34715 
-52 
-O.oI8 
-3.197 
-1.06::::} 0.53 
-30 
-0.019 
-6.27 
-3.96 
-1.0642::::} 0.5321 
-30 
-0.022 
-3.201 
-30 
-0.022 
-40 
-3.216 
-30 
-0.024 
-52.4 
-3.217 
-30 
-0.026 
-3.92 
-1.0845 ::::} 0.54225 
-29 
-0.020 
-3.184 
-Temperature variation of phase-matching angle: 
-Interacting 
-Opm [deg] 
-dOpm/ dT [deg/K] 
-Ref. 
-wavelengths [JlID] 
-SHG, o+o::::}e 
-1.0845 ::::} 0.54225 
-29 
-< -1.3 X 10-3 
-3.184 
-1.0642::::} 0.5321 
-30 
--8.4 x 10-4 
-3.217
-```
+**106 — 3 Properties of Nonlinear Optical Crystals**
+
+Note: the other sets of dispersion relations from [3.213, 214, 215, 189, 202] show worse agreement with the experiment.
+
+**Best set of dispersion relations ($\lambda$ in $\mu\text{m}$, $T = 20\ ^\circ\text{C}$) [3.295] (a corrected set from [3.213]):**
+$$n_o^2 = 3.4132 + \frac{0.0476}{\lambda^2 - 0.0338} - 0.0077\,\lambda^2\ ,$$
+$$n_e^2 = 2.9211 + \frac{0.0346}{\lambda^2 - 0.0320} - 0.0042\,\lambda^2\ .$$
+
+**Calculated values of phase-matching and "walk-off" angles:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | |
+| $0.6328 \Rightarrow 0.3164$ | 64.52 | 3.90 |
+| $0.6943 \Rightarrow 0.34715$ | 53.48 | 4.76 |
+| $1.0642 \Rightarrow 0.5321$ | 30.08 | 4.23 |
+| $1.3188 \Rightarrow 0.6594$ | 24.27 | 3.63 |
+| $2.9365 \Rightarrow 1.46825$ | 20.15 | 3.04 |
+| **SFG, $o+o \Rightarrow e$** | | |
+| $1.0642 + 0.5321 \Rightarrow 0.354733$ | 47.81 | 5.00 |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 35.42 | 4.67 |
+
+**Experimental values of internal angular, temperature and spectral bandwidths ($T = 293\text{K}$):**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\theta^{\text{int}}\ [\text{deg}]$ | $\Delta T\ [^\circ\text{C}]$ | $\Delta\nu\ [\text{cm}^{-1}]$ | Ref. |
+|---|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | | |
+| $0.586 \Rightarrow 0.293$ | 90 | 0.5–0.58 | | 2.04 | 3.195 |
+| $0.6943 \Rightarrow 0.34715$ | 52 | 0.018 | | | 3.197 |
+| $1.06 \Rightarrow 0.53$ | 30 | 0.019 | | 6.27 | 3.96 |
+| $1.0642 \Rightarrow 0.5321$ | 30 | 0.022 | | | 3.201 |
+| | 30 | 0.022 | 40 | | 3.216 |
+| | 30 | 0.024 | 52.4 | | 3.217 |
+| | 30 | 0.026 | | | 3.92 |
+| $1.0845 \Rightarrow 0.54225$ | 29 | 0.020 | | | 3.184 |
+
+**Temperature variation of phase-matching angle:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $d\theta_{\text{pm}}/dT\ [\text{deg/K}]$ | Ref. |
+|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | |
+| $1.0845 \Rightarrow 0.54225$ | 29 | $< -1.3 \times 10^{-3}$ | 3.184 |
+| $1.0642 \Rightarrow 0.5321$ | 30 | $-8.4 \times 10^{-4}$ | 3.217 |
 
 ### [PDF Page 122]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-Effective nonlinearity expression in the phase-matching direction: 
-dooe = d31 sin 0 
-Nonlinear coefficient [3.37]: 
-d3l (1.0641lIll) = 4.4 pm/V , 
-d33(1.0641lIll) = 4.5 pm/V. 
-Laser-induced bulk-damage threshold: 
-). [IlIll) 
-"tp Ins) 
-Itbr x 10-12 (W/m2) 
-0.44-0.62 
-200--300 
-0.1 
-0.53 
-15 
-0.4-0.5 
-20 
-0.7-0.8 
-0.5321 
-0.031 
-50 
-0.032 
-100--120 
-0.035 
-80--100 
-0.035 
-40--50 
-0.1 
-10 
-12 
-0.3 
-0.64 
-330 
-0.04 
-0.6943 
-10 
-1.2 
-20 
-1.3 
-20 
-0.25 
-1.0642 
-0.045 
-190 
-0.13 
-80 
-10 
-1.2 
-12 
-1.2 
-300 
-0.02 
-1.8 x 105 
-> 0.5 
-Thermal conductivity coefficient [3.182]: 
-" = 1.47 W /mk 
-Ref. 
-3.218 
-3.199 
-3.219 
-3.220 
-3.221 
-3.222 
-3.222 
-3.220 
-3.202 
-3.101 
-3.206 
-3.185 
-3.203 
-3.220 
-3.220 
-3.223 
-3.202 
-3.201 
-3.224 
-3.1.7 KTiOP04, Potassium Titanyl Phosphate (KTP) 
-Note 
-25 Hz 
-1 Hz 
-12.5 Hz 
-10 pulses 
-500 pulses 
-100 Hz 
-1 kHz 
-50 Hz 
-Positive biaxial crystal: 2Vz = 37.40 at ). = 0.5461 J-lm [3.225]; 
-Point group: mm2 
-Assignment of dielectric and crystallographic axes: 
-X, Y,Z::} a,b,c (Fig. 3.2); 
-Mass density: 2.945 g/cm3 [3.226, 227]; 
-3.023 g/cm3 [3.228]; 3.03 g/cm3 [3.229]; 
-Mohs hardness: 5 [3.227]; 
-Vickers hardness: 531 [3.228], 566 [3.230]; 
-Knoop hardness: 702 [3.228]; 
-107
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 107)
+
+**Effective nonlinearity expression in the phase-matching direction:**
+$$d_{\text{ooe}} = d_{31}\sin\theta$$
+
+**Nonlinear coefficient [3.37]:**
+$$d_{31}(1.064\ \mu\text{m}) = 4.4\ \text{pm/V}\ ,$$
+$$d_{33}(1.064\ \mu\text{m}) = 4.5\ \text{pm/V}\ .$$
+
+**Laser-induced bulk-damage threshold:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. | Note |
+|---|---|---|---|---|
+| 0.44–0.62 | 200–300 | 0.1 | 3.218 | |
+| 0.53 | 15 | 0.4–0.5 | 3.199 | |
+| | 20 | 0.7–0.8 | 3.219 | |
+| 0.5321 | 0.031 | 50 | 3.220 | |
+| | 0.032 | 100–120 | 3.221 | 25 Hz |
+| | 0.035 | 80–100 | 3.222 | 1 Hz |
+| | 0.035 | 40–50 | 3.222 | 12.5 Hz |
+| | 0.1 | 10 | 3.220 | |
+| | 12 | 0.3 | 3.202 | |
+| 0.64 | 330 | 0.04 | 3.101 | |
+| 0.6943 | 10 | 1.2 | 3.206 | |
+| | 20 | 1.3 | 3.185 | 10 pulses |
+| | 20 | 0.25 | 3.203 | 500 pulses |
+| 1.0642 | 0.045 | 190 | 3.220 | |
+| | 0.13 | 80 | 3.220 | |
+| | 10 | 1.2 | 3.223 | 100 Hz |
+| | 12 | 1.2 | 3.202 | |
+| | 300 | 0.02 | 3.201 | 1 kHz |
+| | $1.8 \times 10^5$ | > 0.5 | 3.224 | 50 Hz |
+
+**Thermal conductivity coefficient [3.182]:**
+$$\kappa = 1.47\ \text{W/mk}\ .$$
+
+---
+
+#### 3.1.7 KTiOPO4, Potassium Titanyl Phosphate (KTP)
+
+- **Optical character:** Positive biaxial crystal: $2V_Z = 37.4^\circ$ at $\lambda = 0.5461\ \mu\text{m}$ [3.225];
+- **Point group:** $mm2$;
+- **Assignment of dielectric and crystallographic axes:** $X, Y, Z \Rightarrow a, b, c$ (Fig. 3.2);
+- **Mass density:** $2.945\ \text{g/cm}^3$ [3.226, 227]; $3.023\ \text{g/cm}^3$ [3.228]; $3.03\ \text{g/cm}^3$ [3.229];
+- **Mohs hardness:** 5 [3.227];
+- **Vickers hardness:** 531 [3.228], 566 [3.230];
+- **Knoop hardness:** 702 [3.228];
 
 ### [PDF Page 123]
 
@@ -11561,592 +10315,241 @@ along b axis, E -L c
 
 ### [PDF Page 147]
 
-```text
-132 
-3 Properties of Nonlinear Optical Crystals 
-;, [~] 
-1: P [ns] 
-Ithr X 10-12 
-1.054 
-0.7 
-110 
-0.7 
-180 
-0.7 
-370 
-1.0642 
-25 
-1.5-1.8 
-0.1 
-> 1000 
-Thennal conductivity coefficient: 
-1C> 3.5 W/mK [3.316] . 
-3.1.10 AgGaS2, Silver TbiogaUate 
-[W/m2] 
-Ref. 
-3.337 
-3.337 
-3.337 
-3.300 
-3.323 
-Note 
-along a axis, E 1. c 
-along b axis, E 1. c 
-along b axis, E 1. c 
-Negative uniaxial crystal: no > ne (at;' < 0.497 Jim ne > no); 
-Point group: 42m ; 
-Mass density: 4.58 g/cm3 [3.338] ; 
-Mohs hardness: 3 - 3.5 ; 
-Transparency range at "0" transmittance level: 0.47 - 13 Jim [3.339] ; 
-Linear absorption coefficient oc: 
-;, [~] 
-oc [em-I] 
-Ref. 
-0.5-13 
-< 0.1 
-3.340 
-0.6-0.65 
-0.04 
-3.341 
-0.6-12 
-< 0.09 
-3.339 
-0.633 
-0.05 
-3.342 
-0.9-8.5 
-< 0.9 
-3.343 
-1.064 
-0.01 
-3.342 
-4-8.5 
-< 0.04 
-3.341 
-Experimental values of refractive indices [3.344]: 
-;, [~] no 
-ne 
-;, [~] no 
-ne 
-;, [Jim] 
-no 
-ne 
-0.490 
-2.7148 2.7287 0.850 
-2.4802 2.4279 2.200 
-2.4142 2.3684 
-0.500 
-2.6916 2.6867 0.900 
-2.4716 2.4192 2.400 
-2.4119 2.3583 
-0.525 
-2.6503 2.6239 0.950 
-2.4644 2.4118 2.600 
-2.4102 2.3567 
-0.550 
-2.6190 2.5834 1.000 
-2.4582 2.4053 2.800 
-2.4094 2.3559 
-0.575 
-2.5944 2.5537 1.100 
-2.4486 2.3954 3.000 
-2.4080 2.3545 
-0.600 
-2.5748 2.5303 
-1.200 
-2.4414 2.3881 
-3.200 
-2.4068 2.3534 
-0.625 
-2.5577 2.5116 1.300 
-2.4359 2.3819 3.400 
-2.4062 2.3522 
-0.650 
-2.5437 2.4961 
-1.400 
-2.4315 2.3781 
-3.600 
-2.4046 2.3511 
-0.675 
-2.5310 2.4824 1.500 
-2.4280 2.3745 3.800 
-2.4024 2.3491 
-0.700 
-2.5205 2.4706 1.600 
-2.4252 2.3716 4.000 
-2.4024 2.3488 
-0.750 
-2.5049 2.4540 1.800 
-2.4206 2.3670 4.500 
-2.4003 2.3461 
-0.800 
-2.4909 2.4395 2.000 
-2.4164 2.3637 5.000 
-2.3955 2.3419
-```
+**132 — 3 Properties of Nonlinear Optical Crystals**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. | Note |
+|---|---|---|---|---|
+| 1.054 | 0.7 | 110 | 3.337 | along $a$ axis, $\mathbf{E} \perp c$ |
+| | 0.7 | 180 | 3.337 | along $b$ axis, $\mathbf{E} \perp c$ |
+| | 0.7 | 370 | 3.337 | along $b$ axis, $\mathbf{E} \perp c$ |
+| 1.0642 | 25 | 1.5–1.8 | 3.300 | |
+| | 0.1 | > 1000 | 3.323 | |
+
+**Thermal conductivity coefficient:**
+$$\kappa > 3.5\ \text{W/mK}\ [3.316]\ .$$
+
+---
+
+#### 3.1.10 AgGaS2, Silver Thiogallate
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$ (at $\lambda < 0.497\ \mu\text{m},\ n_e > n_o$);
+- **Point group:** $\bar{4}2m$;
+- **Mass density:** $4.58\ \text{g/cm}^3$ [3.338];
+- **Mohs hardness:** $3 - 3.5$;
+- **Transparency range:** at "0" transmittance level: $0.47 - 13\ \mu\text{m}$ [3.339];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. |
+|---|---|---|
+| 0.5–13 | < 0.1 | 3.340 |
+| 0.6–0.65 | 0.04 | 3.341 |
+| 0.6–12 | < 0.09 | 3.339 |
+| 0.633 | 0.05 | 3.342 |
+| 0.9–8.5 | < 0.9 | 3.343 |
+| 1.064 | 0.01 | 3.342 |
+| 4–8.5 | < 0.04 | 3.341 |
+
+**Experimental values of refractive indices [3.344]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|---|---|---|---|---|---|
+| 0.490 | 2.7148 | 2.7287 | 0.850 | 2.4802 | 2.4279 | 2.200 | 2.4142 | 2.3684 |
+| 0.500 | 2.6916 | 2.6867 | 0.900 | 2.4716 | 2.4192 | 2.400 | 2.4119 | 2.3583 |
+| 0.525 | 2.6503 | 2.6239 | 0.950 | 2.4644 | 2.4118 | 2.600 | 2.4102 | 2.3567 |
+| 0.550 | 2.6190 | 2.5834 | 1.000 | 2.4582 | 2.4053 | 2.800 | 2.4094 | 2.3559 |
+| 0.575 | 2.5944 | 2.5537 | 1.100 | 2.4486 | 2.3954 | 3.000 | 2.4080 | 2.3545 |
+| 0.600 | 2.5748 | 2.5303 | 1.200 | 2.4414 | 2.3881 | 3.200 | 2.4068 | 2.3534 |
+| 0.625 | 2.5577 | 2.5116 | 1.300 | 2.4359 | 2.3819 | 3.400 | 2.4062 | 2.3522 |
+| 0.650 | 2.5437 | 2.4961 | 1.400 | 2.4315 | 2.3781 | 3.600 | 2.4046 | 2.3511 |
+| 0.675 | 2.5310 | 2.4824 | 1.500 | 2.4280 | 2.3745 | 3.800 | 2.4024 | 2.3491 |
+| 0.700 | 2.5205 | 2.4706 | 1.600 | 2.4252 | 2.3716 | 4.000 | 2.4024 | 2.3488 |
+| 0.750 | 2.5049 | 2.4540 | 1.800 | 2.4206 | 2.3670 | 4.500 | 2.4003 | 2.3461 |
+| 0.800 | 2.4909 | 2.4395 | 2.000 | 2.4164 | 2.3637 | 5.000 | 2.3955 | 2.3419 |
 
 ### [PDF Page 148]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-133 
-Je [~ml no 
-ne 
-Je [~ml no 
-ne 
-Je [~l no 
-5.500 
-2.3938 
-2.3401 
-8.000 
-2.3757 2.3219 
-10.50 
-2.3486 
-6.000 
-2.3908 2.3369 8.500 
-2.3699 2.3163 
-11.00 
-2.3417 
-6.500 
-2.3874 2.3334 9.000 
-2.3663 2.3121 
-11.50 
-2.3329 
-7.000 
-2.3827 2.3291 
-9.500 
-2.3606 2.3064 12.00 
-2.3266 
-7.500 
-2.3787 2.3252 
-10.00 
-2.3548 2.3012 12.50 
-2.3177 
-Optical activity [3.339, 345]: 
-p = 522 deg/mm at isotropic point (no = ne, Je = 0.4973~) 
-Temperature dependences of refractive indices (Je in ~)[3.3461 : 
-d /dT 
-10-5 
-[39.88Je2 
-112.20A,4 1 
-no 
-= 2no x - A? _ 0.0676 + {A,2 _ 0.0676)2 
-' 
-d /dT 
-10-5 
-[25.50A,2 
-45.72A,4 1 
-n 
-=-x + 
-+ 
-e 
-2ne 
-Je2-0.107584 
-{A,2-0.107584l 
-ne 
-2.2948 
-2.2880 
-2.2789 
-2.2716 
-Note: Canarei/i et a~. [3.347] observed the discrepancy between these dispersion 
-formulas and the experiment 
-Experimental values of phase-matching angle (T = 293 K) and comparison 
-between different sets of dispersion relations: 
-Interacting wavelengths [~ml (Jexp [deg] 
-(Jtheor [deg] 
-[3.348] 
-[3.349] 
-[3.350] 
-SHG, 0 + 0 =} e 
-3.3913 =} 1.69565 
-33 [3.339] 
-34.1 
-33.2 
-33.5 
-10.6 =} 5.3 
-67 [3.351] 
-70.7 
-73.3 
-71.7 
-67.5 [3.352] 
-68 [3.339] 
-70.8 [3.344] 
-SFG,o + 0 =} e 
-11.538 + U7233 =} 1.0642 
-34.7 [3.48] 
-35.9 
-35.3 
-35.7 
-9.9 + 1.19237 =} 1.0642 
-35.9 [3.353] 
-36.4 
-35.6 
-36.2 
-8.7 + 1.21252 =} 1.0642 
-37 [3.354] 
-37.3 
-36.4 
-37.0 
-6.24 + 1.28301 =} 1.0642 
-41.1 [3.355] 
-40.9 
-39.8 
-40.4 
-5.89 + 1.29888 =} 1.0642 
-42.1 [3.353] 
-41.7 
-40.5 
-41.2 
-4.8 + 1.36735 =} 1.0642 
-44 [3.354] 
-44.7 
-43.4 
-44.1 
-4.0 + 1.44996 =} 1.0642 
-47.7 [3.355] 
-47.7 
-46.1 
-46.9 
-3.09 + 1.62325 =} 1.0642 
-51 [3.350] 
-51.9 
-50.0 
-50.9 
-2.53 + 1.83683 =} 1.0642 
-53.4 [3.350] 
-54.4 
-52.4 
-53.4 
-6.85 + 1.0642 =} 0.92110 
-42 [3.356] 
-43.9 
-42.7 
-43.6 
-4.43 + 1.0642 =} 0.85807 
-55 [3.356] 
-57.1 
-55.3 
-56.7 
-6.6 + 0.77593 =} 0.6943 
-60 [3.357] 
-60.5 
-60.4 
-61.8
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 133)
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|---|---|---|---|---|---|
+| 5.500 | 2.3938 | 2.3401 | 8.000 | 2.3757 | 2.3219 | 10.50 | 2.3486 | 2.2948 |
+| 6.000 | 2.3908 | 2.3369 | 8.500 | 2.3699 | 2.3163 | 11.00 | 2.3417 | 2.2880 |
+| 6.500 | 2.3874 | 2.3334 | 9.000 | 2.3663 | 2.3121 | 11.50 | 2.3329 | 2.2789 |
+| 7.000 | 2.3827 | 2.3291 | 9.500 | 2.3606 | 2.3064 | 12.00 | 2.3266 | 2.2716 |
+| 7.500 | 2.3787 | 2.3252 | 10.00 | 2.3548 | 2.3012 | 12.50 | 2.3177 | |
+
+**Optical activity [3.339, 345]:**
+$$\rho = 522\ \text{deg/mm at isotropic point}\ (n_o = n_e,\ \lambda = 0.4973\ \mu\text{m})$$
+
+**Temperature dependences of refractive indices ($\lambda$ in $\mu\text{m}$) [3.346]:**
+$$\frac{dn_o}{dT} = \frac{10^{-5}}{2n_o} \times \left[ -\frac{39.88\lambda^2}{\lambda^2 - 0.0676} + \frac{112.20\lambda^4}{(\lambda^2 - 0.0676)^2} \right]\ ,$$
+$$\frac{dn_e}{dT} = \frac{10^{-5}}{2n_e} \times \left[ +\frac{25.50\lambda^2}{\lambda^2 - 0.107584} + \frac{45.72\lambda^4}{(\lambda^2 - 0.107584)^2} \right]\ .$$
+
+Note: *Canarelli et al.* [3.347] observed the discrepancy between these dispersion formulas and the experiment.
+
+**Experimental values of phase-matching angle ($T = 293\ \text{K}$) and comparison between different sets of dispersion relations:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.348] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.349] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.350] |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $3.3913 \Rightarrow 1.69565$ | 33 [3.339] | 34.1 | 33.2 | 33.5 |
+| $10.6 \Rightarrow 5.3$ | 67 [3.351]<br>67.5 [3.352]<br>68 [3.339]<br>70.8 [3.344] | 70.7 | 73.3 | 71.7 |
+| **SFG, $o+o \Rightarrow e$** | | | | |
+| $11.538 + 1.17233 \Rightarrow 1.0642$ | 34.7 [3.48] | 35.9 | 35.3 | 35.7 |
+| $9.9 + 1.19237 \Rightarrow 1.0642$ | 35.9 [3.353] | 36.4 | 35.6 | 36.2 |
+| $8.7 + 1.21252 \Rightarrow 1.0642$ | 37 [3.354] | 37.3 | 36.4 | 37.0 |
+| $6.24 + 1.28301 \Rightarrow 1.0642$ | 41.1 [3.355] | 40.9 | 39.8 | 40.4 |
+| $5.89 + 1.29888 \Rightarrow 1.0642$ | 42.1 [3.353] | 41.7 | 40.5 | 41.2 |
+| $4.8 + 1.36735 \Rightarrow 1.0642$ | 44 [3.354] | 44.7 | 43.4 | 44.1 |
+| $4.0 + 1.44996 \Rightarrow 1.0642$ | 47.7 [3.355] | 47.7 | 46.1 | 46.9 |
+| $3.09 + 1.62325 \Rightarrow 1.0642$ | 51 [3.350] | 51.9 | 50.0 | 50.9 |
+| $2.53 + 1.83683 \Rightarrow 1.0642$ | 53.4 [3.350] | 54.4 | 52.4 | 53.4 |
+| $6.85 + 1.0642 \Rightarrow 0.92110$ | 42 [3.356] | 43.9 | 42.7 | 43.6 |
+| $4.43 + 1.0642 \Rightarrow 0.85807$ | 55 [3.356] | 57.1 | 55.3 | 56.7 |
+| $6.6 + 0.77593 \Rightarrow 0.6943$ | 60 [3.357] | 60.5 | 60.4 | 61.8 |
 
 ### [PDF Page 149]
 
-```text
-134 
-3 Properties of Nonlinear Optical Crystals 
-4.8 + 0.81171 ~ 0.6943 
-75.5 [3.357] 
-79.5 
-79.0 
-83.9 
-11.66329 + 0.617 ~ 0.586 
-64 [3.358] 
-58.9 
-67.0 
-63.4 
-10.12478 + 0.622 ~ 0.586 
-70 [3.358] 
-64.2 
-75.4 
-70.1 
-SFG, e + 0 ~ e 
-10.9 + 1.17934 ~ 1.0642 
-38.3 [3.359] 
-38.3 
-37.5 
-38.0 
-8.8 + 1.21060 ~ 1.0642 
-40.3 [3.359] 
-40.2 
-39.1 
-39.9 
-7.0 + 1.25500 ~ 1.0642 
-43.6 [3.359] 
-43.7 
-42.4 
-43.2 
-5.2 + 1.33803 ~ 1.0642 
-50.6 [3.359] 
-50.6 
-48.7 
-49.9 
-10.6 + 1.0642 ~ 0.96711 
-39.8 [3.360] 
-39.7 
-38.8 
-39.5 
-9.6 + 1.0642 ~ 0.95800 
-41.5 [3.360] 
-41.0 
-40.0 
-40.8 
-10.6 + 0.6943 ~ 0.65162 
-55 [3.361] 
-54.0 
-55.3 
-55.8 
-Note: The other sets of dispersion relations from [3.348, 362, 48] show worse 
-agreement with the experiment 
-Best of dispersion relations (A. in J.1ID, T = 20°C) [3.350]. 
-n2 = 3.3970 + 2. 3982A.2 + 2.1640A.2 
-o 
-A.2 _ 0.09311 
-A.2 - 950.0 ' 
-2 _ 3 5873 
-1.9533A.2 
-2.339U2 
-ne-' 
-+2 
-+2 
-. 
-A. - 0.11066 
-A. - 1030.7 
-Calculated values of phase-matching and "walk-oft''' angles: 
-Interacting wavelengths [J.1ID] 
-8pm [deg] 
-PI [deg] 
-SHG, o+o~e 
-10.6 ~ 5.3 
-71.68 
-9.6 ~4.8 
-58.15 
-5.3 ~ 2.65 
-32.00 
-4.8 ~ 2.4 
-31.04 
-2.9365 ~ 1.46825 
-37.27 
-2.1284 ~ 1.0642 
-54.23 
-SFG,o + 0 ~ e 
-10.6 + 3.533 ~ 2.65 
-37.40 
-10.6 + 2.65 ~ 2.12 
-34.79 
-10.6 + 1.0642 ~ 0.96711 
-37.31 
-10.6 + 0.6943 ~ 0.65162 
-52.85 
-SFG, e + 0 ~ e 
-10.6 + 5.3 ~ 3.533 
-58.15 
-1.18 
-10.6 + 1.0642 ~ 0.96711 
-39.52 
-1.32 
-10.6 + 0.6943 ~ 0.65162 
-55.76 
-1.23 
-P3 [deg] 
-0.76 
-1.15 
-1.17 
-1.15 
-1.24 
-1.18 
-1.25 
-1.21 
-1.21 
-1.04 
-1.15 
-1.23 
-1.00
-```
+**134 — 3 Properties of Nonlinear Optical Crystals**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.348] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.349] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.350] |
+|---|---|---|---|---|
+| $4.8 + 0.81171 \Rightarrow 0.6943$ | 75.5 [3.357] | 79.5 | 79.0 | 83.9 |
+| $11.66329 + 0.617 \Rightarrow 0.586$ | 64 [3.358] | 58.9 | 67.0 | 63.4 |
+| $10.12478 + 0.622 \Rightarrow 0.586$ | 70 [3.358] | 64.2 | 75.4 | 70.1 |
+| **SFG, $e+o \Rightarrow e$** | | | | |
+| $10.9 + 1.17934 \Rightarrow 1.0642$ | 38.3 [3.359] | 38.3 | 37.5 | 38.0 |
+| $8.8 + 1.21060 \Rightarrow 1.0642$ | 40.3 [3.359] | 40.2 | 39.1 | 39.9 |
+| $7.0 + 1.25500 \Rightarrow 1.0642$ | 43.6 [3.359] | 43.7 | 42.4 | 43.2 |
+| $5.2 + 1.33803 \Rightarrow 1.0642$ | 50.6 [3.359] | 50.6 | 48.7 | 49.9 |
+| $10.6 + 1.0642 \Rightarrow 0.96711$ | 39.8 [3.360] | 39.7 | 38.8 | 39.5 |
+| $9.6 + 1.0642 \Rightarrow 0.95800$ | 41.5 [3.360] | 41.0 | 40.0 | 40.8 |
+| $10.6 + 0.6943 \Rightarrow 0.65162$ | 55 [3.361] | 54.0 | 55.3 | 55.8 |
+
+Note: The other sets of dispersion relations from [3.348, 362, 48] show worse agreement with the experiment.
+
+**Best of dispersion relations ($\lambda$ in $\mu\text{m}$, $T = 20\ ^\circ\text{C}$) [3.350]:**
+$$n_o^2 = 3.3970 + \frac{2.3982\lambda^2}{\lambda^2 - 0.09311} + \frac{2.1640\lambda^2}{\lambda^2 - 950.0}\ ,$$
+$$n_e^2 = 3.5873 + \frac{1.9533\lambda^2}{\lambda^2 - 0.11066} + \frac{2.3391\lambda^2}{\lambda^2 - 1030.7}\ .$$
+
+**Calculated values of phase-matching and "walk-off" angles:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_1\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | |
+| $10.6 \Rightarrow 5.3$ | 71.68 | | 0.76 |
+| $9.6 \Rightarrow 4.8$ | 58.15 | | 1.15 |
+| $5.3 \Rightarrow 2.65$ | 32.00 | | 1.17 |
+| $4.8 \Rightarrow 2.4$ | 31.04 | | 1.15 |
+| $2.9365 \Rightarrow 1.46825$ | 37.27 | | 1.24 |
+| $2.1284 \Rightarrow 1.0642$ | 54.23 | | 1.18 |
+| **SFG, $o+o \Rightarrow e$** | | | |
+| $10.6 + 3.533 \Rightarrow 2.65$ | 37.40 | | 1.25 |
+| $10.6 + 2.65 \Rightarrow 2.12$ | 34.79 | | 1.21 |
+| $10.6 + 1.0642 \Rightarrow 0.96711$ | 37.31 | | 1.21 |
+| $10.6 + 0.6943 \Rightarrow 0.65162$ | 52.85 | | 1.04 |
+| **SFG, $e+o \Rightarrow e$** | | | |
+| $10.6 + 5.3 \Rightarrow 3.533$ | 58.15 | 1.18 | 1.15 |
+| $10.6 + 1.0642 \Rightarrow 0.96711$ | 39.52 | 1.32 | 1.23 |
+| $10.6 + 0.6943 \Rightarrow 0.65162$ | 55.76 | 1.23 | 1.00 |
 
 ### [PDF Page 150]
 
-```text
-3.1 Basic Nonlinear Optical Crystals 
-135 
-Experimental values of internal angular and spectral bandwidths at T = 293 K: 
-Interacting 
-Opm [deg) 
-A(jDt [deg) 
-AVI [em-I] Ref. 
-wavelengths [11m] 
-SHG, 0+0 =} e 
-10.6 =} 5.3 
-67.5 
-0.41 
-3.339 
-SFG,o + 0 =} e 
-4.6 + 0.8177 =} 0.6943 
-82.7 
-0.42 
-3.357 
-10.53 + 0.589 =} 0.56589 
-90 
-2.34 
-3.349 
-6.24 + 1.283 =} 1.0642 
-41.1 
-9.8 
-3.355 
-4.817 + 1.0642 =} 0.87163 
-52 
-5.9 
-3.356 
-10.619 + 0.634 =} 0.598 
-90 
-1.73 
-3.341 
-10.6 + 0.598 =} 0.566 
-90 
-1.5 
-3.363 
-10.6 + 0.5968 =} 0.565 
-90 
-1.44 
-3.364 
-Temperature variation of phase-matching angle [3.360): 
-Interacting wavelengths [11m] 
-T [0C) 
-Opm [deg) 
-dOpm /dT [degjK) 
-SFG, e + 0 =} e 
-10.6 + 1.0642 =} 0.9671 
-20 
-39.8 
-0.03 
-Temperature tuning of noncritical SFG [3.347]: 
-Interacting wavelengths [11m] 
-SHG, 0+0 =} e 
-7.8 + 0.65 =} 0.6 
-dAt/dT [nm/K] 
-~4 
-Experimental value of temperature bandwidth for the noncritical SFG process 
-(10.6 11m + 0.598 11m =} 0.566 11m, 0 + 0 =} e): 
-AT = 2.5 °C [3.346] . 
-Effective nonlinearity expressions in the phase-matching direction [3.100]: 
-dooe = d36 sin 0 sin 24> , 
-deoe = doee = d36 sin 20 cos 24> . 
-Nonlinear coefficient: 
-d36(10.6Ilm) = 0.134 x d36(GaAs) ± 15% = 
-11.1 ± 1.7 pm/V [3.344], [3.37] , 
-d36(10.61!ffi) = 0.15 x d36(GaAS) ± 20% = 
-12.5 ± 2.5 pm/V [3.351], [3.37] .
-```
+**3.1 Basic Nonlinear Optical Crystals** (p. 135)
+
+**Experimental values of internal angular and spectral bandwidths at $T = 293\ \text{K}$:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\theta^{\text{int}}\ [\text{deg}]$ | $\Delta\nu_1\ [\text{cm}^{-1}]$ | Ref. |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $10.6 \Rightarrow 5.3$ | 67.5 | 0.41 | | 3.339 |
+| **SFG, $o+o \Rightarrow e$** | | | | |
+| $4.6 + 0.8177 \Rightarrow 0.6943$ | 82.7 | 0.42 | | 3.357 |
+| $10.53 + 0.589 \Rightarrow 0.56589$ | 90 | 2.34 | | 3.349 |
+| $6.24 + 1.283 \Rightarrow 1.0642$ | 41.1 | | 9.8 | 3.355 |
+| $4.817 + 1.0642 \Rightarrow 0.87163$ | 52 | | 5.9 | 3.356 |
+| $10.619 + 0.634 \Rightarrow 0.598$ | 90 | | 1.73 | 3.341 |
+| $10.6 + 0.598 \Rightarrow 0.566$ | 90 | | 1.5 | 3.363 |
+| $10.6 + 0.5968 \Rightarrow 0.565$ | 90 | | 1.44 | 3.364 |
+
+**Temperature variation of phase-matching angle [3.360]:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $T\ [^\circ\text{C}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $d\theta_{\text{pm}}/dT\ [\text{deg/K}]$ |
+|---|---|---|---|
+| **SFG, $e+o \Rightarrow e$** | | | |
+| $10.6 + 1.0642 \Rightarrow 0.9671$ | 20 | 39.8 | 0.03 |
+
+**Temperature tuning of noncritical SFG [3.347]:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $d\lambda_1/dT\ [\text{nm/K}]$ |
+|---|---|
+| **SHG, $o+o \Rightarrow e$** *[Note: در چاپ کتاب با وجود عنوان SFG در جدول SHG آمده است]* | |
+| $7.8 + 0.65 \Rightarrow 0.6$ | $\approx 4$ |
+
+**Experimental value of temperature bandwidth for the noncritical SFG process ($10.6\ \mu\text{m} + 0.598\ \mu\text{m} \Rightarrow 0.566\ \mu\text{m},\ o+o \Rightarrow e$):**
+$$\Delta T = 2.5\ ^\circ\text{C}\ [3.346]\ .$$
+
+**Effective nonlinearity expressions in the phase-matching direction [3.100]:**
+$$d_{\text{ooe}} = d_{36}\sin\theta\sin 2\phi\ ,$$
+$$d_{\text{eoe}} = d_{\text{oee}} = d_{36}\sin 2\theta\cos 2\phi\ .$$
+
+**Nonlinear coefficient:**
+$$d_{36}(10.6\ \mu\text{m}) = 0.134 \times d_{36}(\text{GaAs}) \pm 15\% = 11.1 \pm 1.7\ \text{pm/V}\ [3.344], [3.37]\ ,$$
+$$d_{36}(10.6\ \mu\text{m}) = 0.15 \times d_{36}(\text{GaAs}) \pm 20\% = 12.5 \pm 2.5\ \text{pm/V}\ [3.351], [3.37]\ .$$
 
 ### [PDF Page 151]
 
-```text
-136 
-3 Properties of Nonlinear Optical Crystals 
-Laser-induced surface-damage threshold: 
-). [J1ID] 
-Tp [ns] 
-Itbr x 10-12 [W /m2] 
-Ref. 
-Note 
-0.59 
-500 
-0.2 
-3.358 
-10 pulses 
-0.598 
-3 
-0.15 
-3.363 
-0.625 
-500 
-0.25-{).36 
-3.358 
-10 pulses 
-0.6943 
-30 
-0.006 
-3.361 
-1 Hz, 1000 pulses 
-10 
-0.1 
-3.357 
-100 pulses 
-10 
-0.2 
-3.348 
-1.06 
-35 
-0.2--0.25 
-3.348 
-1.0642 
-20 
-0.1 
-3.350 
-10 Hz 
-17.5 
-> 0.12 
-3.365 
-1000 pulses 
-15 
-0.2 
-3.352 
-12 
-0.35 
-3.359 
-10 Hz 
-0.023 
-> 0.75 
-3.366 
-10 Hz 
-0.025 
->7 
-3.48 
-10 Hz 
-0.002 
-> 10 
-3.367 
-0.021 
-> 20 
-3.355 
-0.020 
-30 
-3.353 
-10.6 
-150 
-0.1 
-3.349 
-150 
-0.2 
-3.368 
-220 
-0.25 
-3.365 
-1000 pulses 
-Thermal conductivity coefficient at T = 293 K [3.58]: 
-" [W/mK], II c 
-" [W /mK], 1. c 
-1.4 
-1.5 
-3.1.11 ZnGeP1, Zinc Germanium Phosphide 
-Positive uniaxial crystal: ne > no ; 
-Point group: 42m ; 
-. 
-Mass density: 4.12 g/em3 [3.338] ; 
-Mohs hardness: 5.5 ; 
-Transparency range at "0" transmittance level: 0.74 - 12 J1ID [3.369,370] 
-Linear absorption coefficient ex: 
-). [J1ID] 
-ex [em-I] 
-Ref. 
-Note 
-1.9 
-0.8--0.95 
-3.371 
-2.15 
-0.6 
-3.372 
-2.5-8 
-< 0.1 
-3.373 
-2.5-8.3 
-<0.2 
-3.374
-```
+**136 — 3 Properties of Nonlinear Optical Crystals**
+
+**Laser-induced surface-damage threshold:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. | Note |
+|---|---|---|---|---|
+| 0.59 | 500 | 0.2 | 3.358 | 10 pulses |
+| 0.598 | 3 | 0.15 | 3.363 | |
+| 0.625 | 500 | 0.25–0.36 | 3.358 | 10 pulses |
+| 0.6943 | 30 | 0.006 | 3.361 | 1 Hz, 1000 pulses |
+| | 10 | 0.1 | 3.357 | 100 pulses |
+| | 10 | 0.2 | 3.348 | |
+| 1.06 | 35 | 0.2–0.25 | 3.348 | |
+| 1.0642 | 20 | 0.1 | 3.350 | 10 Hz |
+| | 17.5 | > 0.12 | 3.365 | 1000 pulses |
+| | 15 | 0.2 | 3.352 | |
+| | 12 | 0.35 | 3.359 | 10 Hz |
+| | 0.023 | > 0.75 | 3.366 | 10 Hz |
+| | 0.025 | > 7 | 3.48 | 10 Hz |
+| | 0.002 | > 10 | 3.367 | |
+| | 0.021 | > 20 | 3.355 | |
+| | 0.020 | 30 | 3.353 | |
+| 10.6 | 150 | 0.1 | 3.349 | |
+| | 150 | 0.2 | 3.368 | |
+| | 220 | 0.25 | 3.365 | 1000 pulses |
+
+**Thermal conductivity coefficient at $T = 293\ \text{K}$ [3.58]:**
+
+| $\kappa\ [\text{W/mK}],\ \parallel c$ | $\kappa\ [\text{W/mK}],\ \perp c$ |
+|---|---|
+| 1.4 | 1.5 |
+
+---
+
+#### 3.1.11 ZnGeP2, Zinc Germanium Phosphide
+
+- **Optical character:** Positive uniaxial crystal: $n_e > n_o$;
+- **Point group:** $\bar{4}2m$;
+- **Mass density:** $4.12\ \text{g/cm}^3$ [3.338];
+- **Mohs hardness:** 5.5;
+- **Transparency range:** at "0" transmittance level: $0.74 - 12\ \mu\text{m}$ [3.369, 370];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 1.9 | 0.8–0.95 | 3.371 | |
+| 2.15 | 0.6 | 3.372 | |
+| 2.5–8 | < 0.1 | 3.373 | |
+| 2.5–8.3 | < 0.2 | 3.374 | |
 
 ### [PDF Page 152]
 
@@ -14103,285 +12506,172 @@ Note
 
 ### [PDF Page 171]
 
-```text
-156 
-3 Properties of Nonlinear Optical Crystals 
-3.2.5 KTiOAs04, Potassium Titaoy. Arseoate (KT A) 
-Positive biaxial crystal: 2Vz = 34S at A. = 0.5321 J.U11j 
-Point group: mm2; 
-Assignment of dielectric and crystallographic axes: 
-X, Y,Z =} a,b,cj 
-Transparency range at "0" transmittance level: 0.35 - 5.3 J.U11 [3.430, 431]; 
-Linear absorption coefficient a [3.432] : 
-A. [J.U11] 
-a [cm-I] 
-4.0 
-0.2 
-5.0 
-1.0 
-Experimental values of refractive indices [3.433]: 
-A. [~m] 
-nx 
-ny 
-nz 
-0.6328 
-1.8083 
-1.8142 
-1.9048 
-Experimental values of phase-matching angle (T = 293 K) and comparison 
-between different sets of dispersion relations: 
-XY plane, () = 90° 
-Interacting 
-¢exp [deg] 
-¢tbeor [deg] 
-wavelengths [~m] 
-[3.433] 
-[3.434] 
-SHG, e+o =} e 
-1.053 =} 0.5265 
-65 [3.434] 
-no pm 
-64.97 
-1.0642 =} 0.5321 
-57.8 [3.434] no pm 
-57.58 
-SFG, e+o =} e 
-1.3188 + 0.6594 =} 
-=} 0.4396 
-47.8 [3.434] 68.84 
-47.79 
-1.0642 + 1.5791 =} 
-=} 0.6358 
-19.8 [3.434] 16.64 
-19.63 
-yz plane, ¢ = 90° 
-Interacting 
-(}exp [deg] 
-(}tbeor [deg] 
-wavelengths [~m] 
-[3.433] 
-[3.434] 
-SHG, o+e =} 0 
-1.0642 =} 0.5321 
-76.3 [3.434] no pm 
-76.28 
-1.1523 =} 0.57615 
-64 [3.434] 
-69.30 
-63.94
-```
+**156 — 3 Properties of Nonlinear Optical Crystals**
+
+#### 3.2.5 KTiOAsO4, Potassium Titanyl Arsenate (KTA)
+
+- **Optical character:** Positive biaxial crystal: $2V_Z = 34.5^\circ$ at $\lambda = 0.5321\ \mu\text{m}$;
+- **Point group:** $mm2$;
+- **Assignment of dielectric and crystallographic axes:** $X, Y, Z \Rightarrow a, b, c$;
+- **Transparency range:** at "0" transmittance level: $0.35 - 5.3\ \mu\text{m}$ [3.430, 431];
+
+**Linear absorption coefficient $\alpha$ [3.432]:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ |
+|---|---|
+| 4.0 | 0.2 |
+| 5.0 | 1.0 |
+
+**Experimental values of refractive indices [3.433]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_X$ | $n_Y$ | $n_Z$ |
+|---|---|---|---|
+| 0.6328 | 1.8083 | 1.8142 | 1.9048 |
+
+**Experimental values of phase-matching angle ($T = 293\ \text{K}$) and comparison between different sets of dispersion relations:**
+
+*$XY$ plane, $\theta = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\phi_{\text{exp}}\ [\text{deg}]$ | $\phi_{\text{theor}}\ [\text{deg}]$ [3.433] | $\phi_{\text{theor}}\ [\text{deg}]$ [3.434] |
+|---|---|---|---|
+| **SHG, $e+o \Rightarrow e$** | | | |
+| $1.053 \Rightarrow 0.5265$ | 65 [3.434] | no pm | 64.97 |
+| $1.0642 \Rightarrow 0.5321$ | 57.8 [3.434] | no pm | 57.58 |
+| **SFG, $e+o \Rightarrow e$** | | | |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 47.8 [3.434] | 68.84 | 47.79 |
+| $1.0642 + 1.5791 \Rightarrow 0.6358$ | 19.8 [3.434] | 16.64 | 19.63 |
+
+*$YZ$ plane, $\phi = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.433] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.434] |
+|---|---|---|---|
+| **SHG, $o+e \Rightarrow o$** | | | |
+| $1.0642 \Rightarrow 0.5321$ | 76.3 [3.434] | no pm | 76.28 |
+| $1.1523 \Rightarrow 0.57615$ | 64 [3.434] | 69.30 | 63.94 |
 
 ### [PDF Page 172]
 
-```text
-3.2 Frequently Used Nonlinear Optical Crystals 
-1.3188 =? 0.6594 
-55.9 [3.433] 56.22 
-53.09 
-SFG, o+e=? 0 
-1.3188 + 0.6594 =? 
-=? 0.4396 
-71.2 [3.434] 82.37 
-71.15 
-1.0642 + 1.5791 =? 
-=? 0.6358 
-67.3 [3.434] 73.04 
-67.29 
-4.15 + 1.0642 =? 
-=? 0.847 
-30.3 [3.431] 31.19 
-31.87 
-XZ plane, ifJ = 0°, (J> Vz 
-Interacting 
-wavelengths [J.nn] 
-(Jexp [deg] 
-(Jtheor [deg] 
-[3.433] 
-[3.434] 
-SHG, o+e =? 0 
-1.1523 =? 0.57615 
-1.3188 =? 0.6594 
-SFG, o+e =? 0 
-1.5791 + 0.6358 =? 
-=? 0.4533 
-82.9 [3.434] 80.61 
-64.2 [3.434] 63.28 
-73.7 [3.434] 72.82 
-83.00 
-64.25 
-73.74 
-Best set of dispersion relations (A. in ~) [3.434]: 
-n2 = 3.1533 
-0.04029 
-_ 0.01320A.2 
-x 
-+ A.2 _ 0.04932 
-' 
-n2 = 3.1775 
-0.04353 
-_ 0.01444A.2 
-Y 
-+ A.2 - 0.05640 
-' 
-n2 = 3.4487 
-0.06334 
-_ 0.01646A.2 • 
-Z 
-+ A.2 _ 0.05887 
-Calculated values of phase-matching and "walk-off" angles: 
-XY plane, (J = 90° 
-Interacting 
-(jJpm [deg] 
-PI [deg] 
-P3 [deg] 
-wavelengths [~] 
-SHG, e+o =?e 
-1.0642 =? 0.5321 
-57.58 
-SFG, e+o =? e 
-1.3188 + 0.6594 =? 
-=? 0.4396 
-47.79 
-0.211 
-0.337 
-0.217 
-0.511 
-157
-```
+**3.2 Frequently Used Nonlinear Optical Crystals** (p. 157)
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.433] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.434] |
+|---|---|---|---|
+| $1.3188 \Rightarrow 0.6594$ | 55.9 [3.433] | 56.22 | 53.09 |
+| **SFG, $o+e \Rightarrow o$** | | | |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 71.2 [3.434] | 82.37 | 71.15 |
+| $1.0642 + 1.5791 \Rightarrow 0.6358$ | 67.3 [3.434] | 73.04 | 67.29 |
+| $4.15 + 1.0642 \Rightarrow 0.847$ | 30.3 [3.431] | 31.19 | 31.87 |
+
+*$XZ$ plane, $\phi = 0^\circ$, $\theta > V_Z$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.433] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.434] |
+|---|---|---|---|
+| **SHG, $o+e \Rightarrow o$** | | | |
+| $1.1523 \Rightarrow 0.57615$ | 82.9 [3.434] | 80.61 | 83.00 |
+| $1.3188 \Rightarrow 0.6594$ | 64.2 [3.434] | 63.28 | 64.25 |
+| **SFG, $o+e \Rightarrow o$** | | | |
+| $1.5791 + 0.6358 \Rightarrow 0.4533$ | 73.7 [3.434] | 72.82 | 73.74 |
+
+**Best set of dispersion relations ($\lambda$ in $\mu\text{m}$) [3.434]:**
+$$n_X^2 = 3.1533 + \frac{0.04029}{\lambda^2 - 0.04932} - 0.01320\,\lambda^2\ ,$$
+$$n_Y^2 = 3.1775 + \frac{0.04353}{\lambda^2 - 0.05640} - 0.01444\,\lambda^2\ ,$$
+$$n_Z^2 = 3.4487 + \frac{0.06334}{\lambda^2 - 0.05887} - 0.01646\,\lambda^2\ .$$
+
+**Calculated values of phase-matching and "walk-off" angles:**
+*$XY$ plane, $\theta = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\phi_{\text{pm}}\ [\text{deg}]$ | $\rho_1\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|---|
+| **SHG, $e+o \Rightarrow e$** | | | |
+| $1.0642 \Rightarrow 0.5321$ | 57.58 | 0.211 | 0.337 |
+| **SFG, $e+o \Rightarrow e$** | | | |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 47.79 | 0.217 | 0.511 |
 
 ### [PDF Page 173]
 
-```text
-158 
-3 Properties of Nonlinear Optical Crystals 
-yz plane, tP = 90° 
-Interacting 
-(Jpm [deg] 
-wavelengths [J.UU] 
-SHG, 0 + e :::} 0 
-1.0642 :::} 0.5321 
-76.28 
-1.1523 :::} 0.57615 
-63.94 
-1.3188 :::} 0.6594 
-53.09 
-2.098 :::} 1.049 
-44.71 
-2.9365 :::} 1.46825 
-59.80 
-SFG, 0 + e :::} 0 
-1.3188 + 0.6594 :::} 
-:::} 0.4396 
-71.15 
-XZ plane, tP = 0°, (J > Vz 
-Interacting 
-wavelengths [Ilm] 
-SHG, 0 + e :::} 0 
-1.1523 :::} 0.57615 
-1.3188 :::} 0.6594 
-2.098 :::} 1.049 
-2.9365 :::} 1.46825 
-(Jpm [deg] 
-83.00 
-64.25 
-53.50 
-69.37 
-P2 [deg] 
-1.179 
-1.978 
-2.344 
-2.345 
-2.042 
-1.708 
-P2 [deg] 
-0.676 
-2.119 
-2.445 
-1.657 
-Experimental values of internal angular and temperature bandwidths: 
-XY plane, (J = 90° 
-Interacting 
-tPpm [deg] 
-AtPint [deg] 
-AT [0C] 
-Ref. 
-wavelengths [J.UU] 
-SHG, e + 0 :::} e 
-1.053 :::} 0.57615 
-65 
-1.0642 :::} 0.5321 
-57.8 
-yz plane, tP = 90° 
-Interacting 
-(Jpm [deg] 
-wavelengths [J.UU] 
-SHG, 0 + e :::} 0 
-1.3188 :::} 0.6594 
-55.9 
-0.4 
-0.37 
-A(Jint [deg] 
-0.093 
-10.4 
-Ref. 
-3.433 
-3.430 
-3.434
-```
+**158 — 3 Properties of Nonlinear Optical Crystals**
+
+*$YZ$ plane, $\phi = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_2\ [\text{deg}]$ |
+|---|---|---|
+| **SHG, $o+e \Rightarrow o$** | | |
+| $1.0642 \Rightarrow 0.5321$ | 76.28 | 1.179 |
+| $1.1523 \Rightarrow 0.57615$ | 63.94 | 1.978 |
+| $1.3188 \Rightarrow 0.6594$ | 53.09 | 2.344 |
+| $2.098 \Rightarrow 1.049$ | 44.71 | 2.345 |
+| $2.9365 \Rightarrow 1.46825$ | 59.80 | 2.042 |
+| **SFG, $o+e \Rightarrow o$** | | |
+| $1.3188 + 0.6594 \Rightarrow 0.4396$ | 71.15 | 1.708 |
+
+*$XZ$ plane, $\phi = 0^\circ,\ \theta > V_Z$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_2\ [\text{deg}]$ |
+|---|---|---|
+| **SHG, $o+e \Rightarrow o$** | | |
+| $1.1523 \Rightarrow 0.57615$ | 83.00 | 0.676 |
+| $1.3188 \Rightarrow 0.6594$ | 64.25 | 2.119 |
+| $2.098 \Rightarrow 1.049$ | 53.50 | 2.445 |
+| $2.9365 \Rightarrow 1.46825$ | 69.37 | 1.657 |
+
+**Experimental values of internal angular and temperature bandwidths:**
+*$XY$ plane, $\theta = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\phi_{\text{pm}}\ [\text{deg}]$ | $\Delta\phi^{\text{int}}\ [\text{deg}]$ | $\Delta T\ [^\circ\text{C}]$ | Ref. |
+|---|---|---|---|---|
+| **SHG, $e+o \Rightarrow e$** | | | | |
+| $1.053 \Rightarrow 0.57615$ *[Note: چاپ کتاب به همین صورت است]* | 65 | 0.4 | | 3.430 |
+| $1.0642 \Rightarrow 0.5321$ | 57.8 | 0.37 | 10.4 | 3.434 |
+
+*$YZ$ plane, $\phi = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\Delta\theta^{\text{int}}\ [\text{deg}]$ | Ref. |
+|---|---|---|---|
+| **SHG, $o+e \Rightarrow o$** | | | |
+| $1.3188 \Rightarrow 0.6594$ | 55.9 | 0.093 | 3.433 |
 
 ### [PDF Page 174]
 
-```text
-3.2 Frequently Used Nonlinear Optical Crystals 
-159 
-Effective nonlinearity expressions in the phase-matching direction for three-
-wave interactions in the principal planes of KT A crystal [3.35, 36]: 
-XY plane 
-deoe = doee = d31 sin2 tP + d32 cos2 tP ; 
-yz plane 
-doeo = deao = d31 sin (J ; 
-XZ plane, (J < Vz 
-dooe = d32 sin (J ; 
-XZ plane, (J> Vz 
-doeo = deaD = d32 sin (J • 
-Effective nonlinearity expressions for three-wave interactions in the arbitrary 
-direction of KTA crystal are given in [3.36] 
-Nonlinear coefficients: 
-d31 (1.0642 J.UD) = 2.5 ± 0.3 pmjV [3.434] , 2.8 ± 0.3 pmjV [3.433] ; 
-d32(1.0642 J.UD) = 4.2 ± 0.4 pmjV [3.433] , 4.5 ± 0.5 pmjV [3.434] ; 
-d33(1.0642 J.UD) = 16.2 ± 1.0 pmjV [3.433] . 
-Laser-induced surface-damage threshold: 
-A. [J.UD] 
-'tp [ns] 
-Ithr X 10-12 [W jm2] 
-Ref. 
-Note 
-0.85 
-2 
-1.0642 
-8 
->10 
->12 
-3.431 
-3.432 
-20 Hz, 1000 pulses 
-3.2.6 MgO : LiNb03, Magnesium-Oxide-Doped Lithium Niobate 
-(5 mole % MgO) 
-Negative uniaxial crystal: no > ne; 
-Point group: 3m ; 
-Transparency range at "0" transmittance level: ~ 0.4 - ~ 5 J.UD [3.435], [3.436] 
-Linear absorption coefficient «: 
-A. [J.UD] 
-0.5321 
-1.0642 
-0.02 
-<0.01 
-0.003 
-Ref. 
-3.437 
-3.437 
-3.438
-```
+**3.2 Frequently Used Nonlinear Optical Crystals** (p. 159)
+
+**Effective nonlinearity expressions in the phase-matching direction for three-wave interactions in the principal planes of KTA crystal [3.35, 36]:**
+
+- *$XY$ plane:*
+  $$d_{\text{eoe}} = d_{\text{oee}} = d_{31}\sin^2\phi + d_{32}\cos^2\phi\ ;$$
+- *$YZ$ plane:*
+  $$d_{\text{oeo}} = d_{\text{eoo}} = d_{31}\sin\theta\ ;$$
+- *$XZ$ plane, $\theta < V_Z$:*
+  $$d_{\text{ooe}} = d_{32}\sin\theta\ ;$$
+- *$XZ$ plane, $\theta > V_Z$:*
+  $$d_{\text{oeo}} = d_{\text{eoo}} = d_{32}\sin\theta\ .$$
+
+Effective nonlinearity expressions for three-wave interactions in the arbitrary direction of KTA crystal are given in [3.36]
+
+**Nonlinear coefficients:**
+$$d_{31}(1.0642\ \mu\text{m}) = 2.5 \pm 0.3\ \text{pm/V}\ [3.434]\ ,\ 2.8 \pm 0.3\ \text{pm/V}\ [3.433]\ ;$$
+$$d_{32}(1.0642\ \mu\text{m}) = 4.2 \pm 0.4\ \text{pm/V}\ [3.433]\ ,\ 4.5 \pm 0.5\ \text{pm/V}\ [3.434]\ ;$$
+$$d_{33}(1.0642\ \mu\text{m}) = 16.2 \pm 1.0\ \text{pm/V}\ [3.433]\ .$$
+
+**Laser-induced surface-damage threshold:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. | Note |
+|---|---|---|---|---|
+| 0.85 | 2 | >10 | 3.431 | |
+| 1.0642 | 8 | >12 | 3.432 | 20 Hz, 1000 pulses |
+
+---
+
+#### 3.2.6 MgO : LiNbO3, Magnesium-Oxide-Doped Lithium Niobate (5 mole % MgO)
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$;
+- **Point group:** $3m$;
+- **Transparency range:** at "0" transmittance level: $\approx 0.4 - \approx 5\ \mu\text{m}$ [3.435], [3.436]
+- **Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. |
+|---|---|---|
+| 0.5321 | 0.02 | 3.437 |
+| 1.0642 | <0.01 | 3.437 |
+| | 0.003 | 3.438 |
 
 ### [PDF Page 175]
 
@@ -19819,108 +18109,84 @@ d31(1.0642J.lffi) = 1=1.13 ± 0.15pmJV ,
 
 ### [PDF Page 235]
 
-```text
-220 
-3 Properties of Nonlinear Optical Crystals 
-d32(1.0642fJIIl) = ±1.l0 ± O.lOpm;V, 
-Id33(1.0642fJIIl)1 = 0.13 ± O.lOpmjV . 
-3.3.22 CsTiOAs04, Cesium Titanyl Arsenate (CTA) 
-Positive biaxial crystal: 2Vz = 52.9° at A. = 0.5321 fJIIl [3.551]; 
-Point group: mm2; 
-Assignment of dielectric and crystallographic axes: 
-X, Y,Z =} a,b,cj 
-Transparency range at "0" transmittance level: 0.35 - 5.3 fJIIl[3.551]; 
-Sellmeier equations (A. in Ilm, T = 20°C) [3.551]; 
-n2 = 2.34498 + 
-1.04863 ).2 
-_ 0.01483 A.2 
-x 
-A.2 _ (0.22044)2 
-' 
-2 
-0.70733 A.2 
-2 
-ny = 2.74440 + 2 
-2 - 0.01526 A. , 
-A. - (0.26033) 
-2 
-1.1 0600 ).2 
-2 
-nz = 2.53666 + 2 
-2 - 0.01711 A. . 
-A. - (0.24988) 
-Experimental and theoretical values of phase-matching angle and calculated 
-values of "walk off" angle: 
-XY plane, () = 90° 
-Interacting 
-<Pexp [deg] 
-<Ptheor [deg] 
-PI [deg] 
-wavelengths [Ilm] 
-[3.551] 
-SHG, e+o =} e 
-1.3188 =} 0.6594 
-64.5 [3.551] 
-62.85 
-0.378 
-Experimental value of internal angular bandwidth [3.551]: 
-XY plane, () = 90° 
-Interacting wavelengths [fJIIl] 
-<Ppm [deg] l1<pint [deg] 
-SHG, e+o =} e 
-1.3188 =} 0.6594 
-64.5 
-0.5 
-P3 [deg] 
-0.369
-```
+**220 — 3 Properties of Nonlinear Optical Crystals**
+
+$$d_{32}(1.0642\ \mu\text{m}) = \pm 1.10 \pm 0.10\ \text{pm/V},$$
+$$|d_{33}(1.0642\ \mu\text{m})| = 0.13 \pm 0.10\ \text{pm/V}\ .$$
+
+---
+
+#### 3.3.22 CsTiOAsO4, Cesium Titanyl Arsenate (CTA)
+
+- **Optical character:** Positive biaxial crystal: $2V_Z = 52.9^\circ$ at $\lambda = 0.5321\ \mu\text{m}$ [3.551];
+- **Point group:** $mm2$;
+- **Assignment of dielectric and crystallographic axes:** $X, Y, Z \Rightarrow a, b, c$;
+- **Transparency range:** at "0" transmittance level: $0.35 - 5.3\ \mu\text{m}$ [3.551];
+
+**Sellmeier equations ($\lambda$ in $\mu\text{m}$, $T = 20\ ^\circ\text{C}$) [3.551]:**
+$$n_X^2 = 2.34498 + \frac{1.04863\,\lambda^2}{\lambda^2 - (0.22044)^2} - 0.01483\,\lambda^2\ ,$$
+$$n_Y^2 = 2.74440 + \frac{0.70733\,\lambda^2}{\lambda^2 - (0.26033)^2} - 0.01526\,\lambda^2\ ,$$
+$$n_Z^2 = 2.53666 + \frac{1.10600\,\lambda^2}{\lambda^2 - (0.24988)^2} - 0.01711\,\lambda^2\ .$$
+
+**Experimental and theoretical values of phase-matching angle and calculated values of "walk off" angle:**
+*$XY$ plane, $\theta = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\phi_{\text{exp}}\ [\text{deg}]$ | $\phi_{\text{theor}}\ [\text{deg}]$ [3.551] | $\rho_1\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|---|---|
+| **SHG, $e+o \Rightarrow e$** | | | | |
+| $1.3188 \Rightarrow 0.6594$ | 64.5 [3.551] | 62.85 | 0.378 | 0.369 |
+
+**Experimental value of internal angular bandwidth [3.551]:**
+*$XY$ plane, $\theta = 90^\circ$*
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\phi_{\text{pm}}\ [\text{deg}]$ | $\Delta\phi^{\text{int}}\ [\text{deg}]$ |
+|---|---|---|
+| **SHG, $e+o \Rightarrow e$** | | |
+| $1.3188 \Rightarrow 0.6594$ | 64.5 | 0.5 |
 
 ### [PDF Page 236]
 
-```text
-3.3 Other Inorganic Nonlinear Optical Crystals 
-221 
-Effective nonlinearity expressions in the phase-matching direction for three-
-wave interactions in the principal planes of CT A crystal [3.35,36]: 
-XYplane 
-deoe = doee = d31 sin2 ¢ + d32 cos2 ¢ ; 
-YZ plane 
-doeo = deoo = d31 sin 0 ; 
-XZ plane, 0 < Vz 
-dooe = d32 sin 0 ; 
-XZ plane, 0 > Vz 
-doeo = deoo = d32 sin 0 . 
-Effective nonlinearity expressions for three-wave interactions in the arbitrary 
-direction of CT A crystal are given in [3.36] 
-Nonlinear coefficients [3.551]: 
-d31(1.0642 ~m) = 2.1 ± O.4pm/V , 
-d32(1.0642J.lm) = 3.4 ± 0.7pm/V , 
-d33(1.0642 J.lffi) = 18.1 ± 1.8 pm/V. 
-3.3.23 NaN Oz. Sodium Nitrite 
-Positive biaxial crystal: 2Vz = 62S at A. = 0.5325 J.lffi [3.552]; 
-Point group: mm2; 
-Assignment of dielectric and crystallographic axes: 
-X, Y,Z::::} a,c,b; 
-Mass density: 2.168 g/cm3; 
-Transparency range: 0.35 - 3.4 J.lffi with the window in 5 - 8 J.lffi range 
-[3.553,554]; 
-Experimental values of refractive indices: 
-A. [J.lm] 
-nx 
-ny 
-nz 
-Ref. 
-0.5325 1.3475 1.4147 1.6643 3.552 
-0.5762 1.3455 1.4125 1.6547 3.553 
-1.0650 1.3395 1.4036 1.6365 3.552 
-1.1523 1.3353 1.4029 1.6319 3.553 
-1.3673 
-1.4018 1.6214 3.554 
-1.5295 
-1.4010 1.6160 3.554 
-1.7109 
-1.4010 1.6136 3.554
-```
+**3.3 Other Inorganic Nonlinear Optical Crystals** (p. 221)
+
+**Effective nonlinearity expressions in the phase-matching direction for three-wave interactions in the principal planes of CTA crystal [3.35, 36]:**
+
+- *$XY$ plane:*
+  $$d_{\text{eoe}} = d_{\text{oee}} = d_{31}\sin^2\phi + d_{32}\cos^2\phi\ ;$$
+- *$YZ$ plane:*
+  $$d_{\text{oeo}} = d_{\text{eoo}} = d_{31}\sin\theta\ ;$$
+- *$XZ$ plane, $\theta < V_Z$:*
+  $$d_{\text{ooe}} = d_{32}\sin\theta\ ;$$
+- *$XZ$ plane, $\theta > V_Z$:*
+  $$d_{\text{oeo}} = d_{\text{eoo}} = d_{32}\sin\theta\ .$$
+
+Effective nonlinearity expressions for three-wave interactions in the arbitrary direction of CTA crystal are given in [3.36].
+
+**Nonlinear coefficients [3.551]:**
+$$d_{31}(1.0642\ \mu\text{m}) = 2.1 \pm 0.4\ \text{pm/V}\ ,$$
+$$d_{32}(1.0642\ \mu\text{m}) = 3.4 \pm 0.7\ \text{pm/V}\ ,$$
+$$d_{33}(1.0642\ \mu\text{m}) = 18.1 \pm 1.8\ \text{pm/V}\ .$$
+
+---
+
+#### 3.3.23 NaNO2, Sodium Nitrite
+
+- **Optical character:** Positive biaxial crystal: $2V_Z = 62.5^\circ$ at $\lambda = 0.5325\ \mu\text{m}$ [3.552];
+- **Point group:** $mm2$;
+- **Assignment of dielectric and crystallographic axes:** $X, Y, Z \Rightarrow a, c, b$;
+- **Mass density:** $2.168\ \text{g/cm}^3$;
+- **Transparency range:** $0.35 - 3.4\ \mu\text{m}$ with the window in $5 - 8\ \mu\text{m}$ range [3.553, 554];
+
+**Experimental values of refractive indices:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_X$ | $n_Y$ | $n_Z$ | Ref. |
+|---|---|---|---|---|
+| 0.5325 | 1.3475 | 1.4147 | 1.6643 | 3.552 |
+| 0.5762 | 1.3455 | 1.4125 | 1.6547 | 3.553 |
+| 1.0650 | 1.3395 | 1.4036 | 1.6365 | 3.552 |
+| 1.1523 | 1.3353 | 1.4029 | 1.6319 | 3.553 |
+| 1.3673 | | 1.4018 | 1.6214 | 3.554 |
+| 1.5295 | | 1.4010 | 1.6160 | 3.554 |
+| 1.7109 | | 1.4010 | 1.6136 | 3.554 |
 
 ### [PDF Page 237]
 
@@ -20699,758 +18965,396 @@ cw
 
 ### [PDF Page 248]
 
-```text
-3.3 Other Inorganic Nonlinear Optical Crystals 
-233 
-3.3.28 HgS, Cinnibar 
-Positive uniaxial crystal: ne > no; 
-Point group: 32; 
-Mass density: 8.10 g/crn3 [3.64]; 
-Mohs hardness: 2 - 2.5 [3.64], 3 [3.338]; 
-Transparency range at "0" transmittance level: 0.62 - 13 Jlm [3.570]; 
-Linear absorption coefficient at: [3.571]: 
-A [Jlm] 
-0.6328 
-0.6729 
-5.3 
-10.6 
-1.7 
-1.4 
-0.032 
-0.073 
-Note 
-o - wave, DFG direction 
-e - wave, DFG direction 
-0- wave, SHG direction 
-e - wave, SHG and DFG directions 
-Experimental values of refractive indices [3.570]: 
-A [Jlffi] no 
-ne 
-A [Jlm] no 
-ne 
-0.62 
-2.9028 3.2560 
-2.80 
-2.6414 2.9052 
-0.65 
-2.8655 3.2064 
-3.00 
-2.6401 2.9036 
-0.68 
-2.8384 3.1703 
-3.20 
-2.6387 2.9017 
-0.70 
-2.8224 3.1489 
-3.40 
-2.6375 2.9001 
-0.80 
-2.7704 3.0743 
-3.60 
-2.6358 2.8987 
-0.90 
-2.7383 3.0340 
-3.80 
-2.6353 2.8971 
-1.00 
-2.7120 3.0050 
-4.00 
-2.6348 2.8963 
-1.20 
-2.6884 2.9680 
-5.00 
-2.6267 2.8863 
-1.40 
-2.6730 2.9475 
-6.00 
-2.6233 2.8799 
-1.60 
-2.6633 2.9344 
-7.00 
-2.6156 2.8741 
-1.80 
-2.6567 2.9258 
-8.00 
-2.6112 2.8674 
-2.00 
-2.6518 2.9194 
-9.00 
-2.6066 2.8608 
-2.20 
-2.6483 2.9146 10.00 
-2.6018 2.8522 
-2.40 
-2.6455 2.9108 11.00 
-2.5914 2.8434 
-2.60 
-2.6433 2.9079 
-Optical activity [3.194]: 
-A [Jlffi] 
-p [deg/mm] 
-A [Jlffi] 
-p [deg/mm] 
-0.6058 
-447 
-0.7281 
-145 
-0.6131 
-393.5 
-0.7789 
-113.5 
-0.6278 
-319 
-0.8296 
-92.5 
-0.6424 
-270.5 
-0.8757 
-74.5 
-0.6571 
-237.5 
-0.9196 
-65.5 
-0.6681 
-218 
-0.9527 
-59 
-0.6770 
-200 
-0.9967 
-51.5
-```
+**3.3 Other Inorganic Nonlinear Optical Crystals** (p. 233)
+
+#### 3.3.28 HgS, Cinnibar
+
+- **Optical character:** Positive uniaxial crystal: $n_e > n_o$;
+- **Point group:** $32$;
+- **Mass density:** $8.10\ \text{g/cm}^3$ [3.64];
+- **Mohs hardness:** $2 - 2.5$ [3.64], $3$ [3.338];
+- **Transparency range:** at "0" transmittance level: $0.62 - 13\ \mu\text{m}$ [3.570];
+
+**Linear absorption coefficient $\alpha$ [3.571]:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Note |
+|---|---|---|
+| 0.6328 | 1.7 | o – wave, DFG direction |
+| 0.6729 | 1.4 | e – wave, DFG direction |
+| 5.3 | 0.032 | o – wave, SHG direction |
+| 10.6 | 0.073 | e – wave, SHG and DFG directions |
+
+**Experimental values of refractive indices [3.570]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|---|---|---|
+| 0.62 | 2.9028 | 3.2560 | 2.80 | 2.6414 | 2.9052 |
+| 0.65 | 2.8655 | 3.2064 | 3.00 | 2.6401 | 2.9036 |
+| 0.68 | 2.8384 | 3.1703 | 3.20 | 2.6387 | 2.9017 |
+| 0.70 | 2.8224 | 3.1489 | 3.40 | 2.6375 | 2.9001 |
+| 0.80 | 2.7704 | 3.0743 | 3.60 | 2.6358 | 2.8987 |
+| 0.90 | 2.7383 | 3.0340 | 3.80 | 2.6353 | 2.8971 |
+| 1.00 | 2.7120 | 3.0050 | 4.00 | 2.6348 | 2.8963 |
+| 1.20 | 2.6884 | 2.9680 | 5.00 | 2.6267 | 2.8863 |
+| 1.40 | 2.6730 | 2.9475 | 6.00 | 2.6233 | 2.8799 |
+| 1.60 | 2.6633 | 2.9344 | 7.00 | 2.6156 | 2.8741 |
+| 1.80 | 2.6567 | 2.9258 | 8.00 | 2.6112 | 2.8674 |
+| 2.00 | 2.6518 | 2.9194 | 9.00 | 2.6066 | 2.8608 |
+| 2.20 | 2.6483 | 2.9146 | 10.00 | 2.6018 | 2.8522 |
+| 2.40 | 2.6455 | 2.9108 | 11.00 | 2.5914 | 2.8434 |
+| 2.60 | 2.6433 | 2.9079 | | | |
+
+**Optical activity [3.194]:**
+
+| $\lambda\ [\mu\text{m}]$ | $\rho\ [\text{deg/mm}]$ | $\lambda\ [\mu\text{m}]$ | $\rho\ [\text{deg/mm}]$ |
+|---|---|---|---|
+| 0.6058 | 447 | 0.7281 | 145 |
+| 0.6131 | 393.5 | 0.7789 | 113.5 |
+| 0.6278 | 319 | 0.8296 | 92.5 |
+| 0.6424 | 270.5 | 0.8757 | 74.5 |
+| 0.6571 | 237.5 | 0.9196 | 65.5 |
+| 0.6681 | 218 | 0.9527 | 59 |
+| 0.6770 | 200 | 0.9967 | 51.5 |
 
 ### [PDF Page 249]
 
-```text
-234 
-3 Properties of Nonlinear Optical Crystals 
-Experimental values of phase-matching angle (T = 293 K) and comparison 
-between different sets of dispersion relations: 
-Interacting 
-Oexp [deg] 
-Otheor [deg] 
-wavelengths [Jlm] 
-[3.458] [3.362] [3.543] 
-SHG, e+e ~ 0 
-10.6 ~ 5.3 
-20.8 [3.571] 21.2 
-23.0 
-21.3 
-21.5 [3.572] 
-SFG, e+e ~ 0 
-10.6 + 0.6729 ~ 0.6328 
-25.3 [3.571] no pm 25.8 
-25.7 
-Best set of dispersion relations (A. in Jlffi, T = 20°C) [3.543]: 
-n2 = 7.8113 + 
-0.3944 + 
-604.5 
-o 
-A.2 _ 0.1172 
-A.2 - 682.5 ' 
-2 _ 9 3139 
-0.5870 
-542.6 
-n-. 
-+2 
-+2 
-. 
-e 
-A. - 0.1166 
-A. - 540.8 
-Calculated values of phase-matching and "walk-off" angles: 
-Interacting wavelengths [Jlm] 
-(}pm [deg] 
-PI [deg] 
-P2 [deg] 
-SHG, e+e ~ 0 
-10.6 ~ 5.3 
-21.32 
-3.19 
-3.19 
-9.6 ~ 4.8 
-19.09 
-2.93 
-2.93 
-5.3 ~ 2.65 
-14.42 
-2.32 
-2.32 
-4.8 ~ 2.4 
-14.82 
-2.38 
-2.38 
-2.65 ~ 1.325 
-23.44 
-3.61 
-3.61 
-2.4 ~ 1.2 
-26.00 
-3.93 
-3.93 
-SHG, o+e ~ 0 
-10.6 ~ 5.3 
-30.68 
-4.22 
-9.6 ~ 4.8 
-27.36 
-3.93 
-5.3 ~ 2.65 
-20.54 
-3.19 
-4.8 ~ 2.4 
-21.12 
-3.27 
-2.65 ~ 1.325 
-33.85 
-4.69 
-2.4 ~ 1.2 
-37.78 
-4.98 
-SFG, o+e~o 
-10.6 + 5.3 ~ 3.533 
-19.75 
-3.08 
-9.6 + 4.8 ~ 3.2 
-18.65 
-2.94 
-SFG, e+o ~ 0 
-10.6 + 5.3 ~ 3.533 
-28.96 
-4.18 
-9.6 + 2.4 ~ 1.92 
-27.16 
-4.00 
-Effective nonlinearity expressions in the phase-matching direction [3.100]: 
-deeo = dll cos2 o sin 3cf> ,
-```
+**234 — 3 Properties of Nonlinear Optical Crystals**
+
+**Experimental values of phase-matching angle ($T = 293\ \text{K}$) and comparison between different sets of dispersion relations:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.458] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.362] | $\theta_{\text{theor}}\ [\text{deg}]$ [3.543] |
+|---|---|---|---|---|
+| **SHG, $e+e \Rightarrow o$** | | | | |
+| $10.6 \Rightarrow 5.3$ | 20.8 [3.571]<br>21.5 [3.572] | 21.2 | 23.0 | 21.3 |
+| **SFG, $e+e \Rightarrow o$** | | | | |
+| $10.6 + 0.6729 \Rightarrow 0.6328$ | 25.3 [3.571] | no pm | 25.8 | 25.7 |
+
+**Best set of dispersion relations ($\lambda$ in $\mu\text{m}$, $T = 20\ ^\circ\text{C}$) [3.543]:**
+$$n_o^2 = 7.8113 + \frac{0.3944}{\lambda^2 - 0.1172} + \frac{604.5}{\lambda^2 - 682.5}\ ,$$
+$$n_e^2 = 9.3139 + \frac{0.5870}{\lambda^2 - 0.1166} + \frac{542.6}{\lambda^2 - 540.8}\ .$$
+
+**Calculated values of phase-matching and "walk-off" angles:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_1\ [\text{deg}]$ | $\rho_2\ [\text{deg}]$ |
+|---|---|---|---|
+| **SHG, $e+e \Rightarrow o$** | | | |
+| $10.6 \Rightarrow 5.3$ | 21.32 | 3.19 | 3.19 |
+| $9.6 \Rightarrow 4.8$ | 19.09 | 2.93 | 2.93 |
+| $5.3 \Rightarrow 2.65$ | 14.42 | 2.32 | 2.32 |
+| $4.8 \Rightarrow 2.4$ | 14.82 | 2.38 | 2.38 |
+| $2.65 \Rightarrow 1.325$ | 23.44 | 3.61 | 3.61 |
+| $2.4 \Rightarrow 1.2$ | 26.00 | 3.93 | 3.93 |
+| **SHG, $o+e \Rightarrow o$** | | | |
+| $10.6 \Rightarrow 5.3$ | 30.68 | | 4.22 |
+| $9.6 \Rightarrow 4.8$ | 27.36 | | 3.93 |
+| $5.3 \Rightarrow 2.65$ | 20.54 | | 3.19 |
+| $4.8 \Rightarrow 2.4$ | 21.12 | | 3.27 |
+| $2.65 \Rightarrow 1.325$ | 33.85 | | 4.69 |
+| $2.4 \Rightarrow 1.2$ | 37.78 | | 4.98 |
+| **SFG, $o+e \Rightarrow o$** | | | |
+| $10.6 + 5.3 \Rightarrow 3.533$ | 19.75 | | 3.08 |
+| $9.6 + 4.8 \Rightarrow 3.2$ | 18.65 | | 2.94 |
+| **SFG, $e+o \Rightarrow o$** | | | |
+| $10.6 + 5.3 \Rightarrow 3.533$ | 28.96 | 4.18 | |
+| $9.6 + 2.4 \Rightarrow 1.92$ | 27.16 | 4.00 | |
+
+**Effective nonlinearity expressions in the phase-matching direction [3.100]:**
+$$d_{eeo} = d_{11}\cos^2\theta\sin 3\phi\ ,$$
 
 ### [PDF Page 250]
 
-```text
-3.3 Other Inorganic Nonlinear Optical Crystals 
-235 
-doeo = deoo = dll COS Bcos 3,p . 
-Nonlinear coefficient: 
-dll (10.6 J.UD.) = 50± 16pm/V [3.365]: 
-Laser-induced surface-damage threshold (3.365]: 
-A. [J.lm] 
-'t'p [ns] 
-Ithr X 10-12 [Wtm2] 
-1.06 
-17 
-0.4 
-Negative uniaxial crystal: no > ne; 
-Point group: 3m; 
-Mass density: 5.83 gtcm3 [3.64]; 
-Mohs hardness: 2 - 2.5 (3.64]; 
-Transparency range at "0" transmittance level: 0.7-14 J.lm [3.573]; 
-Linear absorption coefficient ex: 
-A. [J.lm] ex [cm-I ] Ref. 
-Note 
-0.967 ~ 0.7 
-3.574 
-e - wave, SFG direction 
-1.064 ~ 0.7 
-3.574 
-o - wave, SFG direction 
-10.6 
-~0.7 
-3.574 
-o - wave, SFG direction 
-0.5 
-3.455 
-o - wave, SHG direction 
-0.34 
-3.575 
-0- wave, lie 
-0.08 
-3.575 
-e - wave, .l e 
-13.5 
-<1 
-3.573 
-The graph of no and ne dependences versus wavelength is given in [3.573]. 
-Sellmeier equations (A. in J.UD., T = 20°C) [3.573]: 
-2 
-1 
-6.585..1.2 
-0.1133 ..1.2 
-n = + 
-+-;;---
-o 
-..1.2 _ 0.16 
-..1.2 - 225 ' 
-2 
-1 
-5.845..1.2 
-0.0202..1.2 
-n -
-+ 
-+ --:::---
-e -
-..1.2 _ 0.16 
-..1.2 - 225 . 
-Experimental and theoretical values of phase-matching angle and calculated 
-values of "walk-off" angle: 
-Interacting 
-wavelengths [J.UD.] 
-SHG, 0+0 =>e 
-10.59 => 5.295 
-10.6 => 5.3 
-Bexp [deg] 
-Btheor [deg] [3.573] 
-P3 [deg] [3.573] 
-30 [3.455] 
-23.34 
-2.18 
-29 [3.575] 
-23.37 
-2.18 
-27.6 [3.574]
-```
+**3.3 Other Inorganic Nonlinear Optical Crystals** (p. 235)
+
+$$d_{oeo} = d_{eoo} = d_{11}\cos\theta\cos 3\phi\ .$$
+
+**Nonlinear coefficient:**
+$$d_{11}(10.6\ \mu\text{m}) = 50 \pm 16\ \text{pm/V}\ [3.365]\ :$$
+
+**Laser-induced surface-damage threshold [3.365]:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ |
+|---|---|---|
+| 1.06 | 17 | 0.4 |
+
+---
+
+#### 3.3.29 Ag3SbS3, Pyrargyrite
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$;
+- **Point group:** $3m$;
+- **Mass density:** $5.83\ \text{g/cm}^3$ [3.64];
+- **Mohs hardness:** $2 - 2.5$ [3.64];
+- **Transparency range:** at "0" transmittance level: $0.7 - 14\ \mu\text{m}$ [3.573];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 0.967 | $\approx 0.7$ | 3.574 | e – wave, SFG direction |
+| 1.064 | $\approx 0.7$ | 3.574 | o – wave, SFG direction |
+| 10.6 | $\approx 0.7$ | 3.574 | o – wave, SFG direction |
+| | 0.5 | 3.455 | o – wave, SHG direction |
+| | 0.34 | 3.575 | o – wave, $\parallel c$ |
+| | 0.08 | 3.575 | e – wave, $\perp c$ |
+| 13.5 | $< 1$ | 3.573 | |
+
+The graph of $n_o$ and $n_e$ dependences versus wavelength is given in [3.573].
+
+**Sellmeier equations ($\lambda$ in $\mu\text{m}$, $T = 20\ ^\circ\text{C}$) [3.573]:**
+$$n_o^2 = 1 + \frac{6.585\lambda^2}{\lambda^2 - 0.16} + \frac{0.1133\lambda^2}{\lambda^2 - 225}\ ,$$
+$$n_e^2 = 1 + \frac{5.845\lambda^2}{\lambda^2 - 0.16} + \frac{0.0202\lambda^2}{\lambda^2 - 225}\ .$$
+
+**Experimental and theoretical values of phase-matching angle and calculated values of "walk-off" angle:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.573] | $\rho_3\ [\text{deg}]$ [3.573] |
+|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | |
+| $10.59 \Rightarrow 5.295$ | 30 [3.455] | 23.34 | 2.18 |
+| $10.6 \Rightarrow 5.3$ | 29 [3.575]<br>27.6 [3.574] | 23.37 | 2.18 |
 
 ### [PDF Page 251]
 
-```text
-236 
-3 Properties of Nonlinear Optical Crystals 
-SFG, 0+0 => e 
-10.6 + 1.064 => 0.967 
-27.3 [3.574] 
-39.65 
-2.98 
-Effective nonlinearity expressions in the phase-matching direction [3.100]: 
-dooe = d 31 sin 0 - d22 cos 0 sin 3q, , 
-deoe = doee = d22 cos2 0 cos 3q, . 
-Nonlinear coefficients: 
-d+(10.6 ~m) = (7.5 ± 0.3)-1 x Id36(GaAs)I 
-= 11.1 ± 0.4 pmjV [3.576,37]. 
-Using the ratio 
-Id22(Ag3SbS3)I / Id31 (Ag3SbS3)I = 1.05 ± 0.04 [3.575] 
-and the values 
-Opm (10.6 => 5.3 ~m, 0 + 0 => e) = 29°, p = 2.4° [3.575] 
-from the equation 
-d+ = Id3d sin(Opm + p) + Id221 cos(Opm + p) 
-we deduce 
-Id22(10.6~m)1 = 8.2±0.8pmjV , 
-Id31 (10.6 ~m)1 = 7.8 ± 0.5 pmjV. 
-Laser-induced surface-damage threshold [3.365]: 
-A. [~m] 
-.p [ns] 
-lthe x 10-12 [W/m2] 
-1.06 
-10.6 
-17 
-200 
-3.3.30 Se, Selenium 
->0.09 
->0.46 
-Positive uniaxial crystal: ne > no; 
-Point group: 32; 
-Mass density: 4.79 g/cm3 [3.59]; 
-Mohs hardness: 2 [3.59]; 
-Transparency range at "0" transmittance level: 0.7 - 21 ~m [3.577, 578]; 
-Linear absorption coefficient ex: 
-Ref. 
-Note 
-5.3 
-1.40 ± 0.05 
-3.579 
-II c 
-10.6 
-1.09 ± 0.02 
-3.579 
-II c
-```
+**236 — 3 Properties of Nonlinear Optical Crystals**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{exp}}\ [\text{deg}]$ | $\theta_{\text{theor}}\ [\text{deg}]$ [3.573] | $\rho_3\ [\text{deg}]$ [3.573] |
+|---|---|---|---|
+| **SFG, $o+o \Rightarrow e$** | | | |
+| $10.6 + 1.064 \Rightarrow 0.967$ | 27.3 [3.574] | 39.65 | 2.98 |
+
+**Effective nonlinearity expressions in the phase-matching direction [3.100]:**
+$$d_{ooe} = d_{31}\sin\theta - d_{22}\cos\theta\sin 3\phi\ ,$$
+$$d_{eoe} = d_{oee} = d_{22}\cos^2\theta\cos 3\phi\ .$$
+
+**Nonlinear coefficients:**
+$$d_+(10.6\ \mu\text{m}) = (7.5 \pm 0.3)^{-1} \times |d_{36}(\text{GaAs})| = 11.1 \pm 0.4\ \text{pm/V}\ [3.576, 37]\ .$$
+Using the ratio
+$$|d_{22}(\text{Ag}_3\text{SbS}_3)| / |d_{31}(\text{Ag}_3\text{SbS}_3)| = 1.05 \pm 0.04\ [3.575]$$
+and the values
+$$\theta_{\text{pm}}(10.6 \Rightarrow 5.3\ \mu\text{m},\ o + o \Rightarrow e) = 29^\circ,\ \rho = 2.4^\circ\ [3.575]$$
+from the equation
+$$d_+ = |d_{31}|\sin(\theta_{\text{pm}} + \rho) + |d_{22}|\cos(\theta_{\text{pm}} + \rho)$$
+we deduce
+$$|d_{22}(10.6\ \mu\text{m})| = 8.2 \pm 0.8\ \text{pm/V}\ ,$$
+$$|d_{31}(10.6\ \mu\text{m})| = 7.8 \pm 0.5\ \text{pm/V}\ .$$
+
+**Laser-induced surface-damage threshold [3.365]:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ |
+|---|---|---|
+| 1.06 | 17 | >0.09 |
+| 10.6 | 200 | >0.46 |
+
+---
+
+#### 3.3.30 Se, Selenium
+
+- **Optical character:** Positive uniaxial crystal: $n_e > n_o$;
+- **Point group:** $32$;
+- **Mass density:** $4.79\ \text{g/cm}^3$ [3.59];
+- **Mohs hardness:** $2$ [3.59];
+- **Transparency range:** at "0" transmittance level: $0.7 - 21\ \mu\text{m}$ [3.577, 578];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 5.3 | $1.40 \pm 0.05$ | 3.579 | $\parallel c$ |
+| 10.6 | $1.09 \pm 0.02$ | 3.579 | $\parallel c$ |
 
 ### [PDF Page 252]
 
-```text
-14 
-28 
-2.8 ± 0.5 
-50±5 
-3.3 Other Inorganic Nonlinear Optical Crystals 
-237 
-Ref. 
-Note 
-3.580 
-0 - wave, .1. c 
-3.580 
-0 - wave, .1. c 
-Experimental values of refractive indices at 296 K [3.581]: 
-1.064 
-1.1523 
-3.3913 
-10.6 
-1. 790 ± 0.008 
-2.737 ± 0.008 
-2.650 ±0.01 
-2.640 ± 0.01 
-3.608 ± 0.008 
-3.573 ± 0.008 
-3.460 ± 0.01 
-3.410 ± 0.01 
-Optical activity: 
-A [J.UD] p [degjmm] Ref. 
-0.70 
-0.79 
-0.91 
-1.00 
-1.14 
-3.39 
-10.6 
-440±20 
-300 ± 15 
-200 ± 15 
-150 ± 10 
-100 ± 10 
-4.8 ± 0.5 
-2.5 ±0.5 
-3.582 
-3.582 
-3.582 
-3.582 
-3.582 
-3.579 
-3.579 
-Experimental values of phase-matching angle: 
-Interacting wavelengths [11m] 
-SHG, e+e =} 0 
-10.6 =} 5.3 
-(Jpm [deg] 
-5.5 ± 0.3 [3.579] 
-6.5 [3.577] 
-:::::: 10 [3.583] 
-Effective nonlinearity expressions in phase-matching direction [3.100]: 
-doeo = deoo = dll cos (J cos 3¢ 
-Nonlinear coefficient: 
-dll(10.6Ilm) = 97±25 pm/V [3.579] 
-Thermal conductivity coefficient [3.584]: 
-T [K] 
-K [W/mK], licK [W/mK], .1. c 
-273 
-4.81 
-298 
-4.52 
-1.37 
-1.31
-```
+**3.3 Other Inorganic Nonlinear Optical Crystals** (p. 237)
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 14 | $2.8 \pm 0.5$ | 3.580 | o – wave, $\perp c$ |
+| 28 | $50 \pm 5$ | 3.580 | o – wave, $\perp c$ |
+
+**Experimental values of refractive indices at 296 K [3.581]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|
+| 1.064 | $1.790 \pm 0.008$ | $3.608 \pm 0.008$ |
+| 1.1523 | $2.737 \pm 0.008$ | $3.573 \pm 0.008$ |
+| 3.3913 | $2.650 \pm 0.01$ | $3.460 \pm 0.01$ |
+| 10.6 | $2.640 \pm 0.01$ | $3.410 \pm 0.01$ |
+
+**Optical activity:**
+
+| $\lambda\ [\mu\text{m}]$ | $\rho\ [\text{deg/mm}]$ | Ref. |
+|---|---|---|
+| 0.70 | $440 \pm 20$ | 3.582 |
+| 0.79 | $300 \pm 15$ | 3.582 |
+| 0.91 | $200 \pm 15$ | 3.582 |
+| 1.00 | $150 \pm 10$ | 3.582 |
+| 1.14 | $100 \pm 10$ | 3.582 |
+| 3.39 | $4.8 \pm 0.5$ | 3.579 |
+| 10.6 | $2.5 \pm 0.5$ | 3.579 |
+
+**Experimental values of phase-matching angle:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ |
+|---|---|
+| **SHG, $e+e \Rightarrow o$** | |
+| $10.6 \Rightarrow 5.3$ | $5.5 \pm 0.3$ [3.579]<br>6.5 [3.577]<br>$\approx 10$ [3.583] |
+
+**Effective nonlinearity expressions in phase-matching direction [3.100]:**
+$$d_{eeo} = d_{11}\cos^2\theta\sin 3\phi$$
+$$d_{oeo} = d_{eoo} = d_{11}\cos\theta\cos 3\phi$$
+
+**Nonlinear coefficient:**
+$$d_{11}(10.6\ \mu\text{m}) = 97 \pm 25\ \text{pm/V}\ [3.579]$$
+
+**Thermal conductivity coefficient [3.584]:**
+
+| $T\ [\text{K}]$ | $\kappa\ [\text{W/mK}],\ \parallel c$ | $\kappa\ [\text{W/mK}],\ \perp c$ |
+|---|---|---|
+| 273 | 4.81 | 1.37 |
+| 298 | 4.52 | 1.31 |
 
 ### [PDF Page 253]
 
-```text
-238 
-3 Properties of Nonlinear Optical Crystals 
-3.3.31 ThAsSJ, Thallium Arsenic Selenide (TAS) 
-Negative uniaxial crystal: no > ne; 
-Point group: 3m; 
-Mass density: 7.83 [3.585]; 
-Mohs hardness: 2 - 3 [3.586]; 
-Transparency range at 0.5 transmittance level for a 6 mm long crystal: 
-1.28 - 17 J.UD [3.586]; 
-Linear absorption coefficient a: 
-2-12 
-< 0.02 
-10.6 
-0.082 
-0.038 
-Ref. 
-3.585 
-3.454 
-3.586 
-Note 
-SHG direction 
-Experimental values of refractive indices at 300 K [3.587]: 
-;. [J.UDl 
-no 
-ne 
-2.056 3.419 
-3.227 
-3.059 3.380 
-3.190 
-4.060 3.364 
-3.177 
-5.035 3.357 
-3.171 
-5.856 3.354 
-3.168 
-6.945 3.349 
-3.164 
-7.854 3.345 
-3.162 
-9.016 3.340 
-3.158 
-9.917 3.336 
-3.155 
-10.961 
-3.331 
-3.152 
-12.028 3.327 
-3.147 
-Temperature derivative of refractive indices at 
-;. = 2 - 10.6 11m (T = 80 - 300 K) [3.587] : 
-dno = -452 x 1O-5 K-1 . 
-dT· 
-, 
-~~ = + 3.55 X 10-5 K- 1 • 
-Sellmeier equations (;. in Jlm, T = 27 0c) [3.587]: 
-2 
-1 
-10.210;.2 
-0.522;.2 
-n = + 
-+--=---
-o 
-;.2-0.197136 ;.2-625' 
-2 
-1 
-8.993;.2 
-0.308 ;.2 
-ne = +;.2 _ 0.197136 + ;.2 _ 625 .
-```
+**238 — 3 Properties of Nonlinear Optical Crystals**
+
+#### 3.3.31 Tl3AsS3, Thallium Arsenic Selenide (TAS)
+*[MISMATCH: فرمول شیمیایی در عنوان بخش کتاب به صورت `Tl3AsS3` چاپ شده است، در حالی که نام انگلیسی Thallium Arsenic Selenide و فرمول شیمیایی واقعی سلنید تالیم-آرسنیک $\text{Tl}_3\text{AsSe}_3$ است]*
+
+- **Optical character:** Negative uniaxial crystal: $n_o > n_e$;
+- **Point group:** $3m$;
+- **Mass density:** $7.83$ [3.585];
+- **Mohs hardness:** $2 - 3$ [3.586];
+- **Transparency range:** at 0.5 transmittance level for a 6 mm long crystal: $1.28 - 17\ \mu\text{m}$ [3.586];
+
+**Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 2–12 | $< 0.02$ | 3.585 | |
+| 10.6 | 0.082 | 3.454 | SHG direction |
+| | 0.038 | 3.586 | |
+
+**Experimental values of refractive indices at 300 K [3.587]:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ |
+|---|---|---|
+| 2.056 | 3.419 | 3.227 |
+| 3.059 | 3.380 | 3.190 |
+| 4.060 | 3.364 | 3.177 |
+| 5.035 | 3.357 | 3.171 |
+| 5.856 | 3.354 | 3.168 |
+| 6.945 | 3.349 | 3.164 |
+| 7.854 | 3.345 | 3.162 |
+| 9.016 | 3.340 | 3.158 |
+| 9.917 | 3.336 | 3.155 |
+| 10.961 | 3.331 | 3.152 |
+| 12.028 | 3.327 | 3.147 |
+
+**Temperature derivative of refractive indices at $\lambda = 2 - 10.6\ \mu\text{m}$ ($T = 80 - 300\ \text{K}$) [3.587]:**
+$$\frac{dn_o}{dT} = -4.52 \times 10^{-5}\ \text{K}^{-1}\ ;$$
+$$\frac{dn_e}{dT} = +3.55 \times 10^{-5}\ \text{K}^{-1}\ .$$
+
+**Sellmeier equations ($\lambda$ in $\mu\text{m}$, $T = 27\ ^\circ\text{C}$) [3.587]:**
+$$n_o^2 = 1 + \frac{10.210\lambda^2}{\lambda^2 - 0.197136} + \frac{0.522\lambda^2}{\lambda^2 - 625}\ ,$$
+$$n_e^2 = 1 + \frac{8.993\lambda^2}{\lambda^2 - 0.197136} + \frac{0.308\lambda^2}{\lambda^2 - 625}\ .$$
 
 ### [PDF Page 254]
 
-```text
-3.3 Other Inorganic Nonlinear Optical Crystals 
-239 
-Calculated values of phase-matching and "walk-off" angles: 
-Interacting wavelengths [J.UD) 
-Opm [deg) 
-PI [deg) 
-P2 [deg) 
-P3 [deg) 
-SHG, 0+0 => e 
-10.6 => 5.3 
-19.10 
-2.12 
-9.6 => 4.8 
-18.54 
-2.07 
-5.3 => 2.65 
-24.79 
-2.60 
-4.8 => 2.4 
-27.26 
-2.77 
-2.9365 => 1.46825 
-48.74 
-3.26 
-SFG, 0+0 => e 
-10.6 + 2.65 => 2.12 
-25.21 
-2.64 
-9.6 + 2.4 => 1.92 
-27.65 
-2.81 
-SHG, e+o => e 
-10.6 => 5.3 
-26.79 
-2.65 
-2.72 
-9.6 => 4.8 
-26.03 
-2.62 
-2.67 
-5.3 => 2.65 
-35.77 
-3.16 
-3.18 
-4.8 => 2.4 
-39.78 
-3.25 
-3.27 
-SFG, e+o => e 
-10.6 + 5.3 => 3.533 
-23.81 
-2.45 
-2.52 
-9.6 + 4.8 => 3.2 
-25.06 
-2.55 
-2.62 
-SFG, 0 +e => e 
-10.6 + 5.3 => 3.533 
-34.84 
-3.13 
-3.14 
-9.6 + 4.8 => 3.2 
-36.84 
-3.19 
-3.20 
-Experimental values of internal angular bandwidth: 
-Interacting wavelengths [J.UD) 
-a(jnt [deg) Ref. 
-SHG, 0+0 => e 
-9.6 => 4.8 
-0.27 
-3.588 
-10.6 => 5.3 
-0.30 
-3.589 
-Effective nonlinearity expressions in the phase-matching direction [3.100]: 
-dooe = d31 sin 0 - d22 cos 0 sin 3cf> , 
-deoe = doee = d22 cos2 Ocos 3cf> . 
-Nonlinear coefficient: 
-d+(10.6Ilm) = (3.47 ± 1.04) x d+(Ag3AsS3) 
-= 67.5 ± 31.3 pm/V [3.586,455, 37) , 
-d+(10.6 J.UD) = (3.3 ± 1.0) x d+(Ag3SbS3) 
-= 36.5 ± 12.5 pm/V [3.586, 576, 37) .
-```
+**3.3 Other Inorganic Nonlinear Optical Crystals** (p. 239)
+
+**Calculated values of phase-matching and "walk-off" angles:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\theta_{\text{pm}}\ [\text{deg}]$ | $\rho_1\ [\text{deg}]$ | $\rho_2\ [\text{deg}]$ | $\rho_3\ [\text{deg}]$ |
+|---|---|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | | | |
+| $10.6 \Rightarrow 5.3$ | 19.10 | | | 2.12 |
+| $9.6 \Rightarrow 4.8$ | 18.54 | | | 2.07 |
+| $5.3 \Rightarrow 2.65$ | 24.79 | | | 2.60 |
+| $4.8 \Rightarrow 2.4$ | 27.26 | | | 2.77 |
+| $2.9365 \Rightarrow 1.46825$ | 48.74 | | | 3.26 |
+| **SFG, $o+o \Rightarrow e$** | | | | |
+| $10.6 + 2.65 \Rightarrow 2.12$ | 25.21 | | | 2.64 |
+| $9.6 + 2.4 \Rightarrow 1.92$ | 27.65 | | | 2.81 |
+| **SHG, $e+o \Rightarrow e$** | | | | |
+| $10.6 \Rightarrow 5.3$ | 26.79 | 2.65 | | 2.72 |
+| $9.6 \Rightarrow 4.8$ | 26.03 | 2.62 | | 2.67 |
+| $5.3 \Rightarrow 2.65$ | 35.77 | 3.16 | | 3.18 |
+| $4.8 \Rightarrow 2.4$ | 39.78 | 3.25 | | 3.27 |
+| **SFG, $e+o \Rightarrow e$** | | | | |
+| $10.6 + 5.3 \Rightarrow 3.533$ | 23.81 | 2.45 | | 2.52 |
+| $9.6 + 4.8 \Rightarrow 3.2$ | 25.06 | 2.55 | | 2.62 |
+| **SFG, $o+e \Rightarrow e$** | | | | |
+| $10.6 + 5.3 \Rightarrow 3.533$ | 34.84 | | 3.13 | 3.14 |
+| $9.6 + 4.8 \Rightarrow 3.2$ | 36.84 | | 3.19 | 3.20 |
+
+**Experimental values of internal angular bandwidth:**
+
+| Interacting wavelengths $[\mu\text{m}]$ | $\Delta\theta^{\text{int}}\ [\text{deg}]$ | Ref. |
+|---|---|---|
+| **SHG, $o+o \Rightarrow e$** | | |
+| $9.6 \Rightarrow 4.8$ | 0.27 | 3.588 |
+| $10.6 \Rightarrow 5.3$ | 0.30 | 3.589 |
+
+**Effective nonlinearity expressions in the phase-matching direction [3.100]:**
+$$d_{ooe} = d_{31}\sin\theta - d_{22}\cos\theta\sin 3\phi\ ,$$
+$$d_{eoe} = d_{oee} = d_{22}\cos^2\theta\cos 3\phi\ .$$
+
+**Nonlinear coefficient:**
+$$d_+(10.6\ \mu\text{m}) = (3.47 \pm 1.04) \times d_+(\text{Ag}_3\text{AsS}_3) = 67.5 \pm 31.3\ \text{pm/V}\ [3.586, 455, 37]\ ,$$
+$$d_+(10.6\ \mu\text{m}) = (3.3 \pm 1.0) \times d_+(\text{Ag}_3\text{SbS}_3) = 36.5 \pm 12.5\ \text{pm/V}\ [3.586, 576, 37]\ .$$
 
 ### [PDF Page 255]
 
-```text
-240 
-3 Properties of Nonlinear Optical Crystals 
-Laser-induced surface-damage threshold: 
-A. [J.IlD] 
-1:p [ns] 
-Itbr x 10-12 [W 1m2] 
-Ref. 
-9.6 
-70 
-10.6 
-150 
-10.6 
-200 
-> 0.054 
-0.1-0.17 
-0.16 
-3.3.32 Te, Tellurium 
-Positive uniaxial crystal: ne > no; 
-Point group: 32; 
-Mass density: 6.25 g/em3 [3.59]; 
-Mohs hardness: 2 - 2.5 [3.59]; 
-3.588 
-3.368 
-3.586 
-Transparency range at "0" transmittance level: 3.5 - 36 J.IlD [3.590, 578, 591]; 
-Linear absorption coefficient IX: 
-A. [J.IlD] 
-IX [em-I] 
-Ref. 
-Note 
-5.3 
-1.32 
-3.451 
-o - wave, SHG direction 
-10.6 
-0.96 
-3.451 
-e - wave, SHG direction 
-0.5--1.0 
-3.576 
-e - wave, SHG direction 
-0.2-0.6 
-3.592 
-e - wave, SHG direction 
-14 
-1.1 ± 0.4 
-3.580 
-0- wave, ..L c 
-28 
-4.4± 0.04 
-3.580 
-0- wave, ..L c 
-Two-photon absorption coefficient P [3.593]: 
-Wavelengths of absorbed photons [J.IlD] p x 109 [m/W1 
-5.3 + 5.3 
-5.3 + 10.6 
-8 
-2 
-Experimental values of refractive indices: 
-A. [J.IlDI 
-no 
-ne 
-Ref. 
-A. [J.IlD] 
-4.0 
-4.929 
-6.372 
-3.578 
-10.6 
-5.0 
-4.864 
-6.316 
-3.578 
-10.8 
-6.0 
-4.838 
-6.286 
-3.578 
-11.4 
-7.0 
-4.821 
-6.257 
-3.578 
-12.0 
-8.0 
-4.809 
-6.253 
-3.578 
-12.8 
-8.5 
-4.801 
-6.260 
-3.590 
-13.7 
-8.8 
-4.799 
-6.258 
-3.590 
-14.0 
-9.3 
-4.798 
-6.255 
-3.590 
-14.7 
-9.7 
-4.795 
-6.252 
-3.590 
-15.9 
-10.2 
-4.793 
-6.249 
-3.590 
-17.2 
-no 
-ne 
-4.792 
-6.247 
-4.791 
-6.246 
-4.789 
-6.243 
-4.785 
-6.240 
-4.781 
-6.235 
-4.776 
-6.231 
-4.775 
-6.230 
-4.772 
-6.227 
-4.767 
-6.222 
-4.761 
-6.216 
-Ref. 
-3.590 
-3.590 
-3.590 
-3.590 
-3.590 
-3.590 
-3.590 
-3.590 
-3.590 
-3.590
-```
+**240 — 3 Properties of Nonlinear Optical Crystals**
+
+**Laser-induced surface-damage threshold:**
+
+| $\lambda\ [\mu\text{m}]$ | $\tau_{\text{p}}\ [\text{ns}]$ | $I_{\text{thr}} \times 10^{-12}\ [\text{W/m}^2]$ | Ref. |
+|---|---|---|---|
+| 9.6 | 70 | > 0.054 | 3.588 |
+| 10.6 | 150 | 0.1–0.17 | 3.368 |
+| 10.6 | 200 | 0.16 | 3.586 |
+
+---
+
+#### 3.3.32 Te, Tellurium
+
+- **Optical character:** Positive uniaxial crystal: $n_e > n_o$;
+- **Point group:** $32$;
+- **Mass density:** $6.25\ \text{g/cm}^3$ [3.59];
+- **Mohs hardness:** $2 - 2.5$ [3.59];
+- **Transparency range:** at "0" transmittance level: $3.5 - 36\ \mu\text{m}$ [3.590, 578, 591];
+- **Linear absorption coefficient $\alpha$:**
+
+| $\lambda\ [\mu\text{m}]$ | $\alpha\ [\text{cm}^{-1}]$ | Ref. | Note |
+|---|---|---|---|
+| 5.3 | 1.32 | 3.451 | o – wave, SHG direction |
+| 10.6 | 0.96 | 3.451 | e – wave, SHG direction |
+| | 0.5–1.0 | 3.576 | e – wave, SHG direction |
+| | 0.2–0.6 | 3.592 | e – wave, SHG direction |
+| 14 | $1.1 \pm 0.4$ | 3.580 | o – wave, $\perp c$ |
+| 28 | $4.4 \pm 0.04$ | 3.580 | o – wave, $\perp c$ |
+
+**Two-photon absorption coefficient $\beta$ [3.593]:**
+
+| Wavelengths of absorbed photons $[\mu\text{m}]$ | $\beta \times 10^9\ [\text{m/W}]$ |
+|---|---|
+| $5.3 + 5.3$ | 8 |
+| $5.3 + 10.6$ | 2 |
+
+**Experimental values of refractive indices:**
+
+| $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | Ref. | $\lambda\ [\mu\text{m}]$ | $n_o$ | $n_e$ | Ref. |
+|---|---|---|---|---|---|---|---|
+| 4.0 | 4.929 | 6.372 | 3.578 | 10.6 | 4.792 | 6.247 | 3.590 |
+| 5.0 | 4.864 | 6.316 | 3.578 | 10.8 | 4.791 | 6.246 | 3.590 |
+| 6.0 | 4.838 | 6.286 | 3.578 | 11.4 | 4.789 | 6.243 | 3.590 |
+| 7.0 | 4.821 | 6.257 | 3.578 | 12.0 | 4.785 | 6.240 | 3.590 |
+| 8.0 | 4.809 | 6.253 | 3.578 | 12.8 | 4.781 | 6.235 | 3.590 |
+| 8.5 | 4.801 | 6.260 | 3.590 | 13.7 | 4.776 | 6.231 | 3.590 |
+| 8.8 | 4.799 | 6.258 | 3.590 | 14.0 | 4.775 | 6.230 | 3.590 |
+| 9.3 | 4.798 | 6.255 | 3.590 | 14.7 | 4.772 | 6.227 | 3.590 |
+| 9.7 | 4.795 | 6.252 | 3.590 | 15.9 | 4.767 | 6.222 | 3.590 |
+| 10.2 | 4.793 | 6.249 | 3.590 | 17.2 | 4.761 | 6.216 | 3.590 |
 
 ### [PDF Page 256]
 
@@ -24525,123 +22429,58 @@ perature range 293 - 383 K (;' in J.IlIl) [3.648]:
 
 ### [PDF Page 302]
 
-```text
-dnx/dT = -(3.76 A. - 2.3) X 10-6 K-' , 
-dnyjdT = -(19.40 A. - 6.0lA.) X 10-6 K-' , 
-dnz/dT = -(9.70 - 1.50..1.) X 1O-6 K-' , 
-3.6 New Developments 
-287 
-and for A. = 0.6328 f.lIl1 and a temperature range of 293 - 473 K (A. in J.1m, T 
-in K) [3.649]: 
-dnx/dT = [0.20342 - (1.9697 X 1O-2)(T - 273) 
-- (1.4415 X 1O-5)(T - 273)2] X 10-6 K-' , 
-dnyjdT = -[10.748 + (7.1034 x 1O-2)(T - 273) 
-+ (5.7387 x 1O-5)(T - 273f] x 10-6 K-' , 
-dnz/dT = -[0.85998 + (1.5476 x 1O-')(T - 273) - (9.4675 x 10-4)(T - 273)2 
-+ (2.2375 x 1O-6)(T - 273)3] x 10-6 K-' . 
-CBO 
-Improved dispersion relations for CBO have been published by Kato (A. in f.lIl1, 
-T = 293 K) [3.651]: 
-n2 = 2.3035 + 
-0.01378 
-_ 0.00612..1.2 
-x 
-..1.2 _ 0.01498 
-' 
-n2 = 2.3704 + 
-0.01528 
-_ 0.00939..1.2 
-Y 
-..1.2 - 0.01581 
-' 
-n2 = 2.4753 + 
-0.01806 
-_ 0.01654..1.2 • 
-Z 
-..1.2 _ 0.01752 
-KTP 
-New data on the temperature derivative of refractive indices of flux-grown 
-KTP have been reported for T = 288 - 313 K [3.652]: 
-1.0642 6.1 
-8.3 
-14.5 
-KTA 
-The "infrared-corrected" Sellmeier equations proposed in [3.653] (A. in f.lIl1, 
-T = 293 K) are: 
-n2 = 1.90713 + 
-1.23552..1.2 
-_ 0.01025..1.2 
-x 
-..1.2 _ (0.19692)2 
-'
-```
+**3.6 New Developments** (p. 287)
+
+$$dn_X/dT = -(3.76\lambda - 2.3) \times 10^{-6}\ \text{K}^{-1}\ ,$$
+$$dn_Y/dT = -(19.40\lambda - 6.01\lambda) \times 10^{-6}\ \text{K}^{-1}\ ,$$
+*[MISMATCH: عبارت فوق دقیقاً همان‌طور که در کتاب چاپ شده با $-(19.40\lambda - 6.01\lambda)$ نقل شده است]*
+$$dn_Z/dT = -(9.70 - 1.50\lambda) \times 10^{-6}\ \text{K}^{-1}\ ,$$
+and for $\lambda = 0.6328\ \mu\text{m}$ and a temperature range of $293 - 473\ \text{K}$ ($\lambda$ in $\mu\text{m}$, $T$ in K) [3.649]:
+$$dn_X/dT = [0.20342 - (1.9697 \times 10^{-2})(T - 273) - (1.4415 \times 10^{-5})(T - 273)^2] \times 10^{-6}\ \text{K}^{-1}\ ,$$
+$$dn_Y/dT = -[10.748 + (7.1034 \times 10^{-2})(T - 273) + (5.7387 \times 10^{-5})(T - 273)^2] \times 10^{-6}\ \text{K}^{-1}\ ,$$
+$$dn_Z/dT = -[0.85998 + (1.5476 \times 10^{-1})(T - 273) - (9.4675 \times 10^{-4})(T - 273)^2 + (2.2375 \times 10^{-6})(T - 273)^3] \times 10^{-6}\ \text{K}^{-1}\ .$$
+
+#### CBO
+Improved dispersion relations for CBO have been published by *Kato* ($\lambda$ in $\mu\text{m}$, $T = 293\ \text{K}$) [3.651]:
+$$n_X^2 = 2.3035 + \frac{0.01378}{\lambda^2 - 0.01498} - 0.00612\,\lambda^2\ ,$$
+$$n_Y^2 = 2.3704 + \frac{0.01528}{\lambda^2 - 0.01581} - 0.00939\,\lambda^2\ ,$$
+$$n_Z^2 = 2.4753 + \frac{0.01806}{\lambda^2 - 0.01752} - 0.01654\,\lambda^2\ .$$
+
+#### KTP
+New data on the temperature derivative of refractive indices of flux-grown KTP have been reported for $T = 288 - 313\ \text{K}$ [3.652]:
+
+| $\lambda\ [\mu\text{m}]$ | $dn_X/dT \times 10^6\ [\text{K}^{-1}]$ | $dn_Y/dT \times 10^6\ [\text{K}^{-1}]$ | $dn_Z/dT \times 10^6\ [\text{K}^{-1}]$ |
+|---|---|---|---|
+| 1.0642 | 6.1 | 8.3 | 14.5 |
+
+#### KTA
+The "infrared-corrected" Sellmeier equations proposed in [3.653] ($\lambda$ in $\mu\text{m}$, $T = 293\ \text{K}$) are:
+$$n_X^2 = 1.90713 + \frac{1.23552\,\lambda^2}{\lambda^2 - (0.19692)^2} - 0.01025\,\lambda^2\ ,$$
 
 ### [PDF Page 303]
 
-```text
-288 
-3 Properties of Nonlinear Optical Crystals 
-n2 =2.15912+ 
-1.00099..1.2 
--0.01096,f 
-Y 
-A? - (0.21844)2 
-' 
-n2 = 2.14786 + 
-1.29559..1.2 
-_ 0.01436 A? . 
-z 
-A.2 _ (0.22719)2 
-These indeed show better agreement with experiment in the specific case of 
-1.0642 J.UU pumped OPO in the XZ and YZ plane, but for SHG and SFG 
-processes with shorter wavelength participation (A.3 = 0.4 - 0.6 Ilm) the set 
-from Kala [3.434] is preferrable. 
-RTA 
-Another KTP isomorph, rubidium titanyl arsenate (RbTiOAs04 or RT A), has 
-been extensively developed in the last three years. RTA is a positive biaxial 
-crystal of mm2 point group symmetry, and is transparent from 0.35 to 5.8 Ilm 
-[3.654, 655]. The dispersion relations for RTA are as follows (A. in Ilm, T = 
-293 K) [3.656]: 
-n2 = 2.22681 + 
-0.99616 A.2 
-_ 0.01369 A.2 
-x 
-A.2 _ (0.21423)2 
-' 
-n2 = 1.97756 + 
-1.25726 A.2 
-_ 0.00865 A.2 
-Y 
-A.2 - (0.20448)2 
-' 
-n2 = 2.28779 + 
-1.20629 A.2 
-_ 0.01583 A.2 . 
-Z 
-A.2 _ (0.23484)2 
-The reported RT A nonlinear coefficients are: 
-d31(1.0642Ilm) = 1.4pmjV [3.654,37] , 
-d32(1.0642Ilm) =4.6pmjV [3.654,37], 
-d33(1.0642Ilm) = 12.1pmjV [3.654,37]. 
-AgGaSe2 
-An improved set of Sellmeier equations, which gives much better agreement 
-with experiment in the case of type I NCPM OPO, has been proposed by Kala 
-[3.657] (A. in Ilm, T = 293 K): 
-n2 = 6.85070 + 
-0.42970 
-_ 0.00125..1.2 
-o 
-..1.2 _ 0.15840 
-' 
-n2 = 6.67920 + 
-0.45980 
-_ 0.00126 A.2 . 
-e 
-..1.2 _ 0.21220
-```
+**288 — 3 Properties of Nonlinear Optical Crystals**
 
-## فصل ۴: کاربردهای بلورهای غیرخطی (Chapter 4: Applications of Nonlinear Crystals)
-*(صفحات فایل PDF: 304 تا 381)*
+$$n_Y^2 = 2.15912 + \frac{1.00099\,\lambda^2}{\lambda^2 - (0.21844)^2} - 0.01096\,\lambda^2\ ,$$
+$$n_Z^2 = 2.14786 + \frac{1.29559\,\lambda^2}{\lambda^2 - (0.22719)^2} - 0.01436\,\lambda^2\ .$$
+
+These indeed show better agreement with experiment in the specific case of $1.0642\ \mu\text{m}$ pumped OPO in the $XZ$ and $YZ$ plane, but for SHG and SFG processes with shorter wavelength participation ($\lambda_3 = 0.4 - 0.6\ \mu\text{m}$) the set from *Kato* [3.434] is preferrable.
+
+#### RTA
+Another KTP isomorph, rubidium titanyl arsenate ($	ext{RbTiOAsO}_4$ or RTA), has been extensively developed in the last three years. RTA is a positive biaxial crystal of mm2 point group symmetry, and is transparent from 0.35 to $5.8\ \mu\text{m}$ [3.654, 655]. The dispersion relations for RTA are as follows ($\lambda$ in $\mu\text{m}$, $T = 293\ \text{K}$) [3.656]:
+$$n_X^2 = 2.22681 + \frac{0.99616\,\lambda^2}{\lambda^2 - (0.21423)^2} - 0.01369\,\lambda^2\ ,$$
+$$n_Y^2 = 1.97756 + \frac{1.25726\,\lambda^2}{\lambda^2 - (0.20448)^2} - 0.00865\,\lambda^2\ ,$$
+$$n_Z^2 = 2.28779 + \frac{1.20629\,\lambda^2}{\lambda^2 - (0.23484)^2} - 0.01583\,\lambda^2\ .$$
+
+The reported RTA nonlinear coefficients are:
+$$d_{31}(1.0642\ \mu\text{m}) = 1.4\ \text{pm/V}\ [3.654, 37]\ ,$$
+$$d_{32}(1.0642\ \mu\text{m}) = 4.6\ \text{pm/V}\ [3.654, 37]\ ,$$
+$$d_{33}(1.0642\ \mu\text{m}) = 12.1\ \text{pm/V}\ [3.654, 37]\ .$$
+
+#### AgGaSe2
+An improved set of Sellmeier equations, which gives much better agreement with experiment in the case of type I NCPM OPO, has been proposed by *Kato* [3.657] ($\lambda$ in $\mu\text{m}$, $T = 293\ \text{K}$):
+$$n_o^2 = 6.85070 + \frac{0.42970}{\lambda^2 - 0.15840} - 0.00125\,\lambda^2\ ,$$
+$$n_e^2 = 6.67920 + \frac{0.45980}{\lambda^2 - 0.21220} - 0.00126\,\lambda^2\ .$$
 
 ### [PDF Page 304]
 
@@ -36872,3 +34711,34 @@ Editors: G. M. Breinin and I. M. Siegel
 2. در فصل ۳، تمامی ۷۷ بلور اپتیک غیرخطی (شامل ۱۱ بلور پایه، ۱۱ بلور پرکاربرد، ۳۲ بلور معدنی دیگر، ۲۲ بلور آلی، کوارتز، و پیشرفت‌های جدید) با مقادیر گروه نقطه‌ای، قرارداد محورها، معادلات سلمایر، مشتقات دمایی dn/dT، ضرایب غیرخطی و جداول تجربی درج گردیدند.
 3. تطبیق با تصاویر چاپی نشان داد که در لایه خام متنی PDF برخی نویسه‌های ریاضی خاص (نظیر حروف یونانی، علائم توان و خطوط کسری) دچار به هم ریختگی فونت بودند که در متن پیوست هر بخش جهت ارجاع کامل نگهداری و تشریح شدند.
 4. تعداد اختلافات اصلاح‌نشده: ۰ مورد.
+
+---
+
+## بازخوانی و تطبیق با تصویر (Proofreading & Discrepancy Log)
+
+در این بخش، کلیهٔ ناهمخوانی‌ها و خطاهای لایه متنی OCR در مقایسه مستقیم با تصویر اسکن‌شده صفحات کتاب دیمیتریف (Handbook of Nonlinear Optical Crystals, 1999) مستند و تصحیح شده است:
+
+1. **[MISMATCH] در عنوان بخش ۳.۳.۳۱ (صفحه ۲۳۸ کتاب، صفحه ۲۵۳ فایل PDF):**
+   - عنوان چاپ‌شده در کتاب: `3.3.31 Tl3AsS3, Thallium Arsenic Selenide (TAS)`
+   - خطای منبع چاپی: در متن کتاب فرمول به صورت `Tl3AsS3` (سولفید) چاپ شده در حالی که نام انگلیسی Thallium Arsenic Selenide و نماد TAS مربوط به سلنید تالیم-آرسنیک ($	ext{Tl}_3	ext{AsSe}_3$) است. متن چاپ‌شده دقیقاً نقل و ناهمخوانی با برچسب `[MISMATCH]` ثبت شد.
+
+2. **[MISMATCH] در جدول زوایای تطبیق فاز DKDP (صفحه ۸۷ کتاب، صفحه ۱۰۲ فایل PDF):**
+   - مقدار طول موج فرودی چاپ‌شده در سطر پنجم جدول: `1.6943 => 0.34715`
+   - مقدار در متن اصلی KDP: `0.6943 => 0.34715`
+   - در چاپ کتاب رقم ۱ اضافه آمده است. مقدار دقیقاً همان‌طور که چاپ شده نقل و علامت `[MISMATCH]` ثبت شد.
+
+3. **[MISMATCH] در جدول ضریب شکست LiIO3 (صفحه ۱۰۴ کتاب، صفحه ۱۱۹ فایل PDF):**
+   - در سطر $\lambda = 0.7000\ \mu	ext{m}$ ضریب شکست عادی به صورت `8746` (بدون رقم صحیح و ممیز) چاپ شده است (مقدار درست `1.8746` است). مقدار دقیقاً همان‌طور که چاپ شده نقل شد.
+
+4. **[MISMATCH] در رابطه ترمواپتیک LBO (صفحه ۲۸۷ کتاب، صفحه ۳۰۲ فایل PDF):**
+   - عبارت $dn_Y/dT$ در چاپ کتاب به صورت $-(19.40\lambda - 6.01\lambda) 	imes 10^{-6}\ 	ext{K}^{-1}$ چاپ شده است (هر دو جمله دارای $\lambda$ هستند). فرمول دقیقاً طبق چاپ نقل شد.
+
+5. **[MISMATCH] در جدول پهنای دمایی AgGaS2 (صفحه ۱۳۵ کتاب، صفحه ۱۵۰ فایل PDF):**
+   - عنوان جدول «Temperature tuning of noncritical SFG» است اما در ستون فرایند `SHG, o + o => e` و طول موج‌های $7.8 + 0.65 \Rightarrow 0.6$ درج شده است. دقیقاً مطابق چاپ منتقل گردید.
+
+6. **تصحیح خطاهای تبدیل لایه متنی OCR به لاتک و جدول:**
+   - کلیهٔ حروف `A.` و `l` که تبدیل نادرست $\lambda$ بودند با نماد ریاضی $\lambda$ جایگزین شدند.
+   - کلیهٔ ارقام `8` که تبدیل نادرست $	heta$ بودند با نماد $	heta$ جایگزین شدند.
+   - کلیهٔ نمادهای `<P` که تبدیل نادرست $\phi$ بودند با $\phi$ جایگزین شدند.
+   - کلیهٔ توان‌های تخریب‌شده نظیر `106` با $10^6$ و `10-12` با $10^{-12}$ جایگزین و تمام کسرهای سلمایر به شکل استاندارد لاتک بازنویسی شدند.
+   - جدول‌های چندستونی فشرده در لایه متنی تفکیک و به جدول‌های استاندارد مارک‌داون تبدیل شدند.
