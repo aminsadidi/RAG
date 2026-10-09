@@ -202,34 +202,52 @@ test("thermo-optic formulas: LBO (Kato 1994 & 2018) reproduces Table 1 90° temp
   assert.ok(Math.abs(t_1206 - 23.6) < 0.6);
 });
 
-test("thermo-optic formulas: CLBO and RBBF temperature tuning", () => {
-  // CLBO, Umemura et al. 1999/2001: type-1 SHG of 1.0642 µm at 20 °C is 29.2°
-  const clbo = source("CsLiB6O10", "Sasaki");
-  const ang_clbo = (T) => solveAll(nAtTemp(clbo, T), clbo.kind, "shg", 1.0642, 0).find((r) => r.type === "I").angle;
-  assert.ok(Math.abs(ang_clbo(20) - 29.24) < 0.1);
-  assert.ok(Math.abs(ang_clbo(100) - 29.33) < 0.1);
+test("thermo-optic formulas: CLBO (Umemura et al. 1999) and RBBF (Zhai et al. 2013)", () => {
+  const rad = Math.PI / 180;
+  // CLBO, Table 1 "Calculated": type-1 SHG of 1.0642 µm at 29.2°, of 0.5321 µm at 61.4°
+  const clbo = source("CsLiB6O10", "Umemura-1999");
+  const typeI = (s, T, proc, a, b) => solveAll(nAtTemp(s, T), s.kind, proc, a, b).find((r) => r.type === "I").angle;
+  assert.ok(Math.abs(typeI(clbo, 20, "shg", 1.0642, 0) - 29.2) < 0.06);
+  assert.ok(Math.abs(typeI(clbo, 20, "shg", 0.5321, 0) - 61.4) < 0.06);
+  // Table 2 "Calculated": temperature bandwidths ΔT·l (FWHM, °C·cm) of type-1 (o + o → e) processes, which fix
+  // the signs of Eq. (2) that the PDF text loses
+  const bandwidth = (l1, l2) => {
+    const l3 = 1 / (1 / l1 + 1 / l2), th = typeI(clbo, 20, "sfg", l1, l2) * rad;
+    const dk = (T) => {
+      const n = nAtTemp(clbo, T), [o3, , e3] = n(l3);
+      const ne = 1 / Math.sqrt(Math.cos(th) ** 2 / o3 ** 2 + Math.sin(th) ** 2 / e3 ** 2);
+      return 2 * Math.PI * (ne / l3 - n(l1)[0] / l1 - n(l2)[0] / l2); // µm⁻¹
+    };
+    return 4 * 1.39156 / Math.abs((dk(21) - dk(19)) / 2) / 1e4; // sinc² FWHM, µm → cm
+  };
+  for (const [l1, l2, ref] of [[1.0642, 1.0642, 50.6], [1.0642, 0.5321, 17.7], [1.0642, 0.3547, 7.5], [0.5321, 0.5321, 6.0], [1.0642, 0.2660, 3.7]]) {
+    const v = bandwidth(l1, l2);
+    assert.ok(Math.abs(v - ref) < 0.03 * ref, `CLBO ${l1} + ${l2}: ${v} vs ${ref}`);
+  }
 
-  // RBBF, Zhai et al. 2013 Table 3: 532 nm -> 266 nm SHG angle is 39.97° at 24 °C and 40.09° at 160 °C
+  // RBBF, Zhai et al. 2013 Table 3 "Calculated": type-1 SHG of 532 nm at 39.97° (24 °C) and 40.09° (160 °C)
   const rbbf = source("RbBe2BO3F2", "Zhai-2013");
-  const ang_rbbf = (T) => solveAll(nAtTemp(rbbf, T), rbbf.kind, "shg", 0.532, 0).find((r) => r.type === "I").angle;
-  assert.ok(Math.abs(ang_rbbf(24) - 39.97) < 0.05);
-  assert.ok(Math.abs(ang_rbbf(160) - 40.09) < 0.05);
+  assert.ok(Math.abs(typeI(rbbf, 24, "shg", 0.532, 0) - 39.97) < 0.05);
+  assert.ok(Math.abs(typeI(rbbf, 160, "shg", 0.532, 0) - 40.09) < 0.05);
 });
 
-test("thermo-optic formulas: PPLN (Gayer 2008/2010) and PPSLT (Dolev 2009) QPM periods vs temperature", () => {
-  const qpmPeriod = (mat, label, la, T) => {
-    const s = source(mat, label), ax = s.axes.e;
-    const n = (l) => {
-      const n0 = entryIndex(ax, l);
-      return ax.thermo ? n0 + thermoShift(s.thermo.form, ax.thermo, s.thermo.t0_c, n0, l, T) : n0;
-    };
-    return 1 / (n(la / 2) / (la / 2) - 2 * n(la) / la);
+test("thermo-optic formulas: PPSLT (Dolev et al. 2009) and PPLN (Gayer et al. 2008) QPM", () => {
+  // First-order period of a process from the indices of its three waves (no thermal expansion of the grating)
+  const period = (mat, label, T, lf, pol) => {
+    const s = source(mat, label), n = nAtTemp(s, T), ix = { o: 0, e: 2 };
+    const [p1, p2, p3] = pol, f = n(lf), h = n(lf / 2);
+    return 1 / (h[ix[p3]] / (lf / 2) - f[ix[p1]] / lf - f[ix[p2]] / lf);
   };
-
-  // PPLN 5% MgO:CLN (Gayer): 1.064 µm SHG period is 6.97 µm at 25 °C and shifts to 6.84 µm at 100 °C
-  assert.ok(Math.abs(qpmPeriod("MgO-LiNbO3", "Gayer-5", 1.064, 25) - 6.97) < 0.05);
-  assert.ok(Math.abs(qpmPeriod("MgO-LiNbO3", "Gayer-5", 1.064, 100) - 6.84) < 0.05);
-
-  // PPSLT 0.5% MgO:SLT (Dolev 2009 Table 2): 1.064 µm SHG at 160 °C has period 7.72 µm
-  assert.ok(Math.abs(qpmPeriod("Mg-LiTaO3", "Dolev-2009", 1.064, 160) - 7.72) < 0.03);
+  // Dolev Table 2: 7.72 µm, SHG of 1.064 µm e-ee at 160 °C; 19.8 µm, o-eo at 25.3 °C for 1.5303 µm and e-oo at
+  // 105 °C for 1.5403 µm (the last two check the ordinary index against the extraordinary one)
+  assert.ok(Math.abs(period("Mg-LiTaO3", "Dolev-2009", 160, 1.064, "eee") - 7.72) < 0.03);
+  assert.ok(Math.abs(period("Mg-LiTaO3", "Dolev-2009", 25.3, 1.5303, "oeo") - 19.8) < 0.1);
+  assert.ok(Math.abs(period("Mg-LiTaO3", "Dolev-2009", 105, 1.5403, "ooe") - 19.8) < 0.1);
+  // Gayer Fig. 4: the 19.48 µm grating of 5% MgO:CLN doubles 1530–1570 nm light (the EDFA band) from room
+  // temperature to 200 °C; the paper tabulates no single point
+  for (const T of [25, 200]) {
+    let lo = 1.4, hi = 1.7;
+    for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; (period("MgO-LiNbO3", "Gayer-5", T, m, "eee") < 19.48) ? (lo = m) : (hi = m); }
+    assert.ok(lo > 1.52 && lo < 1.58, `Gayer ${T} °C: ${lo}`);
+  }
 });
