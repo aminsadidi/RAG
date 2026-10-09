@@ -1,0 +1,36 @@
+# فهرست مقالات مرجع مفقود در papers.json (Task 4: Missing Original Papers)
+
+این فهرست شامل مقالات اصلی مرجع است که در تسک‌های ۱ تا ۳ برای مقادیر مشخص استخراج شدند اما در فایل فعلی `web/src/papers.json` وجود ندارند. تمام موارد به صورت برخط از طریق Crossref API بررسی و صحت عنوان، نویسندگان و ژورنال آنها تأیید گردید.
+
+| # | بلور / موضوع | نویسندگان | سال | عنوان مقاله | ژورنال | DOI | وضعیت Crossref |
+| :-: | :--- | :--- | :-: | :--- | :--- | :--- | :--- |
+| 1 | **LiB3O5 (LBO)** | Kato, Grechin, Umemura | 2018 | *New thermo-optic dispersion formula for LiB                     <sub>3</sub>                     O                     <sub>5</sub>* | Laser Physics 28, 095403 | [10.1088/1555-6611/aac9df](https://doi.org/10.1088/1555-6611/aac9df) | `crossref: ok` |
+| 2 | **CsLiB6O10 (CLBO)** | Umemura, Yoshida, Kamimura, Mori et al. | 2001 | *New data on the phase-matching properties of CsLiB6O10* | Advanced Solid State Lasers, PD15 | [10.1364/ASSL.1999.PD15](https://doi.org/10.1364/ASSL.1999.PD15) | `crossref: ok` |
+| 3 | **RbBe2BO3F2 (RBBF)** | Zhai, Wang, Liu, Wang et al. | 2013 | *Measurement of thermal refractive index coefficients of nonlinear optical crystal RbBe2BO3F2* | Optical Materials 36, 333-336 | [10.1016/j.optmat.2013.09.017](https://doi.org/10.1016/j.optmat.2013.09.017) | `crossref: ok` |
+| 4 | **MgO:LiNbO3 (5% MgO CLN)** | Gayer, Sacks, Galun, Arie | 2008 | *Temperature and wavelength dependent refractive index equations for MgO-doped congruent and stoichiometric LiNbO3* | Applied Physics B 91, 343-348 | [10.1007/s00340-008-2998-2](https://doi.org/10.1007/s00340-008-2998-2) | `crossref: ok` |
+| 5 | **MgO:LiTaO3 (0.5% MgO SLT)** | Dolev, Ganany-Padowicz, Gayer, Arie et al. | 2009 | *Linear and nonlinear optical properties of MgO:LiTaO3* | Applied Physics B 96, 423-432 | [10.1007/s00340-009-3502-3](https://doi.org/10.1007/s00340-009-3502-3) | `crossref: ok` |
+| 6 | **BiB3O6 (BIBO)** | Miyata, Umemura, Kato | 2009 | *Phase-matched pure χ^(3) third-harmonic generation in noncentrosymmetric BiB_3O_6* | Optics Letters 34, 500 | [10.1364/OL.34.000500](https://doi.org/10.1364/OL.34.000500) | `crossref: ok` |
+| 7 | **KH2PO4, KD2PO4, NH4H2PO4** | Ghosh | 1992 | *&lt;title&gt;Dispersion of thermo-optic coefficients and temperature-dependent nonlinear optical devices of some nonlinear crystals&lt;/title&gt;* | SPIE Proceedings 1622, 49-53 | [10.1117/12.637003](https://doi.org/10.1117/12.637003) | `crossref: ok` |
+| 8 | **Li2B4O7** | Sugawara, Komatsu, Uda | 1998 | *Linear and nonlinear optical properties of lithium tetraborate* | Solid State Communications 107, 233-237 | [10.1016/S0038-1098(98)00190-2](https://doi.org/10.1016/S0038-1098(98)00190-2) | `crossref: ok` |
+| 9 | **CdGa2S4** | Kato, Umemura, Petrov | 2017 | *Sellmeier and thermo-optic dispersion formulas for CdGa 2 S 4 and their application to the nonlinear optics of Hg 1−x Cd x Ga 2 S 4* | Optics Communications 386, 49-52 | [10.1016/j.optcom.2016.10.054](https://doi.org/10.1016/j.optcom.2016.10.054) | `crossref: ok` |
+| 10 | **LiGaS2** | Kato, Miyata, Isaenko, Lobanov et al. | 2017 | *Phase-matching properties of LiGaS_2 in the 1025–105910  μm spectral range* | Optics Letters 42, 4363 | [10.1364/OL.42.004363](https://doi.org/10.1364/OL.42.004363) | `crossref: ok` |
+| 11 | **Mid-IR NLCs Master Review** | Petrov | 2012 | *Parametric down-conversion devices: The coverage of the mid-infrared spectral range by solid-state laser sources* | Optical Materials 34, 536-554 | [10.1016/j.optmat.2011.03.042](https://doi.org/10.1016/j.optmat.2011.03.042) | `crossref: ok` |
+| 12 | **Non-oxide NLCs Master Review** | Petrov | 2015 | *Frequency down-conversion of solid-state laser sources to the mid-infrared spectral range using non-oxide nonlinear crystals* | Progress in Quantum Electronics 42, 1-106 | [10.1016/j.pquantelec.2015.04.001](https://doi.org/10.1016/j.pquantelec.2015.04.001) | `crossref: ok` |
+| 13 | **La2CaB10O19 (LCB)** | Li, Li, Yu, Shan et al. | 2016 | *The optimal phase-matching angles for third harmonic generation of low symmetry nonlinear optical crystal La2CaB10O19* | Optical Materials 62, 366-371 | [10.1016/j.optmat.2016.10.023](https://doi.org/10.1016/j.optmat.2016.10.023) | `crossref: ok` |
+| 14 | **BiB3O6 (BIBO)** | Hellwig, Liebertz, Bohatý | 1998 | *Exceptional large nonlinear optical coefficients in the monoclinic bismuth borate BiB3O6 (BIBO)* | Solid State Communications 109, 249-251 | [10.1016/S0038-1098(98)00538-9](https://doi.org/10.1016/S0038-1098(98)00538-9) | `crossref: ok` |
+| 15 | **KNbO3** | Pack, Armstrong, Smith | 2003 | *Measurement of the χ^(2) tensor of the potassium niobate crystal* | Journal of the Optical Society of America B 20, 2109 | [10.1364/JOSAB.20.002109](https://doi.org/10.1364/JOSAB.20.002109) | `crossref: ok` |
+| 16 | **KTiOPO4, KTA, RTA, RTP** | Pack, Armstrong, Smith | 2004 | *Measurement of the χ^(2) tensors of KTiOPO_4, KTiOAsO_4, RbTiOPO_4, and RbTiOAsO_4 crystals* | Applied Optics 43, 3319 | [10.1364/AO.43.003319](https://doi.org/10.1364/AO.43.003319) | `crossref: ok` |
+| 17 | **GdCa4O(BO3)3, YCa4O(BO3)3** | Pack, Armstrong, Smith, Aka et al. | 2005 | *Measurement of the chi(2) tensor of GdCa4O(BO3)3 and YCa4O(BO3)3 crystals* | Journal of the Optical Society of America B 22, 417 | [10.1364/JOSAB.22.000417](https://doi.org/10.1364/JOSAB.22.000417) | `crossref: ok` |
+| 18 | **ADP, CuCl** | Jerphagnon, Kurtz | 1970 | *Optical Nonlinear Susceptibilities: Accurate Relative Values for Quartz, Ammonium Dihydrogen Phosphate, and Potassium Dihydrogen Phosphate* | Physical Review B 1, 1739-1744 | [10.1103/PhysRevB.1.1739](https://doi.org/10.1103/PhysRevB.1.1739) | `crossref: ok` |
+| 19 | **BaB2O4 (BBO)** | Shoji, Nakamura, Ohdaira, Kondo et al. | 1999 | *Absolute measurement of second-order nonlinear-optical coefficients of β-BaB_2O_4 for visible to ultraviolet second-harmonic wavelengths* | Journal of the Optical Society of America B 16, 620 | [10.1364/JOSAB.16.000620](https://doi.org/10.1364/JOSAB.16.000620) | `crossref: ok` |
+| 20 | **KBe2BO3F2 (KBBF)** | Chen, Wang, Wang, Xu | 2009 | *Deep-UV nonlinear optical crystal KBe2BO3F2—discovery, growth, optical properties and applications* | Applied Physics B 97, 9-25 | [10.1007/s00340-009-3554-4](https://doi.org/10.1007/s00340-009-3554-4) | `crossref: ok` |
+
+
+---
+
+### توضیحات تکمیلی و وضعیت رفع ابهامات:
+1. **Dolev et al. (2009):** شناسه DOI ثبت‌شده در فایل‌های قبلی به اشتباه `10.1007_s00340-009-3547-4` درج شده بود؛ بررسی مستقیم نشان داد DOI واقعی مقاله `10.1007/s00340-009-3502-3` در مجله *Applied Physics B* است (`crossref: ok`).
+2. **Sugawara et al. (1998):** شناسه قبلی `10.1016_s0921_5107_98_00234_7` مربوط به ژورنال دیگری بود؛ DOI واقعی `10.1016/S0038-1098(98)00190-2` در *Solid State Communications* تأیید شد (`crossref: ok`).
+3. **Ghosh (1992):** شناسه قبلی `10.1117_12.138865` اشتباه بود؛ DOI واقعی آن در مجموعه‌مقالات SPIE برابر `10.1117/12.637003` است (`crossref: ok`).
+4. **Petrov (2012):** مقاله مرجع پتروف در *Optical Materials* دارای DOI رسمی `10.1016/j.optmat.2011.03.042` می‌باشد (`crossref: ok`).
+5. **Zhai et al. (2013):** مقاله RBBF در *Optical Materials* دارای DOI رسمی `10.1016/j.optmat.2013.09.017` می‌باشد (`crossref: ok`).
