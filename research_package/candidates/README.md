@@ -35,11 +35,11 @@
 
 ### تسک ۳: اسکن جامع مجموعه مقالات (Task 3: Whole Collection Scan)
 * **اسکریپت اسکنر چندنخی:** [`candidates/run_scanner.py`](run_scanner.py) (کاملاً مستقل در پوشه candidates و مجهز به چک‌پوینت لحظه‌ای).
-* **تعداد مقالات اسکن‌شده در فاز اول:** **۱۰۳ مقاله** (شامل ۳۲ مقاله موجود در core، ۲۱ مقاله scratch و ۵۰ مقاله درایو).
+* **تعداد مقالات اسکن‌شده تا این مرحله:** **۱۷۶ مقاله** (شامل ۳۲ مقاله موجود در core، ۲۱ مقاله scratch و ۱۲۳ مقاله درایو).
 * **خروجی‌های استخراج‌شده:**
-  - [`candidates/scan_dij.jsonl`](scan_dij.jsonl): **۸۴ قطعه کاندید** تانسورهای غیرخطی $d_{ij}$ و $d_{eff}$ با ذکر شماره صفحه دقیق و نقل‌قول کامل.
-  - [`candidates/scan_thermo.jsonl`](scan_thermo.jsonl): **۲ قطعه کاندید** روابط و ضرایب گرما-نوری $dn/dT$.
-  - [`candidates/scan_sellmeier.jsonl`](scan_sellmeier.jsonl): **۱۶ قطعه کاندید** معادلات و ضرایب پاشندگی Sellmeier.
+  - [`candidates/scan_dij.jsonl`](scan_dij.jsonl): **۱۵۵ قطعه کاندید** تانسورهای غیرخطی $d_{ij}$ و $d_{eff}$ با ذکر شماره صفحه دقیق و نقل‌قول کامل.
+  - [`candidates/scan_thermo.jsonl`](scan_thermo.jsonl): **۴ قطعه کاندید** روابط و ضرایب گرما-نوری $dn/dT$.
+  - [`candidates/scan_sellmeier.jsonl`](scan_sellmeier.jsonl): **۲۹ قطعه کاندید** معادلات و ضرایب پاشندگی Sellmeier.
   - [`candidates/SCAN_SUMMARY.md`](SCAN_SUMMARY.md): جدول آماری مقالات و صفحات به تفکیک هر بلور.
 
 ---
@@ -57,7 +57,7 @@
 | :--- | :--- | :---: | :--- |
 | **Task 1: Audit** | `audit.jsonl` | **۹۶** | `candidate`: 86, `not_found`: 10 (کتاب‌ها/مقالاتی که متن PDF آن‌ها در درایو موجود نبود) |
 | **Task 2: Petrov** | `petrov_tables.jsonl` | **۳۷** | `candidate`: 37 (رونویسی دقیق ۱۰۰٪ سطربه‌سطر) |
-| **Task 3: Scan** | `scan_dij.jsonl`<br>`scan_thermo.jsonl`<br>`scan_sellmeier.jsonl` | **۸۴**<br>**۲**<br>**۱۶** | `candidate`: 102 (بدون تفسیر، حاوی شماره صفحه و نقل‌قول مستقیم) |
+| **Task 3: Scan** | `scan_dij.jsonl`<br>`scan_thermo.jsonl`<br>`scan_sellmeier.jsonl` | **۱۵۵**<br>**۴**<br>**۲۹** | `candidate`: 188 (بدون تفسیر، حاوی شماره صفحه و نقل‌قول مستقیم) |
 | **Task 4: Missing**| `missing_papers.md` | **۲۰** | `crossref: ok`: 20 (تماماً تأیید شده در پایگاه کراس‌رف) |
 
 ---
