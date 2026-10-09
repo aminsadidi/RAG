@@ -3,7 +3,9 @@
 // crystal of length L (Grice & Walmsley 1997; Mosley et al. 2008). From it: the joint spectral intensity,
 // the heralded-photon purity P = Tr ρ² = Σ λn² (the Schmidt decomposition, Law, Walmsley & Eberly 2000),
 // the Schmidt number K = 1/P, the marginal spectra, and the Hong–Ou–Mandel dip of the two photons.
-// Plane-wave pump, no focusing. Frequencies ν in THz (1/ps), wavelengths in µm, Δk in µm⁻¹.
+// The pump is a plane wave (sinc phase matching), or the pump and the two collection modes are collinear Gaussian
+// beams focused at the crystal centre with equal focal parameters ξ = L/(k w²) (Bennink 2010, Eqs. 11, 25, 27).
+// Frequencies ν in THz (1/ps), wavelengths in µm, Δk in µm⁻¹.
 import { TYPES, direction, eigenIndices } from "./phasematch.client.js";
 
 export const C_UM_PS = 299.792458; // c in µm/ps, so ν = c/λ is in THz
@@ -16,7 +18,9 @@ const grid = (c, step, n) => Array.from({ length: n }, (_, i) => c + (i - (n - 1
 // in the phase-matching tab; wave 1 takes the first polarization of the type) or pols ([pump, wave 1, wave 2],
 // each "s" or "f", e.g. ["s", "s", "s"] for type 0 along a principal axis), lp, l1, l2 (centre wavelengths, µm; 1/lp = 1/l1 + 1/l2), L_mm, pumpFwhmNm
 // (FWHM of the pump intensity spectrum), periodUm (QPM grating period; "auto" phase-matches the centre),
-// pm ("sinc", or "gauss": exp(−γ(ΔkL/2)²) with γ = 0.193, the sinc's Gaussian of equal FWHM), filterNm
+// pm ("sinc", or "gauss": exp(−γ(ΔkL/2)²) with γ = 0.193, the sinc's Gaussian of equal FWHM), xi (focal parameter
+// of Gaussian pump and collection modes, Bennink's F(ξ, Φ) instead of the sinc; Φ = ΔkL includes the Gouy shift,
+// so "auto" QPM then sets Φ = −1.04π at the centre, the peak of |F| at ξ = 2.84), filterNm
 // ([FWHM1, FWHM2] of Gaussian intensity filters, or null), n (grid points per axis), spanNm ([span1, span2]
 // of the grid, or null for an automatic span covering the pump and phase-matching widths).
 export function jointSpectrum(opts) {
@@ -26,7 +30,8 @@ export function jointSpectrum(opts) {
   const L = L_mm * 1000, nu1c = C_UM_PS / l1, nu2c = C_UM_PS / l2, nupc = C_UM_PS / lp;
   const dk = (nu1, nu2) => k(C_UM_PS / (nu1 + nu2), pols[0]) - k(C_UM_PS / nu1, pols[1]) - k(C_UM_PS / nu2, pols[2]);
   const dk0 = dk(nu1c, nu2c);
-  const kg = opts.periodUm === "auto" ? dk0 : opts.periodUm ? 2 * Math.PI / opts.periodUm : 0;
+  const xi = opts.xi || 0;
+  const kg = opts.periodUm === "auto" ? dk0 + (xi ? 1.04 * Math.PI / L : 0) : opts.periodUm ? 2 * Math.PI / opts.periodUm : 0;
   const mismatch = (nu1, nu2) => dk(nu1, nu2) - kg;
   // pump: intensity FWHM in ν from the FWHM in λ
   const dnup = C_UM_PS * pumpFwhmNm * 1e-3 / (lp * lp);
@@ -50,6 +55,12 @@ export function jointSpectrum(opts) {
     let amp = Math.exp(-2 * LN2 * s * s / (dnup * dnup));
     if (fil) amp *= Math.exp(-2 * LN2 * ((nu1[i] - nu1c) ** 2 / fil[0] ** 2 + (nu2[j] - nu2c) ** 2 / fil[1] ** 2));
     const x = mismatch(nu1[i], nu2[j]) * L / 2;
+    if (xi) {
+      // F is referred to the crystal centre; the factor e^{iΦ/2} refers it to the entrance face, as the sinc term below
+      const [fr, fi] = benninkF(xi, 2 * x, 60), c = Math.cos(x), sn = Math.sin(x);
+      re[i * n + j] = amp * (fr * c - fi * sn); im[i * n + j] = amp * (fr * sn + fi * c);
+      continue;
+    }
     const phi = pm === "gauss" ? Math.exp(-0.193 * x * x) : Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x;
     re[i * n + j] = amp * phi * Math.cos(x);
     im[i * n + j] = amp * phi * Math.sin(x);
@@ -113,6 +124,29 @@ export function hom({ n, nu1, nu2, re, im }, taus) {
     }
     return 0.5 * (1 - s / norm);
   });
+}
+
+// Bennink's spatial overlap factor F(ξ, Φ) = ∫₋₁¹ √ξ e^{iΦl/2}/(1 − iξl) dl (Eq. 27, with C ≈ 0): the phase-matching
+// function of focused collinear Gaussian modes; for ξ ≪ 1 it tends to 2√ξ sinc(Φ/2). Returns [re, im].
+export function benninkF(xi, Phi, m = 200) {
+  let re = 0, im = 0;
+  for (let k = 0; k <= 2 * m; k++) { // Simpson's rule on [−1, 1]
+    const l = k / m - 1, w = k === 0 || k === 2 * m ? 1 : k % 2 ? 4 : 2;
+    const c = Math.cos(Phi * l / 2), s = Math.sin(Phi * l / 2), d = 1 + xi * xi * l * l;
+    // e^{iΦl/2}(1 + iξl)/(1 + ξ²l²)
+    re += w * (c - s * xi * l) / d; im += w * (s + c * xi * l) / d;
+  }
+  const h = Math.sqrt(xi) / (3 * m);
+  return [re * h, im * h];
+}
+
+// Focusing of collinear Gaussian modes with ξp = ξs = ξi = ξ (Bennink 2010): waists w = √(L/(k ξ)) (µm, k in the
+// medium), the pair collection probability relative to its limit, arctan(ξ)/(π/2) (Eq. 40 with A₊B₊ = 4), and the
+// heralding ratios ηs = (ki/kp)(ks/kp + 1), ηi = (ks/kp)(ki/kp + 1) (Eq. 55).
+export function focusing({ xi, L_mm, kp, ks, ki }) {
+  const L = L_mm * 1000, w = (k) => Math.sqrt(L / (k * xi));
+  return { wp: w(kp), ws: w(ks), wi: w(ki), brightness: Math.atan(xi) / (Math.PI / 2),
+    etaS: ki / kp * (ks / kp + 1), etaI: ks / kp * (ki / kp + 1) };
 }
 
 // The transform-limited intensity FWHM (nm) of a Gaussian pulse of duration tauPs (intensity FWHM) at λ (µm).

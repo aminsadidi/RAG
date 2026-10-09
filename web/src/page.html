@@ -300,7 +300,7 @@ body{overflow-x:hidden}
 <section id="tab-spdc" hidden class="viz-root">
   <div class="card">
     <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
-    <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط، پمپ موج تخت، بدون کانونی‌کردن). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است.</p>
+    <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است.</p>
     <div class="row">
       <label>بلور <select id="spmat" style="max-width:300px"></select></label>
       <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
@@ -316,6 +316,10 @@ body{overflow-x:hidden}
       <label>یا پالس محدود به تبدیل <input id="sptau" type="number" step="any" placeholder="—" style="width:70px"> ps</label>
       <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="number" step="any" placeholder="بدون" style="width:70px"> nm</label>
       <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option></select></label>
+    </div>
+    <div class="row">
+      <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
+      <input id="spxi" type="number" step="any" value="2.84" style="width:64px">
     </div>
     <div class="row">
       <label>پیکربندی <select id="spcfg" style="max-width:420px"></select></label>
@@ -1638,7 +1642,7 @@ new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).o
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
 import { entryIndex } from "/dispersion.js";
 import { eigenIndices, direction, solveAll } from "/phasematch.js";
-import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, C_UM_PS } from "/spdc.js";
+import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, C_UM_PS } from "/spdc.js";
 
 const SP = { list: null };
 const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
@@ -1692,11 +1696,11 @@ function run() {
   setTimeout(() => {
     const j = jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
       L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value,
-      filterNm: fil > 0 ? [fil, fil] : null, n: 120 });
+      filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 90 : 120 });
     const { purity: P, schmidt: K } = purity(j), I = intensity(j);
     // the unfiltered sinc has long tails: also give P on a window twice as wide (same resolution)
     let P2 = null;
-    if ($("sppm").value === "sinc" && !(fil > 0)) {
+    if ($("sppm").value === "sinc" && !(fil > 0) && !$("spfoc").checked) {
       const nm = (nu) => Math.abs(C_UM_PS / nu[0] - C_UM_PS / nu[j.n - 1]) * 1000;
       P2 = purity(jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
         L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: "sinc",
@@ -1707,6 +1711,14 @@ function run() {
     const off = !o.qpm && Math.abs(j.dk0) * +$("spL").value * 1000 / 2 > 0.5;
     $("spres").innerHTML = `<b>P = ${P.toFixed(4)}</b>${P2 !== null ? ` (پنجره‌ی دوبرابر: ${P2.toFixed(4)})` : ""} &nbsp; K = ${K.toFixed(3)} &nbsp; FWHM₁ = ${w1.toFixed(3)} nm &nbsp; FWHM₂ = ${w2.toFixed(3)} nm`
       + (j.periodUm ? ` &nbsp; Λ = ${j.periodUm.toFixed(3)} µm` : "") + (off ? ` <span style="color:#c33">(در مرکز طیف Δk·L/2 = ${(j.dk0 * +$("spL").value * 500).toFixed(2)}؛ زاویه را بازبینی کنید)</span>` : "");
+    if ($("spfoc").checked) {
+      const xi = +$("spxi").value, dir = direction(o.plane, o.angle), idx = (lam, pol) => { const [sl, fa] = eigenIndices(spNAt(s)(lam), dir); return pol === "s" ? sl : fa; };
+      const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
+      const k = (lam, pol) => 2 * Math.PI * idx(lam, pol) / lam;
+      const f = focusing({ xi, L_mm: +$("spL").value, kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]) });
+      $("spres").innerHTML += `<br>ξ = ${xi}: کمر باریکه (شعاع 1/e² میدان) پمپ ${f.wp.toFixed(1)} µm، فوتون ۱ ${f.ws.toFixed(1)} µm، فوتون ۲ ${f.wi.toFixed(1)} µm؛ `
+        + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}`;
+    }
     drawJSI(I.jsi, j.n, lam1, lam2);
     drawHOM(j, l1, l2);
     $("spinfo").textContent = `شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`;

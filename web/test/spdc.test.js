@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex } from "../src/dispersion.client.js";
 import { solveAll } from "../src/phasematch.client.js";
-import { jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
+import { benninkF, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const source = (mat, label) => A.find((c) => c.material === mat).sources.find((s) => !label || s.label === label);
@@ -53,4 +53,48 @@ test("purity is 1 for a factorable amplitude and the grid is converged", () => {
   const n = 50, re = new Float64Array(n * n), im = new Float64Array(n * n);
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) re[i * n + j] = Math.exp(-(((i - 25) / 6) ** 2)) * Math.exp(-(((j - 20) / 9) ** 2));
   assert.ok(Math.abs(purity({ n, re, im }).purity - 1) < 1e-12);
+});
+
+test("Bennink 2010: focused Gaussian modes", () => {
+  const abs = ([a, b]) => Math.hypot(a, b);
+  // the peak of |F(ξ, Φ)| is 2.06… at ξ = 2.84…, Φ = −(1.04…)π (Eqs. 27, 29, 30)
+  let best = [0, 0, 0];
+  for (let xi = 2; xi <= 4; xi += 0.02) for (let ph = -1.3; ph <= -0.8; ph += 0.005) {
+    const v = abs(benninkF(xi, ph * Math.PI)); if (v > best[0]) best = [v, xi, ph];
+  }
+  assert.ok(Math.abs(best[0] - 2.06) < 0.01 && Math.abs(best[1] - 2.84) < 0.03 && Math.abs(best[2] + 1.04) < 0.01, `${best}`);
+  // weak focusing: F → 2√ξ sinc(Φ/2), whose |F|² has a FWHM in Φ of 0.886·2π (Fig. 3); it grows with ξ
+  const width = (xi) => { const ph = Array.from({ length: 2001 }, (_, k) => -40 + k * 0.04), y = ph.map((p) => abs(benninkF(xi, p)) ** 2);
+    const m = Math.max(...y), ins = ph.filter((p, k) => y[k] > m / 2); return (ins[ins.length - 1] - ins[0]) / (2 * Math.PI); };
+  assert.ok(Math.abs(width(0.02) - 0.886) < 0.01);
+  assert.ok(width(10) > 1.2 && width(10) < 2 && width(1) < width(10));
+  // heralding ratio 0.75 for degenerate SPDC with ξs = ξi = ξp (Eq. 55)
+  const f = focusing({ xi: 2.84, L_mm: 10, kp: 2, ks: 1, ki: 1 });
+  assert.ok(Math.abs(f.etaS - 0.75) < 1e-12 && Math.abs(f.etaI - 0.75) < 1e-12);
+  // Evans et al. 2010: the pump (776 nm) and signal (1552 nm) divergences of 13.1 and 18.4 mrad in their 20 mm
+  // PPKTP give equal focal parameters ξp ≈ ξs, Bennink's optimum (w = λ/(π θ), ξ = L/(k w²), k = 2πn/λ)
+  const s = source("KTiOPO4", "Kato"), n = nAtOf(s);
+  const xiOf = (lam, theta, nIdx) => { const w = lam / (Math.PI * theta); return 20000 / (2 * Math.PI * nIdx / lam * w * w); };
+  const xp = xiOf(0.776, 0.0131, n(0.776)[1]), xs = xiOf(1.552, 0.0184, n(1.552)[1]);
+  assert.ok(Math.abs(xp / xs - 1) < 0.05 && xp > 2 && xp < 6, `ξp = ${xp}, ξs = ${xs}`);
+  // with that focus the Schmidt number comes much closer to their predicted K = 1.06 than the plane-wave sinc
+  // (1.24–1.27): 1.12 here; the remainder may come from their (unstated) Sellmeier equations and pump model
+  const j = jointSpectrum({ nAt: n, plane: "xy", angle: 0, type: "IIb", lp: 0.776, l1: 1.552, l2: 1.552, L_mm: 20,
+    pumpFwhmNm: transformLimitedNm(0.776, 1.3), periodUm: "auto", xi: xp, n: 100 });
+  const K = purity(j).schmidt;
+  assert.ok(K > 1.06 && K < 1.15, `K = ${K}`);
+});
+
+test("focused JSA: the QPM period sets Φ = −1.04π at the centre, and purity stays converged", () => {
+  const s = source("KTiOPO4", "Kato"), lp = 0.776;
+  const run = (xi, n) => jointSpectrum({ nAt: nAtOf(s), plane: "xy", angle: 0, type: "IIb", lp, l1: 2 * lp, l2: 2 * lp, L_mm: 20,
+    pumpFwhmNm: transformLimitedNm(lp, 1.3), periodUm: "auto", xi, n });
+  const a = purity(run(2.84, 100)).purity, b = purity(run(2.84, 140)).purity;
+  assert.ok(Math.abs(a - b) < 5e-3 && a > 0.8 && a <= 1, `P = ${a}, ${b}`);
+  // weak focusing approaches the plane-wave sinc result
+  const pw = purity(run(0, 120)).purity, weak = purity(run(0.01, 120)).purity;
+  assert.ok(Math.abs(pw - weak) < 0.01, `${pw} vs ${weak}`);
+  // the HOM dip stays at the same delay with and without focusing (both referred to the entrance face)
+  const taus = Array.from({ length: 25 }, (_, k) => k * 0.25), dip = (j) => { const c = hom(j, taus); return taus[c.indexOf(Math.min(...c))]; };
+  assert.ok(Math.abs(dip(run(2.84, 120)) - dip(run(0, 120))) <= 0.5);
 });
