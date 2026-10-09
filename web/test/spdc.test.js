@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex } from "../src/dispersion.client.js";
 import { solveAll } from "../src/phasematch.client.js";
-import { benninkF, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
+import { benninkF, fiberCoupling, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const source = (mat, label) => A.find((c) => c.material === mat).sources.find((s) => !label || s.label === label);
@@ -97,4 +97,22 @@ test("focused JSA: the QPM period sets Φ = −1.04π at the centre, and purity 
   // the HOM dip stays at the same delay with and without focusing (both referred to the entrance face)
   const taus = Array.from({ length: 25 }, (_, k) => k * 0.25), dip = (j) => { const c = hom(j, taus); return taus[c.indexOf(Math.min(...c))]; };
   assert.ok(Math.abs(dip(run(2.84, 120)) - dip(run(0, 120))) <= 0.5);
+});
+
+test("Ljunggren & Tengner 2005: single-mode fibre coupling, 10 mm PPKTP, 532 → 810 + 1550 nm", () => {
+  const s = source("KTiOPO4", "Kato"), k = (lam) => 2 * Math.PI * entryIndex(s.axes.z, lam) / lam;
+  const base = { kp: k(0.532), ks: k(0.81), ki: k(1.55), L_mm: 10 };
+  // with only the rotationally symmetric part, as in the paper: γs = 98 % at ξp = 1.7, ξs = 2.3 and γi = 93 % at
+  // ξp = 0.9, ξi = 2.4 (Sec. III A)
+  const a = fiberCoupling({ ...base, xiP: 1.7, xiS: 2.3, xiI: 2.3, azimuthal: false, n: 80 });
+  const b = fiberCoupling({ ...base, xiP: 0.9, xiS: 2.4, xiI: 2.4, azimuthal: false, n: 80 });
+  assert.ok(Math.abs(a.gammaS - 0.98) < 0.03 && Math.abs(b.gammaI - 0.93) < 0.03, `γs = ${a.gammaS}, γi = ${b.gammaI}`);
+  // the signal's optimal fibre focus at ξp = 1.7 is near the paper's 2.3, in both models
+  for (const az of [false, true]) {
+    const g = [1.6, 2.3, 3.2].map((x) => fiberCoupling({ ...base, xiP: 1.7, xiS: x, xiI: x, azimuthal: az, n: 60 }).gammaS);
+    assert.ok(g[1] > g[0] && g[1] > g[2], `${az}: ${g}`);
+  }
+  // with all azimuthal modes the couplings are lower (0.82, 0.80), and γc ≤ min(γs, γi)
+  const f = fiberCoupling({ ...base, xiP: 1.7, xiS: 2.3, xiI: 2.3, n: 120 });
+  assert.ok(Math.abs(f.gammaS - 0.82) < 0.02 && Math.abs(f.gammaI - 0.80) < 0.02 && f.gammaC <= Math.min(f.gammaS, f.gammaI) + 2e-3, JSON.stringify(f));
 });
