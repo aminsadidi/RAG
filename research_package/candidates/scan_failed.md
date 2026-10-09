@@ -651,3 +651,6 @@
 
 	Cannot retrieve the public link of the file. You  |
 | `1-UI69PPTePj5cKdXaBRy5bz6huJfQpGA` | `10.1143-jjap.33.1959.pdf` | No extractable text found in any page (likely scanned image) |
+| `1GqtGqP9FUpo6IlHR0-vKHgSmJdlCTjlc` | `10.1021-jacs.6b13234.pdf` | Download failed or non-PDF response from Drive |
+| `1tkuhBKBbTeLFo2z3EPkoSeVJ-dgVCYlD` | `10.1063-1.373414.pdf` | Download failed or non-PDF response from Drive |
+| `1zMzv2VogwzBa_akqSSYIoDZFZvpwwKTc` | `10.1364-ol.34.000262.pdf` | Download failed or non-PDF response from Drive |
