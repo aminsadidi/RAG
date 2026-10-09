@@ -68,6 +68,9 @@ export function entryIndex(entry, lam) {
 // n(λ, T) = n(λ, t0) + thermoShift(...). "kato": dn/dT = Σ c·λ^p × 10⁻⁵ /°C, constant in T (the
 // piece covering λ, else the nearest); "ghosh": 2n·dn/dT = G(T)·R + H(T)·R², R = λ²/(λ² − λig²),
 // G and H in 10⁻⁶ /°C, polynomials in T (°C) integrated from t0 (Ghosh 1995).
+// "gayer": the Sellmeier equation of Gayer et al. (2008) and Dolev et al. (2009), whose coefficients
+// carry f = (T − t0)(T + t0 + 546.32); "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient
+// linear in T − t0, spec {c: [A, B, C, D], dc: [dA, dB, dC, dD]} (Zhang et al. 2013, CBO).
 export function thermoShift(form, spec, t0, n0, lam, T) {
   if (T === t0 || !Number.isFinite(T)) return 0;
   if (form === "kato") {
@@ -79,6 +82,10 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const integral = (poly) => poly.reduce((s, c, k) => s + c * (T ** (k + 1) - t0 ** (k + 1)) / (k + 1), 0);
     const R = lam * lam / (lam * lam - spec.lig_um ** 2);
     return (R * integral(spec.G) + R * R * integral(spec.H)) * 1e-6 / (2 * n0);
+  }
+  if (form === "sellmeier") {
+    const t = T - t0, [A, B, C, D] = spec.c.map((v, i) => v + (spec.dc[i] || 0) * t), l2 = lam * lam;
+    return Math.sqrt(A + B / (l2 - C) - D * l2) - n0;
   }
   if (form === "gayer") {
     const f = (T - t0) * (T + t0 + 546.32);

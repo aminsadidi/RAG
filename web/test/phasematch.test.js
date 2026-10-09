@@ -289,3 +289,12 @@ test("Li2B4O7, AgGaGeS4 and LiGaSe2: the papers' angles and d_eff", () => {
   assert.ok(Math.abs(deffWith("AgGaGeS4", "xy", "I", ag) - 5.43) < 0.1 * 5.43);
 });
 
+
+test("thermo-optic formulas: CBO, Zhang et al. 2013", () => {
+  // Type-II THG 1.064 + 0.532 → 0.355 µm in the x-y plane, φ calculated at six temperatures (p. 2)
+  const s = source("CsB3O5", "Zhang-2013");
+  for (const [T, phi] of [[27.8, 43.26], [40, 43.34], [90, 43.69], [140, 44.05], [160, 44.20], [190, 44.41]]) {
+    const v = solveAll(nAtTemp(s, T), s.kind, "sfg", 1.064, 0.532).find((r) => r.plane === "xy" && r.type === "IIb").angle;
+    assert.ok(Math.abs(v - phi) < 0.02, `CBO ${T} °C: ${v} vs ${phi}`);
+  }
+});
