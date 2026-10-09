@@ -31,3 +31,9 @@ starts, remind them of this file and start from it.
   month 4 trial with a few labs, then pricing.
 - Feature asked for: a "crystal page": one view with all papers, refractive index formulas, d tensor and
   thermo-optic data of a crystal.
+- 2026-10-09, idea to keep: Cloudflare Clef / Clef-flash (released 2026-10-01), open-weight decision models
+  (27B / 9B, Apache 2.0, on Workers AI and Hugging Face) that return a probability for every allowed option
+  of typed questions instead of free text; positioned as a replacement for Jev System One (TypeSafe). Possible
+  uses: routing a question to the right tab or tool, picking the crystal/process from a Persian question,
+  scoring whether a retrieved passage answers it. Workers AI free tier is 10,000 Neurons/day; Clef's cost per
+  request was not published when checked, so measure it with Clef-flash before relying on it.
