@@ -76,7 +76,8 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
   if (form === "kato") {
     const dist = (p) => Math.max(p.range_um[0] - lam, lam - p.range_um[1], 0);
     const piece = spec.reduce((best, p) => (dist(p) < dist(best) ? p : best));
-    return (T - t0) * piece.terms.reduce((s, [c, p]) => s + c * lam ** p, 0) * 1e-5;
+    const dT = T - t0; // dn/dT may carry a factor (1 + t_coef·ΔT), as for BiBO (Umemura et al. 2007)
+    return (dT + (piece.t_coef || 0) * dT * dT / 2) * piece.terms.reduce((s, [c, p]) => s + c * lam ** p, 0) * 1e-5;
   }
   if (form === "ghosh") {
     const integral = (poly) => poly.reduce((s, c, k) => s + c * (T ** (k + 1) - t0 ** (k + 1)) / (k + 1), 0);

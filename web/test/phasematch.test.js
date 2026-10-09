@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex, thermoShift } from "../src/dispersion.client.js";
-import { eigenIndices, effectiveD, fieldVectors, ncpmTemperatures, solveAll } from "../src/phasematch.client.js";
+import { deltaK, eigenIndices, effectiveD, fieldVectors, ncpmTemperatures, solveAll, waves } from "../src/phasematch.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const D = JSON.parse(readFileSync(new URL("../public/ri/dij.json", import.meta.url)));
@@ -296,5 +296,22 @@ test("thermo-optic formulas: CBO, Zhang et al. 2013", () => {
   for (const [T, phi] of [[27.8, 43.26], [40, 43.34], [90, 43.69], [140, 44.05], [160, 44.20], [190, 44.41]]) {
     const v = solveAll(nAtTemp(s, T), s.kind, "sfg", 1.064, 0.532).find((r) => r.plane === "xy" && r.type === "IIb").angle;
     assert.ok(Math.abs(v - phi) < 0.02, `CBO ${T} °C: ${v} vs ${phi}`);
+  }
+});
+
+test("thermo-optic formulas: BiBO, Umemura, Miyata, Kato 2007", () => {
+  // Table 1, x-z plane: calculated temperature bandwidths ΔT·l (FWHM, °C·cm) at the calculated angles; they fix
+  // the signs of Eq. (2) that the PDF text loses
+  const s = source("BiB3O6", "Umemura"), rad = Math.PI / 180;
+  const rows = [["shg", 1.3320, 0, 8.7, 4.2], ["shg", 1.2120, 0, 38.1, 16.6], ["shg", 1.0642, 0, 53.9, 12.2],
+    ["shg", 1.3422, 0, 46.4, 83.4], ["sfg", 1.6208, 1.0642, 8.2, 4.0], ["sfg", 1.6201, 1.0642, 37.0, 13.6],
+    ["sfg", 1.6201, 1.0642, 43.7, 34.4], ["sfg", 1.6201, 1.0642, 52.2, 60.5], ["sfg", 1.5333, 1.0642, 7.3, 3.8]];
+  for (const [p, a, b, ang, ref] of rows) {
+    const sol = solveAll(nAtTemp(s, 20), s.kind, p, a, b).filter((r) => r.plane === "xz")
+      .reduce((m, r) => (Math.abs(r.angle - ang) < Math.abs(m.angle - ang) ? r : m));
+    assert.ok(Math.abs(sol.angle - ang) < 0.25, `BiBO ${p} ${a}: angle ${sol.angle} vs ${ang}`);
+    const w = waves(p, a, b), dk = (T) => deltaK(nAtTemp(s, T), "xz", sol.angle * rad, w, sol.type);
+    const v = 2 * 2.78312 / Math.abs((dk(21) - dk(19)) / 2) / 1e4;
+    assert.ok(Math.abs(v - ref) < 0.03 * ref, `BiBO ${p} ${a} ${b}: ${v} vs ${ref}`);
   }
 });
