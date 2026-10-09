@@ -116,6 +116,8 @@ test("IR crystals: d_eff against the expressions of Petrov et al. 2004 and Kaind
   check("Ag3AsS3", "shg", 4.0, 0, "I", (t) => 10.4 * Math.sin(t) + 16.6 * Math.cos(t), 0.03);
   // CdGeAs2 (−42m): d_eeo = d36 sin2θ cos2φ
   check("CdGeAs2", "shg", 10.6, 0, "I", (t) => 186 * Math.sin(2 * t), 0.03);
+  // ZnSiAs2 (−42m), Boyd et al. 1972 on the GaAs scale of Petrov 2015
+  check("ZnSiAs2", "shg", 8.0, 0, "I", (t) => 68.4 * Math.sin(2 * t), 0.03);
   // RBBF (32), Chen et al. 2009: d_ooe = d11 cos θ cos3φ; Li2B4O7 (4mm), Sugawara et al. 1998: d_ooe = d31 sin θ
   check("RbBe2BO3F2", "shg", 0.532, 0, "I", (t) => 0.45 * Math.cos(t), 0.06); // walk-off ≈ 3°
   check("Li2B4O7", "shg", 0.532, 0, "I", (t) => 0.15 * Math.sin(t), 0.03);
