@@ -8,6 +8,7 @@ Scans all papers (~2,000 papers: 34 core + scratch + 1,960 drive papers) for:
 
 Features:
   - Broad pattern matching as specified by guidelines
+  - Robust Google Drive direct curl download with %PDF header verification
   - Captures verbatim quote (sentence + next line) AND raw_quote
   - Checkpoints after every paper to candidates/scan_checkpoint.json
   - Logs unextractable/failed papers to candidates/scan_failed.md
@@ -25,7 +26,6 @@ import threading
 import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import pypdf
-import gdown
 
 BASE_DIR = "/home/aminsadidi11584/RAG"
 CANDIDATES_DIR = os.path.join(BASE_DIR, "research_package/candidates")
@@ -48,11 +48,6 @@ LOCK = threading.RLock()
 # ---------------------------------------------------------------------------
 # BROAD PATTERNS AS REQUESTED
 # ---------------------------------------------------------------------------
-# 1. Thermo-optic:
-# dn/dT, dn_o/dT, dn_e/dT, dnx/dT, dny/dT, dnz/dT, ∂n/∂T, "thermo-optic", "thermooptic",
-# "thermo-optical", "temperature dependence of the refractive", "temperature-dependent Sellmeier",
-# "temperature dispersion", "noncritical phase-matching temperature", "phase-matching temperature",
-# "temperature tuning", "×10-5 /°C", "10^-5 K^-1", "10−6 /K", "°C−1", "K−1", etc.
 RE_THERMO = re.compile(
     r'(?:dn_?[oexyz]?\s*/\s*dT|∂n/∂T|thermo[- ]?optic(?:al)?|'
     r'temperature\s+dependence\s+of\s+(?:the\s+)?refractive|'
@@ -64,10 +59,6 @@ RE_THERMO = re.compile(
     re.IGNORECASE
 )
 
-# 2. Nonlinear coefficients d_ij / deff:
-# "pm/V", "pmV", "esu", "relative to d36(KDP)", "relative to d11 (quartz)",
-# "d_eff", "deff", "nonlinear coefficient", "nonlinear optical coefficient",
-# "second-order susceptibility", "χ(2)"
 RE_DIJ = re.compile(
     r'(?:pm\s*/\s*V|pm\s*V|\besu\b|'
     r'relative\s+to\s+(?:d_?36\s*\(?KDP\)?|d_?11\s*\(?quartz\)?|KDP|quartz)|'
@@ -78,8 +69,6 @@ RE_DIJ = re.compile(
     re.IGNORECASE
 )
 
-# 3. Sellmeier dispersion formulas:
-# "Sellmeier", "dispersion formula", "dispersion equation", "n^2 =", "n2 =", "n²(λ)"
 RE_SELLMEIER = re.compile(
     r'(?:Sellmeier|dispersion\s+formula|dispersion\s+equation|'
     r'refractive\s+index\s+formula|'
@@ -88,6 +77,21 @@ RE_SELLMEIER = re.compile(
 )
 
 RE_NUMBER = re.compile(r'[-+]?\d*\.?\d+(?:[eE][-+]?\d+)?')
+
+
+def download_drive_file(file_id, output_path):
+    """Directly download PDF using curl with redirect following and verify %PDF header."""
+    try:
+        url = f"https://drive.google.com/uc?id={file_id}&export=download"
+        subprocess.run(["curl", "-s", "-L", url, "-o", output_path], timeout=40)
+        if os.path.exists(output_path) and os.path.getsize(output_path) > 1000:
+            with open(output_path, "rb") as f:
+                header = f.read(4)
+            if header == b"%PDF":
+                return True
+    except Exception:
+        pass
+    return False
 
 
 def load_checkpoint():
@@ -121,7 +125,7 @@ def log_failed(doc_id, filename, reason):
                 f.write("# Failed Paper Extractions (scan_failed.md)\n\n")
                 f.write("| doc_id | File Name | Reason |\n")
                 f.write("| :--- | :--- | :--- |\n")
-            f.write(f"| `{doc_id}` | `{filename}` | {reason} |\n")
+            f.write(f"| `{doc_id}` | `{filename}` | {reason.replace(chr(10), ' ')} |\n")
 
 
 def extract_passage(lines, idx):
@@ -265,7 +269,7 @@ def scan_single_pdf(pdf_path, meta, ckpt):
                 "dij_pages": {},
                 "thermo_pages": {},
                 "sellm_pages": {},
-                "promising_papers": {}  # doc_id: {"filename": fn, "numeric_count": count, "pages": [...]}
+                "promising_papers": {}
             }
 
         st = stats[mat]
@@ -353,7 +357,7 @@ def run_collection_scan(batch_limit=200):
     for sf in scratch_files:
         fn = os.path.basename(sf)
         doc_id = fn.replace(".pdf", "")
-        if doc_id in scanned_set or fn in scanned_set or "tmp" in fn:
+        if doc_id in scanned_set or fn in scanned_set or "scan_" in fn:
             continue
         meta = {"doc_id": doc_id, "filename": fn, "material": "scratch"}
         scan_single_pdf(sf, meta, ckpt)
@@ -378,11 +382,11 @@ def run_collection_scan(batch_limit=200):
                     os.remove(tmp_pdf)
                 except Exception:
                     pass
-            gdown.download(id=item["id"], output=tmp_pdf, quiet=True)
-            if os.path.exists(tmp_pdf) and os.path.getsize(tmp_pdf) > 400:
+            ok = download_drive_file(item["id"], tmp_pdf)
+            if ok:
                 scan_single_pdf(tmp_pdf, item, ckpt)
             else:
-                log_failed(item["id"], item["filename"], "Download returned empty or failed file")
+                log_failed(item["id"], item["filename"], "Download failed or non-PDF response from Drive")
                 with LOCK:
                     ckpt["scanned_ids"].append(item["id"])
                     save_checkpoint(ckpt)
