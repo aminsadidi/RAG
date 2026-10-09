@@ -11,7 +11,7 @@
 #                 n² = a0 + b0·f + (a1 + b1·f)/(λ² − (a2 + b2·f)²) + (a3 + b3·f)/(λ² − (a4 + b4·f)²) − a5·λ²;
 #                 f_c replaces 546.32 (Edwards & Lawrence 1984 write 546).
 #   form "bhar":  n² = A + B/(1 − C/λ²) + D/(1 − E/λ²) with A, B, C, D = m·T + c (T in °C) and E constant
-#                 (Bhar & Ghosh 1979); Δn = n(T) − n(t0) of that equation.
+#                 (Bhar & Ghosh 1979); Δn = n(T) − n(t0) of that equation. kelvin: true when T is in K.
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
 #                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8).
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
@@ -312,3 +312,15 @@
   axes:
     o: {m: [1.919e-3, -1.645e-3, 7.607e-5, 2.756e-4], c: [3.871, 2.337, 0.1134, 1.542], E: 738.43}
     e: {m: [1.668e-3, -1.376e-3, 8.928e-5, 2.096e-4], c: [4.285, 1.894, 0.1346, 1.753], E: 738.43}
+
+- material: NH4H2PO4
+  source: Ghosh-1982
+  doc_id: 10.1109_jqe.1982.1071501
+  cite: "Ghosh & Bhar (1982)"
+  pdf_page: 2
+  where: "Table II: A, B, C, D linear in T (K), E = 30 µm², fitted to the Sellmeier coefficients of Table I (150, 201, 300 K); with the 300 K row of Table I. Reproduces the calculated NCPM temperatures and angles of Table III to the paper's ±4 °C. Its KDP and KD*P equations are not used: they miss the paper's own KDP temperatures by 10–15 °C and the KD*P type-II angle by 5°"
+  t0_c: 26.85
+  form: bhar
+  axes:
+    o: {m: [-0.87835e-3, 0.72007e-3, -1.40526e-5, -1.179e-4], c: [1.69960, 0.64955, 0.01723, 1.10624], E: 30.0, kelvin: true}
+    e: {m: [-0.01089e-3, 0.00514e-3, -0.02471e-5, -0.00999e-4], c: [1.42036, 0.74453, 0.01300, 0.42033], E: 30.0, kelvin: true}

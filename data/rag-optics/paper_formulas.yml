@@ -473,3 +473,15 @@
     - {direction: x, points: [[1.064, 2.1196]], tol: 5.0e-4}
     - {direction: y, points: [[1.064, 2.2198]], tol: 5.0e-4}
     - {direction: z, points: [[1.064, 2.2570]], tol: 1.0e-3}
+
+- material: NH4H2PO4
+  name: NH4H2PO4 (Ammonium dihydrogen phosphate, ADP)
+  doc_id: 10.1109_jqe.1982.1071501
+  reference: "Ghosh & Bhar (1982). Temperature dispersion in ADP, KDP, and KD*P for nonlinear devices. IEEE J. Quantum Electron. 18, 143. doi:10.1109/jqe.1982.1071501"
+  doi: 10.1109/jqe.1982.1071501
+  pdf_page: 2
+  where: "Table I, n² = A + B/(1 − C/λ²) + D/(1 − E/λ²), E = 30 µm², at 300 K, fitted to the indices of Zernike and others (range of Zernike's data); temperature dependence in thermo_optic.yml"
+  entries:
+    - {page: Ghosh-1982, direction: o, type: 4, coefficients: [1.446791, 0.854884, 2, 0.013094, 1, 1.071368, 2, 30.0, 1, 0, 2], range_um: [0.2138, 1.529]}
+    - {page: Ghosh-1982, direction: e, type: 4, coefficients: [1.417093, 0.746071, 2, 0.012929, 1, 0.420032, 2, 30.0, 1, 0, 2], range_um: [0.2138, 1.529]}
+  checks: []  # checked in the test: the calculated NCPM temperatures of Table III

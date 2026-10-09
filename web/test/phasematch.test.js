@@ -398,3 +398,18 @@ test("thermo-optic formulas of Bhar & Ghosh (1979): Table II reproduces the high
     }
   }
 });
+
+test("thermo-optic formula of ADP, Ghosh & Bhar (1982): Table III, 'Our calculated'", () => {
+  const s = source("NH4H2PO4", "Ghosh-1982");
+  const T = (p, a, b) => ncpmTemperatures((t) => nAtTemp(s, t), s.kind, p, a, b, null, [-200, 200]).find((r) => r.pol.join("") === "yyz")?.T;
+  // 90° type-I SHG and SFG, within the paper's ΔT' (±4 °C); "1.06 FHG" is SHG of 0.532 µm
+  for (const [p, a, b, ref] of [["shg", 0.532, 0, 48], ["shg", 0.4965, 0, -96], ["shg", 0.5017, 0, -70], ["shg", 0.5145, 0, -13],
+    ["sfg", 0.347, 0.78, -21], ["sfg", 0.347, 0.86, 66], ["sfg", 1.064, 0.302, 96]]) {
+    assert.ok(Math.abs(T(p, a, b) - ref) < 4, `ADP ${p} ${a} ${b}: ${T(p, a, b)} vs ${ref} °C`);
+  }
+  // type-I SHG at 20 °C: 70° at 0.56 µm to 58° at 0.63 µm
+  for (const [lam, ang] of [[0.56, 70], [0.63, 58]]) {
+    const v = solveAll(nAtTemp(s, 20), s.kind, "shg", lam, 0).find((r) => r.type === "I").angle;
+    assert.ok(Math.abs(v - ang) < 1.5, `ADP SHG ${lam} µm: ${v}° vs ${ang}°`);
+  }
+});
