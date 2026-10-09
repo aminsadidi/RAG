@@ -1,6 +1,6 @@
 # خلاصه اسکن جامع مقالات اپتیک غیرخطی (Task 3 Summary)
 
-گزارش استخراج کاندیداها از مجموعه مقالات MatRAG (تعداد مقالات اسکن شده: 816).
+گزارش استخراج کاندیداها از مجموعه مقالات MatRAG (تعداد مقالات اسکن شده: 1013).
 
 ## ۱. آمار قطعات کاندید به تفکیک بلورها
 
@@ -12,13 +12,17 @@
 | `AgGaS2` | 50 | 102 | 33 | 31 | **166** |
 | `KDP_DKDP_KH2PO4` | 45 | 86 | 11 | 46 | **143** |
 | `BiBO_BiB3O6` | 39 | 87 | 22 | 29 | **138** |
+| `LiInS2_LiGaS2_LiInSe2` | 35 | 59 | 40 | 32 | **131** |
+| `ZGP_ZnGeP2` | 45 | 66 | 21 | 43 | **130** |
 | `LiTaO3_LT_PPLT` | 48 | 49 | 35 | 39 | **123** |
 | `KNbO3` | 49 | 65 | 29 | 27 | **121** |
 | `AgGaSe2` | 43 | 77 | 20 | 22 | **119** |
 | `CLBO_CsLiB6O10` | 35 | 48 | 19 | 26 | **93** |
 | `LiIO3_alpha-HIO3` | 49 | 67 | 9 | 14 | **90** |
 | `AgGaGeS4_HgGa2S4_others` | 37 | 46 | 17 | 23 | **86** |
+| `GaSe_GaS` | 40 | 42 | 9 | 20 | **71** |
 | `RTP_RbTiOPO4` | 36 | 26 | 15 | 26 | **67** |
+| `CdSiP2_CSP` | 26 | 33 | 11 | 21 | **65** |
 | `BaGa4Se7_BaGa4S7` | 20 | 30 | 7 | 26 | **63** |
 | `KTA_RTA_arsenates` | 33 | 25 | 9 | 27 | **61** |
 | `KBBF_KBe2BO3F2` | 20 | 42 | 0 | 17 | **59** |
@@ -26,7 +30,9 @@
 | `SBN_BaTiO3_ferroelectrics` | 48 | 19 | 11 | 20 | **50** |
 | `petrov2015` | 1 | 26 | 13 | 4 | **43** |
 | `dolev2009` | 1 | 7 | 5 | 10 | **22** |
+| `CdSe_CdS_ZnS` | 51 | 3 | 10 | 7 | **20** |
 | `ADP_NH4H2PO4` | 7 | 13 | 4 | 2 | **19** |
+| `GaAs_OP-GaAs_AlGaAs` | 11 | 1 | 9 | 6 | **16** |
 | `ghotbi2004` | 1 | 9 | 0 | 3 | **12** |
 | `tzankov2005` | 1 | 11 | 0 | 0 | **11** |
 | `kato2018` | 1 | 0 | 5 | 5 | **10** |
@@ -47,7 +53,6 @@
 | `hellwig1998` | 1 | 3 | 0 | 0 | **3** |
 | `ljunggren2005` | 1 | 0 | 0 | 2 | **2** |
 | `pack2004` | 1 | 2 | 0 | 0 | **2** |
-| `CdSe_CdS_ZnS` | 11 | 0 | 1 | 1 | **2** |
 | `bennink2010` | 1 | 1 | 0 | 0 | **1** |
 | `gayer2010` | 1 | 0 | 0 | 1 | **1** |
 | `evans2010` | 1 | 0 | 0 | 0 | **0** |
@@ -117,6 +122,24 @@
 | `1JdflJ83eJnWNJFPfO7iYMgtK4aN97R4I` | `10.1007-s00340-005-1898-y.pdf` | ص 1, 2, 3, 4, 5, 6, 7, 8 | 29 |
 | `1ryBDflZIjowNyvDoeU1runnbE-sVZK6s` | `10.1007-s00339-005-3443-6.pdf` | ص 2, 3, 4, 6 | 20 |
 
+### بلور `LiInS2_LiGaS2_LiInSe2`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1OUuVP2aouk3rKfHgJb5F6LxmwIE21Mha` | `10.1364-josab.27.001902.pdf` | ص 5, 6, 7, 8, 9, 10, 11, 12 | 119 |
+| `1R54I8FgktRE33iW9oE5BQEvkEXalAXQa` | `2004_Fossier_Optical_vibrational_thermal_electrical_damage_and_phase-matching_prope_4479e0.pdf` | ص 2, 4, 5, 9, 10, 11, 12, 13 | 83 |
+| `1YUwSHuMC7fnlcO9UjbWNTUEotoIyUB0S` | `10.1002-adfm.202200231.pdf` | ص 1, 2, 3, 5, 7 | 36 |
+| `1Yxynh61azTetMNHs0iKWLzYKKQZxHDdP` | `10.1063-1.1784616.pdf` | ص 1, 2, 4, 5, 6, 7 | 35 |
+| `1nPJuteK3dhcqUTX5jeCF4Rdc1tWy_tiV` | `10.1039-d0nr09146d.pdf` | ص 1, 2, 6, 7, 8, 9 | 26 |
+
+### بلور `ZGP_ZnGeP2`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1Nzy5IHTV1pIlovz4bk9YAQWOZnP5hzGF` | `10.1063-1.1653673.pdf` | ص 2, 3, 4, 5 | 28 |
+| `1k1T0ECTpKvP2YI_66FDNCP6RjGsBzFob` | `10.1364-josab.33.000d36.pdf` | ص 1, 2, 3, 4, 5, 6, 7, 8 | 25 |
+| `1Hgm2196DXXBjHxk6KyEf6zTnwXgtJxsV` | `10.1364-josab.10.001723.pdf` | ص 4, 5 | 19 |
+| `1bYyeitGbBTmVi_uUq7qDc0BHwBEUUa-m` | `10.1007-s00340-019-7347-0.pdf` | ص 1, 4, 5 | 17 |
+| `17nKABKFc_1A8jbzlmedfA_Im3UcmaG7Z` | `10.1063-1.364075.pdf` | ص 1, 2, 5, 6, 7 | 17 |
+
 ### بلور `LiTaO3_LT_PPLT`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
@@ -171,6 +194,15 @@
 | `1w6f4YJEvjkuNBwWegg7Lz5s1nhf8Hsbc` | `10.1016-j.optmat.2004.04.007.pdf` | ص 3, 4, 5, 6 | 17 |
 | `1mH1wqj8D8nhCTMXBl9ECFgLa_mfMx1Fq` | `10.1143-jjap.40.3195.pdf` | ص 2, 3, 4, 5 | 17 |
 
+### بلور `GaSe_GaS`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1TJxS7ylR7IhDEJHuT9U60itZezHDEzu0` | `10.1021-cm504195x.pdf` | ص 1, 3, 6, 7, 8 | 42 |
+| `1eFdMKyGBc3WQaBvAeKNPxOHniPs8bnvi` | `10.1134-s1054660x09050375.pdf` | ص 1, 2, 5, 6, 7, 8, 9 | 25 |
+| `1883EYMQdgVg4Qu-H1dzyCKzzklM7B6iI` | `10.1021-ic202202j.pdf` | ص 1, 4, 5, 6 | 23 |
+| `15DQachNiFjJfGeNX8jDAUDJSOyZgGtID` | `10.1021-acs.chemmater.7b03143.pdf` | ص 1, 3, 7, 8 | 16 |
+| `1EeaUJVNEg_hoWe1QcM_GP4EXGoLv5PyD` | `10.1021-ic1006742.pdf` | ص 1, 5 | 16 |
+
 ### بلور `RTP_RbTiOPO4`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
@@ -179,6 +211,15 @@
 | `18_iKSh2gzJjKiWHuuPAqySo4WlggWsnI` | `10.1007-s00340-004-1498-2.pdf` | ص 1, 3, 4, 5 | 17 |
 | `1olToN44a8psUD42b17tnGCG0hJHG4Mfk` | `10.1016-j.optmat.2009.03.012.pdf` | ص 1, 2, 3 | 11 |
 | `1hmk3TWcHv6gtPptgfBmOQjLmqL8Ecqzc` | `10.1016-s0925-3467(02)00359-2.pdf` | ص 1, 2, 4, 5, 6, 7 | 11 |
+
+### بلور `CdSiP2_CSP`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1SSpdyvKTsZ-BOHJk_ljvipnSNz35FRZP` | `2021_Szabados_Fine_structure_of_second-harmonic_resonances_in_χ2_optical_microresona_49e664.pdf` | ص 1, 2, 5, 7, 8, 9, 10, 11 | 64 |
+| `1DH5SK6oBc1fpV8JdzTQ9E6p1T9E-DNY4` | `10.1021-acsaom.3c00070.pdf` | ص 1, 2, 3, 4, 5, 6 | 44 |
+| `1_H2ZZkrwcxW91dGLBt7zc8e1KqCmutWe` | `10.1016-j.jallcom.2019.06.166.pdf` | ص 4, 5 | 35 |
+| `1hGM6UE8KBjqnadCGQV0mmYK6EpBZ0ayU` | `10.1142-s0218863526500128.pdf` | ص 2, 3, 6, 11, 14, 15 | 33 |
+| `132scRMJNbr2Og8Hwz99cVEsZC6W6ERqr` | `10.1063-1.3590136.pdf` | ص 1, 2, 3 | 18 |
 
 ### بلور `BaGa4Se7_BaGa4S7`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
@@ -235,6 +276,15 @@
 | :--- | :--- | :--- | :---: |
 | `dolev2009` | `dolev2009.pdf` | ص 1, 2, 3, 4, 5, 6, 7, 8 | 59 |
 
+### بلور `CdSe_CdS_ZnS`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1riUj8Ucq6fjGC02RYquOdlxgirR5qrhC` | `10.1088-1464-4258-11-10-105201.pdf` | ص 1, 2, 3, 4, 5, 6, 7, 8 | 20 |
+| `1K1vZup99_SyPzGAMB-y9m5CmNGgMoOdT` | `10.1364-ol.28.001957.pdf` | ص 1, 2, 3 | 9 |
+| `1FrMrpqstbDlMxeSZfqVQpVRTluPZMf9G` | `10.1364-ao.32.004223.pdf` | ص 2, 3, 4, 5 | 6 |
+| `1sf60rQplEDDrl49KK550mPsyPAnCMt_u` | `10.1021-j100136a013.pdf` | ص 4 | 5 |
+| `1xnyYaq2i96KVPPV5noxKDY5wn7vWGUv5` | `10.1002-pssb.2220900108.pdf` | ص 6 | 3 |
+
 ### بلور `ADP_NH4H2PO4`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
@@ -243,6 +293,13 @@
 | `1ah100Vs1Lt6JSalyGyFJnstFdXufU6k0` | `2013_Ji_Non-critical_phase-matching_fourth_harmonic_generation_of_a_1053-nm_la_865079.pdf` | ص 1, 2, 3, 4, 5 | 8 |
 | `1s3Pjva6RKhF5V7Y9ADGM7Uoy7Wts9lqt` | `10.1364-ol.38.001679.pdf` | ص 2 | 3 |
 | `11HUkOe_D7tGnWytN_lr72ma17h4t2j1m` | `10.1364-ol.41.005823.pdf` | ص 3 | 1 |
+
+### بلور `GaAs_OP-GaAs_AlGaAs`
+| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
+| :--- | :--- | :--- | :---: |
+| `1DB5L8SEBLsyLzQhEg53ltkW5-r9MFkze` | `10.1063-1.1621740.pdf` | ص 1, 2, 4, 6, 7, 8, 9 | 20 |
+| `1yMCdUYt8u4ASS9DtY2riVQ-Zqlz7agDB` | `10.1063-1.1308529.pdf` | ص 1, 2, 3, 4 | 6 |
+| `1nMJgRmIRoVJNjTqZciVS_j0jyzcMJwQS` | `10.1063-1.1653912.pdf` | ص 2 | 0 |
 
 ### بلور `ghotbi2004`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
@@ -343,12 +400,6 @@
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
 | :--- | :--- | :--- | :---: |
 | `pack2004` | `pack2004.pdf` | ص 3, 5 | 4 |
-
-### بلور `CdSe_CdS_ZnS`
-| شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
-| :--- | :--- | :--- | :---: |
-| `1xnyYaq2i96KVPPV5noxKDY5wn7vWGUv5` | `10.1002-pssb.2220900108.pdf` | ص 6 | 3 |
-| `1MAuAxv9eyaAje07ZKL2E239GXIjRyVQi` | `10.1002-pssb.2220700139.pdf` | ص 4 | 1 |
 
 ### بلور `bennink2010`
 | شناسه مقاله (doc_id) | نام فایل PDF | صفحات حاوی کاندیدا | امتیاز تراکم مقادیر عددی |
