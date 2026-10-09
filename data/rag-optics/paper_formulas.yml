@@ -445,3 +445,31 @@
     - {page: Mikami-2009, direction: y, type: 4, coefficients: [4.76892, 0.04490, 0, 0.05130, 1, 221.3309, 0, 134.2832, 1], range_um: [0.5321, 3.1842]}
     - {page: Mikami-2009, direction: z, type: 4, coefficients: [7.97109, 0.06079, 0, 0.05968, 1, 1234.6913, 0, 269.8094, 1], range_um: [0.5321, 3.1842]}
   checks: []  # checked in the test against the temperature bandwidths of Table 1
+
+- material: LiNbO3
+  name: LiNbO3 (Lithium niobate, congruent)
+  doc_id: 10.1007_bf00620081
+  reference: "Edwards & Lawrence (1984). A temperature-dependent dispersion equation for congruently grown lithium niobate. Opt. Quantum Electron. 16, 373. doi:10.1007/bf00620081"
+  doi: 10.1007/bf00620081
+  pdf_page: 2
+  where: "Table I, Eq. (2) at T0 = 24.5 °C (F = 0), fitted to the indices of Nelson & Mikulyak, 0.4–4 µm; temperature dependence in thermo_optic.yml"
+  entries:
+    - {page: Edwards-1984, direction: o, type: 4, coefficients: [4.9048, 0.11775, 0, 0.21802, 2, 0, 0, 0, 1, -0.027153, 2], range_um: [0.4, 4.0]}
+    - {page: Edwards-1984, direction: e, type: 4, coefficients: [4.5820, 0.09921, 0, 0.21090, 2, 0, 0, 0, 1, -0.021940, 2], range_um: [0.4, 4.0]}
+  checks: []  # checked in the test: the NCPM temperatures of Table II
+
+- material: KNbO3
+  name: KNbO3 (Potassium niobate)
+  doc_id: 10.1063_1.112444
+  reference: "Ghosh (1994). Dispersion of thermo-optic coefficients in a potassium niobate nonlinear crystal. Appl. Phys. Lett. 65, 3311. doi:10.1063/1.112444"
+  doi: 10.1063/1.112444
+  pdf_page: 1
+  where: "Table I, n² = A + B/(1 − C/λ²) + D/(1 − E/λ²) at 22 °C, fitted to the indices of Zysset et al. (0.4–3.4 µm); n_c, n_a, n_b are nx, ny, nz (x the polar axis); temperature dependence in thermo_optic.yml"
+  entries:
+    - {page: Ghosh-1994, direction: x, type: 4, coefficients: [2.5605749, 1.8596424, 2, 0.054154821, 1, 4.6675402, 2, 250, 1, 0, 2], range_um: [0.4, 3.4]}
+    - {page: Ghosh-1994, direction: y, type: 4, coefficients: [2.5499454, 2.2847207, 2, 0.056363148, 1, 6.0453039, 2, 250, 1, 0, 2], range_um: [0.4, 3.4]}
+    - {page: Ghosh-1994, direction: z, type: 4, coefficients: [2.6318668, 2.3549226, 2, 0.064391208, 1, 6.8615403, 2, 250, 1, 0, 2], range_um: [0.4, 3.4]}
+  checks:  # the indices Pack et al. (2003, Table 3) measured at 1.064 µm
+    - {direction: x, points: [[1.064, 2.1196]], tol: 5.0e-4}
+    - {direction: y, points: [[1.064, 2.2198]], tol: 5.0e-4}
+    - {direction: z, points: [[1.064, 2.2570]], tol: 1.0e-3}
