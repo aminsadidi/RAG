@@ -94,6 +94,11 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const n2 = (t) => { const [A, B, C, D] = spec.c.map((c, i) => c + spec.m[i] * (t + k)); return A + B / (1 - C / l2) + D / (1 - spec.E / l2); };
     return Math.sqrt(n2(T)) - Math.sqrt(n2(t0));
   }
+  if (form === "mangin") { // β = (1/n)dn/dT = (c0 + c1·T) × 10⁻⁶, T in °C, c_j = [a + b/(λ²−C) + d/(λ²−E) + e/(λ²−E)²]/(2n0²),
+    // n(T) = n0·exp(∫β dT) from t0 (Mangin et al. 2009, Eqs. 7–9)
+    const l2 = lam * lam, c = (k) => (k[0] + k[1] / (l2 - spec.C) + k[2] / (l2 - spec.E) + k[3] / (l2 - spec.E) ** 2) / (2 * n0 * n0);
+    return n0 * Math.expm1((c(spec.c0) * (T - t0) + c(spec.c1) * (T * T - t0 * t0) / 2) * 1e-6);
+  }
   if (form === "gayer") {
     const f = (T - t0) * (T + t0 + (spec.f_c ?? 546.32));
     const { a, b } = spec;
