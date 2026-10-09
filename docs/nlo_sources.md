@@ -42,3 +42,24 @@ Ghosh 1995 (BBO, LBO), Kato & Takaoka 2002 (KTP), Fradkin 1999, König & Wong 20
 Mori 1995 (CLBO), Chen 2009 (KBBF, RBBF), Kato & Shirahata 1996, Takaoka & Kato 1999 (AGS),
 Das 2003, Zelmon 2001 (ZGP), Dodge 1984, Malitson 1962, Zernike 1964.
 Abstract only: Kato 2021 (AGSe), Li 2016 (KBBF), Tamošauskas 2018 (BBO), Ghotbi 2004.
+
+## Requested 2026-10-09 (abstract only or missing; DOIs checked with Crossref)
+Nonlinear coefficients:
+- 10.1364/ol.449826  Guo et al. 2022, d of monoclinic BaGa4Se7
+- 10.1364/ol.446333  Zhao et al. 2021, recalibrated d of BaGa4Se7
+- 10.1063/1.1852695  Sanford et al. 2005, chi(2) of GaN and AlGaN
+Thermo-optic and Sellmeier:
+- 10.1364/ao.58.001519  Kato et al. 2019, thermo-optic formula of LiGaS2
+- 10.1364/ol.42.004363  Kato et al. 2017, phase matching of LiGaS2 (test data)
+- 10.1143/jjap.42.6420  Kato 2003, thermo-optic formula of RbTiOAsO4
+- 10.1063/1.3525800  Mikami et al. 2011, Sellmeier and thermo-optic formulas of CsTiOAsO4
+- 10.1364/ao.37.000561  Tanaka et al. 1998, thermo-optic formula of AgGaSe2
+- 10.1117/12.2544656  Kato et al. 2020, new thermo-optic formula of AgGaSe2
+- 10.1364/ao.401828  Kato et al. 2021, refined Sellmeier of AgGaSe2 to 18 um
+- 10.3390/cryst9030129  Kato et al. 2019, Sellmeier and thermo-optic formulas of AgGaS2 (open access)
+- 10.1364/ome.8.000485  Wei et al. 2018, temperature-dependent Sellmeier of GaP
+- 10.1364/ao.430424  Kato et al. 2021, refined Sellmeier of BaGa4S7
+- 10.1364/ome.5.001089  Loiko et al. 2015, thermo-optic formulas of YCOB, GdCOB
+- 10.1364/oe.21.020641  Zhai et al. 2013, temperature-dependent Sellmeier of La2CaB10O19
+Still to find (no candidate paper yet): d of BaGa4S7 (full tensor), BaGa2GeSe6, CuGaS2, ZnO;
+thermo-optic data of KTiOAsO4 (x axis), LiIO3, KH2PO4, congruent LiTaO3.
