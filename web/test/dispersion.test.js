@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { interpolate, refractiveIndex } from "../src/dispersion.client.js";
+import { entryIndex, interpolate, refractiveIndex } from "../src/dispersion.client.js";
 
 const cases = JSON.parse(readFileSync(new URL("./dispersion_cases.json", import.meta.url)));
 
@@ -50,4 +50,17 @@ test("formulas read from papers: the site computes what the Python tests checked
 test("type 4 with one pole is finite at 1 µm (the unused term is not 0/(λ² − 0⁰))", () => {
   const n = refractiveIndex(4, [4.104676, 0.410385, 0, 0.532, 2], 1.0); // DSTMS n1, Mutter et al. 2007
   assert.ok(Math.abs(n - Math.sqrt(4.104676 + 0.410385 / (1 - 0.532 ** 2))) < 1e-12);
+});
+
+test("GaN: Sanford et al. (2003) is the first source and is positive uniaxial at 1.064 µm", () => {
+  const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
+  const src = A.find((c) => c.material === "GaN").sources[0];
+  assert.equal(src.label, "Sanford-2003");
+  const no = entryIndex(src.axes.o, 1.064), ne = entryIndex(src.axes.e, 1.064);
+  assert.ok(ne > no, `ne ${ne} > no ${no}`);
+  // the indices another paper of the same group fitted its Maker fringes with (Sanford et al. 2005, Table I, MOCVD GaN)
+  assert.ok(Math.abs(no - 2.3040) < 3e-3, `no ${no}`);
+  assert.ok(Math.abs(ne - 2.3373) < 3e-3, `ne ${ne}`);
+  assert.ok(Math.abs(entryIndex(src.axes.o, 0.532) - 2.3970) < 5e-3);
+  assert.ok(Math.abs(entryIndex(src.axes.e, 0.532) - 2.4350) < 5e-3);
 });

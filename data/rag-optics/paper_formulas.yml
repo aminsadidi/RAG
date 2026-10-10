@@ -623,3 +623,22 @@
     - {page: Dmitriev-1999, direction: e, type: 2, coefficients: [0, 5.845, 0.16, 0.0202, 225], range_um: [0.7, 14.0]}
   checks: []  # checked in the test: θtheor of the book's table
 
+
+# GaN: refractiveindex.info's only o/e pair (Barker & Ilegems 1973) is an infrared lattice-vibration fit
+# whose e formula has no UV pole: at 1.064 µm it gives ne < no (negative birefringence), against the
+# measured ne > no. Sanford et al. measured both indices of MOCVD GaN (sample No. 1, x = 0) in the
+# visible and near-IR; this source comes first for GaN.
+- material: GaN
+  name: GaN (Gallium nitride, wurtzite)
+  prefer: true  # first in the phase-matching tab, ahead of Barker (wider range, wrong e index in the near-IR)
+  doc_id: "10.1063_1.1598276"
+  reference: "Sanford et al. (2003). Refractive index study of AlxGa1−xN films grown on sapphire substrates. J. Appl. Phys. 94, 2980. doi:10.1063/1.1598276"
+  doi: 10.1063/1.1598276
+  pdf_page: 10
+  where: "Eq. (6) (p. 7, read from the page image): no² = 1 + A1*λ²/(λ² − B1*²) + A2*λ²/(λ² − B2*²), Table IV sample No. 1: A1* = 0.083, B1* = 354.8 nm, A2* = 4.085, B2* = 180.3 nm, valid from the band gap (363.9 nm) to 2500 nm. Eq. (8) (p. 10): ne² = 1 + Ae·λ²/(λ² − Be²), Table V (p. 11) sample No. 1: Ae = 4.321, Be = 189.2 nm, valid 442–1064 nm"
+  entries:
+    - {page: Sanford-2003, direction: o, type: 2, coefficients: [0, 0.083, 0.12588304, 4.085, 0.03250809], range_um: [0.3639, 2.5]}
+    - {page: Sanford-2003, direction: e, type: 2, coefficients: [0, 4.321, 0.03579664], range_um: [0.442, 1.064]}
+  checks:  # prism-coupling (PCWM) measurements of sample No. 1, Table II(a) and II(b) (pp. 7–8); the fits are within 0.006
+    - {direction: o, tol: 7.0e-3, points: [[0.442, 2.471], [0.4579, 2.454], [0.488, 2.429], [0.5145, 2.413], [0.532, 2.397], [0.6328, 2.360], [0.690, 2.345], [0.750, 2.337], [0.850, 2.325], [1.064, 2.304]]}
+    - {direction: e, tol: 7.0e-3, points: [[0.442, 2.514], [0.4579, 2.493], [0.488, 2.465], [0.5145, 2.445], [0.532, 2.435], [0.6328, 2.395], [0.690, 2.380], [0.750, 2.371], [0.850, 2.355], [1.064, 2.342]]}
