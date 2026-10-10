@@ -194,10 +194,19 @@ async function inCollection(env, ids) {
 }
 
 async function paper(env, docId) {
-  const result = await qdrant(env, `/collections/${env.COLLECTION}/points/scroll`, {
-    filter: { must: [{ key: "doc_id", match: { value: docId } }] }, limit: 400, with_payload: PAYLOAD,
-  });
-  const chunks = result.points.map((p) => p.payload)
+  // page through the scroll API: a book has thousands of chunks (at most 20 pages of 500)
+  const points = [];
+  let offset = null;
+  for (let i = 0; i < 20; i++) {
+    const result = await qdrant(env, `/collections/${env.COLLECTION}/points/scroll`, {
+      filter: { must: [{ key: "doc_id", match: { value: docId } }] }, limit: 500, with_payload: PAYLOAD,
+      ...(offset !== null ? { offset } : {}),
+    });
+    points.push(...result.points);
+    offset = result.next_page_offset ?? null;
+    if (offset === null) break;
+  }
+  const chunks = points.map((p) => p.payload)
     .sort((a, b) => (a.first_page ?? 0) - (b.first_page ?? 0) || String(a.node_id).localeCompare(String(b.node_id), "en", { numeric: true }));
   return { doc_id: docId, chunks };
 }
