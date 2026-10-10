@@ -1,7 +1,7 @@
 // The web app: searches the knowledge base in Qdrant and gives the sources, never an AI-written answer.
 // A question in Persian is translated to English (the papers are in English); the query is embedded with
 // the same model and pooling as the Python pipeline, and Qdrant fuses dense and BM25 results with RRF.
-import { cleanTranslation, contextPack, expandQuery, isPersian, queryTerms, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
+import { cleanTranslation, contextPack, crystalsIn, expandQuery, isPersian, queryTerms, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
@@ -152,7 +152,7 @@ async function search(env, opts) {
   const ranked = rerank ? await rerankPoints(env, query, points, topK) : points;
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
-  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), reranked: rerank, hits, relevance: check, ms: Date.now() - started };
+  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), reranked: rerank, materials: crystalsIn(query), hits, relevance: check, ms: Date.now() - started };
 }
 
 async function facets(env) {
