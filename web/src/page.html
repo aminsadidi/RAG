@@ -641,7 +641,9 @@ async function runSearch() {
     lastHits = data.hits;
     const words = terms(data.searchQuery || data.question);
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
-      (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : ""));
+      (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : "") +
+      (data.degraded?.includes("translation") ? " — ترجمه در دسترس نبود؛ با متن خود پرسش جست‌وجو شد (بهتر است انگلیسی یا با فرمول بنویسید)" : "") +
+      (data.degraded?.includes("embedding") ? " — جست‌وجوی معنایی در دسترس نبود؛ فقط جست‌وجوی کلیدواژه‌ای (BM25) انجام شد" : ""));
     const list = data.hits.map((h, i) => renderHit(h, words, i)).join("");
     const r = data.relevance || { verdict: "ok" };
     const why = [

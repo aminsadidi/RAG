@@ -56,6 +56,7 @@ async function cached(env, model, input, compute) {
   const hit = await env.AICACHE.get(key, "json").catch(() => null);
   if (hit !== null) return hit;
   const value = await compute();
+  if (value === null || value === undefined) return value; // nothing worth keeping (and "null" would read as a miss)
   await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: 90 * 86400 }).catch((e) => console.log("AICACHE put", String(e)));
   return value;
 }
@@ -110,15 +111,19 @@ function filterOf(opts) {
 
 async function search(env, opts) {
   const question = String(opts.q || "").trim().slice(0, 1000);
-  if (!question) throw new Error("empty question");
-  const mode = MODES.includes(opts.mode) ? opts.mode : "hybrid";
+  if (!question) throw Object.assign(new Error("empty question"), { status: 400 });
+  let mode = MODES.includes(opts.mode) ? opts.mode : "hybrid";
   const topK = Math.min(Math.max(parseInt(opts.topK, 10) || 8, 1), 30);
   // Off by default: on 200 gold questions it lowered MRR@10 (0.439 -> 0.401), see docs/reranker_eval.md.
   const rerank = opts.rerank === true && Boolean(env.RERANK_MODEL);
   // With the reranker, Qdrant returns a wider candidate list and the cross-encoder picks the topK of it.
   const limit = rerank ? Math.max(topK, RERANK_POOL) : topK;
   const started = Date.now();
-  const searchQuery = isPersian(question) ? await translate(env, question) : null;
+  // Workers AI out of quota or down: the search goes on with less (the original question; keywords only)
+  // and says so, rather than failing.
+  const degraded = [];
+  const searchQuery = isPersian(question)
+    ? await translate(env, question).catch(() => { degraded.push("translation"); return null; }) : null;
   const query = searchQuery || question;
   const filter = filterOf(opts);
   const sparse = { text: expandQuery(query), model: shared.BM25_MODEL };
@@ -130,8 +135,9 @@ async function search(env, opts) {
     using: shared.SPARSE, filter, limit: 50 }] : [];
   let body;
   // The query vector is needed in every mode: its best cosine similarity is one signal of the relevance check.
-  const vector = await embed(env, query);
-  const bestCosine = mode === "vector" ? null
+  const vector = await embed(env, query).catch(() => { degraded.push("embedding"); return null; });
+  if (!vector) mode = "bm25";
+  const bestCosine = mode === "vector" || !vector ? null
     : qdrant(env, `/collections/${env.COLLECTION}/points/query`, { query: vector, using: shared.DENSE, filter, limit: 1 })
       .then((r) => r.points[0]?.score ?? 0);
   if (mode === "bm25") {
@@ -157,7 +163,7 @@ async function search(env, opts) {
   if (rerank) ranked = await rerankPoints(env, query, points, topK).catch(() => { reranked = false; return ranked; });
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
-  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started };
+  return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started };
 }
 
 async function facets(env) {
@@ -270,9 +276,9 @@ async function handle(request, env) {
       ...headers, "content-range": `bytes ${start}-${end}/${size}`, "content-length": String(end - start + 1) } });
   }
   try {
-    if (url.pathname === "/api/search" && request.method === "POST") return json(await search(env, await request.json()));
+    if (url.pathname === "/api/search" && request.method === "POST") return json(await search(env, await request.json().catch(() => ({}))));
     if (url.pathname === "/api/pack" && request.method === "POST") {
-      const found = await search(env, await request.json());
+      const found = await search(env, await request.json().catch(() => ({})));
       return new Response(packFile(found), { headers: {
         "content-type": "text/markdown; charset=utf-8",
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
@@ -284,7 +290,7 @@ async function handle(request, env) {
     }
     if (url.pathname === "/api/paper") return json(await paper(env, url.searchParams.get("doc_id") || ""));
   } catch (error) {
-    return json({ error: String(error.message || error) }, 500);
+    return json({ error: String(error.message || error) }, error.status || 500);
   }
   return json({ error: "not found" }, 404);
 }
