@@ -46,17 +46,34 @@ async function qdrant(env, path, body) {
   return data.result;
 }
 
+// Model outputs are deterministic (temperature 0), so they are kept in KV for 90 days, keyed by
+// model + input: a repeated question costs no Workers AI Neurons. A failing cache never fails a search.
+async function cached(env, model, input, compute) {
+  if (!env.AICACHE) return compute();
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${model}\n${input}`));
+  const key = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  const hit = await env.AICACHE.get(key, "json").catch(() => null);
+  if (hit !== null) return hit;
+  const value = await compute();
+  await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: 90 * 86400 }).catch((e) => console.log("AICACHE put", String(e)));
+  return value;
+}
+
 async function translate(env, question) {
-  const out = await env.AI.run(env.TRANSLATE_MODEL, {
-    messages: [{ role: "user", content: translatePrompt(question) }], max_tokens: 120, temperature: 0,
+  return cached(env, env.TRANSLATE_MODEL, question, async () => {
+    const out = await env.AI.run(env.TRANSLATE_MODEL, {
+      messages: [{ role: "user", content: translatePrompt(question) }], max_tokens: 120, temperature: 0,
+    });
+    return cleanTranslation(out.response, question);
   });
-  return cleanTranslation(out.response, question);
 }
 
 async function embed(env, query) {
   // "cls" pooling: bge's own pooling, identical to the local sentence-transformers vectors.
-  const out = await env.AI.run(env.EMBED_MODEL, { text: [shared.QUERY_INSTRUCTION + query], pooling: "cls" });
-  return out.data[0];
+  return cached(env, env.EMBED_MODEL, query, async () => {
+    const out = await env.AI.run(env.EMBED_MODEL, { text: [shared.QUERY_INSTRUCTION + query], pooling: "cls" });
+    return out.data[0];
+  });
 }
 
 function filterOf(opts) {
