@@ -76,6 +76,26 @@ async function embed(env, query) {
   });
 }
 
+// Reranking: a cross-encoder reads the question and each candidate passage together, which ranks better
+// than the separate vectors of the first stage. The passage is cut to about the model's 512 tokens.
+const RERANK_POOL = 30;
+const RERANK_CHARS = 1800;
+
+async function rerankPoints(env, query, points, topK) {
+  if (points.length < 2) return points;
+  const ids = points.map((p) => p.id).join(",");
+  const scores = await cached(env, env.RERANK_MODEL, `${query}\n${ids}`, async () => {
+    const out = await env.AI.run(env.RERANK_MODEL, {
+      query, contexts: points.map((p) => ({ text: String(p.payload.text || "").slice(0, RERANK_CHARS) })),
+    });
+    const s = new Array(points.length).fill(-1);
+    for (const r of out.response) s[r.id] = r.score;
+    return s;
+  });
+  return points.map((p, i) => ({ ...p, score: scores[i] ?? -1 }))
+    .sort((a, b) => b.score - a.score).slice(0, topK);
+}
+
 function filterOf(opts) {
   const must = [];
   if (opts.material) must.push({ key: "material", match: { value: opts.material } });
@@ -90,6 +110,9 @@ async function search(env, opts) {
   if (!question) throw new Error("empty question");
   const mode = MODES.includes(opts.mode) ? opts.mode : "hybrid";
   const topK = Math.min(Math.max(parseInt(opts.topK, 10) || 8, 1), 30);
+  const rerank = opts.rerank !== false && Boolean(env.RERANK_MODEL);
+  // With the reranker, Qdrant returns a wider candidate list and the cross-encoder picks the topK of it.
+  const limit = rerank ? Math.max(topK, RERANK_POOL) : topK;
   const started = Date.now();
   const searchQuery = isPersian(question) ? await translate(env, question) : null;
   const query = searchQuery || question;
@@ -109,15 +132,15 @@ async function search(env, opts) {
       .then((r) => r.points[0]?.score ?? 0);
   if (mode === "bm25") {
     body = named.length
-      ? { prefetch: [{ query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named], query: { fusion: "rrf" }, limit: topK }
-      : { query: sparse, using: shared.SPARSE, filter, limit: topK };
+      ? { prefetch: [{ query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named], query: { fusion: "rrf" }, limit }
+      : { query: sparse, using: shared.SPARSE, filter, limit };
   } else {
     body = mode === "vector"
-      ? { query: vector, using: shared.DENSE, filter, limit: topK }
+      ? { query: vector, using: shared.DENSE, filter, limit }
       : {
         prefetch: [{ query: vector, using: shared.DENSE, filter, limit: 50 },
           { query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named],
-        query: { fusion: "rrf" }, limit: topK,
+        query: { fusion: "rrf" }, limit,
       };
   }
   // perPaper: the best passage of each paper (Qdrant groups by doc_id), so one paper cannot fill the list.
@@ -125,9 +148,10 @@ async function search(env, opts) {
     ? (await qdrant(env, `/collections/${env.COLLECTION}/points/query/groups`,
       { ...body, group_by: "doc_id", group_size: 1, with_payload: PAYLOAD })).groups.map((g) => g.hits[0])
     : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
-  const hits = points.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
+  const ranked = rerank ? await rerankPoints(env, query, points, topK) : points;
+  const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
-  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), hits, relevance: check, ms: Date.now() - started };
+  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), reranked: rerank, hits, relevance: check, ms: Date.now() - started };
 }
 
 async function facets(env) {

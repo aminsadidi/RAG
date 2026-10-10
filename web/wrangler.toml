@@ -24,6 +24,7 @@ service = "matrag-pdfs"
 COLLECTION = "rag-optics"
 TRANSLATE_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 EMBED_MODEL = "@cf/baai/bge-base-en-v1.5"
+RERANK_MODEL = "@cf/baai/bge-reranker-base"
 
 # Secrets (npx wrangler secret put NAME): QDRANT_URL, QDRANT_API_KEY, SITE_PASSWORD
 
