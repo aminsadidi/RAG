@@ -73,3 +73,33 @@ def test_reconvert_deletes_an_older_conversion_once(tmp_path):
     cached.write_bytes(b"new")  # the new conversion is newer than the date: kept
     assert not ws._stale_conversion(item) and cached.exists()
     assert not ws._stale_conversion(SimpleNamespace(doc_id="other", pdf=Path("o.pdf")))
+
+
+def test_a_book_resumes_from_the_last_finished_part(monkeypatch, tmp_path):
+    from docling_core.types.doc import DoclingDocument, Size
+
+    def part(path, converter, page_range):
+        calls.append(page_range)
+        if page_range == (5, 6) and not resumed:
+            raise KeyboardInterrupt  # a Colab disconnect
+        doc = DoclingDocument(name="book")
+        for n in range(page_range[0], page_range[1] + 1):
+            doc.add_page(page_no=n, size=Size(width=1, height=1))
+            doc.add_text(label="text", text=f"page {n}")
+        return doc
+
+    pdf = tmp_path / "book.pdf"
+    pdf.write_bytes(b"%PDF")
+    monkeypatch.setattr(ingest, "page_count", lambda p: 7)
+    monkeypatch.setattr(ingest, "PART_PAGES", 2)
+    monkeypatch.setattr(ingest, "_convert_pages", part)
+    calls, resumed = [], False
+    with pytest.raises(KeyboardInterrupt):
+        ingest.convert(pdf, FakeConverter(), tmp_path / "cache", "book")
+    assert not ingest.is_cached(tmp_path / "cache", "book")
+    calls, resumed = [], True
+    doc = ingest.convert(pdf, FakeConverter(), tmp_path / "cache", "book")
+    assert calls == [(5, 6), (7, 7)]  # pages 1-4 were not converted again
+    assert sorted(doc.pages) == list(range(1, 8))
+    assert [t.text for t in doc.texts] == [f"page {n}" for n in range(1, 8)]
+    assert ingest.is_cached(tmp_path / "cache", "book") and not (tmp_path / "cache" / "parts" / "book").exists()
