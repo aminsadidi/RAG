@@ -251,10 +251,23 @@ async function handle(request, env) {
   }
   if (url.pathname.startsWith("/pdf/") && env.PDFS) {
     const path = url.pathname.slice("/pdf".length);
+    // Range requests (pdf.js reads a large PDF in parts): the PDF Worker's static assets always send the whole
+    // file, so the range is cut here; only that part goes over the reader's connection.
     const response = await env.PDFS.fetch(new Request(`https://pdfs${path}`));
     if (!response.ok || !(response.headers.get("content-type") || "").includes("pdf")) return json({ error: "no pdf" }, 404);
-    return new Response(response.body, { headers: {
-      "content-type": "application/pdf", "cache-control": "private, max-age=86400", "x-robots-tag": "noindex" } });
+    const headers = { "content-type": "application/pdf", "cache-control": "private, max-age=86400", "x-robots-tag": "noindex",
+      "accept-ranges": "bytes" };
+    const m = /^bytes=(\d*)-(\d*)$/.exec(request.headers.get("range") || "");
+    if (!m || (m[1] === "" && m[2] === "")) {
+      if (response.headers.get("content-length")) headers["content-length"] = response.headers.get("content-length");
+      return new Response(response.body, { headers });
+    }
+    const data = new Uint8Array(await response.arrayBuffer()), size = data.length;
+    const start = m[1] === "" ? Math.max(0, size - Number(m[2])) : Number(m[1]);
+    const end = m[1] === "" || m[2] === "" ? size - 1 : Math.min(Number(m[2]), size - 1);
+    if (start > end || start >= size) return new Response(null, { status: 416, headers: { "content-range": `bytes */${size}` } });
+    return new Response(data.subarray(start, end + 1), { status: 206, headers: {
+      ...headers, "content-range": `bytes ${start}-${end}/${size}`, "content-length": String(end - start + 1) } });
   }
   try {
     if (url.pathname === "/api/search" && request.method === "POST") return json(await search(env, await request.json()));

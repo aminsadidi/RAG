@@ -658,6 +658,8 @@ async function runSearch() {
         : (r.verdict === "weak" ? `<div class="card hint" style="border:1px solid var(--warn)">منابع فقط بخشی از سؤال را پوشش می‌دهند.<ul>${why}</ul></div>` : "") + list;
     bindHits($("hits"), data.hits);
     window.crystalCards?.(data.materials || []);
+    // pdf.js and its worker into the browser cache while the reader looks at the results
+    if (data.hits.some((h) => h.source_file)) (window.requestIdleCallback || setTimeout)(() => loadPdfjs().then(() => fetch(PDFJS + "pdf.worker.min.js")).catch(() => {}));
   } catch (err) { status("خطا: " + err.message, true); }
   setBusy(false);
 }
@@ -751,14 +753,9 @@ async function restoreDir() {
   } catch { return false; }
 }
 // The PDF from the site itself (papers uploaded by the Colab notebook), else from the chosen folder.
-async function serverPdf(hit) {
-  if (!hit.source_file) return null;
-  const r = await fetch("/pdf/" + hit.source_file.split("/").map(encodeURIComponent).join("/"));
-  return r.ok ? r.blob() : null;
-}
-async function pdfFor(hit) {
-  const remote = await serverPdf(hit).catch(() => null);
-  if (remote) return remote;
+const pdfUrl = (hit) => "/pdf/" + hit.source_file.split("/").map(encodeURIComponent).join("/");
+// a PDF from the folder the reader chose (when the site has no copy of it)
+async function localPdf(hit) {
   let f = pdfFiles.get(baseName(hit.source_file));
   if (!f && !pdfFiles.size && (await restoreDir())) f = pdfFiles.get(baseName(hit.source_file));
   if (!f) return null;
@@ -787,23 +784,45 @@ $("vnext").onclick = () => { if (V.doc && V.page < V.doc.numPages) { V.page++; d
 $("vzoom").onclick = () => { V.zoom = V.zoom > 2 ? 1.1 : V.zoom + 0.5; drawPage(); };
 
 async function openViewer(hit) {
-  V.hit = hit; V.doc = null; V.page = boxesOf(hit)[0]?.[0] || hit.first_page || 1;
+  V.hit = hit; V.doc = null; V.err = ""; V.page = boxesOf(hit)[0]?.[0] || hit.first_page || 1;
   $("vtitle").textContent = hit.label || hit.citation || hit.doc_id;
   $("viewer").classList.add("on");
-  $("vbody").innerHTML = '<p class="hint">در حال باز کردن…</p>';
-  const [file, lib] = await Promise.all([pdfFor(hit).catch(() => null), loadPdfjs().catch((err) => err)]);
-  V.err = file && lib instanceof Error ? lib.message : "";
-  if (file && !V.err) {
-    try {
-      const key = baseName(hit.source_file);
-      if (!V.cache.has(key)) V.cache.set(key, await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise);
-      V.doc = V.cache.get(key); await drawPage();
+  $("vbody").innerHTML = '<p class="hint" id="vprog">در حال باز کردن…</p>';
+  $("vnote").textContent = "";
+  try {
+    const doc = await openDoc(hit);
+    if (V.hit !== hit) return; // another source was opened meanwhile
+    if (doc) {
+      V.doc = doc; await drawPage();
       $("vnote").textContent = "بخش پیداشده با رنگ زرد مشخص شده است.";
       return;
-    } catch (err) { V.err = "PDF باز نشد: " + err.message; }
-  }
+    }
+  } catch (err) { V.err = err.message.startsWith("کتابخانه") ? err.message : "PDF باز نشد: " + err.message; }
+  if (V.hit !== hit) return;
   drawSchema();
   if (V.err) $("vnote").insertAdjacentHTML("afterbegin", `<div class="err">${esc(V.err)}</div>`);
+}
+// The site's copy by URL: pdf.js reads it in 64 KB ranges and only the parts the shown page needs, so a large
+// paper opens without downloading all of it. Else the copy in the reader's chosen folder. Documents stay cached.
+async function openDoc(hit) {
+  const key = hit.source_file ? baseName(hit.source_file) : null;
+  if (!key) return null;
+  if (V.cache.has(key)) return V.cache.get(key);
+  const lib = await loadPdfjs();
+  const progress = ({ loaded, total }) => {
+    const el = $("vprog"); if (!el || !loaded) return;
+    el.textContent = `در حال دریافت مقاله… ${fa(Math.round(loaded / 1024))}${total ? " از " + fa(Math.round(total / 1024)) : ""} کیلوبایت`;
+  };
+  let doc = null;
+  const task = lib.getDocument({ url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
+  task.onProgress = progress;
+  doc = await task.promise.catch(() => null);
+  if (!doc) {
+    const file = await localPdf(hit).catch(() => null);
+    if (file) doc = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+  }
+  if (doc) V.cache.set(key, doc);
+  return doc;
 }
 function drawSchema() {
   const boxes = boxesOf(V.hit).filter((b) => b[0] === V.page);
