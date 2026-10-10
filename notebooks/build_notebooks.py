@@ -446,6 +446,10 @@ PAPERS = {
     'miyata2009.pdf': ('10.1364/ol.34.000500', '01_Borates', 'BiBO_BiB3O6', {'title': 'Phase-matched pure χ^(3) third-harmonic generation in noncentrosymmetric BiB3O6', 'authors': 'Kentaro Miyata; Nobuhiro Umemura; Kiyoshi Kato', 'year': 2009, 'journal': 'Optics Letters'}),
     'shoji1999.pdf': ('10.1364/josab.16.000620', '01_Borates', 'BBO_beta-BaB2O4', {'title': 'Absolute measurement of second-order nonlinear-optical coefficients of β-BaB2O4 for visible to ultraviolet second-harmonic wavelengths', 'authors': 'Ichiro Shoji; Hirotaka Nakamura; Keisuke Ohdaira; Takashi Kondo; Ryoichi Ito; Tsutomu Okamoto; Koichi Tatsuki; Shigeo Kubota', 'year': 1999, 'journal': 'Journal of the Optical Society of America B'}),
     'hong1987.pdf': ('10.1103/physrevlett.59.2044', '08_Theory_Dispersion_Models', 'Phase_matching_theory_birefringence', {'title': 'Measurement of subpicosecond time intervals between two photons by interference', 'authors': 'C. K. Hong; Z. Y. Ou; L. Mandel', 'year': 1987, 'journal': 'Physical Review Letters'}),
+    # 2026-10-10: nonlinear coefficients of GaN, ZnTe and BaGa4Se7 (nonlinear_coefficients.yml)
+    'wagner1998.pdf': ('10.1103/physrevb.58.10494', '05_Semiconductors_QPM', 'ZnSe_ZnTe', None),
+    'sanford2005.pdf': ('10.1063/1.1852695', '05_Semiconductors_QPM', 'GaN_AlN', {'title': 'Measurement of second order susceptibilities of GaN and AlGaN', 'authors': 'N. A. Sanford; A. V. Davydov; D. V. Tsvetkov; A. V. Dmitriev; S. Keller; U. K. Mishra; S. P. DenBaars; S. S. Park; J. Y. Han; R. J. Molnar', 'year': 2005, 'journal': 'Journal of Applied Physics'}),
+    'zhang2015.pdf': ('10.1364/oe.23.000552', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', None),
 
 }
 import csv, json, pathlib, shutil
