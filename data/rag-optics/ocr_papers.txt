@@ -55,3 +55,5 @@
 10.1111_j.1151_2916.1995.tb08433.x
 10.1143_jjap.33.1959
 10.1364_ao.29.001281
+# Handbook of Nonlinear Optical Crystals (Dmitriev, Gurzadyan, Nikogosyan 1999): a 39 MB scan
+10.1007_978_3_540_46793_9
