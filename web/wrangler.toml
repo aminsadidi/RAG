@@ -11,6 +11,11 @@ binding = "AI"
 [assets]
 directory = "./public"
 
+# Cache of model outputs (translations, query embeddings): a repeated question costs no Neurons.
+[[kv_namespaces]]
+binding = "AICACHE"
+id = "3ef1d04b9af6433f90e76bb70c4278b8"
+
 [[services]]
 binding = "PDFS"
 service = "matrag-pdfs"
