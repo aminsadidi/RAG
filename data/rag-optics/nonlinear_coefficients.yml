@@ -417,3 +417,30 @@
     - {doc_id: 10.1016_j.pquantelec.2015.04.001, doi: 10.1016/j.pquantelec.2015.04.001, cite: "Petrov (2015)", pdf_page: 31, what: "pyrargyrite, d31 = 7.8, d22 = 8.2 pm/V at 10.6 µm (Table 2; 9.90 and 10.41 after Miller's correction to 1064 → 6.45 µm); phase-matching angles 47.14° (oo-e), 52.84° (eo-e)"}
   notes: "3m as Ag3AsS3: d21 = d16 = −d22, Kleinman d15 = d24 = d31 = d32"
 
+
+- material: GaN
+  point_group: 6mm
+  d: {31: 2.85, 32: 2.85, 15: 2.85, 24: 2.85, 33: -4.6}
+  sources:
+    - {doc_id: "10.1063_1.1852695", doi: 10.1063/1.1852695, cite: "Sanford et al. (2005)", pdf_page: 12, what: "bulk free-standing HVPE GaN: χ31 = 5.7 pm/V (±8%), χ33 = −9.2 pm/V (±40%), Maker fringes at 1064 nm, scale χ11(quartz) = 0.64 pm/V (Conclusions; Table I on p. 10). χ = 2d (the paper's own conversion: d31 = 8.2 ↔ χ31 = 16.4)"}
+  notes: "6mm, Kleinman: d31 = d32 = d15 = d24. d = χ/2; d33 is uncertain to ±40% (the e-e fringes depend weakly on it)"
+
+- material: ZnTe
+  point_group: -43m
+  d: {14: 52, 25: 52, 36: 52}
+  sources:
+    - {doc_id: "10.1103_physrevb.58.10494", doi: 10.1103/physrevb.58.10494, cite: "Wagner et al. (1998)", pdf_page: 3, what: "|d| = 52 pm/V at λF = 1.321 µm, 119 pm/V at 1.047 µm (SH near the band gap), Maker fringes (Table I); 90 pm/V at 1.06 µm from another group (Table I, Ref. 9)"}
+  notes: "−43m: d14 = d25 = d36. The 1.321 µm value is used, the one farther from the band gap; d falls further into the mid-IR (Miller's rule)"
+
+# BaGa4Se7: only two of the six elements are measured, and in the crystal-physical XYZ frame (mirror plane
+# ⊥ Y), which for this monoclinic crystal is rotated in the XZ plane from the dielectric frame of the
+# Sellmeier equations. Shown on the crystal card; `partial` keeps them out of the d_eff of the
+# phase-matching tab, which would be wrong in the dielectric frame with the other four elements missing.
+- material: BaGa4Se7
+  point_group: m
+  partial: true
+  frame: "crystal-physical XYZ (Badikov et al. 2011), not the dielectric frame"
+  d: {11: 24.3, 13: 20.4}
+  sources:
+    - {doc_id: "10.1364_oe.23.000552", doi: 10.1364/OE.23.000552, cite: "Zhang et al. (2015)", pdf_page: 7, what: "d11 = 24.3 ± 1.5, d13 = 20.4 ± 1.1 pm/V (Eqs. 6–7, Maker fringes against d36(KDP)); d12 has the sign opposite to d13"}
+  notes: "m (Pc); d12, d15, d24, d33 not measured"
