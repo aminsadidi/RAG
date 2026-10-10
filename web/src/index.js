@@ -110,7 +110,8 @@ async function search(env, opts) {
   if (!question) throw new Error("empty question");
   const mode = MODES.includes(opts.mode) ? opts.mode : "hybrid";
   const topK = Math.min(Math.max(parseInt(opts.topK, 10) || 8, 1), 30);
-  const rerank = opts.rerank !== false && Boolean(env.RERANK_MODEL);
+  // Off by default: on 200 gold questions it lowered MRR@10 (0.439 -> 0.401), see docs/reranker_eval.md.
+  const rerank = opts.rerank === true && Boolean(env.RERANK_MODEL);
   // With the reranker, Qdrant returns a wider candidate list and the cross-encoder picks the topK of it.
   const limit = rerank ? Math.max(topK, RERANK_POOL) : topK;
   const started = Date.now();
