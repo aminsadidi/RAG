@@ -73,6 +73,11 @@ export function queryTerms(query) {
   for (let i = 1; i < tokens.length; i++) if (isWord(tokens[i - 1]) && isWord(tokens[i])) phrases.push(`${tokens[i - 1]} ${tokens[i]}`);
   return { materials: [...new Set([...formulas, ...abbrs, ...named, ...all.filter(chemical)])], words, phrases: [...new Set(phrases)] };
 }
+// The crystals a query names, as formulas (BBO -> BaB2O4, "lithium niobate" -> LiNbO3), for the crystal cards of the
+// search page; words that only look chemical ("zirconate") are left out.
+export function crystalsIn(query) {
+  return [...new Set(queryTerms(query).materials.map((m) => S.SYNONYMS[m] || m).filter((m) => /[A-Z]/.test(m)))];
+}
 const CHEM_WORDS = new Set(["estimate", "accurate", "separate", "moderate", "appropriate", "approximate", "intermediate",
   "substrate", "aggregate", "elaborate", "calculate", "evaluate", "indicate", "investigate", "demonstrate", "integrate",
   "generate", "illustrate", "compensate", "elevated", "provide", "decide", "guide", "outside", "inside", "wide", "medium"]);

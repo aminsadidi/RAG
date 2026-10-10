@@ -44,3 +44,15 @@ test("relevance check: says 'not found' instead of passing off the nearest passa
   assert.deepEqual(rel.relevance("black holes", far, 0.7).missingWords, ["black holes"]);
   assert.deepEqual(rel.relevance("Sellmeier equations at room temperature", bbo, 0.8).verdict, "ok");
 });
+
+test("crystals named in a query, as formulas (crystal cards of the search page)", () => {
+  const { crystalsIn } = new Function("S", `${src}; return { crystalsIn };`)(S);
+  assert.deepEqual(crystalsIn("Sellmeier coefficients of LBO crystal"), ["LiB3O5"]);
+  assert.deepEqual(crystalsIn("What is the nonlinear coefficient of KTP crystal?"), ["KTiOPO4"]);
+  assert.deepEqual(crystalsIn("beta barium borate thermo-optic coefficients"), ["BaB2O4"]);
+  assert.deepEqual(crystalsIn("compare BBO and LiB3O5").sort(), ["BaB2O4", "LiB3O5"]);
+  assert.deepEqual(crystalsIn("PPLN SPDC source"), ["LiNbO3"]);
+  assert.deepEqual(crystalsIn("ZnGeP2 OPO pumped at 2 µm"), ["ZnGeP2"]);
+  assert.deepEqual(crystalsIn("refractive index of zirconate glass"), []);
+  assert.deepEqual(crystalsIn("SHG efficiency in the UV with an OPO"), []);
+});
