@@ -163,6 +163,17 @@ th,td{padding:7px 10px}
  #side .logout{margin:0;white-space:nowrap}
  main{padding:16px 16px 60px}
 }
+/* crystal cards of the search page */
+.xcard{border-inline-start:3px solid var(--accent)}
+.xhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:6px}
+.xhead b{font-size:1.1em}
+.xrows{border-collapse:collapse;width:100%}
+.xrows th{text-align:start;font-weight:600;white-space:nowrap;padding:3px 0;padding-inline-end:12px;vertical-align:top;width:1%}
+.xrows td{padding:3px 0}
+.xcard .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.xcard .actions button{border:1px solid var(--accent);border-radius:999px;padding:5px 12px;background:var(--accent-soft);color:var(--accent);font:inherit;font-size:.92em;cursor:pointer}
+.xcard .actions button:hover{background:var(--accent);color:#fff}
+@media (max-width:600px){.xrows th{white-space:normal}}
 </style>
 </head>
 <body>
@@ -204,6 +215,7 @@ th,td{padding:7px 10px}
     </div>
   </div>
   <div id="status"></div>
+  <div id="xcards"></div>
   <div id="hits"></div>
 </section>
 
@@ -624,7 +636,7 @@ function bindHits(container, hits) {
 async function runSearch() {
   const opts = options(); if (!opts.q.trim()) return $("q").focus();
   store.set("opts", { ...opts, q: opts.q });
-  setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = "";
+  setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = ""; $("xcards").innerHTML = "";
   try {
     const data = await (await api("/api/search", opts)).json();
     lastHits = data.hits;
@@ -646,6 +658,7 @@ async function runSearch() {
            <details><summary class="hint">نزدیک‌ترین بخش‌ها را نشان بده (احتمالاً نامرتبط)</summary>${list}</details>`
         : (r.verdict === "weak" ? `<div class="card hint" style="border:1px solid var(--warn)">منابع فقط بخشی از سؤال را پوشش می‌دهند.<ul>${why}</ul></div>` : "") + list;
     bindHits($("hits"), data.hits);
+    window.crystalCards?.(data.materials || []);
   } catch (err) { status("خطا: " + err.message, true); }
   setBusy(false);
 }
@@ -932,12 +945,15 @@ window.loadFormulas = () => {
 
 async function selectMaterial(name) {
   const m = RI.byName.get(name); if (!m) return;
+  RI.req = name; // a later choice wins over this one while its files load
   $("rimat").value = name; store.set("rimat2", name);
   $("riinfo").textContent = `${m.name ? m.name.replace(/^\S+ /, "") + " · " : ""}${fa(m.n)} منبع (${fa(m.formulas)} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
   $("rientries").innerHTML = '<p class="hint">در حال خواندن…</p>';
   const list = await (await fetch(`/ri/m/${m.i}.json`)).json();
+  if (RI.req !== name) return;
   const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
   RI.inColl = ids.length ? await (await api("/api/incollection", { ids })).json().catch(() => ({})) : {};
+  if (RI.req !== name) return;
   RI.mat = name; RI.byMat.set(name, list);
   // database curves of the previous material go; user curves stay as they were
   for (const k of [...RI.shown]) if (k.startsWith("db:")) show(k, false);
@@ -951,6 +967,11 @@ async function selectMaterial(name) {
   if (!(probe >= a && probe <= b)) setProbe((a + b) / 2);
   render();
 }
+// A crystal chosen on another page (the crystal card of a search): shown now, or when this tab is first opened.
+window.riSelectCrystal = (mat) => {
+  if (!RI.byName) store.set("rimat2", mat);
+  else if (RI.byName.has(mat)) selectMaterial(mat);
+};
 $("risearch").onclick = () => {
   const m = RI.byName?.get(RI.mat); if (!m) return;
   $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
@@ -1325,6 +1346,13 @@ window.loadPM = async () => {
   const mat = saved?.mat && PM.list.some((c) => key(c) === saved.mat) ? saved.mat : "BaB2O4";
   $("pmmore").checked = !PM.dij[mat];
   fillMats(); setProc(); pick(mat);
+};
+
+window.pmSelectCrystal = (mat) => {
+  if (!PM.list) { store.set("pm", { proc: $("pmproc").value, a: +$("pma").value, b: +$("pmb").value, ...store.get("pm"), mat }); return; }
+  if (!PM.list.some((c) => key(c) === mat)) return;
+  if (!PM.dij[mat] && !$("pmmore").checked) { $("pmmore").checked = true; fillMats(); }
+  pick(mat);
 };
 
 // The crystal menu: those with nonlinear coefficients (complete data), then, if asked, the other birefringent materials.
@@ -1747,7 +1775,7 @@ window.loadSPDC = async () => {
   if (SP.list) return;
   SP.list = (await fetch("/ri/aniso.json").then((r) => r.json())).filter((c) => !c.sources[0].isotropic);
   $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
-  $("spmat").value = SP.list.some((c) => c.material === "KTiOPO4") ? "KTiOPO4" : SP.list[0].material;
+  $("spmat").value = [SP.want, "KTiOPO4"].find((m) => SP.list.some((c) => c.material === m)) || SP.list[0].material;
   $("spmat").onchange = () => { fillSrc(); fillCfg(); };
   $("spsrc").onchange = fillCfg;
   for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
@@ -1756,6 +1784,11 @@ window.loadSPDC = async () => {
   $("spfib").onclick = () => fiber(false);
   $("spfibopt").onclick = () => fiber(true);
   fillSrc(); fillCfg();
+};
+window.spSelectCrystal = (mat) => {
+  if (!SP.list) { SP.want = mat; return; }
+  if (!SP.list.some((c) => c.material === mat)) return;
+  $("spmat").value = mat; fillSrc(); fillCfg();
 };
 function fillSrc() {
   const c = SP.list.find((x) => x.material === $("spmat").value);
@@ -1892,6 +1925,82 @@ function drawHOM(j, l1, l2) {
     + `<text x="4" y="${py(0.5) + 4}" font-size="11" fill="currentColor">½</text><text x="4" y="${py(0) + 4}" font-size="11" fill="currentColor">0</text>`;
   $("sphomcap").textContent = `احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر؛ کمینه در ${taus[k0].toFixed(2)} ps، نمایانی ${(V * 100).toFixed(1)}٪.`;
 }
+</script>
+<script type="module">
+// ---------- crystal cards: a crystal named in a search question (BBO, LiB3O5, «لیتیم نیوبات») gets a card with the
+// verified data of the site (refractive index, d coefficients, thermo-optic formula), and the other tabs select it.
+import { entryIndex } from "/dispersion.js";
+
+let data = null;
+const loadData = () => (data ||= Promise.all([
+  fetch("/ri/aniso.json").then((r) => r.json()),
+  fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({})),
+  fetch("/ri/index.json").then((r) => r.json()),
+]).then(([aniso, dij, index]) => ({ aniso, dij, index })).catch((err) => { data = null; throw err; }));
+
+const KIND_FA = { uniaxial: "تک‌محوری", biaxial: "دومحوری" };
+const AXES = { uniaxial: [["o", "n<sub>o</sub>"], ["e", "n<sub>e</sub>"]], biaxial: [["x", "n<sub>x</sub>"], ["y", "n<sub>y</sub>"], ["z", "n<sub>z</sub>"]] };
+
+// n at 1.064 µm, or at the middle of the formula's range when 1.064 µm is outside it.
+function indices(src) {
+  const [lo, hi] = src.range_um, lam = lo <= 1.064 && 1.064 <= hi ? 1.064 : +((lo + hi) / 2).toPrecision(3);
+  const axes = src.isotropic ? [[Object.keys(src.axes)[0], "n"]] : AXES[src.kind] || [];
+  const vals = axes.map(([a, name]) => { const e = src.axes[a]; const n = e && entryIndex(e, lam); return Number.isFinite(n) ? `<bdi dir="ltr">${name} = ${n.toFixed(4)}</bdi>` : ""; }).filter(Boolean);
+  return vals.length ? `${vals.join("، ")} در <bdi dir="ltr">${lam} µm</bdi>` : "";
+}
+
+function dLine(d) {
+  const seen = new Set(), parts = [];
+  for (const [ij, v] of Object.entries(d.d).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]) || b[1] - a[1] || a[0].localeCompare(b[0]))) {
+    const k = `${Math.abs(v)}`; if (seen.has(k)) continue; seen.add(k); // d21 = −d22 etc.: one of them
+    parts.push(`<bdi dir="ltr">d<sub>${ij}</sub> = ${v}</bdi>`);
+    if (parts.length >= 4) break;
+  }
+  return `${parts.join("، ")} <bdi dir="ltr">pm/V</bdi>${d.point_group ? ` · گروه نقطه‌ای <bdi dir="ltr">${esc(d.point_group)}</bdi>` : ""}`;
+}
+
+function card(mat, D, synced) {
+  const c = D.aniso.find((x) => x.material === mat), d = D.dij[mat];
+  const ri = D.index.find((m) => m.material === mat && (m.shelf === "main" || m.shelf === "papers"));
+  if (!c && !d && !ri) return "";
+  const src = c?.sources[0];
+  const thermo = c ? [...new Set(c.sources.filter((s) => s.thermo).map((s) => s.label))] : [];
+  const kind = src ? (src.isotropic ? "همسان‌گرد (مکعبی)" : KIND_FA[src.kind] || "") : "";
+  const name = (c?.name || ri?.name || "").replace(/^\S+\s*/, "").replace(/^\(|\)$/g, "");
+  const facet = [...$("material").options].find((o) => o.value && o.value.split(/[_-]/).includes(mat));
+  const rows = [
+    src ? ["ضریب شکست", `${indices(src)}<span class="hint"> · ${esc(src.label)} · بازه‌ی فرمول <bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi>${c.sources.length > 1 ? ` · ${fa(c.sources.length)} منبع` : ""}</span>`]
+      : ri ? ["ضریب شکست", `${fa(ri.n)} منبع در پایگاه (${fa(ri.formulas)} فرمول) · بازه‌ی <bdi dir="ltr">${+ri.range_um[0].toPrecision(3)}–${+ri.range_um[1].toPrecision(3)} µm</bdi>`] : null,
+    ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)}</span>` : ""}` : '<span class="hint">ثبت نشده</span>'],
+    ["گرمانوری (dn/dT)", thermo.length ? `فرمول وابسته به دما: ${thermo.map(esc).join("، ")}` : '<span class="hint">ثبت نشده</span>'],
+  ].filter(Boolean);
+  const btn = (act, text) => `<button class="alt" data-xact="${act}" data-mat="${esc(mat)}">${text}</button>`;
+  return `<div class="card xcard">
+    <div class="xhead"><b dir="ltr">${esc(mat)}</b>${name ? `<span class="hint">${esc(name)}</span>` : ""}${kind ? `<span class="chip">${kind}</span>` : ""}</div>
+    <table class="xrows">${rows.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</table>
+    <div class="actions">${ri ? btn("index", "نمودار ضریب شکست") : ""}${c ? btn("pm", "تطبیق فاز") : ""}${c && !src.isotropic ? btn("spdc", "جفت فوتون (SPDC)") : ""}${facet ? `<button class="alt" data-xact="filter" data-facet="${esc(facet.value)}">فقط مقاله‌های این بلور</button>` : ""}</div>
+    ${synced ? '<p class="hint" style="margin:6px 0 0">این بلور در صفحه‌های ضریب شکست، تطبیق فاز و SPDC هم انتخاب شد.</p>' : ""}
+  </div>`;
+}
+
+window.crystalCards = async (materials) => {
+  const box = $("xcards"); box.innerHTML = "";
+  if (!materials.length) return;
+  let D; try { D = await loadData(); } catch { return; }
+  const known = materials.filter((m) => D.aniso.some((c) => c.material === m) || D.dij[m] || D.index.some((x) => x.material === m && (x.shelf === "main" || x.shelf === "papers")));
+  // One crystal in the question: the other tabs take it. Two or more (a comparison): only the cards.
+  const sync = known.length === 1;
+  if (sync) for (const f of ["riSelectCrystal", "pmSelectCrystal", "spSelectCrystal"]) window[f]?.(known[0]);
+  box.innerHTML = known.slice(0, 4).map((m) => card(m, D, sync)).join("");
+};
+
+$("xcards").onclick = (e) => {
+  const b = e.target.closest("[data-xact]"); if (!b) return;
+  const act = b.dataset.xact, mat = b.dataset.mat;
+  if (act === "filter") { $("material").value = b.dataset.facet; runSearch(); return; }
+  ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
+  showTab(act);
+};
 </script>
 </body>
 </html>
