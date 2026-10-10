@@ -952,7 +952,8 @@ async function selectMaterial(name) {
   const list = await (await fetch(`/ri/m/${m.i}.json`)).json();
   if (RI.req !== name) return;
   const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
-  RI.inColl = ids.length ? await (await api("/api/incollection", { ids })).json().catch(() => ({})) : {};
+  // which sources are in the collection: a failing request (Qdrant down) only loses those marks, not the tab
+  RI.inColl = ids.length ? await api("/api/incollection", { ids }).then((r) => r.json()).catch(() => ({})) : {};
   if (RI.req !== name) return;
   RI.mat = name; RI.byMat.set(name, list);
   // database curves of the previous material go; user curves stay as they were
