@@ -450,6 +450,16 @@ PAPERS = {
     'wagner1998.pdf': ('10.1103/physrevb.58.10494', '05_Semiconductors_QPM', 'ZnSe_ZnTe', None),
     'sanford2005.pdf': ('10.1063/1.1852695', '05_Semiconductors_QPM', 'GaN_AlN', {'title': 'Measurement of second order susceptibilities of GaN and AlGaN', 'authors': 'N. A. Sanford; A. V. Davydov; D. V. Tsvetkov; A. V. Dmitriev; S. Keller; U. K. Mishra; S. P. DenBaars; S. S. Park; J. Y. Han; R. J. Molnar', 'year': 2005, 'journal': 'Journal of Applied Physics'}),
     'zhang2015.pdf': ('10.1364/oe.23.000552', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', None),
+    # 2026-10-10: sources of the thermo-optic data (thermo_optic.yml) and the two reference books
+    'tanaka1998.pdf': ('10.1364/ao.37.000561', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'AgGaSe2', {'title': 'Thermo-optic dispersion formula of AgGaSe2 and its practical applications', 'authors': 'Eiko Tanaka; Kiyoshi Kato', 'year': 1998, 'journal': 'Applied Optics'}),
+    'mikami2011.pdf': ('10.1063/1.3525800', '08_Theory_Dispersion_Models', 'Sellmeier_equation_fitting', None),
+    'wei2018.pdf': ('10.1364/ome.8.000485', '05_Semiconductors_QPM', 'GaP_OP-GaP', None),
+    'loiko2015.pdf': ('10.1364/ome.5.001089', '01_Borates', 'YCOB_GdCOB_ReCOB', None),
+    'kato2019.pdf': ('10.3390/cryst9030129', '02_Phosphates_Arsenates_KDP', 'KTP_KTiOPO4', None),  # AgGaS2; the master index files it here
+    # the books: Dmitriev's 39 MB scan is converted with OCR (ocr_papers.txt) and is over Cloudflare's 25 MB per
+    # file, so it is searchable but has no page view on the site
+    'dmitriev1999.pdf': ('10.1007/978-3-540-46793-9', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Nonlinear Optical Crystals (3rd ed.)', 'authors': 'Valentin G. Dmitriev; Gagik G. Gurzadyan; David N. Nikogosyan', 'year': 1999, 'journal': 'Springer Series in Optical Sciences 64 (book)'}),
+    'nonlinear-optical-crystals-a-complete-survey-2005.pdf': ('10.1007/b138685', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Nonlinear Optical Crystals: A Complete Survey', 'authors': 'David N. Nikogosyan', 'year': 2005, 'journal': 'Springer (book)'}),
 
 }
 import csv, json, pathlib, shutil
@@ -536,6 +546,17 @@ print('4/4 Sending the new chunks to the site search (Qdrant)...')
 !matrag --corpus rag-optics export-qdrant 2>&1 | grep -vE "Warning|Loading"
 %cd /content/RAG
 !matrag --corpus rag-optics status 2>&1 | grep -vE "Warning"
+# 5. The handled files leave the downloads folder for proDownloads/processed (moved, never deleted), so the
+# folder only holds what has not been added yet. A file that was not found or failed stays where it is.
+done_dir = downloads / 'processed'
+done_dir.mkdir(exist_ok=True)
+in_collection = {i.doc_id for i in plan(root).items if i.pdf is not None}
+moved = 0
+for name, (doi, *_rest) in PAPERS.items():
+    pdf = downloads / name
+    if pdf.exists() and doi_key(doi) in in_collection:
+        shutil.move(str(pdf), str(done_dir / name)); moved += 1
+print(f'{moved} handled PDFs moved to {done_dir}')
 print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
 """),
     ], gpu=False)
