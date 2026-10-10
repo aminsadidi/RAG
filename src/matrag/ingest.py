@@ -42,9 +42,11 @@ def make_converter(settings: Settings) -> DocumentConverter:
         from docling.datamodel.pipeline_options import RapidOcrOptions
 
         pdf_options.ocr_options = RapidOcrOptions(force_full_page_ocr=True, lang=[settings.ocr_lang])
-    return DocumentConverter(
+    converter = DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
     )
+    converter.matrag_timeout_per_page_s = settings.convert_timeout_per_page_s
+    return converter
 
 
 def make_chunker(settings: Settings, tokenizer: BaseTokenizer | None = None) -> HybridChunker:
@@ -89,6 +91,34 @@ def cached_names(cache_dir: Path) -> set[str]:
     return names
 
 
+def page_count(path: Path) -> int:
+    """Pages of a PDF (0 if it cannot be read)."""
+    try:
+        import pypdfium2
+
+        pdf = pypdfium2.PdfDocument(str(path))
+        try:
+            return len(pdf)
+        finally:
+            pdf.close()
+    except Exception:
+        return 0
+
+
+def extend_timeout(converter: DocumentConverter, path: Path, max_pages: int | None = None) -> None:
+    """Raise the converter's timeout for a long PDF (only ever raised: a changed value makes Docling set
+    up a new pipeline, so the usual papers keep using the one already made)."""
+    options = getattr(converter, "format_to_options", {}).get(InputFormat.PDF)
+    options = getattr(options, "pipeline_options", None)
+    per_page = getattr(converter, "matrag_timeout_per_page_s", 0.0)
+    if options is None or options.document_timeout is None or not per_page or path.suffix.lower() != ".pdf":
+        return
+    pages = min(page_count(path), max_pages or sys.maxsize)
+    needed = pages * per_page
+    if needed > options.document_timeout:
+        options.document_timeout = needed
+
+
 def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str | None = None,
             max_pages: int | None = None) -> DoclingDocument:
     """Convert a paper, caching the result as compressed JSON under ``name`` (default: file name).
@@ -103,7 +133,15 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
     if doc is not None:
         return doc
     page_range = (1, max_pages) if max_pages else (1, sys.maxsize)
-    doc = converter.convert(path, page_range=page_range).document
+    extend_timeout(converter, path, max_pages)
+    result = converter.convert(path, page_range=page_range)
+    # Docling stops at its timeout and returns the pages done so far; cached, that half would pass for the
+    # whole paper on every later run. Not cached and reported instead, so the next run converts it again.
+    timed_out = [e for e in result.errors if str(getattr(e, "category", "")).lower().endswith("timeout")]
+    if timed_out:
+        raise RuntimeError(f"conversion timed out ({len(timed_out)} pages not converted); not cached, "
+                           f"it is retried on the next run")
+    doc = result.document
     cache_dir.mkdir(parents=True, exist_ok=True)
     target = cache_dir / f"{name}.json.gz"
     tmp = target.with_name(f".{target.name}.{os.getpid()}.tmp")
