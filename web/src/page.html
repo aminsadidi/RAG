@@ -412,7 +412,7 @@ th,td{padding:7px 10px}
     <div class="row">
       <label>ξ پمپ <input id="spxp" type="number" step="any" value="1.7" style="width:64px"></label>
       <label>ξ فیبر ۱ <input id="spxs" type="number" step="any" value="2.3" style="width:64px"></label>
-      <label>ξ فیبر ۲ <input id="spxi" type="number" step="any" value="2.3" style="width:64px"></label>
+      <label>ξ فیبر ۲ <input id="spxf2" type="number" step="any" value="2.3" style="width:64px"></label>
       <button id="spfib">محاسبه</button>
       <button class="alt" id="spfibopt">بهینه‌سازی کانونی</button>
     </div>
@@ -636,7 +636,7 @@ function bindHits(container, hits) {
 async function runSearch() {
   const opts = options(); if (!opts.q.trim()) return $("q").focus();
   store.set("opts", { ...opts, q: opts.q });
-  setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = ""; $("xcards").innerHTML = "";
+  setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = ""; window.crystalCards?.([]);
   try {
     const data = await (await api("/api/search", opts)).json();
     lastHits = data.hits;
@@ -1776,20 +1776,40 @@ window.loadSPDC = async () => {
   SP.list = (await fetch("/ri/aniso.json").then((r) => r.json())).filter((c) => !c.sources[0].isotropic);
   $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
   $("spmat").value = [SP.want, "KTiOPO4"].find((m) => SP.list.some((c) => c.material === m)) || SP.list[0].material;
-  $("spmat").onchange = () => { fillSrc(); fillCfg(); };
+  $("spmat").onchange = () => { fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || ""; };
   $("spsrc").onchange = fillCfg;
   for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
   $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(+$("splp").value, t).toFixed(4); };
   $("spgo").onclick = run;
   $("spfib").onclick = () => fiber(false);
   $("spfibopt").onclick = () => fiber(true);
-  fillSrc(); fillCfg();
+  fillSrc(); fitWl(); fillCfg();
 };
 window.spSelectCrystal = (mat) => {
   if (!SP.list) { SP.want = mat; return; }
   if (!SP.list.some((c) => c.material === mat)) return;
-  $("spmat").value = mat; fillSrc(); fillCfg();
+  $("spmat").value = mat; fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || "";
 };
+// Common degenerate pairs (pump, photon 1): when the entered wavelengths are outside every source of the crystal,
+// the first pair one of its sources covers is used instead, and the page says so.
+const SP_LINES = [[0.775, 1.55], [0.405, 0.81], [0.532, 1.064], [1.064, 2.128], [1.55, 3.1], [2.0, 4.0], [3.0, 6.0], [5.0, 10.0]];
+function fitWl() {
+  const c = SP.list.find((x) => x.material === $("spmat").value), lp = +$("splp").value, l1 = +$("spl1").value;
+  // a source takes a pair when every axis has an index at the pump and both photons (each axis has its own range)
+  const ok = (src, p, q) => { const r = 1 / (1 / p - 1 / q); return [p, q, r].every((l) => l > 0 && spNAt(src)(l).every(Number.isFinite)); };
+  SP.moved = "";
+  const cur = +$("spsrc").value;
+  if (ok(c.sources[cur], lp, l1)) return;
+  const other = c.sources.findIndex((src) => ok(src, lp, l1));
+  if (other >= 0) { $("spsrc").value = String(other); return; }
+  for (const [p, q] of SP_LINES) {
+    const i = c.sources.findIndex((src) => ok(src, p, q));
+    if (i < 0) continue;
+    $("splp").value = p; $("spl1").value = q; $("spsrc").value = String(i);
+    SP.moved = `طول موج‌های قبلی (${lp} → ${l1} µm) بیرون از گستره‌ی فرمول‌های ${c.material} بود؛ به ${p} → ${q} µm تغییر کرد.`;
+    return;
+  }
+}
 function fillSrc() {
   const c = SP.list.find((x) => x.material === $("spmat").value);
   $("spsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} (${s.range_um[0]}–${s.range_um[1]} µm)</option>`).join("");
@@ -1808,14 +1828,15 @@ function fillCfg() {
     const others = { x: ["y", "z"], y: ["x", "z"], z: ["x", "y"] }[ax], idx = { x: 0, y: 1, z: 2 };
     // the transverse axis with the larger index at the pump is the slow (s) polarization
     const [a, b] = others, sAx = nAt(lp)[idx[a]] >= nAt(lp)[idx[b]] ? a : b, fAx = sAx === a ? b : a;
-    if (!Number.isFinite(ns + nf)) continue;
+    // all three wavelengths inside the formula's range (no index outside it)
+    if (![lp, l1, l2].every((l) => Number.isFinite(l) && l > 0 && nAt(l).every(Number.isFinite)) || !Number.isFinite(ns + nf)) continue;
     for (const [p, q, r, name] of POLS) {
       const nameAx = (x) => (x === "s" ? sAx : fAx);
       opts.push({ label: `QPM در امتداد ${ax}، ${name}: ${nameAx(p)} → ${nameAx(q)} + ${nameAx(r)}`, plane, angle, pols: [p, q, r], qpm: true });
     }
   }
   SP.cfg = opts;
-  $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("") || `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول است</option>`;
+  $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("") || `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول این منبع است (${s.range_um[0]}–${s.range_um[1]} µm)</option>`;
   // default: type-II QPM along x (the usual PPKTP-type source), else the first option
   const pick = opts.findIndex((o) => o.qpm && o.plane === "xy" && o.angle === 0 && o.pols[1] !== o.pols[2]);
   if (pick >= 0) $("spcfg").value = String(pick);
@@ -1824,11 +1845,16 @@ function run() {
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
   $("spinfo").textContent = "در حال محاسبه…";
-  setTimeout(() => {
+  setTimeout(() => { try { compute(); } catch (err) { $("spres").textContent = ""; $("spinfo").textContent = "خطا در محاسبه: " + err.message; } }, 20);
+  function compute() {
     const j = jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
       L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value,
       filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 90 : 120 });
     const { purity: P, schmidt: K } = purity(j), I = intensity(j);
+    if (!Number.isFinite(P) || !I.jsi.every(Number.isFinite)) {
+      $("spres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند؛ طول موج‌ها، طول بلور یا منبع دیگری را امتحان کنید.</span>`;
+      $("spinfo").textContent = ""; return;
+    }
     // the unfiltered sinc has long tails: also give P on a window twice as wide (same resolution)
     let P2 = null;
     if ($("sppm").value === "sinc" && !(fil > 0) && !$("spfoc").checked) {
@@ -1840,7 +1866,7 @@ function run() {
     const lam1 = j.nu1.map((v) => C_UM_PS / v * 1000), lam2 = j.nu2.map((v) => C_UM_PS / v * 1000);
     const w1 = fwhm(lam1, I.m1), w2 = fwhm(lam2, I.m2);
     const off = !o.qpm && Math.abs(j.dk0) * +$("spL").value * 1000 / 2 > 0.5;
-    $("spres").innerHTML = `<b>P = ${P.toFixed(4)}</b>${P2 !== null ? ` (پنجره‌ی دوبرابر: ${P2.toFixed(4)})` : ""} &nbsp; K = ${K.toFixed(3)} &nbsp; FWHM₁ = ${w1.toFixed(3)} nm &nbsp; FWHM₂ = ${w2.toFixed(3)} nm`
+    $("spres").innerHTML = `<b>P = ${P.toFixed(4)}</b>${Number.isFinite(P2) ? ` (پنجره‌ی دوبرابر: ${P2.toFixed(4)})` : ""} &nbsp; K = ${K.toFixed(3)} &nbsp; FWHM₁ = ${w1.toFixed(3)} nm &nbsp; FWHM₂ = ${w2.toFixed(3)} nm`
       + (j.periodUm ? ` &nbsp; Λ = ${j.periodUm.toFixed(3)} µm` : "") + (off ? ` <span style="color:#c33">(در مرکز طیف Δk·L/2 = ${(j.dk0 * +$("spL").value * 500).toFixed(2)}؛ زاویه را بازبینی کنید)</span>` : "");
     if ($("spfoc").checked) {
       const xi = +$("spxi").value, dir = direction(o.plane, o.angle), idx = (lam, pol) => { const [sl, fa] = eigenIndices(spNAt(s)(lam), dir); return pol === "s" ? sl : fa; };
@@ -1853,7 +1879,7 @@ function run() {
     drawJSI(I.jsi, j.n, lam1, lam2);
     drawHOM(j, l1, l2);
     $("spinfo").textContent = `شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`;
-  }, 20);
+  }
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
 function fiber(optimize) {
@@ -1870,9 +1896,9 @@ function fiber(optimize) {
         const r = fiberCoupling({ ...base, xiP: xp, xiS: xf, xiI: xf, n: 56 });
         if (!best || r.gammaC > best.r.gammaC) best = { xp, xf, r };
       }
-      $("spxp").value = best.xp; $("spxs").value = best.xf; $("spxi").value = best.xf;
+      $("spxp").value = best.xp; $("spxs").value = best.xf; $("spxf2").value = best.xf;
     }
-    const args = { ...base, xiP: +$("spxp").value, xiS: +$("spxs").value, xiI: +$("spxi").value };
+    const args = { ...base, xiP: +$("spxp").value, xiS: +$("spxs").value, xiI: +$("spxf2").value };
     const f = fiberCoupling({ ...args, n: 100 }), z = fiberCoupling({ ...args, azimuthal: false, n: 100 });
     const pc = (v) => (v * 100).toFixed(1) + "%";
     $("spfibres").innerHTML = `w<sub>p</sub> = ${f.wp.toFixed(1)} µm, w₁ = ${f.ws.toFixed(1)} µm, w₂ = ${f.wi.toFixed(1)} µm<br>`
@@ -1983,10 +2009,12 @@ function card(mat, D, synced) {
   </div>`;
 }
 
+let cardsFor = 0; // the latest search: an older one whose data arrives late does not overwrite its cards
 window.crystalCards = async (materials) => {
-  const box = $("xcards"); box.innerHTML = "";
+  const box = $("xcards"), me = ++cardsFor; box.innerHTML = "";
   if (!materials.length) return;
   let D; try { D = await loadData(); } catch { return; }
+  if (me !== cardsFor) return;
   const known = materials.filter((m) => D.aniso.some((c) => c.material === m) || D.dij[m] || D.index.some((x) => x.material === m && (x.shelf === "main" || x.shelf === "papers")));
   // One crystal in the question: the other tabs take it. Two or more (a comparison): only the cards.
   const sync = known.length === 1;

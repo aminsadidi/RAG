@@ -47,7 +47,8 @@ async function qdrant(env, path, body) {
 }
 
 // Model outputs are deterministic (temperature 0), so they are kept in KV for 90 days, keyed by
-// model + input: a repeated question costs no Workers AI Neurons. A failing cache never fails a search.
+// model + the full model input (prompt included, so an edited prompt is not served old answers): a repeated
+// question costs no Workers AI Neurons. A failing cache never fails a search.
 async function cached(env, model, input, compute) {
   if (!env.AICACHE) return compute();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${model}\n${input}`));
@@ -60,9 +61,10 @@ async function cached(env, model, input, compute) {
 }
 
 async function translate(env, question) {
-  return cached(env, env.TRANSLATE_MODEL, question, async () => {
+  const prompt = translatePrompt(question);
+  return cached(env, env.TRANSLATE_MODEL, prompt, async () => {
     const out = await env.AI.run(env.TRANSLATE_MODEL, {
-      messages: [{ role: "user", content: translatePrompt(question) }], max_tokens: 120, temperature: 0,
+      messages: [{ role: "user", content: prompt }], max_tokens: 120, temperature: 0,
     });
     return cleanTranslation(out.response, question);
   });
@@ -70,8 +72,9 @@ async function translate(env, question) {
 
 async function embed(env, query) {
   // "cls" pooling: bge's own pooling, identical to the local sentence-transformers vectors.
-  return cached(env, env.EMBED_MODEL, query, async () => {
-    const out = await env.AI.run(env.EMBED_MODEL, { text: [shared.QUERY_INSTRUCTION + query], pooling: "cls" });
+  const text = shared.QUERY_INSTRUCTION + query;
+  return cached(env, env.EMBED_MODEL, `cls\n${text}`, async () => {
+    const out = await env.AI.run(env.EMBED_MODEL, { text: [text], pooling: "cls" });
     return out.data[0];
   });
 }
@@ -149,10 +152,12 @@ async function search(env, opts) {
     ? (await qdrant(env, `/collections/${env.COLLECTION}/points/query/groups`,
       { ...body, group_by: "doc_id", group_size: 1, with_payload: PAYLOAD })).groups.map((g) => g.hits[0])
     : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
-  const ranked = rerank ? await rerankPoints(env, query, points, topK) : points;
+  // A failing reranker (Workers AI quota, outage) leaves the first-stage order rather than failing the search.
+  let reranked = rerank, ranked = points.slice(0, topK);
+  if (rerank) ranked = await rerankPoints(env, query, points, topK).catch(() => { reranked = false; return ranked; });
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
-  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), reranked: rerank, materials: crystalsIn(query), hits, relevance: check, ms: Date.now() - started };
+  return { question, searchQuery, mode, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started };
 }
 
 async function facets(env) {
