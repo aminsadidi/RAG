@@ -358,7 +358,8 @@ def export_formulas(
     thermo = Settings().data_dir / Settings().corpus / "thermo_optic.yml"
     dij = Settings().data_dir / Settings().corpus / "nonlinear_coefficients.yml"
     cubic = anisotropic.cubic_crystals(dij)
-    typer.echo(f"{anisotropic.build(out, thermo, cubic)} crystals written to aniso.json (phase-matching tab; "
+    prefer = anisotropic.preferred(Settings().data_dir / Settings().corpus / "paper_formulas.yml")
+    typer.echo(f"{anisotropic.build(out, thermo, cubic, prefer)} crystals written to aniso.json (phase-matching tab; "
                f"{len(cubic)} cubic, for QPM only)")
     typer.echo(f"{anisotropic.build_nonlinear(out, dij)} crystals with nonlinear coefficients written to dij.json")
 

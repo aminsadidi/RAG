@@ -320,7 +320,7 @@ th,td{padding:7px 10px}
 <section id="tab-pm" hidden class="viz-root">
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
-    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۵۵ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
+    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۵۷ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
@@ -1376,6 +1376,8 @@ function inputs() {
 window.loadPM = async () => {
   if (PM.list) return;
   [PM.list, PM.dij] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({}))]);
+  // partial tensors (not all elements, or not in the dielectric frame) would give a wrong d_eff: card only
+  PM.dij = Object.fromEntries(Object.entries(PM.dij).filter(([, v]) => !v.partial));
   const saved = store.get("pm"); if (saved) { $("pmproc").value = saved.proc; $("pma").value = saved.a; $("pmb").value = saved.b; }
   const mat = saved?.mat && PM.list.some((c) => key(c) === saved.mat) ? saved.mat : "BaB2O4";
   $("pmmore").checked = !PM.dij[mat];
@@ -2031,7 +2033,9 @@ function card(mat, D, synced) {
   const rows = [
     src ? ["ضریب شکست", `${indices(src)}<span class="hint"> · ${esc(src.label)} · بازه‌ی فرمول <bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi>${c.sources.length > 1 ? ` · ${fa(c.sources.length)} منبع` : ""}</span>`]
       : ri ? ["ضریب شکست", `${fa(ri.n)} منبع در پایگاه (${fa(ri.formulas)} فرمول) · بازه‌ی <bdi dir="ltr">${+ri.range_um[0].toPrecision(3)}–${+ri.range_um[1].toPrecision(3)} µm</bdi>`] : null,
-    ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)}</span>` : ""}` : '<span class="hint">ثبت نشده</span>'],
+    ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)}</span>` : ""}`
+      + (d.partial ? `<div class="hint">ناقص: فقط بعضی عنصرها اندازه‌گیری شده‌اند${d.frame ? ` و در دستگاه <bdi dir="ltr">${esc(d.frame)}</bdi>` : ""}؛ در محاسبه‌ی d<sub>eff</sub> تطبیق فاز به کار نمی‌روند.</div>` : "")
+      : '<span class="hint">ثبت نشده</span>'],
     ["گرمانوری (dn/dT)", thermo.length ? `فرمول وابسته به دما: ${thermo.map(esc).join("، ")}` : '<span class="hint">ثبت نشده</span>'],
   ].filter(Boolean);
   const btn = (act, text) => `<button class="alt" data-xact="${act}" data-mat="${esc(mat)}">${text}</button>`;
