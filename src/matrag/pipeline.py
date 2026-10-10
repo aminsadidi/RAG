@@ -224,6 +224,8 @@ class Workspace:
                           and sources.get(item.doc_id, FULL_TEXT) == item.source_type
                           and (item.pdf is None or files.get(item.doc_id) in (self._relative(item.pdf), item.pdf.name))
                           and conversions.get(item.doc_id, "") == (self.conversion_of(item.doc_id) if item.pdf else ""))
+            if up_to_date and self._stale_conversion(item):
+                up_to_date = False  # listed in reconvert.txt: its cached conversion was deleted above
             if up_to_date and not force:
                 report(name)
                 results.append(IngestResult(name, library.get(item.doc_id).short_citation(), 0, skipped=True))
@@ -468,6 +470,37 @@ class Workspace:
             lines = path.read_text("utf-8").splitlines() if path.exists() else []
             cache[name] = {line.split("#")[0].strip() for line in lines} - {""}
         return cache[name]
+
+    def reconvert_dates(self) -> dict[str, float]:
+        """data/<corpus>/reconvert.txt: lines "doc_id YYYY-MM-DD"; a cached conversion older than the date
+        is converted again (once: the new one is newer), e.g. one cut short by a timeout before such
+        conversions were no longer cached."""
+        cache = self.__dict__
+        if "_reconvert" not in cache:
+            import datetime as dt
+
+            path = self.settings.data_dir / self.settings.corpus / "reconvert.txt"
+            out = {}
+            for line in (path.read_text("utf-8").splitlines() if path.exists() else []):
+                parts = line.split("#")[0].split()
+                if len(parts) >= 2:
+                    out[parts[0]] = dt.datetime.fromisoformat(parts[1]).replace(tzinfo=dt.timezone.utc).timestamp()
+            cache["_reconvert"] = out
+        return cache["_reconvert"]
+
+    def _stale_conversion(self, item) -> bool:
+        """Delete the cached conversion of a paper listed in reconvert.txt if it is older than its date."""
+        since = self.reconvert_dates().get(item.doc_id)
+        if since is None or item.pdf is None:
+            return False
+        how = self.conversion_of(item.doc_id)
+        folder = self.settings.processed_dir.parent / f"docling_{how.replace('+', '_')}" if how else self.settings.processed_dir
+        stale = False
+        for f in (folder / f"{item.doc_id}.json.gz", folder / f"{item.doc_id}.json"):
+            if f.exists() and f.stat().st_mtime < since:
+                f.unlink()
+                stale = True
+        return stale
 
     def conversion_of(self, doc_id: str) -> str:
         """How a paper's PDF is converted: "" (default), "ocr", "formulas" or "ocr+formulas"."""
