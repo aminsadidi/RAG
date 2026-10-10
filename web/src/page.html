@@ -195,7 +195,7 @@ th,td{padding:7px 10px}
       <label>ماده <select id="material"><option value="">همه</option></select></label>
       <label><input id="fulltext" type="checkbox"> فقط متن کامل مقاله‌ها</label>
       <label title="بهترین بخش هر مقاله؛ یک مقاله نمی‌تواند همه‌ی نتیجه‌ها را بگیرد"><input id="perpaper" type="checkbox"> هر مقاله یک بار</label>
-      <label title="۳۰ نتیجه‌ی اول را یک مدل cross-encoder (bge-reranker) دوباره با خود پرسش می‌خواند و مرتب می‌کند"><input id="rerank" type="checkbox" checked> مرتب‌سازی دوباره</label>
+      <label title="۳۰ نتیجه‌ی اول را یک مدل cross-encoder (bge-reranker) دوباره با خود پرسش می‌خواند و مرتب می‌کند"><input id="rerank" type="checkbox"> مرتب‌سازی دوباره</label>
     </div>
     <div class="row">
       <button class="main" id="go">جست‌وجو</button>
@@ -833,7 +833,7 @@ function loadFacets() {
 }
 
 const saved = store.get("opts");
-if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; $("perpaper").checked = !!saved.perPaper; $("rerank").checked = saved.rerank !== false; }
+if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; $("perpaper").checked = !!saved.perPaper; $("rerank").checked = saved.rerank === true; }
 loadFacets().then(() => { if (saved?.material) $("material").value = saved.material; });
 </script>
 <script type="module">
