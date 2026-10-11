@@ -1,7 +1,7 @@
 // The web app: searches the knowledge base in Qdrant and gives the sources, never an AI-written answer.
 // A question in Persian is translated to English (the papers are in English); the query is embedded with
 // the same model and pooling as the Python pipeline, and Qdrant fuses dense and BM25 results with RRF.
-import { cleanTranslation, contextPack, crystalsIn, expandQuery, isPersian, queryTerms, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
+import { cleanTranslation, contextPack, crystalsIn, expandQuery, foldDigits, isPersian, queryTerms, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
 import PAGE from "./page.html";
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
@@ -123,7 +123,7 @@ function filterOf(opts) {
 }
 
 async function search(env, opts) {
-  const question = String(opts.q || "").trim().slice(0, 1000);
+  const question = foldDigits(String(opts.q || "")).trim().slice(0, 1000);
   if (!question) throw Object.assign(new Error("empty question"), { status: 400 });
   let mode = MODES.includes(opts.mode) ? opts.mode : "hybrid";
   const topK = Math.min(Math.max(parseInt(opts.topK, 10) || 8, 1), 30);

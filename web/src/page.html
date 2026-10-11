@@ -699,7 +699,7 @@ async function runSearch() {
       <button data-fb="found">بله</button><button data-fb="notfound">نه</button>
       <input id="fbnote" placeholder="اگر خواستید بنویسید چه چیزی کم بود یا چه چیزی را دنبال می‌گشتید (اختیاری)"></div>`);
     bindHits($("hits"), data.hits);
-    window.crystalCards?.(data.materials || []);
+    window.crystalCards?.(data.materials || [], `${data.question} ${data.searchQuery || ""}`);
     // pdf.js and its worker into the browser cache while the reader looks at the results
     if (data.hits.some((h) => h.source_file)) (window.requestIdleCallback || setTimeout)(() => loadPdfjs().then(() => fetch(PDFJS + "pdf.worker.min.js")).catch(() => {}));
   } catch (err) { status("خطا: " + err.message, true); }
@@ -2096,11 +2096,36 @@ function card(mat, D, synced) {
 }
 
 let cardsFor = 0; // the latest search: an older one whose data arrives late does not overwrite its cards
-window.crystalCards = async (materials) => {
+// Crystals of the question found by their name in the data, so every material with a card is found, not only what
+// the server reads as a formula: elements (Si, Ge), KD2PO4, LuAl3(BO3)4, liquid crystals (E7), names in lower case
+// ("linbo3") and doped crystals written with a colon ("MgO:LiNbO3" is the card MgO-LiNbO3, not MgO and LiNbO3).
+// Lower case only for names with a digit and four characters or more ("gase", "zno", "n2" are words or symbols);
+// one-letter elements and "In", "Be", "He" … only when the search is the symbol alone.
+const NAME_WORDS = new Set(["In", "Be", "He", "Re", "Ne", "As", "No", "At", "So", "Pa"]);
+function namedIn(text, D) {
+  text = text || "";
+  const tokens = text.split(/[^\p{L}\p{N}:-]+/u).map((w) => w.replace(/:/g, "-").replace(/^-+|-+$/g, ""));
+  const lower = new Set(tokens.map((w) => w.toLowerCase())), exact = new Set(tokens);
+  const found = [];
+  for (const m of new Set([...D.aniso.map((c) => c.material), ...Object.keys(D.dij),
+    ...D.index.filter((x) => x.shelf === "main" || x.shelf === "papers").map((x) => x.material)])) {
+    const keys = m.split(" - ").map((k) => k.replace(/^\((.+)\)n$/, "$1"));
+    if (keys.some((k) => (/[\s(),]/.test(k) ? k.length > 4 && text.toLowerCase().includes(k.toLowerCase())
+      : /\d/.test(k) && k.length > 3 ? lower.has(k.toLowerCase())
+        : exact.has(k) && ((!NAME_WORDS.has(k) && k.length > 1) || text.trim() === k)))) found.push(m);
+  }
+  // in the order the question names them
+  const at = (m) => { const i = text.toLowerCase().indexOf(m.split(" - ")[0].toLowerCase()); return i < 0 ? Infinity : i; };
+  return found.sort((a, b) => at(a) - at(b));
+}
+
+window.crystalCards = async (materials, text) => {
   const box = $("xcards"), me = ++cardsFor; box.innerHTML = "";
-  if (!materials.length) return;
+  if (!materials.length && !text) return;
   let D; try { D = await loadData(); } catch { return; }
   if (me !== cardsFor) return;
+  const all = namedIn(text, D), parts = new Set(all.filter((m) => m.includes("-")).flatMap((m) => m.split("-")));
+  materials = [...new Set([...all, ...materials])].filter((m) => !parts.has(m));
   const known = materials.filter((m) => D.aniso.some((c) => c.material === m) || D.dij[m] || D.index.some((x) => x.material === m && (x.shelf === "main" || x.shelf === "papers")));
   // One crystal in the question: the other tabs take it. Two or more (a comparison): only the cards.
   const sync = known.length === 1;

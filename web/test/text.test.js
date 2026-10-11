@@ -49,6 +49,11 @@ test("crystals named in a query, as formulas (crystal cards of the search page)"
   const { crystalsIn } = new Function("S", `${src}; return { crystalsIn };`)(S);
   assert.deepEqual(crystalsIn("Sellmeier coefficients of LBO crystal"), ["LiB3O5"]);
   assert.deepEqual(crystalsIn("What is the nonlinear coefficient of KTP crystal?"), ["KTiOPO4"]);
+  // subscript and Persian digits, abbreviations in lower case
+  assert.deepEqual(crystalsIn("LiNbO₃"), ["LiNbO3"]);
+  assert.deepEqual(crystalsIn("ضریب شکست LiNbO۳"), ["LiNbO3"]);
+  assert.deepEqual(crystalsIn("bbo vs ktp"), ["BaB2O4", "KTiOPO4"]);
+  assert.deepEqual(crystalsIn("the ln case"), []);
   assert.deepEqual(crystalsIn("beta barium borate thermo-optic coefficients"), ["BaB2O4"]);
   assert.deepEqual(crystalsIn("compare BBO and LiB3O5").sort(), ["BaB2O4", "LiB3O5"]);
   assert.deepEqual(crystalsIn("PPLN SPDC source"), ["LiNbO3"]);
