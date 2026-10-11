@@ -649,10 +649,25 @@
   reference: "Kirby & DeShazer (1987). Refractive indices of 14 nonlinear crystals isomorphic to KH2PO4. J. Opt. Soc. Am. B 4, 1072. doi:10.1364/josab.4.001072"
   doi: 10.1364/josab.4.001072
   pdf_page: 6
-  where: "Table 15 (modified Sellmeier, Eq. (3)), in the λ-in-µm form Nikogosyan (2005, doc 10.1007_b138685, PDF p. 157, read from the page image) gives: n² = A + Bλ²/(λ² − C²) + D/(λ² − E²); o: A = 2.240921, B = 2.246956, C = 11.26591, D = 0.009676, E = 0.124981; e: A = 2.126019, B = 0.784404, C = 11.10871, D = 0.008578, E = 0.109505. Written as type 2 with D/(λ² − E²) = (D/E²)·λ²/(λ² − E²) − D/E². Measured at 33.0 °C (Table 2), not 293 K as the handbook says"
+  where: "Table 15 (modified Sellmeier, Eq. (3)), in the λ-in-µm form Nikogosyan (2005, doc 10.1007_b138685, PDF p. 157, read from the page image) gives: n² = A + Bλ²/(λ² − C²) + D/(λ² − E²); o: A = 2.240921, B = 2.246956, C = 11.26591, D = 0.009676, E = 0.124981; e: A = 2.126019, B = 0.784404, C = 11.10871, D = 0.008578, E = 0.109505. Written as type 2 with D/(λ² − E²) = (D/E²)·λ²/(λ² − E²) − D/E². Measured at 33.0 °C (Table 2), not 293 K as the handbook says. Measured from 0.4047 µm; used down to 0.26 µm as the handbook does for its calculated angles (532 → 266 nm at 86.20°): with the dn/dT of Barnes et al. (1982) it puts noncritical SHG of 532 nm at 53 °C (measured 42–49 °C, handbook PDF p. 159) and its tuning at 0.060 nm/K (measured 0.068)"
   entries:
-    - {page: Kirby-1987, direction: o, type: 2, coefficients: [0.621469, 2.246956, 126.920728, 0.619452, 0.01562025], range_um: [0.4047, 1.064]}
-    - {page: Kirby-1987, direction: e, type: 2, coefficients: [0.41067, 0.784404, 123.403438, 0.715349, 0.01199135], range_um: [0.4047, 1.064]}
+    - {page: Kirby-1987, direction: o, type: 2, coefficients: [0.621469, 2.246956, 126.920728, 0.619452, 0.01562025], range_um: [0.26, 1.064]}
+    - {page: Kirby-1987, direction: e, type: 2, coefficients: [0.41067, 0.784404, 123.403438, 0.715349, 0.01199135], range_um: [0.26, 1.064]}
   checks:  # the paper's measured indices, Table 2 (p. 2, read from the page image); its own fit is within 1e-4
     - {direction: o, tol: 1.0e-4, points: [[0.404656, 1.51770], [0.435833, 1.51427], [0.467815, 1.51147], [0.479991, 1.51055], [0.508582, 1.50870], [0.546074, 1.50662], [0.58930, 1.50472], [0.643847, 1.50263], [0.780027, 1.49882], [0.79476, 1.49840], [0.852113, 1.49721], [0.894346, 1.49629], [1.0640, 1.49314]]}
     - {direction: e, tol: 1.0e-4, points: [[0.404656, 1.47696], [0.435833, 1.47412], [0.467815, 1.47174], [0.479991, 1.47099], [0.508582, 1.46945], [0.546074, 1.46774], [0.58930, 1.46610], [0.643847, 1.46449], [0.780027, 1.46162], [0.79476, 1.46146], [0.852113, 1.46059], [0.894346, 1.46007], [1.0640, 1.45824]]}
+
+- material: LiTaO3
+  name: LiTaO3 (Lithium tantalate, congruent)
+  prefer: true  # a fit to Bond's table (the other source) that also carries the temperature dependence
+  doc_id: "10.1063_1.363679"
+  reference: "Abedin & Ito (1996). Temperature-dependent dispersion relation of ferroelectric lithium tantalate. J. Appl. Phys. 80, 6561. doi:10.1063/1.363679"
+  doi: 10.1063/1.363679
+  pdf_page: 2
+  where: "Eq. (2) and Table I (read from the page image): n² = A1 + A2/(λ² − A3²) + A4·λ², fitted to the 22 room-temperature points of Bond (1965); o: 4.51224, 0.0847522, 0.19876, −0.0239046; e: 4.52999, 0.0844313, 0.20344, −0.0237909; 0.4–4 µm, T0 = 25 °C"
+  entries:
+    - {page: Abedin-1996, direction: o, type: 4, coefficients: [4.51224, 0.0847522, 0, 0.19876, 2, 0, 0, 0, 1, -0.0239046, 2], range_um: [0.45, 4.0]}
+    - {page: Abedin-1996, direction: e, type: 4, coefficients: [4.52999, 0.0844313, 0, 0.20344, 2, 0, 0, 0, 1, -0.0237909, 2], range_um: [0.45, 4.0]}
+  checks:  # Bond's table, which the paper fits with standard deviations 2.1e-4 (o) and 3.5e-4 (e)
+    - {direction: o, tol: 5.0e-4, points: [[0.45, 2.242], [0.5, 2.216], [0.6, 2.1834], [0.8, 2.1538], [1.0, 2.1391], [1.6, 2.1174], [2.0, 2.1066], [3.0, 2.0755], [4.0, 2.0335]]}
+    - {direction: e, tol: 7.0e-4, points: [[0.45, 2.2468], [0.5, 2.2205], [0.6, 2.1878], [4.0, 2.0377]]}

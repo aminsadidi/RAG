@@ -143,3 +143,18 @@ def test_dkdp_phase_matching_angles():
     lam = 1.0642
     th2 = math.degrees(brentq(lambda t: (no(lam) + ne_theta(lam, t)) / 2 - ne_theta(lam / 2, t), 0.01, 1.57))
     assert 53.4 < th2 < 54.0
+
+
+def test_lithium_tantalate_temperature_curves():
+    """Abedin & Ito (1996), Fig. 3: from 25 to 300 °C, ne(468 nm) rises from about 2.237 to 2.258 and
+    no(468 nm) from 2.232 to 2.236 (the gayer form of thermo_optic.yml, with f_c = 546)."""
+    import yaml
+    block = next(b for b in yaml.safe_load(open(DATA.parent / "thermo_optic.yml")) if b.get("source") == "Abedin-1996")
+
+    def n(axis, lam, T):
+        a, b = block["axes"][axis]["a"], block["axes"][axis]["b"]
+        f = (T - 25) * (T + 25 + 546)
+        return math.sqrt(a[0] + b[0] * f + (a[1] + b[1] * f) / (lam ** 2 - (a[2] + b[2] * f) ** 2) - a[5] * lam ** 2)
+
+    assert n("e", 0.468, 25) == pytest.approx(2.237, abs=2e-3) and n("e", 0.468, 300) == pytest.approx(2.258, abs=2e-3)
+    assert n("o", 0.468, 300) - n("o", 0.468, 25) == pytest.approx(0.0045, abs=1.5e-3)

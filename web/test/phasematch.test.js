@@ -528,3 +528,20 @@ test("handbook data (Dmitriev et al. 1999) checked against the book's and Petrov
   assert.ok(Math.abs(opo.find((r) => r.type === "I").angle - 47.14) < 0.02 && Math.abs(opo.find((r) => r.type === "IIa").angle - 52.84) < 0.02);
   for (const m of ["HgS", "Se", "Ag3SbS3"]) assert.ok(D[m], m);
 });
+
+test("DKDP (Kirby & DeShazer 1987 with the dn/dT of Barnes et al. 1982): noncritical SHG of 532 nm near the measured 42–49 °C, tuning near the measured 0.068 nm/K", async () => {
+  const fs = await import("node:fs");
+  const { refractiveIndex, thermoShift } = await import("../src/dispersion.client.js");
+  const A = JSON.parse(fs.readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
+  const s = A.find((x) => x.material === "KD2PO4").sources.find((x) => x.label === "Kirby-1987");
+  const n = (ax, lam, T) => {
+    const n0 = refractiveIndex(s.axes[ax].type, s.axes[ax].coefficients, lam);
+    return n0 + thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, n0, lam, T);
+  };
+  const D = (lam, T) => n("e", lam / 2, T) - n("o", lam, T);
+  const bis = (f, lo, hi) => { for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; (Math.sign(f(m)) === Math.sign(f(lo))) ? lo = m : hi = m; } return (lo + hi) / 2; };
+  const T = bis((t) => D(0.5321, t), -50, 200);
+  assert.ok(T > 40 && T < 61, `T = ${T}`);
+  const rate = (bis((l) => D(l, 43), 0.48, 0.56) - bis((l) => D(l, 33), 0.48, 0.56)) / 10 * 1000;
+  assert.ok(Math.abs(rate - 0.068) < 0.015, `rate = ${rate}`);
+});
