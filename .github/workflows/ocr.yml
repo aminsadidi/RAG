@@ -3,7 +3,8 @@
 #
 # Started by hand (Actions -> OCR papers -> Run workflow) or by a commit that changes
 # scripts/ocr_gh/run.json. The repository is public: paper text only travels encrypted (ARTIFACT_KEY)
-# and is never printed. Secrets: SITE_KEY, QDRANT_URL, QDRANT_API_KEY, ARTIFACT_KEY.
+# and is never printed. The keys come from the site, which hands them to this workflow only
+# (scripts/ocr_gh/keys.sh: GitHub's OIDC token proves which workflow asks).
 name: OCR papers
 
 on:
@@ -21,14 +22,11 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 concurrency: ocr
 
 env:
-  SITE_KEY: ${{ secrets.SITE_KEY }}
-  QDRANT_URL: ${{ secrets.QDRANT_URL }}
-  QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
-  ARTIFACT_KEY: ${{ secrets.ARTIFACT_KEY }}
   GH_TOKEN: ${{ github.token }}
   HF_HUB_DISABLE_PROGRESS_BARS: "1"
   TQDM_DISABLE: "1"
@@ -44,6 +42,8 @@ jobs:
       dry: ${{ steps.args.outputs.dry }}
     steps:
       - uses: actions/checkout@v4
+      - name: Keys
+        run: bash scripts/ocr_gh/keys.sh
       - uses: actions/setup-python@v5
         with: {python-version: "3.11", cache: pip}
       - name: Install
@@ -81,6 +81,8 @@ jobs:
         shard: ${{ fromJSON(needs.scan.outputs.shards) }}
     steps:
       - uses: actions/checkout@v4
+      - name: Keys
+        run: bash scripts/ocr_gh/keys.sh
       - uses: actions/setup-python@v5
         with: {python-version: "3.11", cache: pip}
       - name: Install
@@ -108,6 +110,8 @@ jobs:
     timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
+      - name: Keys
+        run: bash scripts/ocr_gh/keys.sh
       - uses: actions/setup-python@v5
         with: {python-version: "3.11", cache: pip}
       - name: Install
