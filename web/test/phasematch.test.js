@@ -567,3 +567,17 @@ test("BGSe (Kato et al. 2023): measured 90° type-2 DFG temperatures 112 and 149
   assert.ok(Math.abs(bis((T) => dk(1.98, 14.201, T, 0), 20, 300) - 149) < 1);
   for (const [li, deg] of [[8.9257, 4.83], [8.244, 6.94]]) assert.ok(Math.abs(bis((t) => dk(2.0907, li, 20, t), 0, 0.5) * 180 / Math.PI - deg) < 0.02);
 });
+
+test("thermo-optic: KDP (Phillips 1966) tuning rate and KTA (Emanueli & Arie 2003) n1", () => {
+  const kdp = source("KH2PO4", "Zernike");
+  const n = (s, ax, l, T) => entryIndex(s.axes[ax], l) + thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], l), l, T);
+  // 90° type-I SHG, no(λ) = ne(λ/2): 0.045 nm/K at 0.517 µm (measured 0.048 nm/K)
+  const f = (l, T) => n(kdp, "e", l / 2, T) - n(kdp, "o", l, T);
+  let lo = 0.49, hi = 0.55; for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; f(lo, 24.85) * f(m, 24.85) <= 0 ? hi = m : lo = m; }
+  const rate = -((f(lo, 25.85) - f(lo, 23.85)) / 2) / ((f(lo + 1e-5, 24.85) - f(lo - 1e-5, 24.85)) / 2e-5) * 1000;
+  assert.ok(Math.abs(rate - 0.048) < 0.006, `KDP tuning rate ${rate}`);
+  // KTA n1 = dn/dT at 25 °C, Fig. 4: z 3.0e-5 at 0.532 µm, y 1.37e-5 at 1.064 µm
+  const kta = source("KTiOAsO4", "Feve-2000"), d = (ax, l) => (n(kta, ax, l, 26) - n(kta, ax, l, 24)) / 2;
+  assert.ok(Math.abs(d("z", 0.532) - 2.97e-5) < 0.1e-5 && Math.abs(d("y", 1.064) - 1.33e-5) < 0.1e-5);
+  assert.equal(kta.thermo.partial, true);
+});
