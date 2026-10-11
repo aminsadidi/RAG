@@ -260,7 +260,7 @@ async function handle(request, env, ctx) {
         location: "/", "set-cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=31536000` } });
     }
     await new Promise((r) => setTimeout(r, 800));
-    return html(LOGIN.replace("<!--error-->", '<p class="err">رمز درست نیست.</p>'), 401);
+    return html(LOGIN.replace("<!--error-->", '<p class="err">رمز درست نیست. / Wrong password.</p>'), 401);
   }
   if (url.pathname === "/logout") {
     return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; Max-Age=0" } });
