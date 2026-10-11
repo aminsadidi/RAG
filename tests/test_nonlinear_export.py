@@ -14,7 +14,8 @@ def test_partial_tensors_are_flagged(tmp_path):
     partial = {m for m, v in data.items() if v.get("partial")}
     assert partial == {"BaGa4Se7", "BaGa4S7"}
     assert data["BaGa4Se7"]["d"] == {"11": 24.3, "13": 20.4} and data["BaGa4Se7"]["frame"]
-    assert all("partial" not in v for m, v in data.items() if m != "BaGa4Se7")
+    assert all("partial" not in v for m, v in data.items() if m not in partial)
+    assert data["BaGa4S7"]["d"]["31"] == 5.1 and data["BaGa4S7"]["d"]["32"] == 5.7 and data["BaGa4S7"]["frame"]
 
 
 def test_new_coefficients(tmp_path):
