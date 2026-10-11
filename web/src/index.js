@@ -10,6 +10,7 @@ import SPDC_JS from "./spdc.client.js";
 // the module imports the phase-matching module by its file name; the browser loads it as /phasematch.js
 const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "/phasematch.js"');
 import PAPERS from "./papers.json";
+import { verifyOidc } from "./oidc.js";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
 const MODES = ["hybrid", "vector", "bm25"];
@@ -234,8 +235,20 @@ function packFile(found) {
   return contextPack(found.question, found.hits, about, language, found.searchQuery);
 }
 
+// ---------- keys for the OCR workflow (.github/workflows/ocr.yml) on GitHub's runners
+// A runner proves which workflow it runs with GitHub's signed OIDC token; only this repository's OCR workflow
+// gets the keys, so none has to be stored in the (public) repository.
+async function ciKeys(request, env) {
+  const claims = await verifyOidc((request.headers.get("authorization") || "").replace(/^Bearer /i, ""));
+  if (!claims) return json({ error: "not this repository's OCR workflow" }, 403);
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`ocr-artifacts:${env.QDRANT_API_KEY}`));
+  return json({ SITE_KEY: env.SITE_PASSWORD, QDRANT_URL: env.QDRANT_URL, QDRANT_API_KEY: env.QDRANT_API_KEY,
+    ARTIFACT_KEY: [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") });
+}
+
 async function handle(request, env) {
   const url = new URL(request.url);
+  if (url.pathname === "/ci/keys" && request.method === "POST") return ciKeys(request, env);
   // The password in a form or in the link (/?key=...): the browser is then remembered for a year.
   const given = url.searchParams.get("key") ??
     (url.pathname === "/login" && request.method === "POST" ? (await request.formData()).get("password") : null);
