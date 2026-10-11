@@ -122,3 +122,24 @@ def test_catalog_for_the_site():
     assert {"KTiOAsO4", "CsB3O5", "KBe2BO3F2", "CdSiP2", "YCa4O(BO3)3", "La2CaB10O19", "DAST"} <= mats
     assert all(i["shelf"] == "papers" and i["doc_id"] and i["range_um"][0] < i["range_um"][1] for i in items)
     assert paper_formulas.names(DATA)[("papers", "papers", "KBe2BO3F2")].endswith("(Potassium fluoroboratoberyllate, KBBF)")
+
+
+def test_dkdp_phase_matching_angles():
+    """Kirby & DeShazer (1987) KD*P: the type-I SHG angles Nikogosyan (2005, PDF p. 160) calculates from it
+    (1.2 µm: 35.94°, 1.0 µm: 37.47°, 0.8 µm: 43.75°; SFG 1.0642 + 0.5321 µm: 46.82°) and the measured
+    type-II SHG angle of 1.0642 µm, 53.5–54° (PDF p. 159)."""
+    no, ne = curve("KD2PO4", "Kirby-1987", "o"), curve("KD2PO4", "Kirby-1987", "e")
+
+    def ne_theta(lam, th):
+        return 1 / math.sqrt(math.cos(th) ** 2 / no(lam) ** 2 + math.sin(th) ** 2 / ne(lam) ** 2)
+
+    def type1(l1, l2):
+        l3 = 1 / (1 / l1 + 1 / l2)
+        return math.degrees(brentq(lambda t: no(l1) / l1 + no(l2) / l2 - ne_theta(l3, t) / l3, 0.01, 1.5707))
+
+    for lam, angle in ((1.2, 35.94), (1.0, 37.47), (0.8, 43.75)):
+        assert type1(lam, lam) == pytest.approx(angle, abs=0.02)
+    assert type1(1.0642, 0.5321) == pytest.approx(46.82, abs=0.02)
+    lam = 1.0642
+    th2 = math.degrees(brentq(lambda t: (no(lam) + ne_theta(lam, t)) / 2 - ne_theta(lam / 2, t), 0.01, 1.57))
+    assert 53.4 < th2 < 54.0
