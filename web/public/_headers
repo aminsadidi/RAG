@@ -1,3 +1,7 @@
 # Versioned third-party files (the version is in the path): cached for a year, never revalidated.
 /vendor/*
   Cache-Control: public, max-age=31536000, immutable
+
+# Logo and icons: a new logo gets a new file name, so a week in the browser cache is safe.
+/brand/*
+  Cache-Control: public, max-age=604800
