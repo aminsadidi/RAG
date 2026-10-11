@@ -186,6 +186,9 @@ th,td{padding:7px 10px}
 .fbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.fbbar input{flex:1 1 100%}
 .fbhit{margin-inline-start:auto}.fbhit button{padding:2px 8px}
 html.i18n-wait body{visibility:hidden}
+html.nopdf [data-act="view"],html.nopdf [data-needpdf],html.nopdf .pagemap{display:none!important}
+html:not(.nopdf) [data-nopdfonly]{display:none!important}
+html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack{display:none!important}
 #langbtn{margin-top:6px;color:var(--side-ink);background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 </style>
 </head>
@@ -207,6 +210,7 @@ html.i18n-wait body{visibility:hidden}
 </aside>
 
 <main>
+  <div id="sitebanner" class="card" hidden style="border:1px solid var(--accent);background:var(--soft)"></div>
 <div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p></div>
 <section id="tab-search">
   <div class="card">
@@ -458,7 +462,7 @@ html.i18n-wait body{visibility:hidden}
     <div class="row"><button class="alt" id="plmore" hidden>بیشتر</button></div>
   </div>
   <div class="card" style="margin-top:14px"><h2>ماده‌ها (تعداد بخش)</h2><table id="materials" class="bars"></table></div>
-  <div class="card" style="margin-top:14px">
+  <div data-needpdf class="card" style="margin-top:14px">
     <h2>(اختیاری) PDFها از روی این رایانه</h2>
     <p class="hint">PDF مقاله‌ها روی خود سایت هست. فقط برای مقاله‌ای که آن‌جا نیست: برای دیدن صفحه‌ی اصلی مقاله با بخشِ پیداشده‌ی رنگی، پوشه‌ی <b>RAG-Optics</b> (یا <b>01_Papers_by_Category</b>) را انتخاب کنید. فایل‌ها فقط در مرورگر خودتان باز می‌شوند و به هیچ سروری فرستاده نمی‌شوند.</p>
     <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
@@ -498,7 +502,8 @@ html.i18n-wait body{visibility:hidden}
 <section id="tab-about" hidden>
   <div class="card">
     <h2>این سامانه چه می‌کند؟</h2>
-    <p>این یک سامانه‌ی <b>بازیابی</b> (Retrieval) است: برای هر سؤال، بخش‌هایی از مقاله‌ها را که به سؤال مربوط‌اند پیدا می‌کند و با نام مقاله، شماره‌ی صفحه و محل دقیق روی صفحه نشان می‌دهد. خودِ سایت پاسخ نمی‌نویسد؛ بخش «تولید» (Generation) را هر مدل زبانی که بخواهید با فایل دانلودی انجام می‌دهد، و چون همه‌ی ادعاها به شماره‌ی منبع و صفحه ارجاع داده می‌شوند، قابل‌بررسی‌اند.</p>
+    <p data-needpdf>این یک سامانه‌ی <b>بازیابی</b> (Retrieval) است: برای هر سؤال، بخش‌هایی از مقاله‌ها را که به سؤال مربوط‌اند پیدا می‌کند و با نام مقاله، شماره‌ی صفحه و محل دقیق روی صفحه نشان می‌دهد. خودِ سایت پاسخ نمی‌نویسد؛ بخش «تولید» (Generation) را هر مدل زبانی که بخواهید با فایل دانلودی انجام می‌دهد، و چون همه‌ی ادعاها به شماره‌ی منبع و صفحه ارجاع داده می‌شوند، قابل‌بررسی‌اند.</p>
+    <p data-nopdfonly>این یک سامانه‌ی <b>بازیابی</b> (Retrieval) است: برای هر سؤال، بخش‌هایی از مقاله‌ها را که به سؤال مربوط‌اند پیدا می‌کند و با نام مقاله و شماره‌ی صفحه نشان می‌دهد. خودِ سایت پاسخ نمی‌نویسد؛ بخش «تولید» (Generation) را هر مدل زبانی که بخواهید با فایل دانلودی انجام می‌دهد، و چون همه‌ی ادعاها به شماره‌ی منبع و صفحه ارجاع داده می‌شوند، قابل‌بررسی‌اند.</p>
     <h3>مراحل یک جست‌وجو</h3>
     <ol class="steps">
       <li>سؤال فارسی با مدل Llama 3.3 70B و یک واژه‌نامه‌ی ثابت فیزیک به انگلیسی ترجمه می‌شود (مقاله‌ها انگلیسی‌اند). فقط ترجمه؛ هیچ پاسخی تولید نمی‌شود.</li>
@@ -508,7 +513,8 @@ html.i18n-wait body{visibility:hidden}
     </ol>
     <h3>بخش‌های سایت</h3>
     <ul class="steps">
-      <li><b>جست‌وجو:</b> منابع با نام مقاله، صفحه و محل روی صفحه؛ «نمایش روی صفحه‌ی مقاله» خود صفحه‌ی PDF را با بخشِ پیداشده‌ی زرد نشان می‌دهد؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
+      <li data-needpdf><b>جست‌وجو:</b> منابع با نام مقاله، صفحه و محل روی صفحه؛ «نمایش روی صفحه‌ی مقاله» خود صفحه‌ی PDF را با بخشِ پیداشده‌ی زرد نشان می‌دهد؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
+      <li data-nopdfonly><b>جست‌وجو:</b> منابع با نام مقاله و صفحه؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
       <li><b>مقاله:</b> همه‌ی بخش‌های یک مقاله، صفحه به صفحه.</li>
       <li><b>ضریب شکست:</b> n(λ) از همه‌ی داده‌های refractiveindex.info (فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده، ۲٬۲۴۶ ماده) با پیوند به مقاله‌ی منبع در همین مجموعه؛ فرمول یا نقاط اندازه‌گیری خودتان را هم می‌توانید وارد کنید، اختلاف Δn نسبت به یک منحنی مرجع را ببینید و جدول مقادیر را کپی یا CSV دانلود کنید.</li>
       <li><b>مجموعه:</b> مقاله‌ها بر اساس سال و دسته، و فهرست قابل‌جست‌وجوی همه‌ی مقاله‌ها.</li>
@@ -2101,6 +2107,27 @@ $("xcards").onclick = (e) => {
   ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
   showTab(act);
 };
+</script>
+<script>
+// What this account may use (/api/me): tabs not allowed are taken out, PDFs hidden for accounts without them,
+// and the site announcement (set from the admin bot) shown on top.
+api("/api/me").then((r) => r.json()).then((me) => {
+  window.ME = me;
+  for (const b of document.querySelectorAll("nav button[data-tab]")) if (!me.tabs.includes(b.dataset.tab)) b.remove();
+  for (const s of document.querySelectorAll(".navsec")) {
+    let n = s.nextElementSibling; while (n && n.tagName !== "BUTTON" && !n.classList.contains("navsec")) n = n.nextElementSibling;
+    if (!n || n.classList.contains("navsec")) s.remove();
+  }
+  const on = document.querySelector("nav button.on");
+  if (!on) showTab(me.tabs[0]);
+  if (!me.pdf) document.documentElement.classList.add("nopdf");
+  if (!me.search) document.documentElement.classList.add("nosearch");
+  if (me.banner) { const b = document.getElementById("sitebanner"); b.textContent = "📢 " + me.banner; b.hidden = false; }
+}).catch(() => {});
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-xact]");
+  if (b && window.ME && b.dataset.xact !== "filter" && !window.ME.tabs.includes(b.dataset.xact)) { e.stopImmediatePropagation(); e.preventDefault(); }
+}, true);
 </script>
 <button id="fbopen" title="نظر، مشکل یا پیشنهاد">💬 بازخورد</button>
 <dialog id="fbdlg"><form method="dialog" id="fbform">

@@ -12,7 +12,7 @@ const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "
 import PAPERS from "./papers.json";
 import { verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
-import { checkLogin, makeSession, sessionUser } from "./accounts.js";
+import { OWNER, checkLogin, getSettings, makeSession, sessionUser, takeQuota } from "./accounts.js";
 import { telegramWebhook } from "./admin.js";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
@@ -35,13 +35,18 @@ function cookie(request, name) {
   return match ? match[1] : null;
 }
 
-// The signed-in user ("owner" for the shared password, also in its old cookie form), or null.
+// The signed-in account ({name, role, tabs, search, pdf, quota}; OWNER for the shared password, also in its
+// old cookie form), or null.
 async function signedIn(request, env) {
   if (!env.SITE_PASSWORD) return null;
   const token = cookie(request, "session");
-  if (token && token === (await sessionToken(env))) return "owner";
+  if (token && token === (await sessionToken(env))) return OWNER;
   return sessionUser(env, token);
 }
+
+const MAINTENANCE = `<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MatRAG</title>
+<body style="font-family:Tahoma,sans-serif;display:grid;place-items:center;min-height:90vh;text-align:center;color:#334">
+<div><h2>سایت موقتاً در دست تعمیر است</h2><p>کمی بعد دوباره سر بزنید.</p><p dir="ltr">MatRAG is down for maintenance; please come back a little later.</p><p><a href="/logout">خروج / Log out</a></p></div></body></html>`;
 
 async function qdrant(env, path, body) {
   const response = await fetch(`${env.QDRANT_URL}${path}`, {
@@ -279,10 +284,19 @@ async function handle(request, env, ctx) {
   if (url.pathname === "/logout") {
     return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; Max-Age=0" } });
   }
-  const user = await signedIn(request, env);
-  if (!user) {
+  const acc = await signedIn(request, env);
+  if (!acc) {
     return url.pathname.startsWith("/api/") ? json({ error: "login required" }, 401) : html(LOGIN);
   }
+  const user = acc.name;
+  const settings = await getSettings(env);
+  if (settings.maintenance && acc.role !== "owner") {
+    return url.pathname.startsWith("/api/") ? json({ error: "maintenance" }, 503) : html(MAINTENANCE, 503);
+  }
+  const denied = (what) => json({ error: what }, 403);
+  // Accounts without the papers' PDFs get no trace of them: no file path, Drive link or place on the page.
+  const PDF_FIELDS = ["source_file", "drive_id", "boxes", "pdf_mismatch"];
+  const noPdf = (rows) => (acc.pdf ? rows : rows.map((r) => Object.fromEntries(Object.entries(r).filter(([k]) => !PDF_FIELDS.includes(k)))));
   if (url.pathname === "/") return html(PAGE);
   if (url.pathname === "/phasematch.js") {
     return new Response(PHASEMATCH_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
@@ -294,6 +308,7 @@ async function handle(request, env, ctx) {
     return new Response(DISPERSION_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
   }
   if (url.pathname.startsWith("/pdf/") && env.PDFS) {
+    if (!acc.pdf) return denied("PDFs are not available on this account");
     const path = url.pathname.slice("/pdf".length);
     // Range requests (pdf.js reads a large PDF in parts): the PDF Worker's static assets always send the whole
     // file, so the range is cut here; only that part goes over the reader's connection.
@@ -314,6 +329,10 @@ async function handle(request, env, ctx) {
       ...headers, "content-range": `bytes ${start}-${end}/${size}`, "content-length": String(end - start + 1) } });
   }
   try {
+    if ((url.pathname === "/api/search" || url.pathname === "/api/pack") && request.method === "POST") {
+      if (!acc.search) return denied("search is not available on this account");
+      if (!(await takeQuota(env, acc))) return json({ error: `daily limit of ${acc.quota} searches reached / سهمیه‌ی روزانه‌ی ${acc.quota} جست‌وجو تمام شد` }, 429);
+    }
     if (url.pathname === "/api/search" && request.method === "POST") {
       const found = await search(env, await request.json().catch(() => ({})));
       // every question is kept (log:), the ones the collection cannot answer also go to Telegram
@@ -321,7 +340,7 @@ async function handle(request, env, ctx) {
       const log = logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
         verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id }, user);
       ctx?.waitUntil(none ? Promise.all([log, unanswered(env, found, user)]) : log);
-      return json(found);
+      return json({ ...found, hits: noPdf(found.hits) });
     }
     if (url.pathname === "/api/feedback" && request.method === "POST") return json(await feedback(env, await request.json().catch(() => ({})), user));
     if (url.pathname === "/api/pack" && request.method === "POST") {
@@ -330,13 +349,16 @@ async function handle(request, env, ctx) {
         "content-type": "text/markdown; charset=utf-8",
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
-    if (url.pathname === "/api/me") return json({ user });
+    if (url.pathname === "/api/me") return json({ user, role: acc.role, tabs: acc.tabs, pdf: acc.pdf, search: acc.search, quota: acc.quota, banner: settings.banner || "" });
     if (url.pathname === "/api/facets") return json(await facets(env));
     if (url.pathname === "/api/papers") return json(PAPERS);
     if (url.pathname === "/api/incollection" && request.method === "POST") {
       return json(await inCollection(env, (await request.json()).ids));
     }
-    if (url.pathname === "/api/paper") return json(await paper(env, url.searchParams.get("doc_id") || ""));
+    if (url.pathname === "/api/paper") {
+      const data = await paper(env, url.searchParams.get("doc_id") || "");
+      return json({ ...data, chunks: noPdf(data.chunks || []) });
+    }
   } catch (error) {
     return json({ error: String(error.message || error) }, error.status || 500);
   }
