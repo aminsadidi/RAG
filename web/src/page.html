@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MatRAG Optics</title>
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/webp" href="/brand/icon.webp"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- fonts and pdf.js are served by the site itself: a CDN filtered or slow on the reader's network must not break the page -->
 <script>
 // Interface language: Persian (default) or English, remembered in this browser; English pages stay hidden until
@@ -125,7 +126,7 @@ body{font-size:14.5px;line-height:1.7;display:grid;grid-template-columns:232px m
 #side{position:sticky;top:0;height:100vh;background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;padding:18px 12px;gap:6px}
 #side .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;color:#fff}
 #side .brand b{display:block;font-size:16px;letter-spacing:.2px}#side .brand small{display:block;color:var(--side-ink);font-size:12px;font-weight:400;margin:0}
-#side .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#4f7cff,#2f5bd3);display:grid;place-items:center;font-weight:700;color:#fff}
+#side .logo{display:none;width:34px;height:34px;border-radius:9px}#side .brand .word{display:block;width:180px;height:auto}
 #side nav{display:flex;flex-direction:column;gap:2px;margin:0;overflow:visible;max-width:none}
 #side nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:start;color:var(--side-ink);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500}
 #side nav button svg{width:18px;height:18px;fill:currentColor;flex:none;opacity:.85}
@@ -162,7 +163,7 @@ th,td{padding:7px 10px}
 @media (max-width:900px){
  body{display:block}
  #side{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;padding:8px 10px;z-index:10;gap:8px}
- #side .brand{padding:0}#side .brand div,#side .navsec{display:none}
+ #side .brand{padding:0}#side .brand div,#side .navsec{display:none}#side .logo{display:block}
  #side nav{flex-direction:row;overflow-x:auto;flex:1;gap:2px}
  #side nav button{width:auto;white-space:nowrap;padding:7px 10px;font-size:13px}
  #side nav button svg{display:none}#side nav button.minor{margin:0}
@@ -194,7 +195,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
 </head>
 <body>
 <aside id="side">
-  <div class="brand"><span class="logo">M</span><div><b>MatRAG</b><small>اپتیک غیرخطی</small></div></div>
+  <div class="brand"><img class="logo" src="/brand/icon.webp" alt="MatRAG" width="34" height="34"><div><img class="word" src="/brand/logo.webp" alt="MatRAG" width="180" height="41"><small>اپتیک غیرخطی</small></div></div>
   <nav>
     <button data-tab="search" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 0 4.03 11.6l4.43 4.44 1.06-1.06-4.44-4.43A6.5 6.5 0 0 0 10.5 4Zm0 1.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"/></svg><span>جست‌وجو</span></button>
     <div class="navsec">ابزارها</div>
