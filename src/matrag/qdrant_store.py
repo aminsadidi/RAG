@@ -41,16 +41,21 @@ SYNONYMS = {
 }
 
 
+# Subscript (LiNbO₃), Persian (LiNbO۳), Arabic-Indic and full-width digits, read as ASCII digits.
+_DIGITS = {start + i: str(i) for start in (0x2080, 0x06F0, 0x0660, 0xFF10) for i in range(10)}
+
+
 def normalize_formulas(text: str) -> str:
     """Join spaced-out subscripts of chemical formulas: 'LiB 3 O 5' -> 'LiB3O5', 'KTiOPO 4' -> 'KTiOPO4'.
 
     Only runs with at least two capital letters are joined, so 'Eq 5' or 'N 2' stay as they are.
+    Subscript and Persian digits become ASCII digits first: 'LiNbO₃' -> 'LiNbO3'.
     """
     def join(m: re.Match) -> str:
         s = m.group(0)
         return re.sub(r"\s+", "", s) if sum(c.isupper() for c in s) >= 2 else s
 
-    return _SPACED_FORMULA.sub(join, text)
+    return _SPACED_FORMULA.sub(join, text.translate(_DIGITS))
 
 
 def expand_query(query: str) -> str:
