@@ -2,3 +2,5 @@
 # scripts/ocr_gh), not from the index on Drive: export-qdrant leaves them as they are.
 10.1007_978_3_540_46793_9
 10.1007_b138685
+10.1002_j.1538_7305.1967.tb01727.x
+10.1364_aop.10.000043
