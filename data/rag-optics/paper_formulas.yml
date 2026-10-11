@@ -671,3 +671,16 @@
   checks:  # Bond's table, which the paper fits with standard deviations 2.1e-4 (o) and 3.5e-4 (e)
     - {direction: o, tol: 5.0e-4, points: [[0.45, 2.242], [0.5, 2.216], [0.6, 2.1834], [0.8, 2.1538], [1.0, 2.1391], [1.6, 2.1174], [2.0, 2.1066], [3.0, 2.0755], [4.0, 2.0335]]}
     - {direction: e, tol: 7.0e-4, points: [[0.45, 2.2468], [0.5, 2.2205], [0.6, 2.1878], [4.0, 2.0377]]}
+
+- material: BaGa4Se7
+  name: BaGa4Se7 (Barium gallium selenide, BGSe)
+  prefer: true  # refined over 0.901–13.703 µm; its dn/dT reproduces the measured 90° DFG temperatures
+  doc_id: "10.1364_ome.491299"
+  reference: "Kato, Miyata & Petrov (2023). Refined Sellmeier and thermo-optic dispersion formulas for BaGa4Se7. Opt. Mater. Express 13, 1852. doi:10.1364/OME.491299"
+  doi: 10.1364/OME.491299
+  pdf_page: 3
+  where: "Eq. (1) (read from the page image): n² = A + B/(λ² − C) + D/(λ² − E); x: 6.72431, 0.26375, 0.04248, 608.63, 756.87; y: 6.86603, 0.26816, 0.04259, 682.97, 781.78; z: 7.16709, 0.32681, 0.06973, 731.86, 790.16; 0.901–13.703 µm, 20 °C (ny, nz as in Kato et al. 2018, only the IR term of nx adjusted); the authors use it to 14.201 µm, where it gives the measured 149 °C (Fig. 3)"
+  entries:
+    - {page: Kato-2023, direction: x, type: 4, coefficients: [6.72431, 0.26375, 0, 0.04248, 1, 608.63, 0, 756.87, 1, 0, 2], range_um: [0.901, 14.201]}
+    - {page: Kato-2023, direction: y, type: 4, coefficients: [6.86603, 0.26816, 0, 0.04259, 1, 682.97, 0, 781.78, 1, 0, 2], range_um: [0.901, 14.201]}
+    - {page: Kato-2023, direction: z, type: 4, coefficients: [7.16709, 0.32681, 0, 0.06973, 1, 731.86, 0, 790.16, 1, 0, 2], range_um: [0.901, 14.201]}

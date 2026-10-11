@@ -555,3 +555,15 @@ test("ZnSe and CdTe dn/dT (Johnston 1977, Fig. 2): 2n·dn/dT read off the figure
   for (const [lam, v] of [[0.633, 4.7], [1.15, 2.95], [3.39, 2.6], [10.6, 2.45]]) assert.ok(Math.abs(twoNdndT("ZnSe", "Connolly", lam) - v) < 0.2, `ZnSe ${lam}`);
   assert.ok(Math.abs(twoNdndT("CdTe", "Marple", 1.15) - 8.2) < 0.3);
 });
+
+test("BGSe (Kato et al. 2023): measured 90° type-2 DFG temperatures 112 and 149 °C, calculated OPO angles 4.83° and 6.94°", () => {
+  const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
+  const s = A.find((x) => x.material === "BaGa4Se7").sources.find((x) => x.label === "Kato-2023");
+  const n = (ax, lam, T) => { const n0 = entryIndex(s.axes[ax], lam); return n0 + thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, n0, lam, T); };
+  const ne = (lam, th, T) => 1 / Math.sqrt(Math.cos(th) ** 2 / n("y", lam, T) ** 2 + Math.sin(th) ** 2 / n("z", lam, T) ** 2);
+  const dk = (lp, li, T, th) => { const ls = 1 / (1 / lp - 1 / li); return n("x", lp, T) / lp - ne(ls, th, T) / ls - n("x", li, T) / li; };
+  const bis = (f, lo, hi) => { for (let i = 0; i < 90; i++) { const m = (lo + hi) / 2; (Math.sign(f(m)) === Math.sign(f(lo))) ? lo = m : hi = m; } return (lo + hi) / 2; };
+  assert.ok(Math.abs(bis((T) => dk(1.9, 8.853, T, 0), 20, 300) - 112) < 1);
+  assert.ok(Math.abs(bis((T) => dk(1.98, 14.201, T, 0), 20, 300) - 149) < 1);
+  for (const [li, deg] of [[8.9257, 4.83], [8.244, 6.94]]) assert.ok(Math.abs(bis((t) => dk(2.0907, li, 20, t), 0, 0.5) * 180 / Math.PI - deg) < 0.02);
+});
