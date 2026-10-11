@@ -12,6 +12,8 @@ const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "
 import PAPERS from "./papers.json";
 import { verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
+import { checkLogin, makeSession, sessionUser } from "./accounts.js";
+import { telegramWebhook } from "./admin.js";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
 const MODES = ["hybrid", "vector", "bm25"];
@@ -33,8 +35,12 @@ function cookie(request, name) {
   return match ? match[1] : null;
 }
 
+// The signed-in user ("owner" for the shared password, also in its old cookie form), or null.
 async function signedIn(request, env) {
-  return Boolean(env.SITE_PASSWORD) && cookie(request, "session") === (await sessionToken(env));
+  if (!env.SITE_PASSWORD) return null;
+  const token = cookie(request, "session");
+  if (token && token === (await sessionToken(env))) return "owner";
+  return sessionUser(env, token);
 }
 
 async function qdrant(env, path, body) {
@@ -250,22 +256,31 @@ async function ciKeys(request, env) {
 async function handle(request, env, ctx) {
   const url = new URL(request.url);
   if (url.pathname === "/ci/keys" && request.method === "POST") return ciKeys(request, env);
-  // The password in a form or in the link (/?key=...): the browser is then remembered for a year.
-  const given = url.searchParams.get("key") ??
-    (url.pathname === "/login" && request.method === "POST" ? (await request.formData()).get("password") : null);
+  if (url.pathname === "/tg/webhook" && request.method === "POST") return telegramWebhook(request, env);
+  // A user's name and password from the form, or the owner's shared password (form without a name, or the
+  // /?key= link); the browser is then remembered (owner a year, users 30 days).
+  let given = url.searchParams.get("key"), name = "";
+  if (given === null && url.pathname === "/login" && request.method === "POST") {
+    const form = await request.formData();
+    given = form.get("password"); name = String(form.get("username") || "").trim().toLowerCase();
+  }
   if (given !== null) {
-    if (env.SITE_PASSWORD && given === env.SITE_PASSWORD) {
-      const token = await sessionToken(env);
+    const owner = env.SITE_PASSWORD && (!name || name === "owner") && given === env.SITE_PASSWORD;
+    const user = owner ? "owner" : name && (await checkLogin(env, name, String(given))) ? name : null;
+    ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
+    if (user) {
+      const days = user === "owner" ? 365 : 30;
       return new Response(null, { status: 303, headers: {
-        location: "/", "set-cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=31536000` } });
+        location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
     }
     await new Promise((r) => setTimeout(r, 800));
-    return html(LOGIN.replace("<!--error-->", '<p class="err">رمز درست نیست. / Wrong password.</p>'), 401);
+    return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
   }
   if (url.pathname === "/logout") {
     return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; Max-Age=0" } });
   }
-  if (!(await signedIn(request, env))) {
+  const user = await signedIn(request, env);
+  if (!user) {
     return url.pathname.startsWith("/api/") ? json({ error: "login required" }, 401) : html(LOGIN);
   }
   if (url.pathname === "/") return html(PAGE);
@@ -304,17 +319,18 @@ async function handle(request, env, ctx) {
       // every question is kept (log:), the ones the collection cannot answer also go to Telegram
       const none = !found.hits.length || found.relevance?.verdict === "none";
       const log = logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
-        verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id });
-      ctx?.waitUntil(none ? Promise.all([log, unanswered(env, found)]) : log);
+        verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id }, user);
+      ctx?.waitUntil(none ? Promise.all([log, unanswered(env, found, user)]) : log);
       return json(found);
     }
-    if (url.pathname === "/api/feedback" && request.method === "POST") return json(await feedback(env, await request.json().catch(() => ({}))));
+    if (url.pathname === "/api/feedback" && request.method === "POST") return json(await feedback(env, await request.json().catch(() => ({})), user));
     if (url.pathname === "/api/pack" && request.method === "POST") {
       const found = await search(env, await request.json().catch(() => ({})));
       return new Response(packFile(found), { headers: {
         "content-type": "text/markdown; charset=utf-8",
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
+    if (url.pathname === "/api/me") return json({ user });
     if (url.pathname === "/api/facets") return json(await facets(env));
     if (url.pathname === "/api/papers") return json(PAPERS);
     if (url.pathname === "/api/incollection" && request.method === "POST") {

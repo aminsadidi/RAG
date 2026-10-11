@@ -13,29 +13,47 @@ export async function telegram(env, text) {
   return r.ok;
 }
 
-export async function logEvent(env, kind, data) {
+// log:<time>:<kind>:<user>:<random>, with the question in the metadata, so the admin bot reads a user's
+// activity from one listing (no value reads).
+export async function logEvent(env, kind, data, user = "?") {
   if (!env.AICACHE) return;
-  const key = `log:${new Date().toISOString()}:${kind}:${crypto.randomUUID().slice(0, 8)}`;
-  await env.AICACHE.put(key, JSON.stringify({ kind, ...data }), { expirationTtl: 180 * DAY }).catch((e) => console.log("log put", String(e)));
+  const key = `log:${new Date().toISOString()}:${kind}:${user}:${crypto.randomUUID().slice(0, 8)}`;
+  await env.AICACHE.put(key, JSON.stringify({ kind, user, ...data }), { expirationTtl: 180 * DAY,
+    metadata: { q: clip(data.question || data.comment || "", 180), v: clip(data.verdict || "", 20) } }).catch((e) => console.log("log put", String(e)));
+}
+
+// Logged events since an ISO time, oldest first: {time, kind, user, q, v}.
+export async function listLogs(env, since = "") {
+  const out = [];
+  let cursor;
+  do {
+    const page = await env.AICACHE.list({ prefix: "log:", cursor });
+    for (const k of page.keys) {
+      const m = /^log:(.+Z):([a-z]+):(?:([^:]+):)?[0-9a-f]{8}$/.exec(k.name);
+      if (m && m[1] >= since) out.push({ time: m[1], kind: m[2], user: m[3] || "?", q: k.metadata?.q || "", v: k.metadata?.v || "" });
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor);
+  return out;
 }
 
 const VERDICT = { useful: "👍 مفید بود", wrong: "👎 مرتبط نبود", found: "✅ جوابم را پیدا کردم", notfound: "❌ جوابم را پیدا نکردم", comment: "💬 نظر" };
 
 // POST /api/feedback {verdict, question, searchQuery, comment, who, hit: {label, doc_id, node_id}, tab}
-export async function feedback(env, body) {
+export async function feedback(env, body, user = "?") {
   const verdict = VERDICT[body.verdict] ? body.verdict : "comment";
   const item = { verdict, question: clip(body.question, 500), searchQuery: clip(body.searchQuery, 500), comment: clip(body.comment, 2000),
     who: clip(body.who, 80), tab: clip(body.tab, 30), hit: body.hit ? { label: clip(body.hit.label, 200), doc_id: clip(body.hit.doc_id, 120) } : undefined };
   if (verdict === "comment" && !item.comment) throw Object.assign(new Error("empty feedback"), { status: 400 });
-  await logEvent(env, "feedback", item);
-  await telegram(env, [`${VERDICT[verdict]} — MatRAG`, item.who && `از: ${item.who}`, item.tab && item.tab !== "search" && `بخش: ${item.tab}`,
+  await logEvent(env, "feedback", item, user);
+  await telegram(env, [`${VERDICT[verdict]} — MatRAG`, `کاربر: ${user}`, item.who && `نام داده‌شده: ${item.who}`, item.tab && item.tab !== "search" && `بخش: ${item.tab}`,
     item.question && `سؤال: ${item.question}`, item.hit && `منبع: ${item.hit.label}`, item.comment && `توضیح: ${item.comment}`].filter(Boolean).join("\n"));
   return { ok: true };
 }
 
 // A search the collection could not answer, sent right away.
-export async function unanswered(env, found) {
-  await telegram(env, ["❓ سؤال بی‌جواب — MatRAG", `سؤال: ${clip(found.question, 500)}`,
+export async function unanswered(env, found, user = "?") {
+  await telegram(env, ["❓ سؤال بی‌جواب — MatRAG", `کاربر: ${user}`, `سؤال: ${clip(found.question, 500)}`,
     found.searchQuery && found.searchQuery !== found.question && `ترجمه: ${clip(found.searchQuery, 300)}`,
     found.relevance?.missingMaterials?.length && `ماده‌ی پیدا نشده: ${found.relevance.missingMaterials.join(", ")}`].filter(Boolean).join("\n"));
 }
