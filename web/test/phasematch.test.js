@@ -545,3 +545,13 @@ test("DKDP (Kirby & DeShazer 1987 with the dn/dT of Barnes et al. 1982): noncrit
   const rate = (bis((l) => D(l, 43), 0.48, 0.56) - bis((l) => D(l, 33), 0.48, 0.56)) / 10 * 1000;
   assert.ok(Math.abs(rate - 0.068) < 0.015, `rate = ${rate}`);
 });
+
+test("ZnSe and CdTe dn/dT (Johnston 1977, Fig. 2): 2n·dn/dT read off the figure", async () => {
+  const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
+  const twoNdndT = (m, label, lam) => {
+    const s = A.find((x) => x.material === m).sources.find((x) => x.label === label), e = s.axes.o, n0 = entryIndex(e, lam);
+    return 2 * n0 * thermoShift(s.thermo.form, e.thermo, s.thermo.t0_c, n0, lam, s.thermo.t0_c + 1) * 1e4;
+  };
+  for (const [lam, v] of [[0.633, 4.7], [1.15, 2.95], [3.39, 2.6], [10.6, 2.45]]) assert.ok(Math.abs(twoNdndT("ZnSe", "Connolly", lam) - v) < 0.2, `ZnSe ${lam}`);
+  assert.ok(Math.abs(twoNdndT("CdTe", "Marple", 1.15) - 8.2) < 0.3);
+});

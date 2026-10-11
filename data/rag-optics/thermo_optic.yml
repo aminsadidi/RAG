@@ -554,3 +554,98 @@
     o: [{range_um: [0.405, 0.633], terms: [[-3.104, 0]]}]
     e: [{range_um: [0.405, 0.633], terms: [[-2.098, 0]]}]
 
+- material: ZnSe
+  source: Amotchkina
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.29, B = 27.4 × 10⁻⁵ /°C, λg = 0.322 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+    e: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+
+- material: ZnSe
+  source: Connolly
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.29, B = 27.4 × 10⁻⁵ /°C, λg = 0.322 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+    e: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+
+- material: ZnSe
+  source: Marple
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.29, B = 27.4 × 10⁻⁵ /°C, λg = 0.322 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+    e: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+
+- material: ZnSe
+  source: Querry
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.29, B = 27.4 × 10⁻⁵ /°C, λg = 0.322 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+    e: {lig_um: 0.322, G: [-22.9], H: [274.0]}
+
+- material: CdTe
+  source: DeBell-300K
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.26, B = 53.4 × 10⁻⁵ /°C, λg = 0.523 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+    e: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+
+- material: CdTe
+  source: Marple
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.26, B = 53.4 × 10⁻⁵ /°C, λg = 0.523 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+    e: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+
+- material: CdTe
+  source: Treharne
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.26, B = 53.4 × 10⁻⁵ /°C, λg = 0.523 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+    e: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+
+- material: CdTe
+  source: Adachi
+  doc_id: 10.1364_ao.16.001796
+  cite: "Johnston (1977)"
+  pdf_page: 2
+  where: "Table I and Eq. (9) (read from the page image): 2n·dn/dT = A·R + B·R², R = λ²/(λ² − λg²), A = -2.26, B = 53.4 × 10⁻⁵ /°C, λg = 0.523 µm (Fig. 2), fitted to the measured dn/dT of Harris et al. (1977) from 0.63 to 10.6 µm; the same for every room-temperature index source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+    e: {lig_um: 0.523, G: [-22.6], H: [534.0]}
