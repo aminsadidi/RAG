@@ -56,6 +56,13 @@ BRANCH = "{BRANCH}"  #@param {{type:"string"}}
 import sys
 if '/content/RAG/src' not in sys.path:
     sys.path.insert(0, '/content/RAG/src')
+# The per-paper lists (OCR, equation decoding, wrong PDFs, reconversions, papers whose site points are made
+# elsewhere) are read from the data folder on Drive; the repository's copies are the current ones.
+import glob, os, shutil
+if 'WORK' in globals():
+    os.makedirs(f'{{WORK}}/data/rag-optics', exist_ok=True)
+    for f in glob.glob('/content/RAG/data/rag-optics/*.txt'):
+        shutil.copy(f, f'{{WORK}}/data/rag-optics/')
 """
 
 QDRANT_KEYS = """
