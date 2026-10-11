@@ -17,12 +17,16 @@ on:
         description: "Only report, do not change the site"
         type: boolean
         default: false
+      from_run:
+        description: "Only the replace step, with the plan and conversions of this earlier run (kept 3 days)"
+        default: ""
   push:
     paths: [scripts/ocr_gh/run.json]
 
 permissions:
   contents: write
   id-token: write
+  actions: read
 
 concurrency: ocr
 
@@ -35,6 +39,7 @@ env:
 
 jobs:
   scan:
+    if: ${{ !inputs.from_run }}
     runs-on: ubuntu-latest
     timeout-minutes: 180
     outputs:
@@ -72,7 +77,7 @@ jobs:
 
   convert:
     needs: scan
-    if: needs.scan.outputs.shards != '[]'
+    if: needs.scan.result == 'success' && needs.scan.outputs.shards != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 350
     strategy:
@@ -105,7 +110,7 @@ jobs:
 
   replace:
     needs: [scan, convert]
-    if: always() && needs.scan.result == 'success' && needs.scan.outputs.shards != '[]'
+    if: always() && (inputs.from_run || (needs.scan.result == 'success' && needs.scan.outputs.shards != '[]'))
     runs-on: ubuntu-latest
     timeout-minutes: 240
     steps:
@@ -119,19 +124,23 @@ jobs:
           pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -q -e ".[ocr]"
       - uses: actions/download-artifact@v4
-        with: {pattern: "*", merge-multiple: true}
+        with:
+          pattern: "*"
+          merge-multiple: true
+          run-id: ${{ inputs.from_run || github.run_id }}
+          github-token: ${{ github.token }}
       - name: Decrypt
         run: |
           for f in units-*.enc; do openssl enc -d -aes-256-cbc -pbkdf2 -pass env:ARTIFACT_KEY -in "$f" | tar xzf -; done
           ls units | wc -l
       - name: Replace on the site
         run: |
-          python scripts/ocr_gh/replace.py ${{ needs.scan.outputs.dry == 'true' && '--dry' || '' }} 2>&1 | grep -vE "Warning|warn\(" || true
+          python scripts/ocr_gh/replace.py ${{ (needs.scan.outputs.dry == 'true' || inputs.dry) && '--dry' || '' }} 2>&1 | grep -vE "Warning|warn\(" || true
           test -f report.json
       - name: Save the report and the list of replaced papers
         run: |
-          mkdir -p scripts/ocr_gh/reports && cp report.json "scripts/ocr_gh/reports/${{ github.run_id }}.json"
+          mkdir -p scripts/ocr_gh/reports && cp report.json "scripts/ocr_gh/reports/${{ inputs.from_run || github.run_id }}.json"
           git config user.name "ocr workflow"; git config user.email "actions@users.noreply.github.com"
           git add scripts/ocr_gh/reports data/rag-optics/external_points.txt
-          git commit -qm "OCR workflow: report of run ${{ github.run_id }}" || exit 0
+          git commit -qm "OCR workflow: report of run ${{ inputs.from_run || github.run_id }}" || exit 0
           for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done
