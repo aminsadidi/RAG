@@ -55,31 +55,40 @@ print(f"{len(docs)} papers with full text on the site; {len(todo)} to check; {le
 session = site()
 
 
-def measure(item):
+def fetch(item):
     doc_id, d = item
     path = pdfs / f"{doc_id}.pdf"
-    if not download(session, d["source_file"], path):
-        return doc_id, None
+    return doc_id, path if download(session, d["source_file"], path) else None
+
+
+def measure(path):
+    """Pages, characters and common-word share of the PDF's embedded text (pypdfium2 is not thread-safe:
+    only the downloads run in parallel)."""
     try:
         pdf = pypdfium2.PdfDocument(str(path))
         try:
             texts = [pdf[i].get_textpage().get_text_range() for i in range(len(pdf))]
         finally:
             pdf.close()
+        return (len(texts), *quality(texts))
     except Exception:
-        return doc_id, None
+        return None
     finally:
         if only is None:
             path.unlink(missing_ok=True)  # the shards download their own; the runner's disk is small
-    return doc_id, (len(texts), *quality(texts))
 
 
-rows, plan = {}, []
+rows, plan, missing, unreadable = {}, [], 0, 0
 with ThreadPoolExecutor(8) as pool:
-    for n, (doc_id, m) in enumerate(pool.map(measure, todo.items()), 1):
+    for n, (doc_id, path) in enumerate(pool.map(fetch, todo.items()), 1):
         if n % 200 == 0:
             print(f"  {n}/{len(todo)} checked", flush=True)
+        if path is None:
+            missing += 1
+            continue
+        m = measure(path)
         if m is None:
+            unreadable += 1
             continue
         pages, chars, stop = m
         site_chars, _ = quality(todo[doc_id]["texts"])
@@ -93,6 +102,9 @@ with ThreadPoolExecutor(8) as pool:
             continue
         rows[doc_id] = {"mode": mode, "pages": pages, "pdf_chars": chars, "pdf_stop": round(stop, 3),
                         "site_chars": site_chars, "source_file": todo[doc_id]["source_file"]}
+print(f"{missing} PDFs not downloaded, {unreadable} unreadable", flush=True)
+if todo and missing + unreadable > len(todo) / 2:
+    raise SystemExit("most PDFs could not be checked")
 for doc_id, path in extra.items():
     pdf = pypdfium2.PdfDocument(str(path))
     rows[doc_id] = {"mode": "ocr", "pages": len(pdf), "source_file": None, "extra": True}
