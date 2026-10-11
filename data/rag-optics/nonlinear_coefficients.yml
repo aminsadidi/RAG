@@ -443,6 +443,17 @@
 # ⊥ Y), which for this monoclinic crystal is rotated in the XZ plane from the dielectric frame of the
 # Sellmeier equations. Shown on the crystal card; `partial` keeps them out of the d_eff of the
 # phase-matching tab, which would be wrong in the dielectric frame with the other four elements missing.
+# BaGa4S7: d31 and d32 in the crystallographic abc frame (Badikov et al. 2011 give d_eff in the dielectric
+# planes, Eqs. 1a–d); kept out of the phase-matching d_eff like BaGa4Se7.
+- material: BaGa4S7
+  point_group: mm2
+  partial: true
+  frame: "crystallographic abc frame (Badikov et al. 2011), not the dielectric frame of the Sellmeier equations"
+  d: {31: 5.1, 32: 5.7, 15: 5.1, 24: 5.7}
+  sources:
+    - {doc_id: "10.1364_ome.1.000316", doi: 10.1364/OME.1.000316, cite: "Badikov et al. (2011)", pdf_page: 4, what: "d31 = (0.37 ± 0.02)·d36(AGS) = 5.1 ± 0.3 pm/V, d32 = (0.41 ± 0.02)·d36(AGS) = 5.7 ± 0.3 pm/V at 2.26 µm (Eqs. 2a, 2b, read from the page image; d36(AGS) = 13.9 pm/V), d31/d32 > 0; d15 = d31, d24 = d32 by Kleinman symmetry"}
+  notes: "mm2 (Pmn21); d33 not measured"
+
 - material: BaGa4Se7
   point_group: m
   partial: true
