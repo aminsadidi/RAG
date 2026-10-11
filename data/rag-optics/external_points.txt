@@ -1,0 +1,4 @@
+# Papers whose points on the site come from the OCR workflow (.github/workflows/ocr.yml,
+# scripts/ocr_gh), not from the index on Drive: export-qdrant leaves them as they are.
+10.1007_978_3_540_46793_9
+10.1007_b138685
