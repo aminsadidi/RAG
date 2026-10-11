@@ -530,3 +530,27 @@
     o: [{range_um: [0.5321, 1.3188], terms: [[-9.35, 0]]}]
     e: [{range_um: [0.5321, 1.3188], terms: [[-8.25, 0]]}]
 
+- material: LiTaO3
+  source: Abedin-1996
+  doc_id: 10.1063_1.363679
+  cite: "Abedin & Ito (1996)"
+  pdf_page: 3
+  where: "Eq. (1) and Table II (read from the page image): A2 + B1·F over λ² − (A3 + B2·F)², plus B3·F, F = (T − 25)(T + 25 + 546), T in °C; fitted to measured no and ne at 468 and 644 nm from 25 to 300 °C (Fig. 3, standard deviations 1.4–5.4 × 10⁻⁴)"
+  t0_c: 25
+  form: gayer
+  axes:
+    o: {a: [4.51224, 0.0847522, 0.19876, 0, 0, 0.0239046], b: [4.25637e-8, -9.66449e-9, 8.815e-8, 0, 0], f_c: 546}
+    e: {a: [4.52999, 0.0844313, 0.20344, 0, 0, 0.0237909], b: [-8.31467e-8, 1.72995e-7, -4.7733e-7, 0, 0], f_c: 546}
+
+- material: KD2PO4
+  source: Kirby-1987
+  doc_id: 10.1364_josa.72.000895
+  cite: "Barnes, Gettemy & Adhav (1982)"
+  pdf_page: 2
+  where: "Table 2 (read from the page image), KD*P at 0.405, 0.436, 0.546, 0.578, 0.633 µm: dno/dT = −30.0, −33.7, −29.9, −30.0, −31.6 and dne/dT = −18.6, −21.3, −19.5, −25.2, −20.3 × 10⁻⁶ /K, constant from 20 to 50 °C, with no trend in wavelength: their means are used. With the Kirby–DeShazer indices they give a 90° SHG tuning rate of 0.060 nm/K (measured 0.068 nm/K, Table 6). Their KDP values are not used: they give 0.022 nm/K against a measured 0.048"
+  t0_c: 33
+  form: kato
+  axes:
+    o: [{range_um: [0.405, 0.633], terms: [[-3.104, 0]]}]
+    e: [{range_um: [0.405, 0.633], terms: [[-2.098, 0]]}]
+
