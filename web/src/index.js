@@ -11,6 +11,7 @@ import SPDC_JS from "./spdc.client.js";
 const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "/phasematch.js"');
 import PAPERS from "./papers.json";
 import { verifyOidc } from "./oidc.js";
+import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
 
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
 const MODES = ["hybrid", "vector", "bm25"];
@@ -246,7 +247,7 @@ async function ciKeys(request, env) {
     ARTIFACT_KEY: [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") });
 }
 
-async function handle(request, env) {
+async function handle(request, env, ctx) {
   const url = new URL(request.url);
   if (url.pathname === "/ci/keys" && request.method === "POST") return ciKeys(request, env);
   // The password in a form or in the link (/?key=...): the browser is then remembered for a year.
@@ -298,7 +299,16 @@ async function handle(request, env) {
       ...headers, "content-range": `bytes ${start}-${end}/${size}`, "content-length": String(end - start + 1) } });
   }
   try {
-    if (url.pathname === "/api/search" && request.method === "POST") return json(await search(env, await request.json().catch(() => ({}))));
+    if (url.pathname === "/api/search" && request.method === "POST") {
+      const found = await search(env, await request.json().catch(() => ({})));
+      // every question is kept (log:), the ones the collection cannot answer also go to Telegram
+      const none = !found.hits.length || found.relevance?.verdict === "none";
+      const log = logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
+        verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id });
+      ctx?.waitUntil(none ? Promise.all([log, unanswered(env, found)]) : log);
+      return json(found);
+    }
+    if (url.pathname === "/api/feedback" && request.method === "POST") return json(await feedback(env, await request.json().catch(() => ({}))));
     if (url.pathname === "/api/pack" && request.method === "POST") {
       const found = await search(env, await request.json().catch(() => ({})));
       return new Response(packFile(found), { headers: {
@@ -321,5 +331,6 @@ export default {
   fetch: handle,
   async scheduled(event, env, ctx) {
     ctx.waitUntil(qdrant(env, `/collections/${env.COLLECTION}`).then((info) => console.log("qdrant ok", info.points_count)));
+    ctx.waitUntil(dailySummary(env));
   },
 };

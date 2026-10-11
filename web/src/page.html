@@ -174,6 +174,11 @@ th,td{padding:7px 10px}
 .xcard .actions button{border:1px solid var(--accent);border-radius:999px;padding:5px 12px;background:var(--accent-soft);color:var(--accent);font:inherit;font-size:.92em;cursor:pointer}
 .xcard .actions button:hover{background:var(--accent);color:#fff}
 @media (max-width:600px){.xrows th{white-space:normal}}
+#fbopen{position:fixed;left:16px;bottom:16px;z-index:50;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;font:inherit}
+#fbdlg{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:460px;width:calc(100% - 32px)}
+#fbdlg textarea,#fbdlg input,.fbbar input{width:100%;box-sizing:border-box;margin:6px 0;padding:8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit}
+.fbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.fbbar input{flex:1 1 100%}
+.fbhit{margin-inline-start:auto}.fbhit button{padding:2px 8px}
 </style>
 </head>
 <body>
@@ -602,7 +607,19 @@ function pageMap(hit) {
     .map(([, l, t, r, b]) => `<i style="left:${l * 100}%;top:${t * 100}%;width:${(r - l) * 100}%;height:${(b - t) * 100}%"></i>`).join("") + "</div>";
 }
 
-let lastHits = [];
+let lastHits = [], lastSearch = null;
+// Feedback goes to the site owner (Telegram); the name is optional and remembered in this browser.
+function sendFeedback(extra) {
+  const nav = document.querySelector("nav button.on");
+  return api("/api/feedback", { question: lastSearch?.question, searchQuery: lastSearch?.searchQuery, who: store.get("fbwho") || "",
+    tab: nav?.dataset.tab || "", ...extra }).catch(() => {});
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-fb]"); if (!b) return;
+  const bar = b.closest(".fbbar");
+  sendFeedback({ verdict: b.dataset.fb, comment: bar.querySelector("#fbnote").value });
+  bar.innerHTML = '<span class="hint">ممنون! بازخوردتان رسید.</span>';
+});
 function renderHit(h, words, i) {
   const type = h.source_type || "";
   return `<div class="card hit" data-i="${i}">
@@ -617,7 +634,8 @@ function renderHit(h, words, i) {
       ${boxesOf(h).length ? '<button data-act="view">نمایش روی صفحه‌ی مقاله</button>' : ""}
       <button data-act="paper">کل مقاله</button>
       ${h.doi ? `<a href="https://doi.org/${esc(h.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}
-      <button data-act="copy">کپی متن</button></div>
+      <button data-act="copy">کپی متن</button>
+      <span class="fbhit"><button data-act="up" title="این منبع به سؤال مربوط بود">👍</button><button data-act="down" title="این منبع به سؤال مربوط نبود">👎</button></span></div>
   </div>`;
 }
 function bindHits(container, hits) {
@@ -629,6 +647,10 @@ function bindHits(container, hits) {
     if (act === "view") openViewer(h);
     if (act === "paper") openPaper(h.doc_id, h.node_id);
     if (act === "copy") navigator.clipboard?.writeText(`(${h.label})\n${h.text}`).then(() => { e.target.textContent = "کپی شد"; });
+    if (act === "up" || act === "down") {
+      sendFeedback({ verdict: act === "up" ? "useful" : "wrong", hit: { label: h.label, doc_id: h.doc_id } });
+      e.target.parentElement.innerHTML = '<span class="hint">ممنون!</span>';
+    }
   };
 }
 
@@ -638,7 +660,7 @@ async function runSearch() {
   setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = ""; window.crystalCards?.([]);
   try {
     const data = await (await api("/api/search", opts)).json();
-    lastHits = data.hits;
+    lastHits = data.hits; lastSearch = data;
     const words = terms(data.searchQuery || data.question);
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
       (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : "") +
@@ -658,6 +680,9 @@ async function runSearch() {
             <p class="hint">سامانه همیشه نزدیک‌ترین بخش‌ها را برمی‌گرداند؛ این بار هیچ‌کدام جواب سؤال نیست. سؤال را دقیق‌تر بنویسید (مثلاً با فرمول شیمیایی ماده) یا فیلترها را بردارید.</p></div>
            <details><summary class="hint">نزدیک‌ترین بخش‌ها را نشان بده (احتمالاً نامرتبط)</summary>${list}</details>`
         : (r.verdict === "weak" ? `<div class="card hint" style="border:1px solid var(--warn)">منابع فقط بخشی از سؤال را پوشش می‌دهند.<ul>${why}</ul></div>` : "") + list;
+    if (data.hits.length) $("hits").insertAdjacentHTML("beforeend", `<div class="card fbbar"><b>جواب سؤالتان را پیدا کردید؟</b>
+      <button data-fb="found">بله</button><button data-fb="notfound">نه</button>
+      <input id="fbnote" placeholder="اگر خواستید بنویسید چه چیزی کم بود یا چه چیزی را دنبال می‌گشتید (اختیاری)"></div>`);
     bindHits($("hits"), data.hits);
     window.crystalCards?.(data.materials || []);
     // pdf.js and its worker into the browser cache while the reader looks at the results
@@ -2067,6 +2092,27 @@ $("xcards").onclick = (e) => {
   ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
   showTab(act);
 };
+</script>
+<button id="fbopen" title="نظر، مشکل یا پیشنهاد">💬 بازخورد</button>
+<dialog id="fbdlg"><form method="dialog" id="fbform">
+  <h3>بازخورد</h3>
+  <p class="hint">مشکل، اشتباه در داده‌ها، بلور یا مقاله‌ای که کم است، یا هر پیشنهادی. مستقیم به سازنده‌ی سایت می‌رسد.</p>
+  <textarea id="fbtext" rows="5" required placeholder="مثلاً: ضریب d بلور … در کارت اشتباه است / مقاله‌ی … در مجموعه نیست"></textarea>
+  <input id="fbwho" placeholder="نام یا آیدی تلگرام (اختیاری، برای پاسخ)">
+  <div class="actions"><button value="send" class="primary">ارسال</button><button value="cancel" formnovalidate>انصراف</button></div>
+</form></dialog>
+<script>
+(() => {
+  const dlg = document.getElementById("fbdlg"), who = document.getElementById("fbwho");
+  document.getElementById("fbopen").onclick = () => { who.value = store.get("fbwho") || ""; dlg.showModal(); };
+  dlg.addEventListener("close", async () => {
+    if (dlg.returnValue !== "send") return;
+    const text = document.getElementById("fbtext");
+    store.set("fbwho", who.value.trim());
+    await sendFeedback({ verdict: "comment", comment: text.value });
+    text.value = ""; status("ممنون! بازخوردتان رسید.");
+  });
+})();
 </script>
 </body>
 </html>
