@@ -506,3 +506,27 @@
     y: [{range_um: [0.45, 1.62], terms: [[0.5138, -3], [-1.1054, -2], [0.8035, -1], [1.9591, 0]]}]
     z: [{range_um: [0.45, 3.2], terms: [[1.5905, -3], [-4.2423, -2], [4.2161, -1], [1.7355, 0]]}]
 
+- material: Li2B4O7
+  source: Sugawara-1998
+  doc_id: 10.1007_b138685
+  cite: "Nikogosyan (2005), from Sugawara et al. (1998)"
+  pdf_page: 255
+  where: "dno/dT and dne/dT measured at 6 wavelengths (0.43584–0.64385 µm) in 7 temperature ranges from 233 to 373 K (table, ref. [6], the paper of the Sellmeier equations; read from the page image), fitted here by (c0 + c2/λ²)(1 + t_coef·ΔT): rms 0.18 (o) and 0.08 (e) × 10⁻⁶ /K, largest misfit 0.5 × 10⁻⁶ /K"
+  t0_c: 25
+  form: kato
+  axes:
+    o: [{range_um: [0.43584, 0.64385], terms: [[0.08951, 0], [0.01342, -2]], t_coef: -0.01849}]
+    e: [{range_um: [0.43584, 0.64385], terms: [[0.24918, 0], [0.01860, -2]], t_coef: -0.00659}]
+
+- material: LiIO3
+  source: Umegaki
+  doc_id: 10.1007_b138685
+  cite: "Nikogosyan (2005), from Gettemy et al. (1988)"
+  pdf_page: 373
+  where: "dno/dT and dne/dT at T = 300 K measured by Gettemy et al. (1988, ref. [13]) at 0.5321, 0.6594, 1.0642 and 1.3188 µm (read from the page image): no trend with wavelength (o: −96, −95, −89, −94; e: −86, −84, −75, −85 × 10⁻⁶ /K), so their means are used; ref. [7] at 0.657 µm gives −79 and −71"
+  t0_c: 26.85
+  form: kato
+  axes:
+    o: [{range_um: [0.5321, 1.3188], terms: [[-9.35, 0]]}]
+    e: [{range_um: [0.5321, 1.3188], terms: [[-8.25, 0]]}]
+
