@@ -188,7 +188,7 @@ th,td{padding:7px 10px}
 html.i18n-wait body{visibility:hidden}
 html.nopdf [data-act="view"],html.nopdf [data-needpdf],html.nopdf .pagemap{display:none!important}
 html:not(.nopdf) [data-nopdfonly]{display:none!important}
-html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack{display:none!important}
+html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.nosearch #risearch{display:none!important}
 #langbtn{margin-top:6px;color:var(--side-ink);background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 </style>
 </head>
@@ -1008,7 +1008,13 @@ function show(key, on) {
 let loaded = null;
 window.loadFormulas = () => {
   loaded ||= fetch("/ri/index.json").then((r) => r.json()).then((index) => {
-    RI.index = index; RI.byName = new Map(index.map((m) => [matName(m), m]));
+    // A crystal both in refractiveindex.info (main shelf) and among the formulas read from the collection's papers
+    // (papers shelf) has one name: the first entry is the one listed, the others are shown with it.
+    RI.index = index; RI.byName = new Map(); RI.extra = new Map();
+    for (const m of index) {
+      const name = matName(m);
+      if (RI.byName.has(name)) RI.extra.set(name, [...(RI.extra.get(name) || []), m]); else RI.byName.set(name, m);
+    }
     $("rimats").innerHTML = index.map((m) => `<option value="${esc(matName(m))}">${esc(m.name ? m.name.replace(/^\S+ /, "") + " · " : "")}${m.n} (${m.formulas} formula)</option>`).join("");
     const saved = store.get("rimat2");
     selectMaterial(saved && RI.byName.has(saved) ? saved : "LiB3O5");
@@ -1020,9 +1026,11 @@ async function selectMaterial(name) {
   const m = RI.byName.get(name); if (!m) return;
   RI.req = name; // a later choice wins over this one while its files load
   $("rimat").value = name; store.set("rimat2", name);
-  $("riinfo").textContent = `${m.name ? m.name.replace(/^\S+ /, "") + " · " : ""}${fa(m.n)} منبع (${fa(m.formulas)} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
+  const parts = [m, ...(RI.extra.get(name) || [])];
+  const sum = (k) => parts.reduce((t, p) => t + (p[k] || 0), 0);
+  $("riinfo").textContent = `${m.name ? m.name.replace(/^\S+ /, "") + " · " : ""}${fa(sum("n"))} منبع (${fa(sum("formulas"))} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
   $("rientries").innerHTML = '<p class="hint">در حال خواندن…</p>';
-  const list = await (await fetch(`/ri/m/${m.i}.json`)).json();
+  const list = (await Promise.all(parts.map((p) => fetch(`/ri/m/${p.i}.json`).then((r) => r.json())))).flat();
   if (RI.req !== name) return;
   const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
   // which sources are in the collection: a failing request (Qdrant down) only loses those marks, not the tab
@@ -1162,7 +1170,7 @@ for (const box of ["rientries", "riuser"]) $(box).addEventListener("click", (ev)
   if (act === "copy") fillForm({ name: `${label(c.e)} (کپی)`, ...(c.e.type === "tab"
     ? { kind: "points", points: c.e.points } : { kind: "formula", type: String(c.e.type), coefficients: c.e.coefficients }), range_um: c.e.range_um, note: c.e.reference });
   if (act === "edit") fillForm(c.e);
-  if (act === "del" && confirm(`«${c.e.name}» حذف شود؟`)) {
+  if (act === "del" && confirm(LANG === "en" ? `Delete “${c.e.name}”?` : `«${c.e.name}» حذف شود؟`)) {
     show(key, false); RI.user = RI.user.filter((u) => `u:${u.id}` !== key); saveUser(); render();
   }
 });
@@ -2169,7 +2177,9 @@ document.addEventListener("click", (e) => {
     const PERSIAN = /[\u0600-\u06FF]/;
     const digits = (t) => t.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/٬/g, ",").replace(/٫/g, ".")
       .replace(/،/g, ",").replace(/؛/g, ";").replace(/؟/g, "?").replace(/٪/g, "%");
-    const tr = (t) => { if (!t || !PERSIAN.test(t)) return t; for (let i = 0; i < 2; i++) t = t.replace(re, (m) => dict[m]); return digits(t); };
+    // "4 منبع" comes out "4 Source": English counts take the plural
+    const plural = (t) => t.replace(/\b(\d[\d,]*) (Source|source|formula|passage|point)\b/g, (m, n, w) => `${n} ${n === "1" ? w.toLowerCase() : w.toLowerCase() + "s"}`);
+    const tr = (t) => { if (!t || !PERSIAN.test(t)) return t; for (let i = 0; i < 2; i++) t = t.replace(re, (m) => dict[m]); return plural(digits(t)); };
     const ATTRS = ["placeholder", "title", "aria-label", "alt"];
     const walk = (root) => {
       if (root.nodeType === 3) { const v = tr(root.nodeValue); if (v !== root.nodeValue) root.nodeValue = v; return; }
