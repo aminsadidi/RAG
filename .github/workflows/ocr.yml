@@ -1,0 +1,133 @@
+# Convert again, on 20 GitHub runners in parallel, the papers whose text on the site is missing or cut
+# short: scanned PDFs get full-page OCR, long PDFs (books) every page. See scripts/ocr_gh.
+#
+# Started by hand (Actions -> OCR papers -> Run workflow) or by a commit that changes
+# scripts/ocr_gh/run.json. The repository is public: paper text only travels encrypted (ARTIFACT_KEY)
+# and is never printed. Secrets: SITE_KEY, QDRANT_URL, QDRANT_API_KEY, ARTIFACT_KEY.
+name: OCR papers
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "doc_ids, comma-separated (empty: check every paper)"
+        default: ""
+      dry:
+        description: "Only report, do not change the site"
+        type: boolean
+        default: false
+  push:
+    paths: [scripts/ocr_gh/run.json]
+
+permissions:
+  contents: write
+
+concurrency: ocr
+
+env:
+  SITE_KEY: ${{ secrets.SITE_KEY }}
+  QDRANT_URL: ${{ secrets.QDRANT_URL }}
+  QDRANT_API_KEY: ${{ secrets.QDRANT_API_KEY }}
+  ARTIFACT_KEY: ${{ secrets.ARTIFACT_KEY }}
+  GH_TOKEN: ${{ github.token }}
+  HF_HUB_DISABLE_PROGRESS_BARS: "1"
+  TQDM_DISABLE: "1"
+  PYTHONPATH: ${{ github.workspace }}/scripts/ocr_gh
+  SHARDS: "20"
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    outputs:
+      shards: ${{ steps.plan.outputs.shards }}
+      dry: ${{ steps.args.outputs.dry }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - name: Install
+        run: |
+          pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -e ".[ocr]"
+      - name: Arguments
+        id: args
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            ONLY="${{ inputs.only }}"; DRY="${{ inputs.dry }}"
+          else
+            ONLY=$(jq -r '.only // ""' scripts/ocr_gh/run.json); DRY=$(jq -r '.dry // false' scripts/ocr_gh/run.json)
+          fi
+          echo "only=$ONLY" >> "$GITHUB_OUTPUT"; echo "dry=$DRY" >> "$GITHUB_OUTPUT"
+      - name: Extra PDFs (encrypted assets of the draft release ocr-inputs)
+        run: bash scripts/ocr_gh/fetch_inputs.sh
+      - name: Plan
+        id: plan
+        run: |
+          ONLY="${{ steps.args.outputs.only }}"
+          python scripts/ocr_gh/scan.py "$SHARDS" ${ONLY:+--only "$ONLY"}
+          echo "shards=$(jq -c '[.units[].shard] | unique' plan.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with: {name: plan, path: plan.json, retention-days: 7}
+
+  convert:
+    needs: scan
+    if: needs.scan.outputs.shards != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.scan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - name: Install
+        run: |
+          pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -e ".[ocr]"
+      - uses: actions/download-artifact@v4
+        with: {name: plan}
+      - name: Extra PDFs
+        run: bash scripts/ocr_gh/fetch_inputs.sh
+      - name: Convert
+        run: python scripts/ocr_gh/convert.py ${{ matrix.shard }} 2>&1 | grep -vE "Warning|warn\(" || true
+      - name: Encrypt
+        if: always()
+        run: |
+          mkdir -p units && tar czf - units | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:ARTIFACT_KEY -out units-${{ matrix.shard }}.enc
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: "units-${{ matrix.shard }}", path: "units-${{ matrix.shard }}.enc", retention-days: 3}
+
+  replace:
+    needs: [scan, convert]
+    if: always() && needs.scan.result == 'success' && needs.scan.outputs.shards != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - name: Install
+        run: |
+          pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -q -e ".[ocr]"
+      - uses: actions/download-artifact@v4
+        with: {pattern: "*", merge-multiple: true}
+      - name: Decrypt
+        run: |
+          for f in units-*.enc; do openssl enc -d -aes-256-cbc -pbkdf2 -pass env:ARTIFACT_KEY -in "$f" | tar xzf -; done
+          ls units | wc -l
+      - name: Replace on the site
+        run: |
+          python scripts/ocr_gh/replace.py ${{ needs.scan.outputs.dry == 'true' && '--dry' || '' }} 2>&1 | grep -vE "Warning|warn\(" || true
+          test -f report.json
+      - name: Save the report and the list of replaced papers
+        run: |
+          mkdir -p scripts/ocr_gh/reports && cp report.json "scripts/ocr_gh/reports/${{ github.run_id }}.json"
+          git config user.name "ocr workflow"; git config user.email "actions@users.noreply.github.com"
+          git add scripts/ocr_gh/reports data/rag-optics/external_points.txt
+          git commit -qm "OCR workflow: report of run ${{ github.run_id }}" || exit 0
+          for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done
