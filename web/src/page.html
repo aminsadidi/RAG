@@ -4,6 +4,12 @@
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MatRAG Optics</title>
 <!-- fonts and pdf.js are served by the site itself: a CDN filtered or slow on the reader's network must not break the page -->
+<script>
+// Interface language: Persian (default) or English, remembered in this browser; English pages stay hidden until
+// translated (at most 2 s) so Persian text does not flash.
+const LANG = (() => { try { return localStorage.getItem("lang") === "en" ? "en" : "fa"; } catch { return "fa"; } })();
+if (LANG === "en") { document.documentElement.lang = "en"; document.documentElement.dir = "ltr"; document.documentElement.classList.add("i18n-wait"); }
+</script>
 <style>@font-face{font-family:Vazirmatn;src:url(/vendor/vazirmatn-33.0.3/Vazirmatn-wght.woff2) format("woff2");font-weight:100 900;font-display:swap}</style>
 <style>
 :root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--muted:#5b6876;--line:#dde3ea;--soft:#eef2f7;--accent:#1f6feb;--accent-ink:#fff;
@@ -53,7 +59,7 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:760px){.grid2{grid-template-columns:1fr}nav{margin-inline-start:0}}
 table{border-collapse:collapse;width:100%;font-size:14px}
-th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:start}
 td.ltr,th.ltr{direction:ltr;text-align:left}
 .bars td{white-space:nowrap}.barfill{height:8px;border-radius:4px;background:var(--accent);opacity:.75}
 h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
@@ -83,7 +89,7 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 select,input{max-width:100%}
 .row label{max-width:100%;flex-wrap:wrap}
 #uftable input{width:100%;min-width:70px;max-width:130px;direction:ltr}
-#ritable td,#ritable th{text-align:right;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+#ritable td,#ritable th{text-align:start;font-family:ui-monospace,Consolas,monospace;font-size:13px}
 .entry .tools{display:flex;gap:6px;flex-wrap:wrap}
 .entry .tools button{font:inherit;font-size:12px;border:1px solid var(--line);background:transparent;color:var(--accent);border-radius:14px;padding:0 10px;cursor:pointer}
 .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:var(--shadow);white-space:nowrap;display:none;direction:ltr;text-align:left}
@@ -95,7 +101,7 @@ select,input{max-width:100%}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .tile{background:var(--soft);border-radius:12px;padding:12px 14px}
-.tile b{display:block;font-size:24px;direction:ltr;text-align:right}
+.tile b{display:block;font-size:24px;direction:ltr;text-align:start}
 .tile span{color:var(--muted);font-size:13px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;direction:ltr}
 .seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:5px 12px;cursor:pointer}
@@ -174,11 +180,13 @@ th,td{padding:7px 10px}
 .xcard .actions button{border:1px solid var(--accent);border-radius:999px;padding:5px 12px;background:var(--accent-soft);color:var(--accent);font:inherit;font-size:.92em;cursor:pointer}
 .xcard .actions button:hover{background:var(--accent);color:#fff}
 @media (max-width:600px){.xrows th{white-space:normal}}
-#fbopen{position:fixed;left:16px;bottom:16px;z-index:50;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;font:inherit}
+#fbopen{position:fixed;inset-inline-end:16px;bottom:16px;z-index:50;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;font:inherit}
 #fbdlg{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:460px;width:calc(100% - 32px)}
 #fbdlg textarea,#fbdlg input,.fbbar input{width:100%;box-sizing:border-box;margin:6px 0;padding:8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit}
 .fbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.fbbar input{flex:1 1 100%}
 .fbhit{margin-inline-start:auto}.fbhit button{padding:2px 8px}
+html.i18n-wait body{visibility:hidden}
+#langbtn{margin-top:6px;color:var(--side-ink);background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -194,6 +202,7 @@ th,td{padding:7px 10px}
     <button data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4V4Zm5.5 0h4v16h-4V4Zm6.2.6 3.8-1 4 15.5-3.8 1-4-15.5Z"/></svg><span>مجموعه و ارزیابی</span></button>
     <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
+  <button id="langbtn" type="button" title="English / فارسی">English</button>
   <a href="/logout" class="logout">خروج</a>
 </aside>
 
@@ -531,7 +540,7 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
-const fa = (n) => Number(n).toLocaleString("fa-IR");
+const fa = (n) => Number(n).toLocaleString(LANG === "en" ? "en-US" : "fa-IR");
 const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده", metadata_only: "فقط عنوان" };
 
 // ---------- tabs
@@ -1504,7 +1513,7 @@ function run() {
       : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
     const other = c.sources.findIndex((s) => covers(s, w));
-    $("pmtable").innerHTML = `<tr><td class="err" style="direction:rtl;text-align:right">طول موج‌های این فرایند (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) همه باید در بازه‌ی فرمول این منبع (${src.range_um[0]}–${src.range_um[1]} µm) باشند و نیستند. `
+    $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">طول موج‌های این فرایند (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) همه باید در بازه‌ی فرمول این منبع (${src.range_um[0]}–${src.range_um[1]} µm) باشند و نیستند. `
       + (other >= 0 ? `<button id="pmother">رفتن به منبع ${esc(c.sources[other].label)} که این بازه را دارد</button>` : `<button id="pmfit">تنظیم خودکار طول موج برای این بلور</button>`) + `</td></tr>`;
     if (other >= 0) $("pmother").onclick = () => { $("pmsrc").value = String(other); run(); };
     else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
@@ -1515,7 +1524,7 @@ function run() {
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
         <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td><b>${fmtD(r)}</b>${r.phi !== undefined && r.deff > 0.005 ? ` <span class="hint">(φ = ${r.phi}°)</span>` : ""}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
         <td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
-       '<tr><td colspan="9" style="direction:rtl;text-align:right">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
+       '<tr><td colspan="9" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
@@ -2112,6 +2121,43 @@ $("xcards").onclick = (e) => {
     await sendFeedback({ verdict: "comment", comment: text.value });
     text.value = ""; status("ممنون! بازخوردتان رسید.");
   });
+})();
+</script>
+<script>
+(() => {
+  const btn = document.getElementById("langbtn");
+  btn.textContent = LANG === "en" ? "فارسی" : "English";
+  btn.onclick = () => { try { localStorage.setItem("lang", LANG === "en" ? "fa" : "en"); } catch {} location.reload(); };
+  if (LANG !== "en") return;
+  const done = () => document.documentElement.classList.remove("i18n-wait");
+  setTimeout(done, 2000);
+  // Every Persian text of the page (/i18n/en.json, keyed by the exact Persian as it is in page.html) is replaced
+  // where it stands, whole words only, so the reader's own Persian (a question) is left alone; content added
+  // later (results, messages, plots) is translated as it appears.
+  fetch("/i18n/en.json").then((r) => r.json()).then((dict) => {
+    const keys = Object.keys(dict).sort((a, b) => b.length - a.length);
+    const L = "\u0621-\u064A\u0671-\u06D3\u06FA-\u06FF";
+    const esc = (k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(?<![${L}])(?:${keys.map(esc).join("|")})(?![${L}])`, "g");
+    const PERSIAN = /[\u0600-\u06FF]/;
+    const digits = (t) => t.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/٬/g, ",").replace(/٫/g, ".")
+      .replace(/،/g, ",").replace(/؛/g, ";").replace(/؟/g, "?").replace(/٪/g, "%");
+    const tr = (t) => { if (!t || !PERSIAN.test(t)) return t; for (let i = 0; i < 2; i++) t = t.replace(re, (m) => dict[m]); return digits(t); };
+    const ATTRS = ["placeholder", "title", "aria-label", "alt"];
+    const walk = (root) => {
+      if (root.nodeType === 3) { const v = tr(root.nodeValue); if (v !== root.nodeValue) root.nodeValue = v; return; }
+      if (root.nodeType !== 1) return;
+      for (const a of ATTRS) if (root.hasAttribute?.(a)) { const v = tr(root.getAttribute(a)); if (v !== root.getAttribute(a)) root.setAttribute(a, v); }
+      if (root.tagName === "TEXTAREA" || root.tagName === "SCRIPT" || root.tagName === "STYLE") return;  // what the reader typed
+      if (root.tagName === "OPTION" || root.tagName === "TITLE") { const v = tr(root.textContent); if (v !== root.textContent) root.textContent = v; }
+      for (const c of root.childNodes) walk(c);
+    };
+    walk(document.documentElement);
+    new MutationObserver((ms) => { for (const m of ms) { if (m.type === "characterData") walk(m.target); else for (const n of m.addedNodes) walk(n);
+      if (m.type === "attributes") walk(m.target); } })
+      .observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+    done();
+  }).catch(done);
 })();
 </script>
 </body>
