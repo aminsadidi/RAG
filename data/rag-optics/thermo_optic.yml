@@ -19,6 +19,10 @@
 #                 with [a, b, d, e] given; n(T) = n0·exp(∫ from t0) (Mangin et al. 2009).
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
 #                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8).
+#   form "phillips": dn/dT = −c·(n² + a·n + b), constant in T, n the index at t0 (Phillips 1966, Eqs. 7–9).
+#   form "emanueli": Δn = n1·ΔT + n2·ΔT², n1 = Σ a_m/λ^m × 10⁻⁶, n2 = Σ b_m/λ^m × 10⁻⁸ (m = 0..3); `corr` adds
+#                 B(λ − λ0)/(1 + exp(−γ(λ − λ0))) to n1 (B1, 10⁻⁶) and n2 (B2, 10⁻⁹) (Emanueli & Arie 2003, Eqs. 2–4).
+# partial: true marks a paper that measured only some of the axes; the others keep their t0 index.
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
 # phase-matching temperatures the papers report.
 
@@ -663,3 +667,28 @@
     y: [{range_um: [0.901, 14.201], terms: [[6.3935, -3], [-13.1762, -2], [10.8950, -1], [2.8130, 0]]}]
     z: [{range_um: [0.901, 14.201], terms: [[6.3141, -3], [-13.0790, -2], [10.8486, -1], [2.2548, 0]]}]
 
+- material: KH2PO4
+  source: Zernike
+  doc_id: 10.1364_josa.56.000629
+  cite: "Phillips (1966)"
+  pdf_page: 3
+  where: "Table V and Eqs. (7)–(9): Δn = (n² + a·n + b)·c·(298 K − T), measured from 298 K down to 154 K at 0.3653–0.6907 µm (Table III), linear in T. With the Zernike indices they give a 90° type-I SHG tuning rate of 0.045 nm/K at 0.517 µm (measured 0.048 nm/K, Barnes et al. 1982), where Barnes's own KDP values give 0.021 and Ghosh & Bhar (1982) miss the NCPM temperatures. Above room temperature it is an extrapolation"
+  t0_c: 24.85
+  form: phillips
+  axes:
+    o: {a: 0, b: -1.432, c: 0.402e-4}
+    e: {a: 0, b: -1.105, c: 0.221e-4}
+
+- material: KTiOAsO4
+  source: Feve-2000
+  partial: true
+  doc_id: 10.1364_ao.42.006661
+  cite: "Emanueli & Arie (2003)"
+  pdf_page: 3
+  where: "Table 2 and Eqs. (2)–(4), y and z axes only, measured at 0.532–1.585 µm from 25 to 200 °C; the z axis carries the paper's mid-IR correction of Eq. (4) (λ0 = 1.55 µm, γ = 10 µm⁻¹, B = 4.6 × 10⁻⁶ and 8 × 10⁻⁹), fitted to a KTA OPO. The x axis was not measured: nx stays at its 25 °C value, so temperatures of interactions polarized along x are not reliable"
+  t0_c: 25
+  form: emanueli
+  axes:
+    y: {n1: [-4.1053, 44.261, -38.012, 11.302], n2: [0.5857, 3.9386, -4.0081, 1.4316]}
+    z: {n1: [-6.1537, 64.505, -56.447, 17.169], n2: [-0.96751, 13.192, -11.78, 3.6292],
+        corr: {lam0: 1.55, gamma: 10, B1: 4.6, B2: 8}}

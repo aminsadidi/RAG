@@ -110,6 +110,15 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const n2 = (t) => q(spec.A, t) + q(spec.B, t) / (l2 - spec.C) + q(spec.D, t) / (l2 - spec.E);
     return Math.sqrt(n2(T + 273.15)) - Math.sqrt(n2(t0 + 273.15));
   }
+  if (form === "phillips") { // dn/dT = −c·(n² + a·n + b), constant in T (Phillips 1966, Eqs. 7–9, KDP)
+    return -spec.c * (n0 * n0 + spec.a * n0 + spec.b) * (T - t0);
+  }
+  if (form === "emanueli") { // Δn = n1·ΔT + n2·ΔT², n1, n2 = Σ a_m/λ^m (10⁻⁶ and 10⁻⁸); the z axis of KTA adds
+    // B(λ − λ0)/(1 + exp(−γ(λ − λ0))) to both (B1 in 10⁻⁶, B2 in 10⁻⁹) (Emanueli & Arie 2003, Eqs. 2–4)
+    const poly = (a) => a.reduce((s, c, m) => s + c / lam ** m, 0), d = T - t0, k = spec.corr;
+    const corr = k ? (lam - k.lam0) / (1 + Math.exp(-k.gamma * (lam - k.lam0))) : 0;
+    return (poly(spec.n1) + (k ? k.B1 * corr : 0)) * 1e-6 * d + (poly(spec.n2) * 1e-8 + (k ? k.B2 * corr * 1e-9 : 0)) * d * d;
+  }
   if (form === "gayer") {
     const f = (T - t0) * (T + t0 + (spec.f_c ?? 546.32));
     const { a, b } = spec;

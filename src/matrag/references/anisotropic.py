@@ -123,10 +123,11 @@ def add_thermo(crystals: dict[str, dict], path: Path) -> None:
         src = next((s for s in crystal["sources"] if s["label"] == block["source"]), None) if crystal else None
         if src is None:
             raise ValueError(f"thermo_optic.yml: no source {block['source']!r} of {block['material']}")
-        if set(block["axes"]) != set(src["axes"]):
+        # partial: true, a paper that measured only some axes (KTA: y and z); the others stay at t0
+        if not (set(block["axes"]) <= set(src["axes"]) if block.get("partial") else set(block["axes"]) == set(src["axes"])):
             raise ValueError(f"thermo_optic.yml: {block['material']} axes {sorted(block['axes'])} "
                              f"do not match the source's {sorted(src['axes'])}")
-        src["thermo"] = {k: block[k] for k in ("form", "t0_c", "cite", "doc_id", "pdf_page", "where") if k in block}
+        src["thermo"] = {k: block[k] for k in ("form", "t0_c", "cite", "doc_id", "pdf_page", "where", "partial") if k in block}
         for axis, spec in block["axes"].items():
             src["axes"][axis]["thermo"] = spec
         if block.get("prefer"):
