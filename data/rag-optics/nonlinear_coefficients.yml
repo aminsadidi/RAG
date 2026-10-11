@@ -50,6 +50,13 @@
     - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "d36 = 0.39 pm/V at 1.064 µm (Table 10)"}
   notes: "−42m: d14 = d25; d14 = d36 by Kleinman symmetry"
 
+- material: KD2PO4
+  point_group: -42m
+  d: {36: 0.37, 14: 0.37, 25: 0.37}
+  sources:
+    - {doc_id: 10.1007_b138685, cite: "Nikogosyan (2005)", pdf_page: 158, what: "d36 = 0.37 pm/V at 1.0642 µm (absolute value, refs. [33], [35]; read from the page image)"}
+  notes: "−42m: d14 = d25 = d36 by Kleinman symmetry (the handbook's d_eff expressions)"
+
 - material: CsLiB6O10
   point_group: -42m
   d: {36: 0.73, 14: 0.73, 25: 0.73}
