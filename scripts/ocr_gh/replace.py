@@ -48,11 +48,12 @@ for doc_id, paper in sorted(plan["papers"].items()):
     oc, os_ = quality([p.payload.get("text", "") for p in old])
     nc, ns = quality([n.get_content() for n in nodes])
     # OCR'd text must read as prose and hold more of the paper (or read better). A full conversion keeps the
-    # PDF's own text (a book of data tables has few common words): it must hold more and read no worse.
+    # PDF's own text, so it only has to hold more and not be garbled: its later pages (reference lists, data
+    # tables) have fewer common words than the first 60, which is no sign of worse text.
     if paper["mode"] == "ocr":
         better = ns >= 0.15 and (nc > 1.05 * oc or ns > os_ + 0.02)
     else:
-        better = nc > 1.05 * oc and ns >= os_ - 0.02
+        better = nc > 1.05 * oc and ns >= 0.1
     better = bool(nodes) and better
     row = {"mode": paper["mode"], "pages": paper["pages"], "old_chunks": len(old), "new_chunks": len(nodes),
            "old_chars": oc, "new_chars": nc, "old_stop": round(os_, 3), "new_stop": round(ns, 3), "better": better}
