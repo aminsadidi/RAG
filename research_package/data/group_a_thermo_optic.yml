@@ -1,0 +1,282 @@
+# Group A: Thermo-optic dispersion (dn/dT) for crystals that have refractive-index data but no temperature data
+# Extracted strictly from PDFs in RAG-Optics / 01_Papers_by_Category
+
+- material: KTiOAsO4
+  quantity: dn/dT
+  axis: x
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "x-axis thermo-optic dispersion coefficients are not reported in the collection PDFs (only y and z axes are given in 10.1364-ao.42.006661.pdf)."
+
+- material: KTiOAsO4
+  quantity: dn/dT
+  axis: y
+  file: 10.1364-ao.42.006661.pdf
+  pdf_page: 3
+  where: "Table 2, KTA y-axis column n1"
+  formula: "Δn(λ,T) = n1(λ)(T − 25 °C) + n2(λ)(T − 25 °C)², n1 = Σ a_m/λ^m"
+  values: {a0: -4.1053, a1: 44.261, a2: -38.012, a3: 11.302}
+  units: "n1 in 1e-6 /°C, λ in µm"
+  range: {wavelength_um: [0.532, 1.585], temperature_c: [25, 200]}
+  check: "Fig. 4: n1(y) ≈ 1.37e-5 /°C at 1.064 µm"
+  note: "n2 is independent of λ: n2(y) = 2.404e-8 /°C² (Table 2)."
+
+- material: KTiOAsO4
+  quantity: dn/dT
+  axis: z
+  file: 10.1364-ao.42.006661.pdf
+  pdf_page: 3
+  where: "Table 2, KTA z-axis column n1"
+  formula: "Δn(λ,T) = n1(λ)(T − 25 °C) + n2(λ)(T − 25 °C)², n1 = Σ a_m/λ^m"
+  values: {a0: 9.9587, a1: 44.905, a2: -38.448, a3: 13.481}
+  units: "n1 in 1e-6 /°C, λ in µm"
+  range: {wavelength_um: [0.532, 1.585], temperature_c: [25, 200]}
+  check: "Fig. 4: n1(z) ≈ 3.45e-5 /°C at 1.064 µm"
+  note: "n2 is independent of λ: n2(z) = 3.655e-8 /°C² (Table 2)."
+
+- material: GaN
+  quantity: dn/dT
+  axis: o
+  file: 10.1063-1.3021148.pdf
+  pdf_page: 4
+  where: "Eq. (2) and Table I"
+  formula: "∂n_o/∂T = A/λ³ + B/λ² + C/λ + D"
+  values: {A: 4.247e4, B: -1.592e2, C: 2.187e-1, D: -3.427e-5}
+  units: "∂n_o/∂T in K⁻¹, λ in nm"
+  range: {wavelength_um: [0.370, 0.500], temperature_c: [20, 40]}
+  check: "∂n_o/∂T = (1.53 ± 0.14)e-4 K⁻¹ at λ = 441.6 nm, T = 20–40 °C (p. 4, col. 1)"
+  note: "Measured on wurtzite GaN epilayer by spectroscopic interferometry."
+
+- material: GaN
+  quantity: dn/dT
+  axis: e
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "Extraordinary ray thermo-optic dispersion dn_e/dT is not found in the collection PDFs."
+
+- material: KBe2BO3F2
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "KBBF thermo-optic dispersion formula not found in collection PDFs."
+
+- material: SiO2
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "Crystal quartz dn/dT dispersion formula not found in collection PDFs (only fused silica or constant single-λ dn/dT reported)."
+
+- material: LiGaS2
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "LiGaS2 thermo-optic dispersion formula not found in collection PDFs."
+
+- material: LiGaSe2
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "LiGaSe2 thermo-optic dispersion formula not found in collection PDFs."
+
+- material: BaGa4S7
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "BaGa4S7 thermo-optic dispersion formula not found in collection PDFs."
+
+- material: AgGaGeS4
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "AgGaGeS4 thermo-optic dispersion formula not found in collection PDFs."
+
+- material: CdGeAs2
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "CdGeAs2 thermo-optic dispersion formula not found in collection PDFs."
+
+- material: ZnTe
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "ZnTe thermo-optic dispersion formula not found in collection PDFs (only room-temperature refractive indices / electro-optic coefficients reported)."
+
+- material: CdS
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "CdS thermo-optic dispersion formula not found in collection PDFs."
+
+- material: Ag3AsS3
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "Ag3AsS3 (proustite) thermo-optic dispersion formula not found in collection PDFs."
+
+- material: Ag3SbS3
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "Ag3SbS3 (pyrargyrite) thermo-optic dispersion formula not found in collection PDFs."
+
+- material: Te
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "Tellurium thermo-optic dispersion formula not found in collection PDFs."
+
+- material: Se
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "Selenium thermo-optic dispersion formula not found in collection PDFs."
+
+- material: DAST
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "DAST thermo-optic dispersion formula not found in collection PDFs."
+
+- material: DSTMS
+  quantity: dn/dT
+  axis: "-"
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range: {wavelength_um: not_found, temperature_c: not_found}
+  check: not_found
+  note: "DSTMS thermo-optic dispersion formula not found in collection PDFs."
+
+# Papers searched with no useful dn/dT formula for the above crystals:
+# 10.1364-ol.26.000620.pdf, 10.1002-pssr.201004425.pdf, 10.1016-j.optmat.2019.109564.pdf,
+# 10.1364-ao.49.006284.pdf, 10.1016-j.infrared.2020.103571.pdf, 10.1007-s00340-016-6631-5.pdf,
+# 10.1016-j.pquantelec.2015.04.001.pdf, 10.1088-1612-2011-13-1-015401.pdf, 10.1063-1.4897639.pdf,
+# 10.1002-adfm.200800633.pdf, 10.1364-oe.22.016142.pdf, 10.1364-josab.25.001678.pdf,
+# 10.1364-ao.38.006304.pdf, 10.1364-ao.39.006152.pdf, 10.1063-1.326261.pdf, 10.1063-1.121516.pdf
+
+# External papers cited for the missing dn/dT data (DOIs for retrieval):
+# KTiOAsO4 (x-axis dn/dT): 10.1364/AO.37.008527
+# SiO2 (crystal quartz dn/dT): 10.1364/JOSA.67.001443
+# CdGeAs2 (dn/dT): 10.1364/AO.18.003704
+# LiGaS2 (dn/dT): 10.1134/S1054660X0702008X
+# LiGaSe2 (dn/dT): 10.1134/S1054660X1107018X
+# BaGa4S7 (dn/dT): 10.1364/OE.20.016833
+# AgGaGeS4 (dn/dT): 10.1364/OE.22.000413
+# ZnTe (dn/dT): 10.1063/1.1709405
+# CdS (dn/dT): 10.1063/1.1654067
+# Te (dn/dT): 10.1364/JOSA.65.000394
+# DAST (dn/dT): 10.1063/1.1604183
