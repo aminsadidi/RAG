@@ -649,3 +649,17 @@
   axes:
     o: {lig_um: 0.523, G: [-22.6], H: [534.0]}
     e: {lig_um: 0.523, G: [-22.6], H: [534.0]}
+
+- material: BaGa4Se7
+  source: Kato-2023
+  doc_id: 10.1364_ome.491299
+  cite: "Kato, Miyata & Petrov (2023)"
+  pdf_page: 4
+  where: "Eq. (2) (read from the page image), 0.901–14.201 µm; with Eq. (1) it reproduces the measured 90° type-2 DFG temperatures in the yz plane, 112 and 149 °C for pumps at 1.9000 and 1.9800 µm (p. 4)"
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.901, 14.201], terms: [[6.0868, -3], [-12.6368, -2], [10.5624, -1], [1.5532, 0]]}]
+    y: [{range_um: [0.901, 14.201], terms: [[6.3935, -3], [-13.1762, -2], [10.8950, -1], [2.8130, 0]]}]
+    z: [{range_um: [0.901, 14.201], terms: [[6.3141, -3], [-13.0790, -2], [10.8486, -1], [2.2548, 0]]}]
+
