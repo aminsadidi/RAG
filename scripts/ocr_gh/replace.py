@@ -47,8 +47,13 @@ for doc_id, paper in sorted(plan["papers"].items()):
         n.metadata["citation"], n.metadata["reference"] = ref.get("citation"), ref.get("reference")
     oc, os_ = quality([p.payload.get("text", "") for p in old])
     nc, ns = quality([n.get_content() for n in nodes])
-    # OCR'd text must read as prose and hold more of the paper (or read better); a full conversion more text.
-    better = bool(nodes) and ns >= 0.15 and (nc > 1.05 * oc or (paper["mode"] == "ocr" and ns > os_ + 0.02))
+    # OCR'd text must read as prose and hold more of the paper (or read better). A full conversion keeps the
+    # PDF's own text (a book of data tables has few common words): it must hold more and read no worse.
+    if paper["mode"] == "ocr":
+        better = ns >= 0.15 and (nc > 1.05 * oc or ns > os_ + 0.02)
+    else:
+        better = nc > 1.05 * oc and ns >= os_ - 0.02
+    better = bool(nodes) and better
     row = {"mode": paper["mode"], "pages": paper["pages"], "old_chunks": len(old), "new_chunks": len(nodes),
            "old_chars": oc, "new_chars": nc, "old_stop": round(os_, 3), "new_stop": round(ns, 3), "better": better}
     if better and not dry:
