@@ -21,6 +21,7 @@ data/*/reference/
 
 # Scratch outputs from manual test runs
 results/test_*
+downloaded_papers/
 
 # Outputs saved by the web app
 results/app/

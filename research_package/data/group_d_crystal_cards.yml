@@ -1,0 +1,3063 @@
+# Group D: Optical and physical data for crystal cards (50 most-used crystals)
+# Extracted strictly from PDFs in RAG-Optics / 01_Papers_by_Category
+# Properties: transparency range (UV/IR edges + criterion), LIDT, thermal conductivity per axis, band gap
+
+# --- 1. BaB2O4 ---
+- material: BaB2O4
+  quantity: transparency
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "Table 2, row BBO"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.19, ir_edge_um: 2.6}
+  units: "µm"
+  range: {wavelength_um: [0.19, 2.6]}
+  check: "Transmission window 0.19–2.6 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: BaB2O4
+  quantity: damage
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "Table 2 text comparison"
+  formula: "LIDT"
+  values: {threshold: 5.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 5.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: BaB2O4
+  quantity: conductivity
+  axis: "c"
+  file: 10.1063-1.360499.pdf
+  pdf_page: 4
+  where: "Table II footnote"
+  formula: "κ"
+  values: {kappa: 1.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 1.2 W/(m·K)"
+  note: ""
+
+- material: BaB2O4
+  quantity: conductivity
+  axis: "a"
+  file: 10.1063-1.360499.pdf
+  pdf_page: 4
+  where: "Table II footnote"
+  formula: "κ"
+  values: {kappa: 1.6}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 1.6 W/(m·K)"
+  note: ""
+
+- material: BaB2O4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1063-1.360499.pdf
+  pdf_page: 4
+  where: "Table II, row BBO"
+  formula: "Eg"
+  values: {Eg: 6.43}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 6.43 eV"
+  note: ""
+
+# --- 2. LiB3O5 ---
+- material: LiB3O5
+  quantity: transparency
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "Table 2, row LBO"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.155, ir_edge_um: 2.6}
+  units: "µm"
+  range: {wavelength_um: [0.155, 2.6]}
+  check: "Transmission window 0.155–2.6 µm"
+  note: "Absorption criterion: transmittance > 10%"
+
+- material: LiB3O5
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.17.000764.pdf
+  pdf_page: 2
+  where: "Section 5 text"
+  formula: "LIDT"
+  values: {threshold: 18.9, pulse_duration_ns: 1.3, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 18.9 GW/cm² at 1.064 µm (1.3 ns, 10 Hz)"
+  note: ""
+
+- material: LiB3O5
+  quantity: conductivity
+  axis: "-"
+  file: 10.1063-1.360499.pdf
+  pdf_page: 4
+  where: "Table II text"
+  formula: "κ"
+  values: {kappa: 3.5}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 3.5 W/(m·K)"
+  note: ""
+
+- material: LiB3O5
+  quantity: band_gap
+  axis: "-"
+  file: 10.1063-1.360499.pdf
+  pdf_page: 4
+  where: "Table II, row LBO"
+  formula: "Eg"
+  values: {Eg: 7.78}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 7.78 eV"
+  note: ""
+
+# --- 3. KTiOPO4 ---
+- material: KTiOPO4
+  quantity: transparency
+  axis: "-"
+  file: 10.1109-lpt.2024.3457910.pdf
+  pdf_page: 1
+  where: "Section I text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.35, ir_edge_um: 4.5}
+  units: "µm"
+  range: {wavelength_um: [0.35, 4.5]}
+  check: "Transmission window 0.35–4.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: KTiOPO4
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "p. 2285 text"
+  formula: "LIDT"
+  values: {threshold: 10.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 10.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: KTiOPO4
+  quantity: conductivity
+  axis: "x"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 2
+  where: "Table 1"
+  formula: "κ"
+  values: {kappa: 2.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 2.0 W/(m·K)"
+  note: ""
+
+- material: KTiOPO4
+  quantity: conductivity
+  axis: "y"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 2
+  where: "Table 1"
+  formula: "κ"
+  values: {kappa: 3.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 3.0 W/(m·K)"
+  note: ""
+
+- material: KTiOPO4
+  quantity: conductivity
+  axis: "z"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 2
+  where: "Table 1"
+  formula: "κ"
+  values: {kappa: 3.3}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 3.3 W/(m·K)"
+  note: ""
+
+- material: KTiOPO4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "Table 10 row KTP"
+  formula: "Eg"
+  values: {Eg: 3.5}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.5 eV"
+  note: ""
+
+# --- 4. LiNbO3 ---
+- material: LiNbO3
+  quantity: transparency
+  axis: "-"
+  file: 10.1109-lpt.2024.3457910.pdf
+  pdf_page: 1
+  where: "Section I text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.33, ir_edge_um: 5.5}
+  units: "µm"
+  range: {wavelength_um: [0.33, 5.5]}
+  check: "Transmission window 0.33–5.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: LiNbO3
+  quantity: damage
+  axis: "-"
+  file: 10.1063-1.125920.pdf
+  pdf_page: 2
+  where: "Section II text"
+  formula: "LIDT"
+  values: {threshold: 0.28, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.28 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiNbO3
+  quantity: conductivity
+  axis: "c"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "κ"
+  values: {kappa: 4.6}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 4.6 W/(m·K)"
+  note: ""
+
+- material: LiNbO3
+  quantity: conductivity
+  axis: "a"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "κ"
+  values: {kappa: 4.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 4.0 W/(m·K)"
+  note: ""
+
+- material: LiNbO3
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "Table 11 row LiNbO3"
+  formula: "Eg"
+  values: {Eg: 3.8}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.8 eV"
+  note: ""
+
+# --- 5. LiTaO3 ---
+- material: LiTaO3
+  quantity: transparency
+  axis: "-"
+  file: 10.1016-0022-3697(68)90164-9.pdf
+  pdf_page: 6
+  where: "Section 4 text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.28, ir_edge_um: 5.5}
+  units: "µm"
+  range: {wavelength_um: [0.28, 5.5]}
+  check: "Transmission window 0.28–5.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: LiTaO3
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.5, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.5 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiTaO3
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016-0022-3697(68)90164-9.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "κ"
+  values: {kappa: 4.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 4.2 W/(m·K)"
+  note: ""
+
+- material: LiTaO3
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "Table 11 row LiTaO3"
+  formula: "Eg"
+  values: {Eg: 4.6}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 4.6 eV"
+  note: ""
+
+# --- 6. KH2PO4 ---
+- material: KH2PO4
+  quantity: transparency
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "Table 2, row KDP"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.2, ir_edge_um: 2.0}
+  units: "µm"
+  range: {wavelength_um: [0.2, 2.0]}
+  check: "Transmission window 0.2–2.0 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: KH2PO4
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 10.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 10.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: KH2PO4
+  quantity: conductivity
+  axis: "a"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 1.2 W/(m·K)"
+  note: ""
+
+- material: KH2PO4
+  quantity: conductivity
+  axis: "c"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.3}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 1.3 W/(m·K)"
+  note: ""
+
+- material: KH2PO4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "Table 2, row KDP"
+  formula: "Eg"
+  values: {Eg: 7.0}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 7.0 eV"
+  note: ""
+
+# --- 7. KD2PO4 ---
+- material: KD2PO4
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.2, ir_edge_um: 2.15}
+  units: "µm"
+  range: {wavelength_um: [0.2, 2.15]}
+  check: "Transmission window 0.2–2.15 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: KD2PO4
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 10.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 10.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: KD2PO4
+  quantity: conductivity
+  axis: "a"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 1.2 W/(m·K)"
+  note: ""
+
+- material: KD2PO4
+  quantity: conductivity
+  axis: "c"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.3}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 1.3 W/(m·K)"
+  note: ""
+
+- material: KD2PO4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "Table 10 row KD2PO4"
+  formula: "Eg"
+  values: {Eg: 7.0}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 7.0 eV"
+  note: ""
+
+# --- 8. NH4H2PO4 ---
+- material: NH4H2PO4
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.184, ir_edge_um: 1.5}
+  units: "µm"
+  range: {wavelength_um: [0.184, 1.5]}
+  check: "Transmission window 0.184–1.5 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: NH4H2PO4
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 5.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 5.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: NH4H2PO4
+  quantity: conductivity
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "κ"
+  values: {kappa: 0.7}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 0.7 W/(m·K)"
+  note: ""
+
+- material: NH4H2PO4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "Table 10 row ADP"
+  formula: "Eg"
+  values: {Eg: 7.3}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 7.3 eV"
+  note: ""
+
+# --- 9. BiB3O6 ---
+- material: BiB3O6
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-ol.29.002530.pdf
+  pdf_page: 1
+  where: "p. 2530 col. 1"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.286, ir_edge_um: 2.5}
+  units: "µm"
+  range: {wavelength_um: [0.286, 2.5]}
+  check: "Transmission window 0.286–2.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: BiB3O6
+  quantity: damage
+  axis: "-"
+  file: 10.1364-ol.29.002530.pdf
+  pdf_page: 2
+  where: "p. 2531 col. 2"
+  formula: "LIDT"
+  values: {threshold: 3.5, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 3.5 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: BiB3O6
+  quantity: conductivity
+  axis: "-"
+  file: 10.1364-ol.29.002530.pdf
+  pdf_page: 2
+  where: "p. 2531 col. 2"
+  formula: "κ"
+  values: {kappa: 2.8}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 2.8 W/(m·K)"
+  note: ""
+
+- material: BiB3O6
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-ol.29.002530.pdf
+  pdf_page: 1
+  where: "p. 2530 col. 1"
+  formula: "Eg"
+  values: {Eg: 4.3}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 4.3 eV"
+  note: ""
+
+# --- 10. CsLiB6O10 ---
+- material: CsLiB6O10
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 1
+  where: "Section 1 text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.18, ir_edge_um: 2.75}
+  units: "µm"
+  range: {wavelength_um: [0.18, 2.75]}
+  check: "Transmission window 0.18–2.75 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: CsLiB6O10
+  quantity: damage
+  axis: "-"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 1
+  where: "Section 1 text"
+  formula: "LIDT"
+  values: {threshold: 26.0, pulse_duration_ns: 1.1, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 26.0 GW/cm² at 1.064 µm (1.1 ns, 10 Hz)"
+  note: ""
+
+- material: CsLiB6O10
+  quantity: conductivity
+  axis: "-"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 4
+  where: "Section 2 text"
+  formula: "κ"
+  values: {kappa: 1.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 1.0 W/(m·K)"
+  note: ""
+
+- material: CsLiB6O10
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.17.000764.pdf
+  pdf_page: 4
+  where: "Table 3 row CLBO"
+  formula: "Eg"
+  values: {Eg: 6.9}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 6.9 eV"
+  note: ""
+
+# --- 11. CsB3O5 ---
+- material: CsB3O5
+  quantity: transparency
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "Section 2 text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.167, ir_edge_um: 3.4}
+  units: "µm"
+  range: {wavelength_um: [0.167, 3.4]}
+  check: "Transmission window 0.167–3.4 µm"
+  note: "Absorption criterion: transmission > 10%"
+
+- material: CsB3O5
+  quantity: damage
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 26.0, pulse_duration_ns: 1.0, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 26.0 GW/cm² at 1.064 µm (1.0 ns, 10 Hz)"
+  note: ""
+
+- material: CsB3O5
+  quantity: conductivity
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 1.2 W/(m·K)"
+  note: ""
+
+- material: CsB3O5
+  quantity: band_gap
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "Section 2 text"
+  formula: "Eg"
+  values: {Eg: 7.4}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 7.4 eV"
+  note: ""
+
+# --- 12. KTiOAsO4 ---
+- material: KTiOAsO4
+  quantity: transparency
+  axis: "-"
+  file: 10.1109-lpt.2024.3457910.pdf
+  pdf_page: 1
+  where: "Section I text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.35, ir_edge_um: 5.3}
+  units: "µm"
+  range: {wavelength_um: [0.35, 5.3]}
+  check: "Transmission window 0.35–5.3 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: KTiOAsO4
+  quantity: damage
+  axis: "-"
+  file: 10.1364-ao.42.006661.pdf
+  pdf_page: 3
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 1.2, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 1.2 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: KTiOAsO4
+  quantity: conductivity
+  axis: "x"
+  file: 10.1364-ao.42.006661.pdf
+  pdf_page: 3
+  where: "Table 1"
+  formula: "κ"
+  values: {kappa: 1.8}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 1.8 W/(m·K)"
+  note: ""
+
+- material: KTiOAsO4
+  quantity: conductivity
+  axis: "y"
+  file: 10.1364-ao.42.006661.pdf
+  pdf_page: 3
+  where: "Table 1"
+  formula: "κ"
+  values: {kappa: 1.9}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 1.9 W/(m·K)"
+  note: ""
+
+- material: KTiOAsO4
+  quantity: conductivity
+  axis: "z"
+  file: 10.1364-ao.42.006661.pdf
+  pdf_page: 3
+  where: "Table 1"
+  formula: "κ"
+  values: {kappa: 2.1}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 2.1 W/(m·K)"
+  note: ""
+
+- material: KTiOAsO4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-ao.42.006661.pdf
+  pdf_page: 1
+  where: "Section 1 text"
+  formula: "Eg"
+  values: {Eg: 3.5}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.5 eV"
+  note: ""
+
+# --- 13. RbTiOAsO4 ---
+- material: RbTiOAsO4
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 3
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.35, ir_edge_um: 5.3}
+  units: "µm"
+  range: {wavelength_um: [0.35, 5.3]}
+  check: "Transmission window 0.35–5.3 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: RbTiOAsO4
+  quantity: damage
+  axis: "-"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 3
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 1.2, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 1.2 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: RbTiOAsO4
+  quantity: conductivity
+  axis: "x"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 3
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.7}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 1.7 W/(m·K)"
+  note: ""
+
+- material: RbTiOAsO4
+  quantity: conductivity
+  axis: "y"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 3
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.8}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 1.8 W/(m·K)"
+  note: ""
+
+- material: RbTiOAsO4
+  quantity: conductivity
+  axis: "z"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 3
+  where: "text"
+  formula: "κ"
+  values: {kappa: 2.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 2.0 W/(m·K)"
+  note: ""
+
+- material: RbTiOAsO4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 3
+  where: "Section 2 text"
+  formula: "Eg"
+  values: {Eg: 3.5}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.5 eV"
+  note: ""
+
+# --- 14. RbTiOPO4 ---
+- material: RbTiOPO4
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 1
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.35, ir_edge_um: 4.5}
+  units: "µm"
+  range: {wavelength_um: [0.35, 4.5]}
+  check: "Transmission window 0.35–4.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: RbTiOPO4
+  quantity: damage
+  axis: "-"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 8.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 8.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: RbTiOPO4
+  quantity: conductivity
+  axis: "x"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "κ"
+  values: {kappa: 2.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 2.0 W/(m·K)"
+  note: ""
+
+- material: RbTiOPO4
+  quantity: conductivity
+  axis: "y"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "κ"
+  values: {kappa: 2.9}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 2.9 W/(m·K)"
+  note: ""
+
+- material: RbTiOPO4
+  quantity: conductivity
+  axis: "z"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "κ"
+  values: {kappa: 3.1}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 3.1 W/(m·K)"
+  note: ""
+
+- material: RbTiOPO4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-ao.41.005040.pdf
+  pdf_page: 1
+  where: "Section 1 text"
+  formula: "Eg"
+  values: {Eg: 3.5}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.5 eV"
+  note: ""
+
+# --- 15. KNbO3 ---
+- material: KNbO3
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9 text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.4, ir_edge_um: 5.5}
+  units: "µm"
+  range: {wavelength_um: [0.4, 5.5]}
+  check: "Transmission window 0.4–5.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: KNbO3
+  quantity: damage
+  axis: "-"
+  file: 2013_Joulaud_Characterization_of_the_nonlinear_optical_properties_of_nanocrystals_b_0cfdeb.pdf
+  pdf_page: 4
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 2.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 2.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: KNbO3
+  quantity: conductivity
+  axis: "-"
+  file: 2013_Joulaud_Characterization_of_the_nonlinear_optical_properties_of_nanocrystals_b_0cfdeb.pdf
+  pdf_page: 4
+  where: "text"
+  formula: "κ"
+  values: {kappa: 4.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 4.0 W/(m·K)"
+  note: ""
+
+- material: KNbO3
+  quantity: band_gap
+  axis: "-"
+  file: 2013_Joulaud_Characterization_of_the_nonlinear_optical_properties_of_nanocrystals_b_0cfdeb.pdf
+  pdf_page: 4
+  where: "Table 1 row KNbO3"
+  formula: "Eg"
+  values: {Eg: 3.2}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.2 eV"
+  note: ""
+
+# --- 16. LiIO3 ---
+- material: LiIO3
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.31, ir_edge_um: 5.5}
+  units: "µm"
+  range: {wavelength_um: [0.31, 5.5]}
+  check: "Transmission window 0.31–5.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: LiIO3
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.12, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.12 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiIO3
+  quantity: conductivity
+  axis: "c"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 1.2 W/(m·K)"
+  note: ""
+
+- material: LiIO3
+  quantity: conductivity
+  axis: "a"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 1.0 W/(m·K)"
+  note: ""
+
+- material: LiIO3
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 18
+  where: "Table 10 row LiIO3"
+  formula: "Eg"
+  values: {Eg: 3.9}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.9 eV"
+  note: ""
+
+# --- 17. AgGaS2 ---
+- material: AgGaS2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.53, ir_edge_um: 12.0}
+  units: "µm"
+  range: {wavelength_um: [0.53, 12.0]}
+  check: "Transmission window 0.53–12.0 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: AgGaS2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 35
+  where: "Section 6.1.1 text"
+  formula: "LIDT"
+  values: {threshold: 0.025, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.025 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: AgGaS2
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row AgGaS2"
+  formula: "κ"
+  values: {kappa: 1.4}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 1.4 W/(m·K)"
+  note: ""
+
+- material: AgGaS2
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row AgGaS2"
+  formula: "κ"
+  values: {kappa: 1.5}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 1.5 W/(m·K)"
+  note: ""
+
+- material: AgGaS2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row AgGaS2"
+  formula: "Eg"
+  values: {Eg: 2.7}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.7 eV"
+  note: ""
+
+# --- 18. AgGaSe2 ---
+- material: AgGaSe2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.71, ir_edge_um: 18.0}
+  units: "µm"
+  range: {wavelength_um: [0.71, 18.0]}
+  check: "Transmission window 0.71–18.0 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: AgGaSe2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.02, pulse_duration_ns: 100, wavelength_um: 10.6, rep_rate_hz: 1}
+  units: "GW/cm²"
+  range: {wavelength_um: 10.6}
+  check: "LIDT = 0.02 GW/cm² at 10.6 µm (100 ns, 1 Hz)"
+  note: ""
+
+- material: AgGaSe2
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 1.0 W/(m·K)"
+  note: ""
+
+- material: AgGaSe2
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.1}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 1.1 W/(m·K)"
+  note: ""
+
+- material: AgGaSe2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "Section 5 text"
+  formula: "Eg"
+  values: {Eg: 1.83}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 1.83 eV"
+  note: ""
+
+# --- 19. ZnGeP2 ---
+- material: ZnGeP2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9 and p. 28"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.74, ir_edge_um: 12.0}
+  units: "µm"
+  range: {wavelength_um: [0.74, 12.0]}
+  check: "Transmission window 0.74–12.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹ (residual loss ~1%/cm in clear window)"
+
+- material: ZnGeP2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.06, pulse_duration_ns: 10, wavelength_um: 2.05, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 2.05}
+  check: "LIDT = 0.06 GW/cm² at 2.05 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: ZnGeP2
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 36.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 36.0 W/(m·K)"
+  note: ""
+
+- material: ZnGeP2
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 35.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 35.0 W/(m·K)"
+  note: ""
+
+- material: ZnGeP2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "Section 5 text"
+  formula: "Eg"
+  values: {Eg: 2.05}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.05 eV"
+  note: ""
+
+# --- 20. GaSe ---
+- material: GaSe
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.65, ir_edge_um: 18.0}
+  units: "µm"
+  range: {wavelength_um: [0.65, 18.0]}
+  check: "Transmission window 0.65–18.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: GaSe
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.03, pulse_duration_ns: 100, wavelength_um: 10.6, rep_rate_hz: 1}
+  units: "GW/cm²"
+  range: {wavelength_um: 10.6}
+  check: "LIDT = 0.03 GW/cm² at 10.6 µm (100 ns, 1 Hz)"
+  note: ""
+
+- material: GaSe
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 2.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 2.0 W/(m·K)"
+  note: ""
+
+- material: GaSe
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 16.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 16.0 W/(m·K)"
+  note: ""
+
+- material: GaSe
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "Section 5 text"
+  formula: "Eg"
+  values: {Eg: 2.0}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.0 eV"
+  note: ""
+
+# --- 21. CdSe ---
+- material: CdSe
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.75, ir_edge_um: 25.0}
+  units: "µm"
+  range: {wavelength_um: [0.75, 25.0]}
+  check: "Transmission window 0.75–25.0 µm"
+  note: "Absorption criterion: α < 0.1 cm⁻¹"
+
+- material: CdSe
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.04, pulse_duration_ns: 100, wavelength_um: 10.6, rep_rate_hz: 1}
+  units: "GW/cm²"
+  range: {wavelength_um: 10.6}
+  check: "LIDT = 0.04 GW/cm² at 10.6 µm (100 ns, 1 Hz)"
+  note: ""
+
+- material: CdSe
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 4.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 4.0 W/(m·K)"
+  note: ""
+
+- material: CdSe
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "Section 5 text"
+  formula: "Eg"
+  values: {Eg: 1.74}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 1.74 eV"
+  note: ""
+
+# --- 22. CdSiP2 ---
+- material: CdSiP2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "Section 5 text and Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.5, ir_edge_um: 6.5}
+  units: "µm"
+  range: {wavelength_um: [0.5, 6.5]}
+  check: "Transmission window 0.5–6.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: CdSiP2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 73
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.1, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.1 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: CdSiP2
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row CdSiP2"
+  formula: "κ"
+  values: {kappa: 13.6}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 13.6 W/(m·K)"
+  note: ""
+
+- material: CdSiP2
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row CdSiP2"
+  formula: "κ"
+  values: {kappa: 11.8}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 11.8 W/(m·K)"
+  note: ""
+
+- material: CdSiP2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row CdSiP2"
+  formula: "Eg"
+  values: {Eg: 2.45}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.45 eV"
+  note: ""
+
+# --- 23. LiGaS2 ---
+- material: LiGaS2
+  quantity: transparency
+  axis: "-"
+  file: 10.1063-1.4723645.pdf
+  pdf_page: 5
+  where: "Section IV.A text and Fig. 1"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.32, ir_edge_um: 11.6}
+  units: "µm"
+  range: {wavelength_um: [0.32, 11.6]}
+  check: "Transmission window 0.32–11.6 µm"
+  note: "Absorption criterion: absorption level ~ 5 cm⁻¹ (transmission > 10%)"
+
+- material: LiGaS2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 43
+  where: "Section 6.2 text"
+  formula: "LIDT"
+  values: {threshold: 3.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 3.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiGaS2
+  quantity: conductivity
+  axis: "x"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 footnote"
+  formula: "κ"
+  values: {kappa: 5.8}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 5.8 W/(m·K)"
+  note: ""
+
+- material: LiGaS2
+  quantity: conductivity
+  axis: "y"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 footnote"
+  formula: "κ"
+  values: {kappa: 5.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 5.2 W/(m·K)"
+  note: ""
+
+- material: LiGaS2
+  quantity: conductivity
+  axis: "z"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 footnote"
+  formula: "κ"
+  values: {kappa: 6.5}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 6.5 W/(m·K)"
+  note: ""
+
+- material: LiGaS2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiGaS2"
+  formula: "Eg"
+  values: {Eg: 3.76}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.76 eV"
+  note: ""
+
+# --- 24. LiGaSe2 ---
+- material: LiGaSe2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.37, ir_edge_um: 13.2}
+  units: "µm"
+  range: {wavelength_um: [0.37, 13.2]}
+  check: "Transmission window 0.37–13.2 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: LiGaSe2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 43
+  where: "Section 6.2 text"
+  formula: "LIDT"
+  values: {threshold: 2.5, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 2.5 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiGaSe2
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 footnote"
+  formula: "κ"
+  values: {kappa: 5.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 5.0 W/(m·K)"
+  note: ""
+
+- material: LiGaSe2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiGaSe2"
+  formula: "Eg"
+  values: {Eg: 3.65}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.65 eV"
+  note: ""
+
+# --- 25. LiInS2 ---
+- material: LiInS2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.4, ir_edge_um: 12.0}
+  units: "µm"
+  range: {wavelength_um: [0.4, 12.0]}
+  check: "Transmission window 0.4–12.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: LiInS2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 43
+  where: "Section 6.2 text"
+  formula: "LIDT"
+  values: {threshold: 1.5, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 1.5 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiInS2
+  quantity: conductivity
+  axis: "x"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInS2"
+  formula: "κ"
+  values: {kappa: 6.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 6.2 W/(m·K)"
+  note: ""
+
+- material: LiInS2
+  quantity: conductivity
+  axis: "y"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInS2"
+  formula: "κ"
+  values: {kappa: 6.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 6.0 W/(m·K)"
+  note: ""
+
+- material: LiInS2
+  quantity: conductivity
+  axis: "z"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInS2"
+  formula: "κ"
+  values: {kappa: 7.6}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 7.6 W/(m·K)"
+  note: ""
+
+- material: LiInS2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInS2"
+  formula: "Eg"
+  values: {Eg: 3.57}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.57 eV"
+  note: ""
+
+# --- 26. LiInSe2 ---
+- material: LiInSe2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.5, ir_edge_um: 14.0}
+  units: "µm"
+  range: {wavelength_um: [0.5, 14.0]}
+  check: "Transmission window 0.5–14.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: LiInSe2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 43
+  where: "Section 6.2 text"
+  formula: "LIDT"
+  values: {threshold: 1.2, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 1.2 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiInSe2
+  quantity: conductivity
+  axis: "x"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInSe2"
+  formula: "κ"
+  values: {kappa: 4.6}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 4.6 W/(m·K)"
+  note: ""
+
+- material: LiInSe2
+  quantity: conductivity
+  axis: "y"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInSe2"
+  formula: "κ"
+  values: {kappa: 4.75}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 4.75 W/(m·K)"
+  note: ""
+
+- material: LiInSe2
+  quantity: conductivity
+  axis: "z"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInSe2"
+  formula: "κ"
+  values: {kappa: 5.65}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 5.65 W/(m·K)"
+  note: ""
+
+- material: LiInSe2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiInSe2"
+  formula: "Eg"
+  values: {Eg: 2.86}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.86 eV"
+  note: ""
+
+# --- 27. LiGaTe2 ---
+- material: LiGaTe2
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.8, ir_edge_um: 18.0}
+  units: "µm"
+  range: {wavelength_um: [0.8, 18.0]}
+  check: "Transmission window 0.8–18.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: LiGaTe2
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.1, pulse_duration_ns: 10, wavelength_um: 2.05, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 2.05}
+  check: "LIDT = 0.1 GW/cm² at 2.05 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: LiGaTe2
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "κ"
+  values: {kappa: 1.5}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 1.5 W/(m·K)"
+  note: ""
+
+- material: LiGaTe2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row LiGaTe2"
+  formula: "Eg"
+  values: {Eg: 2.41}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.41 eV"
+  note: ""
+
+# --- 28. BaGa4S7 ---
+- material: BaGa4S7
+  quantity: transparency
+  axis: "-"
+  file: 10.1021-cg8010579.pdf
+  pdf_page: 3
+  where: "p. 1188 col. 1 and Fig. 6"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.35, ir_edge_um: 13.7}
+  units: "µm"
+  range: {wavelength_um: [0.35, 13.7]}
+  check: "Transmission window 0.35–13.7 µm"
+  note: "Absorption criterion: unpolarized absorption level 0.3 cm⁻¹ (transmission window extends to 350 nm)"
+
+- material: BaGa4S7
+  quantity: damage
+  axis: "-"
+  file: 10.1021-cg8010579.pdf
+  pdf_page: 3
+  where: "Eq. (2) and text"
+  formula: "LIDT"
+  values: {threshold: 1.2, pulse_duration_ns: 15, wavelength_um: 1.064, rep_rate_hz: 1}
+  units: "J/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 1.2 J/cm² at 1.064 µm (15 ns, 1 Hz)"
+  note: ""
+
+- material: BaGa4S7
+  quantity: conductivity
+  axis: "x"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row BaGa4S7"
+  formula: "κ"
+  values: {kappa: 1.68}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(x) = 1.68 W/(m·K)"
+  note: ""
+
+- material: BaGa4S7
+  quantity: conductivity
+  axis: "y"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row BaGa4S7"
+  formula: "κ"
+  values: {kappa: 1.58}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(y) = 1.58 W/(m·K)"
+  note: ""
+
+- material: BaGa4S7
+  quantity: conductivity
+  axis: "z"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row BaGa4S7"
+  formula: "κ"
+  values: {kappa: 1.45}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(z) = 1.45 W/(m·K)"
+  note: ""
+
+- material: BaGa4S7
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row BaGa4S7"
+  formula: "Eg"
+  values: {Eg: 3.54}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.54 eV"
+  note: ""
+
+# --- 29. BaGa4Se7 ---
+- material: BaGa4Se7
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-ol.40.004591.pdf
+  pdf_page: 1
+  where: "col. 2, lines 18-20"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.47, ir_edge_um: 18.0}
+  units: "µm"
+  range: {wavelength_um: [0.47, 18.0]}
+  check: "Transmission window 0.47–18.0 µm"
+  note: "Absorption criterion: absorption level 0.3 cm⁻¹ (0.776–14.72 µm) and transparency extends 0.47–18 µm"
+
+- material: BaGa4Se7
+  quantity: damage
+  axis: "-"
+  file: 10.1364-ol.40.004591.pdf
+  pdf_page: 4
+  where: "col. 1 text comparison"
+  formula: "LIDT"
+  values: {threshold: 0.055, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.055 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: BaGa4Se7
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row BaGa4Se7"
+  formula: "κ"
+  values: {kappa: 0.65}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 0.65 W/(m·K)"
+  note: ""
+
+- material: BaGa4Se7
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row BaGa4Se7"
+  formula: "Eg"
+  values: {Eg: 2.64}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.64 eV"
+  note: ""
+
+# --- 30. BaGa2GeSe6 ---
+- material: BaGa2GeSe6
+  quantity: transparency
+  axis: "-"
+  file: 10.1109-lpt.2024.3457910.pdf
+  pdf_page: 1
+  where: "Section I text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.5, ir_edge_um: 18.0}
+  units: "µm"
+  range: {wavelength_um: [0.5, 18.0]}
+  check: "Transmission window 0.5–18.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: BaGa2GeSe6
+  quantity: damage
+  axis: "-"
+  file: 10.1109-lpt.2024.3457910.pdf
+  pdf_page: 3
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.11, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.11 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: BaGa2GeSe6
+  quantity: conductivity
+  axis: "-"
+  file: 10.1109-lpt.2024.3457910.pdf
+  pdf_page: 1
+  where: "text"
+  formula: "κ"
+  values: {kappa: 0.65}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 0.65 W/(m·K)"
+  note: ""
+
+- material: BaGa2GeSe6
+  quantity: band_gap
+  axis: "-"
+  file: 10.1109-lpt.2024.3457910.pdf
+  pdf_page: 1
+  where: "Section I text"
+  formula: "Eg"
+  values: {Eg: 2.25}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.25 eV"
+  note: ""
+
+# --- 31. HgGa2S4 ---
+- material: HgGa2S4
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.55, ir_edge_um: 12.0}
+  units: "µm"
+  range: {wavelength_um: [0.55, 12.0]}
+  check: "Transmission window 0.55–12.0 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: HgGa2S4
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.04, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.04 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: HgGa2S4
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row HgGa2S4"
+  formula: "κ"
+  values: {kappa: 2.67}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 2.67 W/(m·K)"
+  note: ""
+
+- material: HgGa2S4
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row HgGa2S4"
+  formula: "κ"
+  values: {kappa: 2.33}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 2.33 W/(m·K)"
+  note: ""
+
+- material: HgGa2S4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row HgGa2S4"
+  formula: "Eg"
+  values: {Eg: 2.79}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.79 eV"
+  note: ""
+
+# --- 32. AgGaGeS4 ---
+- material: AgGaGeS4
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.5, ir_edge_um: 11.5}
+  units: "µm"
+  range: {wavelength_um: [0.5, 11.5]}
+  check: "Transmission window 0.5–11.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: AgGaGeS4
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.05, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.05 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: AgGaGeS4
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.optmat.2011.03.042.pdf
+  pdf_page: 6
+  where: "Table 2 row AgGaGeS4"
+  formula: "κ"
+  values: {kappa: 0.399}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 0.399 W/(m·K)"
+  note: ""
+
+- material: AgGaGeS4
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row AgGaGeS4"
+  formula: "Eg"
+  values: {Eg: 3.0}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.0 eV"
+  note: ""
+
+# --- 33. Ag3AsS3 ---
+- material: Ag3AsS3
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.6, ir_edge_um: 13.0}
+  units: "µm"
+  range: {wavelength_um: [0.6, 13.0]}
+  check: "Transmission window 0.6–13.0 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: Ag3AsS3
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.015, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.015 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: Ag3AsS3
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row Ag3AsS3"
+  formula: "κ"
+  values: {kappa: 0.113}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 0.113 W/(m·K)"
+  note: ""
+
+- material: Ag3AsS3
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row Ag3AsS3"
+  formula: "κ"
+  values: {kappa: 0.092}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 0.092 W/(m·K)"
+  note: ""
+
+- material: Ag3AsS3
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row Ag3AsS3"
+  formula: "Eg"
+  values: {Eg: 2.2}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.2 eV"
+  note: ""
+
+# --- 34. Ag3SbS3 ---
+- material: Ag3SbS3
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.65, ir_edge_um: 13.0}
+  units: "µm"
+  range: {wavelength_um: [0.65, 13.0]}
+  check: "Transmission window 0.65–13.0 µm"
+  note: "Absorption criterion: α < 0.5 cm⁻¹"
+
+- material: Ag3SbS3
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.015, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.015 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: Ag3SbS3
+  quantity: conductivity
+  axis: "c"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row Ag3SbS3"
+  formula: "κ"
+  values: {kappa: 0.1}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 0.1 W/(m·K)"
+  note: ""
+
+- material: Ag3SbS3
+  quantity: conductivity
+  axis: "a"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row Ag3SbS3"
+  formula: "κ"
+  values: {kappa: 0.09}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 0.09 W/(m·K)"
+  note: ""
+
+- material: Ag3SbS3
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: "Table 2 row Ag3SbS3"
+  formula: "Eg"
+  values: {Eg: 2.2}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.2 eV"
+  note: ""
+
+# --- 35. Sn2P2S6 ---
+- material: Sn2P2S6
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: "Fig. 9"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.53, ir_edge_um: 8.0}
+  units: "µm"
+  range: {wavelength_um: [0.53, 8.0]}
+  check: "Transmission window 0.53–8.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: Sn2P2S6
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 28
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.03, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.03 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: Sn2P2S6
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row Sn2P2S6"
+  formula: "κ"
+  values: {kappa: 0.475}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 0.475 W/(m·K)"
+  note: ""
+
+- material: Sn2P2S6
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: "Table 2 row Sn2P2S6"
+  formula: "Eg"
+  values: {Eg: 2.35}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.35 eV"
+  note: ""
+
+# --- 36. GaAs ---
+- material: GaAs
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row GaAs"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.85, ir_edge_um: 18.5}
+  units: "µm"
+  range: {wavelength_um: [0.85, 18.5]}
+  check: "Transmission window 0.85–18.5 µm"
+  note: "Absorption criterion: at 3 cm⁻¹ level"
+
+- material: GaAs
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 32
+  where: "Section 5 text"
+  formula: "LIDT"
+  values: {threshold: 0.05, pulse_duration_ns: 100, wavelength_um: 10.6, rep_rate_hz: 1}
+  units: "GW/cm²"
+  range: {wavelength_um: 10.6}
+  check: "LIDT = 0.05 GW/cm² at 10.6 µm (100 ns, 1 Hz)"
+  note: ""
+
+- material: GaAs
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row GaAs"
+  formula: "κ"
+  values: {kappa: 55.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 55.0 W/(m·K)"
+  note: ""
+
+- material: GaAs
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row GaAs"
+  formula: "Eg"
+  values: {Eg: 1.428}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 1.428 eV"
+  note: ""
+
+# --- 37. GaP ---
+- material: GaP
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row GaP"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.57, ir_edge_um: 13.2}
+  units: "µm"
+  range: {wavelength_um: [0.57, 13.2]}
+  check: "Transmission window 0.57–13.2 µm"
+  note: "Absorption criterion: at 3 cm⁻¹ level"
+
+- material: GaP
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Section 5 text"
+  formula: "LIDT"
+  values: {threshold: 0.1, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.1 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: GaP
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row GaP"
+  formula: "κ"
+  values: {kappa: 110.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 110.0 W/(m·K)"
+  note: ""
+
+- material: GaP
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row GaP"
+  formula: "Eg"
+  values: {Eg: 2.26}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.26 eV"
+  note: ""
+
+# --- 38. ZnSe ---
+- material: ZnSe
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row ZnSe"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.55, ir_edge_um: 20.0}
+  units: "µm"
+  range: {wavelength_um: [0.55, 20.0]}
+  check: "Transmission window 0.55–20.0 µm"
+  note: "Absorption criterion: at 3 cm⁻¹ level"
+
+- material: ZnSe
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.08, pulse_duration_ns: 100, wavelength_um: 10.6, rep_rate_hz: 1}
+  units: "GW/cm²"
+  range: {wavelength_um: 10.6}
+  check: "LIDT = 0.08 GW/cm² at 10.6 µm (100 ns, 1 Hz)"
+  note: ""
+
+- material: ZnSe
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row ZnSe"
+  formula: "κ"
+  values: {kappa: 18.5}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 18.5 W/(m·K)"
+  note: ""
+
+- material: ZnSe
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Table 3 row ZnSe"
+  formula: "Eg"
+  values: {Eg: 2.67}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.67 eV"
+  note: ""
+
+# --- 39. ZnTe ---
+- material: ZnTe
+  quantity: transparency
+  axis: "-"
+  file: 10.1016-0022-3697(68)90164-9.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.55, ir_edge_um: 25.0}
+  units: "µm"
+  range: {wavelength_um: [0.55, 25.0]}
+  check: "Transmission window 0.55–25.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: ZnTe
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.05, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.05 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: ZnTe
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016-0022-3697(68)90164-9.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "κ"
+  values: {kappa: 18.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 18.0 W/(m·K)"
+  note: ""
+
+- material: ZnTe
+  quantity: band_gap
+  axis: "-"
+  file: 10.1016-0022-3697(68)90164-9.pdf
+  pdf_page: 6
+  where: "Section 4 text"
+  formula: "Eg"
+  values: {Eg: 2.26}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.26 eV"
+  note: ""
+
+# --- 40. CdTe ---
+- material: CdTe
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 32
+  where: "Section 5 text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.85, ir_edge_um: 30.0}
+  units: "µm"
+  range: {wavelength_um: [0.85, 30.0]}
+  check: "Transmission window 0.85–30.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: CdTe
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 32
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.03, pulse_duration_ns: 100, wavelength_um: 10.6, rep_rate_hz: 1}
+  units: "GW/cm²"
+  range: {wavelength_um: 10.6}
+  check: "LIDT = 0.03 GW/cm² at 10.6 µm (100 ns, 1 Hz)"
+  note: ""
+
+- material: CdTe
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 32
+  where: "text"
+  formula: "κ"
+  values: {kappa: 6.2}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 6.2 W/(m·K)"
+  note: ""
+
+- material: CdTe
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "Table 11 row CdTe"
+  formula: "Eg"
+  values: {Eg: 1.5}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 1.5 eV"
+  note: ""
+
+# --- 41. CdS ---
+- material: CdS
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.52, ir_edge_um: 14.0}
+  units: "µm"
+  range: {wavelength_um: [0.52, 14.0]}
+  check: "Transmission window 0.52–14.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: CdS
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 0.05, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 0.05 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: CdS
+  quantity: conductivity
+  axis: "c"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "κ"
+  values: {kappa: 16.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 16.0 W/(m·K)"
+  note: ""
+
+- material: CdS
+  quantity: conductivity
+  axis: "a"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "text"
+  formula: "κ"
+  values: {kappa: 16.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 16.0 W/(m·K)"
+  note: ""
+
+- material: CdS
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: "Table 11 row CdS"
+  formula: "Eg"
+  values: {Eg: 2.42}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.42 eV"
+  note: ""
+
+# --- 42. GaN ---
+- material: GaN
+  quantity: transparency
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "Section 5 text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.36, ir_edge_um: 7.0}
+  units: "µm"
+  range: {wavelength_um: [0.36, 7.0]}
+  check: "Transmission window 0.36–7.0 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: GaN
+  quantity: damage
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 2.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 2.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: GaN
+  quantity: conductivity
+  axis: "-"
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: "text"
+  formula: "κ"
+  values: {kappa: 160.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 160.0 W/(m·K)"
+  note: ""
+
+- material: GaN
+  quantity: band_gap
+  axis: "-"
+  file: 10.1063-1.3021148.pdf
+  pdf_page: 1
+  where: "Section 1 text"
+  formula: "Eg"
+  values: {Eg: 3.4}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.4 eV"
+  note: ""
+
+# --- 43. AlN ---
+- material: AlN
+  quantity: transparency
+  axis: "-"
+  file: 10.1103-physrevb.57.3905.pdf
+  pdf_page: 10
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.2, ir_edge_um: 4.5}
+  units: "µm"
+  range: {wavelength_um: [0.2, 4.5]}
+  check: "Transmission window 0.2–4.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: AlN
+  quantity: damage
+  axis: "-"
+  file: 10.1103-physrevb.57.3905.pdf
+  pdf_page: 10
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 5.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 5.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: AlN
+  quantity: conductivity
+  axis: "-"
+  file: 10.1103-physrevb.57.3905.pdf
+  pdf_page: 10
+  where: "text"
+  formula: "κ"
+  values: {kappa: 285.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 285.0 W/(m·K)"
+  note: ""
+
+- material: AlN
+  quantity: band_gap
+  axis: "-"
+  file: 10.1103-physrevb.57.3905.pdf
+  pdf_page: 10
+  where: "Table V text"
+  formula: "Eg"
+  values: {Eg: 6.2}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 6.2 eV"
+  note: ""
+
+# --- 44. SiC ---
+- material: SiC
+  quantity: transparency
+  axis: "-"
+  file: 2017_Fischer.pdf
+  pdf_page: 1
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.38, ir_edge_um: 5.5}
+  units: "µm"
+  range: {wavelength_um: [0.38, 5.5]}
+  check: "Transmission window 0.38–5.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: SiC
+  quantity: damage
+  axis: "-"
+  file: 2017_Fischer.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 8.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 8.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: SiC
+  quantity: conductivity
+  axis: "-"
+  file: 2017_Fischer.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "κ"
+  values: {kappa: 370.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 370.0 W/(m·K)"
+  note: ""
+
+- material: SiC
+  quantity: band_gap
+  axis: "-"
+  file: 2017_Fischer.pdf
+  pdf_page: 1
+  where: "Section 1 text"
+  formula: "Eg"
+  values: {Eg: 3.23}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 3.23 eV"
+  note: ""
+
+# --- 45. KBe2BO3F2 ---
+- material: KBe2BO3F2
+  quantity: transparency
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "Table 2, row KBBF"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.155, ir_edge_um: 3.66}
+  units: "µm"
+  range: {wavelength_um: [0.155, 3.66]}
+  check: "Transmission window 0.155–3.66 µm"
+  note: "Absorption criterion: transmittance > 10%"
+
+- material: KBe2BO3F2
+  quantity: damage
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 10.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 10.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: KBe2BO3F2
+  quantity: conductivity
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "text"
+  formula: "κ"
+  values: {kappa: 3.0}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 3.0 W/(m·K)"
+  note: ""
+
+- material: KBe2BO3F2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1038-373322a0.pdf
+  pdf_page: 2
+  where: "Table 2, row KBBF"
+  formula: "Eg"
+  values: {Eg: 8.0}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 8.0 eV"
+  note: ""
+
+# --- 46. K2Al2B2O7 ---
+- material: K2Al2B2O7
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-josab.17.000764.pdf
+  pdf_page: 2
+  where: "Section 3 and Figs. 2, 3"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.18, ir_edge_um: 3.6}
+  units: "µm"
+  range: {wavelength_um: [0.18, 3.6]}
+  check: "Transmission window 0.18–3.6 µm"
+  note: "Absorption criterion: UV and IR absorption edges (thickness d = 1.5 mm)"
+
+- material: K2Al2B2O7
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.17.000764.pdf
+  pdf_page: 2
+  where: "Section 5 text"
+  formula: "LIDT"
+  values: {threshold: 12.7, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "J/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 12.7 J/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: K2Al2B2O7
+  quantity: conductivity
+  axis: "-"
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 4
+  where: "Section 2 text"
+  formula: "κ"
+  values: {kappa: 2.5}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 2.5 W/(m·K)"
+  note: ""
+
+- material: K2Al2B2O7
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.17.000764.pdf
+  pdf_page: 2
+  where: "Section 3 text"
+  formula: "Eg"
+  values: {Eg: 6.89}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 6.89 eV"
+  note: ""
+
+# --- 47. YCa4O(BO3)3 ---
+- material: YCa4O(BO3)3
+  quantity: transparency
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.2, ir_edge_um: 2.6}
+  units: "µm"
+  range: {wavelength_um: [0.2, 2.6]}
+  check: "Transmission window 0.2–2.6 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: YCa4O(BO3)3
+  quantity: damage
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 1.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 1.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: YCa4O(BO3)3
+  quantity: conductivity
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "κ"
+  values: {kappa: 2.1}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 2.1 W/(m·K)"
+  note: ""
+
+- material: YCa4O(BO3)3
+  quantity: band_gap
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "Eg"
+  values: {Eg: 5.2}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 5.2 eV"
+  note: ""
+
+# --- 48. GdCa4O(BO3)3 ---
+- material: GdCa4O(BO3)3
+  quantity: transparency
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.2, ir_edge_um: 2.6}
+  units: "µm"
+  range: {wavelength_um: [0.2, 2.6]}
+  check: "Transmission window 0.2–2.6 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: GdCa4O(BO3)3
+  quantity: damage
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 1.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 1.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: GdCa4O(BO3)3
+  quantity: conductivity
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "κ"
+  values: {kappa: 2.1}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 2.1 W/(m·K)"
+  note: ""
+
+- material: GdCa4O(BO3)3
+  quantity: band_gap
+  axis: "-"
+  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
+  pdf_page: 6
+  where: "text"
+  formula: "Eg"
+  values: {Eg: 5.2}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 5.2 eV"
+  note: ""
+
+# --- 49. SiO2 ---
+- material: SiO2
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 4
+  where: "text"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.15, ir_edge_um: 4.5}
+  units: "µm"
+  range: {wavelength_um: [0.15, 4.5]}
+  check: "Transmission window 0.15–4.5 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹"
+
+- material: SiO2
+  quantity: damage
+  axis: "-"
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 4
+  where: "text"
+  formula: "LIDT"
+  values: {threshold: 15.0, pulse_duration_ns: 10, wavelength_um: 1.064, rep_rate_hz: 10}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.064}
+  check: "LIDT = 15.0 GW/cm² at 1.064 µm (10 ns, 10 Hz)"
+  note: ""
+
+- material: SiO2
+  quantity: conductivity
+  axis: "c"
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 4
+  where: "text"
+  formula: "κ"
+  values: {kappa: 10.7}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(c) = 10.7 W/(m·K)"
+  note: ""
+
+- material: SiO2
+  quantity: conductivity
+  axis: "a"
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 4
+  where: "text"
+  formula: "κ"
+  values: {kappa: 6.5}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(a) = 6.5 W/(m·K)"
+  note: ""
+
+- material: SiO2
+  quantity: band_gap
+  axis: "-"
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 4
+  where: "Section 5 text"
+  formula: "Eg"
+  values: {Eg: 8.4}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 8.4 eV"
+  note: ""
+
+# --- 50. OH1 ---
+- material: OH1
+  quantity: transparency
+  axis: "-"
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 1
+  where: "Abstract and p. 1680 Fig. 6"
+  formula: "T(λ) optical transmission window"
+  values: {uv_edge_um: 0.6, ir_edge_um: 2.2}
+  units: "µm"
+  range: {wavelength_um: [0.6, 2.2]}
+  check: "Transmission window 0.6–2.2 µm"
+  note: "Absorption criterion: α < 1 cm⁻¹ in 0.9–1.4 µm range"
+
+- material: OH1
+  quantity: damage
+  axis: "-"
+  file: 10.1063-1.4897639.pdf
+  pdf_page: 4
+  where: "col. 1 text"
+  formula: "LIDT"
+  values: {threshold: 3.5, pulse_duration_ns: 0.0003, wavelength_um: 1.03, rep_rate_hz: 1000}
+  units: "GW/cm²"
+  range: {wavelength_um: 1.03}
+  check: "LIDT = 3.5 GW/cm² at 1.03 µm (0.0003 ns, 1000 Hz)"
+  note: ""
+
+- material: OH1
+  quantity: conductivity
+  axis: "-"
+  file: 10.1063-1.4897639.pdf
+  pdf_page: 4
+  where: "text"
+  formula: "κ"
+  values: {kappa: 0.3}
+  units: "W/(m·K)"
+  range: {}
+  check: "κ(-) = 0.3 W/(m·K)"
+  note: ""
+
+- material: OH1
+  quantity: band_gap
+  axis: "-"
+  file: 10.1063-1.4939456.pdf
+  pdf_page: 4
+  where: "col. 1, lines 1-3"
+  formula: "Eg"
+  values: {Eg: 2.11}
+  units: "eV"
+  range: {}
+  check: "Optical band gap Eg = 2.11 eV"
+  note: ""
+
+# Papers searched with no useful crystal card physical data:
+# 10.1364-ol.26.000620.pdf, 10.1002-pssr.201004425.pdf, 10.1016-j.optmat.2019.109564.pdf,
+# 10.1364-ao.49.006284.pdf, 10.1016-j.infrared.2020.103571.pdf
+
+# External papers cited for extended temperature/damage threshold benchmarking (DOIs for retrieval):
+# 10.1117/12.203014, 10.1016/0925-3467(94)90035-3, 10.1364/OE.16.011328
