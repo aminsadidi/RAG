@@ -26,7 +26,8 @@ const setState = (env, s) => (s ? env.AICACHE.put("admin:state", JSON.stringify(
 function lines(events) {
   return events.map((e) => `${KIND[e.kind] || "•"} ${when(e.time)} · ${e.user}${e.q ? ` · ${e.q}` : ""}${e.v && e.kind === "feedback" ? ` (${e.v})` : ""}`).join("\n");
 }
-const clip = (t) => (t.length > 3900 ? "…" + t.slice(-3900) : t);
+const clip = (t) => (t.length > 3900 ? "…" + t.slice(-3900) : t);  // activity lists: the latest
+const fit = (t) => (t.length > 4000 ? t.slice(0, 3990) + "…" : t);  // Telegram takes 4096 characters
 const state = (u) => (!u.active ? "⛔" : u.expires && u.expires < Date.now() ? "⌛" : "✅");
 
 // ---------- screens: each returns {text, keyboard}
@@ -205,13 +206,13 @@ export async function telegramWebhook(request, env) {
     let screen;
     try { screen = await onButton(env, cb.data || "m"); } catch (e) { screen = { text: `⚠️ ${e.message || e}`, keyboard: [BACK] }; }
     await tg(env, "answerCallbackQuery", { callback_query_id: cb.id });
-    await tg(env, "editMessageText", { chat_id: cb.message.chat.id, message_id: cb.message.message_id, text: screen.text,
+    await tg(env, "editMessageText", { chat_id: cb.message.chat.id, message_id: cb.message.message_id, text: fit(screen.text),
       reply_markup: { inline_keyboard: screen.keyboard }, disable_web_page_preview: true });
     return new Response("ok");
   }
   if (!msg?.text || String(msg.from?.id) !== owner || msg.chat?.type !== "private") return new Response("ok");
   let screen;
   try { screen = await onText(env, msg.text); } catch (e) { screen = { text: `⚠️ ${e.message || e}`, keyboard: [BACK] }; }
-  await tg(env, "sendMessage", { chat_id: msg.chat.id, text: screen.text, reply_markup: { inline_keyboard: screen.keyboard }, disable_web_page_preview: true });
+  await tg(env, "sendMessage", { chat_id: msg.chat.id, text: fit(screen.text), reply_markup: { inline_keyboard: screen.keyboard }, disable_web_page_preview: true });
   return new Response("ok");
 }
