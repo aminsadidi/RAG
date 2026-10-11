@@ -19,8 +19,9 @@ button{margin-top:12px;width:100%;padding:11px;border:0;border-radius:9px;backgr
 <form method="post" action="/login">
 <h1>جست‌وجو در مقاله‌های اپتیک</h1>
 <h2 dir="ltr" lang="en" style="font-size:15px;margin:0 0 4px">MatRAG — search the nonlinear-optics literature</h2>
-<p>سامانه‌ی بازیابی (RAG) ثابت‌های نوری. این صفحه خصوصی است؛ رمز را وارد کنید.<br><span dir="ltr" lang="en">A retrieval system for optical constants. This page is private; enter the password.</span></p>
-<input type="password" name="password" placeholder="رمز / Password" autocomplete="current-password" autofocus required>
+<p>سامانه‌ی بازیابی (RAG) ثابت‌های نوری. این صفحه خصوصی است؛ نام کاربری و رمزی را که گرفته‌اید وارد کنید.<br><span dir="ltr" lang="en">A retrieval system for optical constants. This page is private; enter the username and password you were given.</span></p>
+<input type="text" name="username" placeholder="نام کاربری / Username" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus dir="ltr">
+<input type="password" name="password" placeholder="رمز / Password" autocomplete="current-password" required dir="ltr" style="margin-top:8px">
 <!--error-->
 <button type="submit">ورود / Sign in</button>
 </form>
