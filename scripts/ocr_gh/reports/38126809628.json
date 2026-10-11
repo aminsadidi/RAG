@@ -24,14 +24,13 @@
  "10.1002_j.1538_7305.1967.tb01727.x": {
   "mode": "full",
   "pages": 80,
-  "old_chunks": 77,
+  "old_chunks": 105,
   "new_chunks": 105,
-  "old_chars": 108783,
+  "old_chars": 145236,
   "new_chars": 145236,
-  "old_stop": 0.344,
+  "old_stop": 0.335,
   "new_stop": 0.335,
-  "better": true,
-  "replaced": true
+  "better": false
  },
  "10.1002_lpor.201900094": {
   "mode": "full",
@@ -42,19 +41,19 @@
   "new_chars": 224645,
   "old_stop": 0.286,
   "new_stop": 0.231,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1007_b138685": {
   "mode": "full",
   "pages": 430,
-  "old_chunks": 145,
+  "old_chunks": 1383,
   "new_chunks": 1383,
-  "old_chars": 124798,
+  "old_chars": 1109090,
   "new_chars": 1109090,
-  "old_stop": 0.115,
+  "old_stop": 0.119,
   "new_stop": 0.119,
-  "better": true,
-  "replaced": true
+  "better": false
  },
  "10.1007_s00340_010_4203_7": {
   "mode": "ocr",
@@ -76,7 +75,8 @@
   "new_chars": 120430,
   "old_stop": 0.183,
   "new_stop": 0.157,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1016_j.pquantelec.2015.04.001": {
   "mode": "full",
@@ -87,7 +87,8 @@
   "new_chars": 422512,
   "old_stop": 0.282,
   "new_stop": 0.244,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1016_s0022_3093_01_00793_1": {
   "mode": "ocr",
@@ -142,7 +143,8 @@
   "new_chars": 540908,
   "old_stop": 0.33,
   "new_stop": 0.3,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1063_1.1992666": {
   "mode": "full",
@@ -153,7 +155,8 @@
   "new_chars": 568233,
   "old_stop": 0.301,
   "new_stop": 0.277,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1063_1.371145": {
   "mode": "full",
@@ -164,7 +167,8 @@
   "new_chars": 389182,
   "old_stop": 0.304,
   "new_stop": 0.257,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1063_1.555624": {
   "mode": "full",
@@ -175,7 +179,8 @@
   "new_chars": 494890,
   "old_stop": 0.226,
   "new_stop": 0.203,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1103_physrevb.1.3494": {
   "mode": "ocr",
@@ -219,7 +224,8 @@
   "new_chars": 1141381,
   "old_stop": 0.331,
   "new_stop": 0.296,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1103_revmodphys.75.473": {
   "mode": "full",
@@ -230,7 +236,8 @@
   "new_chars": 333335,
   "old_stop": 0.329,
   "new_stop": 0.296,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "10.1111_j.1151_2916.1995.tb08060.x": {
   "mode": "ocr",
@@ -279,14 +286,13 @@
  "10.1364_aop.10.000043": {
   "mode": "full",
   "pages": 68,
-  "old_chunks": 158,
+  "old_chunks": 182,
   "new_chunks": 182,
-  "old_chars": 180594,
+  "old_chars": 206798,
   "new_chars": 206798,
-  "old_stop": 0.248,
+  "old_stop": 0.232,
   "new_stop": 0.232,
-  "better": true,
-  "replaced": true
+  "better": false
  },
  "10.1364_aop.411024": {
   "mode": "full",
@@ -297,7 +303,8 @@
   "new_chars": 367323,
   "old_stop": 0.261,
   "new_stop": 0.226,
-  "better": false
+  "better": true,
+  "replaced": true
  },
  "2012_Dahlstro_m_Introduction_to_attosecond_delays_in_photoionization_e507dd": {
   "mode": "full",
@@ -308,6 +315,7 @@
   "new_chars": 156851,
   "old_stop": 0.339,
   "new_stop": 0.315,
-  "better": false
+  "better": true,
+  "replaced": true
  }
 }
