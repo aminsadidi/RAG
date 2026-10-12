@@ -56,11 +56,11 @@
 - material: SiC
   quantity: d_ij
   axis: "-"
-  file: 2017_Fischer.pdf
+  file: 2017_Fischer_Coherent_field_transients_below_15_THz_from_phase-matched_difference_f_e58ffc.pdf
   pdf_page: 3
-  where: "p. 3, col. 1, Eq. (4) and Table 1"
+  where: "p. 3, col. 1, Eq. (4) and text"
   formula: "d31 ≈ (1/2)·|χ(2)_31|"
-  values: {point_group: "6mm", d31: 4.25, d33: 12.0}
+  values: {point_group: "6mm", d31: 4.25}
   units: "pm/V"
   range: {wavelength_um: [1.064, 1.064], temperature_c: not_found}
   check: "|χ(2)_31| ≈ 8.5 pm/V, |χ(2)_33| ≈ 24 pm/V for 4H-SiC at 1064 nm"
