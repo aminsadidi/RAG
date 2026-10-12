@@ -19,15 +19,19 @@
 - material: BaB2O4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.345765.pdf
+  pdf_page: 5
+  where: Section IV, right column, line 43
+  formula: Laser damage threshold at 1.064 µm (1.3 ns pulse width)
+  values:
+    damage_threshold_j_cm2: 12.9
+    pulse_duration_ns: 1.3
+    wavelength_um: 1.064
+  units: J/cm²
   range: {}
-  check: not_found
-  note: damage for BaB2O4 is not reported in collection PDFs.
+  check: 'Lin et al. 1990: 12.9 J/cm² (D. Fan 1987); Eimerl 1988 (10.1364-ao.27.002634.pdf
+    p. 1) reports 13.5 GW/cm² for 1-ns pulse.'
+  note: Measured by Dianyuan Fan at 1.064 µm with 1.3 ns pulse duration.
 - material: BaB2O4
   quantity: conductivity
   axis: '-'
@@ -69,15 +73,19 @@
 - material: LiB3O5
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.345765.pdf
+  pdf_page: 5
+  where: Section IV, right column, line 42
+  formula: Laser damage threshold at 1.064 µm (1.3 ns pulse width)
+  values:
+    damage_threshold_j_cm2: 24.6
+    pulse_duration_ns: 1.3
+    wavelength_um: 1.064
+  units: J/cm²
   range: {}
-  check: not_found
-  note: damage for LiB3O5 is not reported in collection PDFs.
+  check: 'Lin et al. 1990: 24.6 J/cm²; Chen et al. 1989 (10.1364-josab.6.000616.pdf
+    p. 1, p. 5) reports 25 GW/cm² for 0.1 ns pulse.'
+  note: Measured by Dianyuan Fan at 1.064 µm with 1.3 ns pulse duration.
 - material: LiB3O5
   quantity: conductivity
   axis: '-'
@@ -105,39 +113,49 @@
 - material: KTiOPO4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.6.000622.pdf
+  pdf_page: 3
+  where: Table 1, row Transmission range
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.35
+    ir_edge_um: 4.5
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for KTiOPO4 is not reported in collection PDFs.
+  check: 'Table 1: 0.35–4.5 µm'
+  note: Transmission window of KTP.
 - material: KTiOPO4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.6.000622.pdf
+  pdf_page: 4
+  where: p. 625, col. 1, lines 1-3
+  formula: Laser damage threshold at 1.064 µm
+  values:
+    damage_threshold_gw_cm2_1ns: 15.0
+    damage_threshold_gw_cm2_30ps: 30.0
+    damage_threshold_j_cm2_1_3ns: 6.0
+  units: GW/cm² (or J/cm²)
   range: {}
-  check: not_found
-  note: damage for KTiOPO4 is not reported in collection PDFs.
+  check: 'Bierlein & Vanherzeele 1989: 15 GW/cm² (1 ns), 30 GW/cm² (30 ps); Lin et
+    al. 1990 (10.1063-1.345765.pdf p. 5): 6.0 J/cm² (1.3 ns)'
+  note: Hydrothermally grown KTP has higher damage threshold than flux-grown material.
 - material: KTiOPO4
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.6.000622.pdf
+  pdf_page: 3
+  where: Table 1, row Thermal conductivity
+  formula: k_i along principal axes x, y, z
+  values:
+    kx: 2.0
+    ky: 3.0
+    kz: 3.3
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for KTiOPO4 is not reported in collection PDFs.
+  check: 'Bierlein & Vanherzeele 1989 Table 1: k1 = 2.0e-2, k2 = 3.0e-2, k3 = 3.3e-2
+    W/(cm·°C) = 2.0, 3.0, 3.3 W/(m·K)'
+  note: Biaxial crystal. Thermal conductivity along x, y, z.
 - material: KTiOPO4
   quantity: band_gap
   axis: '-'
@@ -177,15 +195,16 @@
 - material: LiNbO3
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.2450648.pdf
+  pdf_page: 2
+  where: p. 051115-1, col. 1, lines 42-45
+  formula: Thermal conductivity κ
+  values:
+    kappa: 4.6
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for LiNbO3 is not reported in collection PDFs.
+  check: 'Tovstonog et al. 2007 (APL 90, 051115): 4.6 W/mK'
+  note: LiNbO3 / MgO:LiNbO3.
 - material: LiNbO3
   quantity: band_gap
   axis: '-'
@@ -201,15 +220,17 @@
 - material: LiTaO3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.2450648.pdf
+  pdf_page: 2
+  where: p. 051115-1, col. 1, line 48
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.28
+    ir_edge_um: 5.5
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for LiTaO3 is not reported in collection PDFs.
+  check: 'Tovstonog et al. 2007: 0.28–5.5 µm'
+  note: SLT transparency window.
 - material: LiTaO3
   quantity: damage
   axis: '-'
@@ -225,15 +246,16 @@
 - material: LiTaO3
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.2450648.pdf
+  pdf_page: 2
+  where: p. 051115-1, col. 1, lines 51-53
+  formula: Thermal conductivity κ
+  values:
+    kappa: 8.8
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for LiTaO3 is not reported in collection PDFs.
+  check: 'Tovstonog et al. 2007: 8.8 W/mK'
+  note: Stoichiometric lithium tantalate (SLT).
 - material: LiTaO3
   quantity: band_gap
   axis: '-'
@@ -263,15 +285,18 @@
 - material: KH2PO4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.345765.pdf
+  pdf_page: 5
+  where: Section IV, right column, line 43
+  formula: Laser damage threshold at 1.064 µm (1.3 ns pulse width)
+  values:
+    damage_threshold_j_cm2: 10.9
+    pulse_duration_ns: 1.3
+    wavelength_um: 1.064
+  units: J/cm²
   range: {}
-  check: not_found
-  note: damage for KH2PO4 is not reported in collection PDFs.
+  check: 'Lin et al. 1990: 10.9 J/cm² measured by D. Fan (1987)'
+  note: Measured by Dianyuan Fan at 1.064 µm with 1.3 ns pulse width.
 - material: KH2PO4
   quantity: conductivity
   axis: '-'
@@ -407,15 +432,16 @@
 - material: BiB3O6
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007-s00340-005-1898-y.pdf
+  pdf_page: 9
+  where: p. 723, Section 4, col. 1, lines 12-16
+  formula: Surface damage threshold at 355 nm
+  values:
+    damage_threshold_mw_cm2: 55.0
+  units: MW/cm²
   range: {}
-  check: not_found
-  note: damage for BiB3O6 is not reported in collection PDFs.
+  check: 'Appl. Phys. B 80, 715 (2005): ~55 MW/cm² at 355 nm'
+  note: Measured during third-harmonic generation (355 nm).
 - material: BiB3O6
   quantity: conductivity
   axis: '-'
@@ -443,27 +469,31 @@
 - material: CsLiB6O10
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016-s0925-3467(00)00002-1.pdf
+  pdf_page: 2
+  where: Section 2, line 2
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.2
+    ir_edge_um: 3.1
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for CsLiB6O10 is not reported in collection PDFs.
+  check: 'Opt. Mater. 2000: 0.2 to 3.1 µm'
+  note: Transmission window in visible and near-IR.
 - material: CsLiB6O10
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016-s0925-3467(00)00002-1.pdf
+  pdf_page: 2
+  where: Section 2, lines 3-4
+  formula: Bulk damage threshold at 1.064 µm (10 ns)
+  values:
+    damage_threshold_gw_cm2: 26.0
+    pulse_duration_ns: 10.0
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for CsLiB6O10 is not reported in collection PDFs.
+  check: 'Opt. Mater. 2000: ~26 GW/cm² for 10 ns'
+  note: Single crystal CLBO.
 - material: CsLiB6O10
   quantity: conductivity
   axis: '-'
@@ -504,15 +534,17 @@
 - material: CsB3O5
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016-j.jcrysgro.2004.10.041.pdf
+  pdf_page: 1
+  where: Introduction, right column, lines 4-6
+  formula: Bulk laser damage threshold at 1.064 µm (10 ns)
+  values:
+    damage_threshold_gw_cm2: 26.0
+    pulse_duration_ns: 10.0
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for CsB3O5 is not reported in collection PDFs.
+  check: 'J. Cryst. Growth 2004: 26 GW/cm² for 10 ns pulses'
+  note: CBO single crystal.
 - material: CsB3O5
   quantity: conductivity
   axis: '-'
@@ -910,27 +942,30 @@
 - material: ZnGeP2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.10.001723.pdf
+  pdf_page: 5
+  where: Section 4, left column, line 12
+  formula: Bulk damage threshold
+  values:
+    bulk_damage_gw_cm2: '> 30'
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for ZnGeP2 is not reported in collection PDFs.
+  check: 'JOSA B 1993: > 30 GW/cm²'
+  note: Single crystal ZGP.
 - material: ZnGeP2
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.33.000d36.pdf
+  pdf_page: 1
+  where: p. D36, col. 1, lines 16-18
+  formula: Thermal conductivity κ
+  values:
+    kappa: 35.0
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for ZnGeP2 is not reported in collection PDFs.
+  check: 'JOSA B 2016: 35 W/mK; Opt. Quant. Electron. 2019 (10.1007-s11082-019-1782-3.pdf
+    p. 31) reports 0.36 W/cm K = 36 W/mK'
+  note: Single crystal ZnGeP2.
 - material: ZnGeP2
   quantity: band_gap
   axis: '-'
@@ -960,27 +995,29 @@
 - material: GaSe
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1134-s1054660x09050375.pdf
+  pdf_page: 8
+  where: Section 4, item (j)
+  formula: Laser damage threshold
+  values:
+    damage_threshold_mw_cm2: 121.0
+  units: MW/cm²
   range: {}
-  check: not_found
-  note: damage for GaSe is not reported in collection PDFs.
+  check: 'Laser Phys. 2009: 121 MW/cm²'
+  note: GaSe single crystal.
 - material: GaSe
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 2015_Wickramaratne_Electronic_and_thermoelectric_properties_of_van_der_Waals_materials_wi_90edb3.pdf
+  pdf_page: 27
+  where: Section IV, right column, line 18
+  formula: Thermal conductivity along c-axis
+  values:
+    kappa_c: 0.49
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for GaSe is not reported in collection PDFs.
+  check: 'Wickramaratne 2015: 0.49 W/mK'
+  note: Layered crystal GaSe along c-axis.
 - material: GaSe
   quantity: band_gap
   axis: '-'
@@ -1209,15 +1246,18 @@
 - material: LiInS2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 2004_Fossier_Optical_vibrational_thermal_electrical_damage_and_phase-matching_prope_4479e0.pdf
+  pdf_page: 25
+  where: Table VI, Laser damage threshold
+  formula: Surface / bulk damage threshold
+  values:
+    surface_damage_j_cm2_10ns_1064nm: 1.0
+    bulk_damage_gw_cm2_500fs_1064nm: '> 6'
+    surface_damage_gw_cm2_200fs_800nm: '> 140'
+  units: J/cm² (ns) / GW/cm² (fs)
   range: {}
-  check: not_found
-  note: damage for LiInS2 is not reported in collection PDFs.
+  check: 'Table VI: 1 J/cm² at 10 ns, 1064 nm; >6 GW/cm² at 500 fs'
+  note: Fossier et al. (2004) Table VI.
 - material: LiInS2
   quantity: conductivity
   axis: x
@@ -1287,15 +1327,19 @@
 - material: LiInSe2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.27.001902.pdf
+  pdf_page: 23
+  where: Table 6, Laser damage threshold
+  formula: Laser damage threshold
+  values:
+    surface_damage_gw_cm2_10ns_1064nm: 0.04
+    fs_damage_gw_cm2_220fs_820nm: 55.0
+    single_pulse_gw_cm2_30ns_9550nm: 0.25
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for LiInSe2 is not reported in collection PDFs.
+  check: 'Petrov et al. 2010 Table 6: ~0.04 GW/cm² at 1064 nm, 10 ns; ~55 GW/cm² at
+    820 nm, 220 fs'
+  note: Petrov et al. (2010) JOSA B 27, 1902-1927.
 - material: LiInSe2
   quantity: conductivity
   axis: x
@@ -1417,15 +1461,18 @@
 - material: BaGa4S7
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1021-cg8010579.pdf
+  pdf_page: 1
+  where: Abstract and Section 3 p. 3
+  formula: Laser damage threshold at 1.064 µm (15 ns pulse width)
+  values:
+    damage_threshold_j_cm2: 1.2
+    pulse_duration_ns: 15.0
+    wavelength_um: 1.064
+  units: J/cm²
   range: {}
-  check: not_found
-  note: damage for BaGa4S7 is not reported in collection PDFs.
+  check: 'Lin et al. 2008: 1.2 J/cm² at 1.064 µm, 15 ns; Vickers hardness 327.5 HV5'
+  note: Single crystal BaGa4S7.
 - material: BaGa4S7
   quantity: conductivity
   axis: x
@@ -1495,29 +1542,37 @@
 - material: BaGa4Se7
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016-j.optmat.2019.109564.pdf
+  pdf_page: 2
+  where: Table on Page 2, row Laser damage threshold
+  formula: Laser damage threshold
+  values:
+    damage_threshold_mw_cm2: 557.0
+    pulse_duration_ns: 5.0
+    rep_rate_hz: 1.0
+    wavelength_um: 1.0
+  units: MW/cm²
   range: {}
-  check: not_found
-  note: damage for BaGa4Se7 is not reported in collection PDFs.
+  check: 'Table 1: 557 MW/cm² (1 µm, 5 nsec, 1 Hz)'
+  note: Single crystal BaGa4Se7.
 - material: BaGa4Se7
   quantity: conductivity
   axis: '-'
-  file: 10.1016_j.pquantelec.2015.04.001.pdf
-  pdf_page: 30
-  where: Table 2, row BaGa4Se7
-  formula: κ
+  file: 10.1016-j.optmat.2019.109564.pdf
+  pdf_page: 2
+  where: Table on Page 2, row Thermal conductivity
+  formula: κ along crystallographic axes a, b, c
   values:
-    kappa_min: 0.56
-    kappa_max: 0.74
+    kappa_a: 0.74
+    error_a: 0.03
+    kappa_b: 0.64
+    error_b: 0.04
+    kappa_c: 0.56
+    error_c: 0.04
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 0.56-0.74 W/(m·K)'
-  note: ''
+  check: 'Table 1: 0.74(3), 0.64(4), 0.56(4) W m⁻¹ K⁻¹ along a, b, c axes'
+  note: Single crystal BaGa4Se7.
 - material: BaGa4Se7
   quantity: band_gap
   axis: '-'
@@ -2036,15 +2091,18 @@
 - material: ZnTe
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.555705.pdf
+  pdf_page: 1
+  where: Abstract and Section 3.3 p. 44 (Table 13)
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.55
+    ir_edge_um: 30.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for ZnTe is not reported in collection PDFs.
+  check: 'Li 1984 Abstract: 0.55–30 µm; Table 13 recommends n(λ) from 0.55 to 30.0
+    µm'
+  note: Transparent spectral region of ZnTe.
 - material: ZnTe
   quantity: damage
   axis: '-'
@@ -2072,15 +2130,16 @@
 - material: ZnTe
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.555705.pdf
+  pdf_page: 42
+  where: Table 12, row ZnTe
+  formula: Fundamental absorption edge E0
+  values:
+    Eg_ev: 2.26
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for ZnTe is not reported in collection PDFs.
+  check: 'Table 12: E0 = 2.26 eV'
+  note: Fundamental band gap of ZnTe at 300 K.
 - material: CdTe
   quantity: transparency
   axis: '-'
@@ -2388,15 +2447,19 @@
 - material: K2Al2B2O7
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.17.000764.pdf
+  pdf_page: 3
+  where: Section 5, col. 1, lines 1-3
+  formula: Laser damage threshold at 1.064 µm (10 ns)
+  values:
+    damage_threshold_repetition_gw_cm2: '> 1.0'
+    damage_threshold_single_pulse_gw_cm2: 15.0
+    pulse_duration_ns: 10.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for K2Al2B2O7 is not reported in collection PDFs.
+  check: 'Ye et al. 2000 (JOSA B 17, 764): > 1 GW/cm² at 10 Hz, 15 GW/cm² single pulse'
+  note: Measured with Q-switched Nd:YAG laser (10 ns).
 - material: K2Al2B2O7
   quantity: conductivity
   axis: '-'
@@ -2582,15 +2645,16 @@
 - material: OH1
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.4897639.pdf
+  pdf_page: 4
+  where: p. 4, col. 1, lines 23-25
+  formula: Experimentally observed damage threshold
+  values:
+    damage_threshold_mw_cm2: 25.0
+  units: MW/cm²
   range: {}
-  check: not_found
-  note: damage for OH1 is not reported in collection PDFs.
+  check: 'Appl. Phys. Lett. 2014: ~25 MW/cm² for thin OH1 crystals'
+  note: Damage threshold of thin OH1 crystal under infrared pumping.
 - material: OH1
   quantity: conductivity
   axis: '-'
@@ -2615,27 +2679,3 @@
   range: {}
   check: not_found
   note: band_gap for OH1 is not reported in collection PDFs.
-
-# Papers searched for crystal card data in 01_Papers_by_Category:
-# 10.1016_j.pquantelec.2015.04.001.pdf (Petrov 2015 Progress in Quantum Electronics)
-# 10.1038-373322a0.pdf (Nature 1995 Table 2)
-# 10.1109-lpt.2024.3457910.pdf (IEEE Photonics Technology Letters 2024)
-# 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
-# 10.1364-josab.28.002236.pdf (JOSA B 2011 BPO4)
-# 10.1364-josab.25.001678.pdf (JOSA B 2008 OH1)
-# 10.1364-ao.42.002716.pdf (Applied Optics 2003 KABO)
-# 10.1364-ao.42.006661.pdf (Applied Optics 2003 KTA)
-# 10.1063-1.3021148.pdf (Appl. Phys. Lett. 2008 GaN/AlN)
-# 10.1103-physrevb.57.3905.pdf (Phys. Rev. B 1998 AlN)
-# 10.1364-josab.14.002268.pdf (Shoji 1997 JOSA B)
-# 10.1109-jqe.1971.1076588.pdf (Boyd 1971 IEEE JQE)
-# 10.1364-ol.40.004591.pdf (Opt. Lett. 2015 BGSe)
-
-# External papers and handbooks cited for the missing crystal card physical properties (DOIs for retrieval):
-# Dmitriev et al., Handbook of Nonlinear Optical Crystals (Springer 1999): 10.1007/978-3-540-69666-7
-# Nikogosyan, Nonlinear Optical Crystals: A Complete Survey (Springer 2005): 10.1007/b138685
-# BBO & LBO damage thresholds and thermal conductivity: 10.1063/1.102847, 10.1364/JOSAB.6.000616
-# KTP thermal conductivity: 10.1063/1.108422
-# LiNbO3 and LiTaO3 thermal properties: 10.1016/0022-3697(68)90164-9
-# ZnGeP2 and AgGaSe2 damage & thermal properties: 10.1364/AO.37.008527, 10.1016/S0925-3467(99)00030-9
-# GaSe and CdSe physical properties: 10.1016/0079-6727(84)90001-4
