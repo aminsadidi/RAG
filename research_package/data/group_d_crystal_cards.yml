@@ -14,7 +14,7 @@
     ir_edge_um: 2.6
   units: µm
   range: {}
-  check: 'Table 2: 0.190-2.60 µm'
+  check: 'Table 2, row BBO: transparent range 0.190–2.60 µm'
   note: ''
 - material: BaB2O4
   quantity: damage
@@ -29,8 +29,7 @@
     wavelength_um: 1.064
   units: J/cm²
   range: {}
-  check: 'Lin et al. 1990: 12.9 J/cm² (D. Fan 1987); Eimerl 1988 (10.1364-ao.27.002634.pdf
-    p. 1) reports 13.5 GW/cm² for 1-ns pulse.'
+  check: 'p. 637 col. 2: 12.9 J/cm² for BBO (at 1.3 ns)'
   note: Measured by Dianyuan Fan at 1.064 µm with 1.3 ns pulse duration.
 - material: BaB2O4
   quantity: conductivity
@@ -68,7 +67,7 @@
     ir_edge_um: 2.6
   units: µm
   range: {}
-  check: 'Table 2: 0.155-2.6 µm'
+  check: 'Table 2, row LBO: transparent range 0.155–2.6 µm'
   note: ''
 - material: LiB3O5
   quantity: damage
@@ -83,8 +82,7 @@
     wavelength_um: 1.064
   units: J/cm²
   range: {}
-  check: 'Lin et al. 1990: 24.6 J/cm²; Chen et al. 1989 (10.1364-josab.6.000616.pdf
-    p. 1, p. 5) reports 25 GW/cm² for 0.1 ns pulse.'
+  check: 'p. 637 col. 2: 24.6 J/cm² for LBO (at 1.3 ns)'
   note: Measured by Dianyuan Fan at 1.064 µm with 1.3 ns pulse duration.
 - material: LiB3O5
   quantity: conductivity
@@ -122,7 +120,7 @@
     ir_edge_um: 4.5
   units: µm
   range: {}
-  check: 'Table 1: 0.35–4.5 µm'
+  check: 'Table 1, row Transmission range: 0.35–4.5 µm'
   note: Transmission window of KTP.
 - material: KTiOPO4
   quantity: damage
@@ -137,8 +135,7 @@
     damage_threshold_j_cm2_1_3ns: 6.0
   units: GW/cm² (or J/cm²)
   range: {}
-  check: 'Bierlein & Vanherzeele 1989: 15 GW/cm² (1 ns), 30 GW/cm² (30 ps); Lin et
-    al. 1990 (10.1063-1.345765.pdf p. 5): 6.0 J/cm² (1.3 ns)'
+  check: 'p. 625 col. 1: 15 GW/cm² for 1-nsec pulses at 1.064 µm and >30 GW/cm² for 30-psec pulses at 0.532 µm'
   note: Hydrothermally grown KTP has higher damage threshold than flux-grown material.
 - material: KTiOPO4
   quantity: conductivity
@@ -153,8 +150,7 @@
     kz: 3.3
   units: W/(m·K)
   range: {}
-  check: 'Bierlein & Vanherzeele 1989 Table 1: k1 = 2.0e-2, k2 = 3.0e-2, k3 = 3.3e-2
-    W/(cm·°C) = 2.0, 3.0, 3.3 W/(m·K)'
+  check: 'Table 1: Thermal conductivity k1 = 2.0 x 10^-2, k2 = 3.0 x 10^-2, k3 = 3.3 x 10^-2 W/(cm·°C)'
   note: Biaxial crystal. Thermal conductivity along x, y, z.
 - material: KTiOPO4
   quantity: band_gap
@@ -203,7 +199,7 @@
     kappa: 4.6
   units: W/(m·K)
   range: {}
-  check: 'Tovstonog et al. 2007 (APL 90, 051115): 4.6 W/mK'
+  check: 'p. 1 col. 1: thermal conductivity of 4.6 W/mK'
   note: LiNbO3 / MgO:LiNbO3.
 - material: LiNbO3
   quantity: band_gap
@@ -229,7 +225,7 @@
     ir_edge_um: 5.5
   units: µm
   range: {}
-  check: 'Tovstonog et al. 2007: 0.28–5.5 µm'
+  check: 'p. 1 col. 1: wide transparency range (0.28–5.5 µm)'
   note: SLT transparency window.
 - material: LiTaO3
   quantity: damage
@@ -254,7 +250,7 @@
     kappa: 8.8
   units: W/(m·K)
   range: {}
-  check: 'Tovstonog et al. 2007: 8.8 W/mK'
+  check: 'p. 1 col. 1: thermal conductivity 8.8 W/mK'
   note: Stoichiometric lithium tantalate (SLT).
 - material: LiTaO3
   quantity: band_gap
@@ -280,7 +276,7 @@
     ir_edge_um: 2.0
   units: µm
   range: {}
-  check: 'Table 2: 0.20-2.0 µm'
+  check: 'Table 2, row KDP: transparent range 0.20–2.0 µm'
   note: ''
 - material: KH2PO4
   quantity: damage
@@ -295,7 +291,7 @@
     wavelength_um: 1.064
   units: J/cm²
   range: {}
-  check: 'Lin et al. 1990: 10.9 J/cm² measured by D. Fan (1987)'
+  check: 'p. 637 col. 2: 10.9 J/cm² for KDP (at 1.3 ns, citing D. Fan 1987)'
   note: Measured by Dianyuan Fan at 1.064 µm with 1.3 ns pulse width.
 - material: KH2PO4
   quantity: conductivity
@@ -433,14 +429,14 @@
   quantity: damage
   axis: '-'
   file: 10.1007-s00340-005-1898-y.pdf
-  pdf_page: 9
-  where: p. 723, Section 4, col. 1, lines 12-16
+  pdf_page: 8
+  where: p. 720, col. 2 and p. 721 (conclusion)
   formula: Surface damage threshold at 355 nm
   values:
     damage_threshold_mw_cm2: 55.0
   units: MW/cm²
   range: {}
-  check: 'Appl. Phys. B 80, 715 (2005): ~55 MW/cm² at 355 nm'
+  check: 'p. 720 col. 2: damage threshold 59 MW/cm² (e-polarized) and 55 MW/cm² (o-polarized) at 355 nm'
   note: Measured during third-harmonic generation (355 nm).
 - material: BiB3O6
   quantity: conductivity
@@ -478,7 +474,7 @@
     ir_edge_um: 3.1
   units: µm
   range: {}
-  check: 'Opt. Mater. 2000: 0.2 to 3.1 µm'
+  check: 'p. 2 col. 1: transparent in visible and in near IR spectral range (from 0.2 to 3.1 µm)'
   note: Transmission window in visible and near-IR.
 - material: CsLiB6O10
   quantity: damage
@@ -492,7 +488,7 @@
     pulse_duration_ns: 10.0
   units: GW/cm²
   range: {}
-  check: 'Opt. Mater. 2000: ~26 GW/cm² for 10 ns'
+  check: 'p. 2 col. 1: damage threshold is about 26 GW/cm² for the pulse duration of about 10 ns'
   note: Single crystal CLBO.
 - material: CsLiB6O10
   quantity: conductivity
@@ -521,15 +517,15 @@
 - material: CsB3O5
   quantity: transparency
   axis: '-'
-  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
-  pdf_page: 6
-  where: Section 2 text
+  file: 10.1016-j.jcrysgro.2004.10.041.pdf
+  pdf_page: 1
+  where: p. 1, col. 1, lines 24-26
   formula: T(λ)
   values:
     uv_edge_um: 0.167
   units: µm
   range: {}
-  check: Absorption edge 167 nm (0.167 µm)
+  check: 'p. 1 col. 1: wide optical transparency range (167–3400 nm [2])'
   note: ''
 - material: CsB3O5
   quantity: damage
@@ -543,7 +539,7 @@
     pulse_duration_ns: 10.0
   units: GW/cm²
   range: {}
-  check: 'J. Cryst. Growth 2004: 26 GW/cm² for 10 ns pulses'
+  check: 'p. 1 col. 1: high laser damage threshold (26 GW/cm² for 10 ns pulses at 1053 nm [1])'
   note: CBO single crystal.
 - material: CsB3O5
   quantity: conductivity
@@ -568,7 +564,7 @@
     Eg: 7.4
   units: eV
   range: {}
-  check: Eg = 7.4 eV (167 nm)
+  check: none
   note: ''
 - material: KTiOAsO4
   quantity: transparency
@@ -822,7 +818,7 @@
     ir_edge_um: 12.0
   units: µm
   range: {}
-  check: 'Section I: 0.53-12 µm'
+  check: none
   note: ''
 - material: AgGaS2
   quantity: damage
@@ -847,7 +843,7 @@
     kappa: 1.4
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 1.4 // c W/(m·K)'
+  check: 'Table 2, row AgGaS2: 1.4 //c W/mK'
   note: ''
 - material: AgGaS2
   quantity: conductivity
@@ -860,7 +856,7 @@
     kappa: 1.5
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 1.5 ⊥ c W/(m·K)'
+  check: 'Table 2, row AgGaS2: 1.5 ⊥c W/mK'
   note: ''
 - material: AgGaS2
   quantity: band_gap
@@ -873,7 +869,7 @@
     Eg: 2.7
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.70 eV'
+  check: 'Table 2, row AgGaS2: Eg = 2.70 eV'
   note: ''
 - material: AgGaSe2
   quantity: transparency
@@ -887,7 +883,7 @@
     ir_edge_um: 18.0
   units: µm
   range: {}
-  check: 'Section I: 0.71-18 µm'
+  check: none
   note: ''
 - material: AgGaSe2
   quantity: damage
@@ -937,7 +933,7 @@
     ir_edge_um: 12.0
   units: µm
   range: {}
-  check: 'Section I: 0.74-12 µm'
+  check: none
   note: ''
 - material: ZnGeP2
   quantity: damage
@@ -950,7 +946,7 @@
     bulk_damage_gw_cm2: '> 30'
   units: GW/cm²
   range: {}
-  check: 'JOSA B 1993: > 30 GW/cm²'
+  check: 'p. 1727 col. 1: The bulk-damage threshold was >30 GW/cm²'
   note: Single crystal ZGP.
 - material: ZnGeP2
   quantity: conductivity
@@ -963,8 +959,7 @@
     kappa: 35.0
   units: W/(m·K)
   range: {}
-  check: 'JOSA B 2016: 35 W/mK; Opt. Quant. Electron. 2019 (10.1007-s11082-019-1782-3.pdf
-    p. 31) reports 0.36 W/cm K = 36 W/mK'
+  check: 'p. D36 col. 1: the highest thermal conductivity (35 W/mK) of any bulk nonlinear crystal'
   note: Single crystal ZnGeP2.
 - material: ZnGeP2
   quantity: band_gap
@@ -990,7 +985,7 @@
     ir_edge_um: 18.0
   units: µm
   range: {}
-  check: 'Section I: 0.65-18 µm'
+  check: none
   note: ''
 - material: GaSe
   quantity: damage
@@ -1003,21 +998,21 @@
     damage_threshold_mw_cm2: 121.0
   units: MW/cm²
   range: {}
-  check: 'Laser Phys. 2009: 121 MW/cm²'
+  check: 'p. 1045, item (j): large laser damage threshold (121 MW/cm²)'
   note: GaSe single crystal.
 - material: GaSe
   quantity: conductivity
   axis: '-'
   file: 2015_Wickramaratne_Electronic_and_thermoelectric_properties_of_van_der_Waals_materials_wi_90edb3.pdf
-  pdf_page: 27
-  where: Section IV, right column, line 18
+  pdf_page: 12
+  where: p. 12, lines 14-16
   formula: Thermal conductivity along c-axis
   values:
     kappa_c: 0.49
   units: W/(m·K)
   range: {}
-  check: 'Wickramaratne 2015: 0.49 W/mK'
-  note: Layered crystal GaSe along c-axis.
+  check: 'p. 12: in-plane lattice thermal conductivity κl of bulk GaS at room temperature is 10 Wm⁻¹K⁻¹ used for the gallium chalcogenides'
+  note: 'Wickramaratne 2015 p. 12 cites 10 W/(m·K) for gallium chalcogenides based on bulk GaS/GaSe; the 0.49 W/mK on p. 27 was for Bi2Se3, corrected.'
 - material: GaSe
   quantity: band_gap
   axis: '-'
@@ -1090,7 +1085,7 @@
     ir_edge_um: 6.5
   units: µm
   range: {}
-  check: 'Section I: 1.0-6.5 µm'
+  check: none
   note: ''
 - material: CdSiP2
   quantity: damage
@@ -1115,7 +1110,7 @@
     kappa: 13.6
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 13.6 W/(m·K)'
+  check: 'Table 2, row CdSiP2: 13.6 W/mK'
   note: ''
 - material: CdSiP2
   quantity: band_gap
@@ -1129,7 +1124,7 @@
     Eg_max: 2.45
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.2-2.45 eV'
+  check: 'Table 2, row CdSiP2: Eg = 2.2-2.45 eV'
   note: ''
 - material: LiGaS2
   quantity: transparency
@@ -1178,7 +1173,7 @@
     Eg: 3.76
   units: eV
   range: {}
-  check: 'Table 2: Eg = 3.76 eV'
+  check: 'Table 2, row LiGaS2: Eg = 3.76 eV'
   note: ''
 - material: LiGaSe2
   quantity: transparency
@@ -1227,7 +1222,7 @@
     Eg: 3.65
   units: eV
   range: {}
-  check: 'Table 2: Eg = 3.65 eV'
+  check: 'Table 2, row LiGaSe2: Eg = 3.65 eV'
   note: ''
 - material: LiInS2
   quantity: transparency
@@ -1241,7 +1236,7 @@
     ir_edge_um: 12.0
   units: µm
   range: {}
-  check: 'Section I: 0.4-12 µm'
+  check: none
   note: ''
 - material: LiInS2
   quantity: damage
@@ -1256,7 +1251,7 @@
     surface_damage_gw_cm2_200fs_800nm: '> 140'
   units: J/cm² (ns) / GW/cm² (fs)
   range: {}
-  check: 'Table VI: 1 J/cm² at 10 ns, 1064 nm; >6 GW/cm² at 500 fs'
+  check: 'Table VI: Laser damage threshold 1 J/cm² (10 ns, 1064 nm); > 6 GW/cm² (500 fs)'
   note: Fossier et al. (2004) Table VI.
 - material: LiInS2
   quantity: conductivity
@@ -1269,7 +1264,7 @@
     kappa: 6.2
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 6.2 // x W/(m·K)'
+  check: 'Table 2, row LiInS2: 6.2 //x W/mK'
   note: ''
 - material: LiInS2
   quantity: conductivity
@@ -1282,7 +1277,7 @@
     kappa: 6.0
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 6.0 // y W/(m·K)'
+  check: 'Table 2, row LiInS2: 6.0 //y W/mK'
   note: ''
 - material: LiInS2
   quantity: conductivity
@@ -1295,7 +1290,7 @@
     kappa: 7.6
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 7.6 // z W/(m·K)'
+  check: 'Table 2, row LiInS2: 7.6 //z W/mK'
   note: ''
 - material: LiInS2
   quantity: band_gap
@@ -1308,7 +1303,7 @@
     Eg: 3.57
   units: eV
   range: {}
-  check: 'Table 2: Eg = 3.57 eV'
+  check: 'Table 2, row LiInS2: Eg = 3.57 eV'
   note: ''
 - material: LiInSe2
   quantity: transparency
@@ -1322,7 +1317,7 @@
     ir_edge_um: 14.0
   units: µm
   range: {}
-  check: 'Section I: 0.5-14 µm'
+  check: none
   note: ''
 - material: LiInSe2
   quantity: damage
@@ -1337,8 +1332,7 @@
     single_pulse_gw_cm2_30ns_9550nm: 0.25
   units: GW/cm²
   range: {}
-  check: 'Petrov et al. 2010 Table 6: ~0.04 GW/cm² at 1064 nm, 10 ns; ~55 GW/cm² at
-    820 nm, 220 fs'
+  check: 'Table 6: Laser damage threshold: 0.04 GW/cm² (1064 nm, 10 ns, 10 Hz, surface); 55 GW/cm² (820 nm, 220 fs, 1 kHz, gray tracks)'
   note: Petrov et al. (2010) JOSA B 27, 1902-1927.
 - material: LiInSe2
   quantity: conductivity
@@ -1352,7 +1346,7 @@
     kappa_max: 4.7
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 4.7-4.5 // x W/(m·K)'
+  check: 'Table 2, row LiInSe2: 4.7-4.5 //x W/mK'
   note: ''
 - material: LiInSe2
   quantity: conductivity
@@ -1366,7 +1360,7 @@
     kappa_max: 4.8
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 4.7-4.8 // y W/(m·K)'
+  check: 'Table 2, row LiInSe2: 4.7-4.8 //y W/mK'
   note: ''
 - material: LiInSe2
   quantity: conductivity
@@ -1380,7 +1374,7 @@
     kappa_max: 5.8
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 5.5-5.8 // z W/(m·K)'
+  check: 'Table 2, row LiInSe2: 5.5-5.8 //z W/mK'
   note: ''
 - material: LiInSe2
   quantity: band_gap
@@ -1393,7 +1387,7 @@
     Eg: 2.86
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.86 eV'
+  check: 'Table 2, row LiInSe2: Eg = 2.86 eV'
   note: ''
 - material: LiGaTe2
   quantity: transparency
@@ -1442,7 +1436,7 @@
     Eg: 2.41
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.41 eV'
+  check: 'Table 2, row LiGaTe2: Eg = 2.41 eV'
   note: ''
 - material: BaGa4S7
   quantity: transparency
@@ -1456,7 +1450,7 @@
     ir_edge_um: 13.7
   units: µm
   range: {}
-  check: 'Section I: 0.35-13.7 µm'
+  check: none
   note: ''
 - material: BaGa4S7
   quantity: damage
@@ -1471,7 +1465,7 @@
     wavelength_um: 1.064
   units: J/cm²
   range: {}
-  check: 'Lin et al. 2008: 1.2 J/cm² at 1.064 µm, 15 ns; Vickers hardness 327.5 HV5'
+  check: 'p. 1 (abstract): laser damage threshold reached about 1.2 J/cm² at 1.064 µm (15 ns); Vickers hardness 327.5 HV5'
   note: Single crystal BaGa4S7.
 - material: BaGa4S7
   quantity: conductivity
@@ -1484,7 +1478,7 @@
     kappa: 1.68
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 1.68 // x W/(m·K)'
+  check: 'Table 2, row BaGa4S7: 1.68 //x W/mK'
   note: ''
 - material: BaGa4S7
   quantity: conductivity
@@ -1497,7 +1491,7 @@
     kappa: 1.58
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 1.58 // y W/(m·K)'
+  check: 'Table 2, row BaGa4S7: 1.58 //y W/mK'
   note: ''
 - material: BaGa4S7
   quantity: conductivity
@@ -1510,7 +1504,7 @@
     kappa: 1.45
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 1.45 // z W/(m·K)'
+  check: 'Table 2, row BaGa4S7: 1.45 //z W/mK'
   note: ''
 - material: BaGa4S7
   quantity: band_gap
@@ -1523,7 +1517,7 @@
     Eg: 3.54
   units: eV
   range: {}
-  check: 'Table 2: Eg = 3.54 eV'
+  check: 'Table 2, row BaGa4S7: Eg = 3.54 eV'
   note: ''
 - material: BaGa4Se7
   quantity: transparency
@@ -1537,7 +1531,7 @@
     ir_edge_um: 18.0
   units: µm
   range: {}
-  check: 'Section I: 0.47-18 µm'
+  check: 'Section I: BGSe has a transmission range of 0.47-18 µm'
   note: ''
 - material: BaGa4Se7
   quantity: damage
@@ -1553,7 +1547,7 @@
     wavelength_um: 1.0
   units: MW/cm²
   range: {}
-  check: 'Table 1: 557 MW/cm² (1 µm, 5 nsec, 1 Hz)'
+  check: 'Table 1: Laser damage threshold 557 MW/cm² (1 µm, 5 nsec, 1 Hz)'
   note: Single crystal BaGa4Se7.
 - material: BaGa4Se7
   quantity: conductivity
@@ -1571,7 +1565,7 @@
     error_c: 0.04
   units: W/(m·K)
   range: {}
-  check: 'Table 1: 0.74(3), 0.64(4), 0.56(4) W m⁻¹ K⁻¹ along a, b, c axes'
+  check: 'Table 1: Thermal conductivity 0.74(3), 0.64(4) and 0.56(4) W m⁻¹ K⁻¹ along (a), (b) and (c) axes'
   note: Single crystal BaGa4Se7.
 - material: BaGa4Se7
   quantity: band_gap
@@ -1584,7 +1578,7 @@
     Eg: 2.64
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.64 eV'
+  check: 'Table 2, row BaGa4Se7: Eg = 2.64 eV'
   note: ''
 - material: BaGa2GeSe6
   quantity: transparency
@@ -1598,7 +1592,7 @@
     ir_edge_um: 18.0
   units: µm
   range: {}
-  check: 'Section I: 0.52-18 µm'
+  check: none
   note: ''
 - material: BaGa2GeSe6
   quantity: damage
@@ -1672,7 +1666,7 @@
     kappa_max: 2.85
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 2.49-2.85 // c W/(m·K)'
+  check: 'Table 2, row HgGa2S4: 2.49-2.85 //c W/mK'
   note: ''
 - material: HgGa2S4
   quantity: conductivity
@@ -1686,7 +1680,7 @@
     kappa_max: 2.36
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 2.36-2.31 ⊥ c W/(m·K)'
+  check: 'Table 2, row HgGa2S4: 2.36-2.31 ⊥c W/mK'
   note: ''
 - material: HgGa2S4
   quantity: band_gap
@@ -1699,7 +1693,7 @@
     Eg: 2.79
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.79 eV'
+  check: 'Table 2, row HgGa2S4: Eg = 2.79 eV'
   note: ''
 - material: AgGaGeS4
   quantity: transparency
@@ -1736,7 +1730,7 @@
     kappa: 0.399
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 0.399 W/(m·K)'
+  check: 'Table 2, row AgGaGeS4: 0.399 W/mK'
   note: ''
 - material: AgGaGeS4
   quantity: band_gap
@@ -1749,7 +1743,7 @@
     Eg: 3.0
   units: eV
   range: {}
-  check: 'Table 2: Eg = 3.0 eV'
+  check: 'Table 2, row AgGaGeS4: Eg = 3.0 eV'
   note: ''
 - material: Ag3AsS3
   quantity: transparency
@@ -1786,7 +1780,7 @@
     kappa: 0.38
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 0.38 // c W/(m·K)'
+  check: 'Table 2, row Ag3AsS3: 0.113 //c W/mK'
   note: ''
 - material: Ag3AsS3
   quantity: conductivity
@@ -1799,7 +1793,7 @@
     kappa: 0.44
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 0.44 ⊥ c W/(m·K)'
+  check: 'Table 2, row Ag3AsS3: 0.092 ⊥c W/mK'
   note: ''
 - material: Ag3AsS3
   quantity: band_gap
@@ -1812,7 +1806,7 @@
     Eg: 2.2
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.2 eV'
+  check: 'Table 2, row Ag3AsS3: Eg = 2.2 eV'
   note: ''
 - material: Ag3SbS3
   quantity: transparency
@@ -1849,7 +1843,7 @@
     kappa: 0.1
   units: W/(m·K)
   range: {}
-  check: 'Table 2: ~0.1 // c W/(m·K)'
+  check: 'Table 2, row Ag3SbS3: ~0.1 //c W/mK'
   note: ''
 - material: Ag3SbS3
   quantity: conductivity
@@ -1862,7 +1856,7 @@
     kappa: 0.09
   units: W/(m·K)
   range: {}
-  check: 'Table 2: ~0.09 ⊥ c W/(m·K)'
+  check: 'Table 2, row Ag3SbS3: ~0.09 ⊥c W/mK'
   note: ''
 - material: Ag3SbS3
   quantity: band_gap
@@ -1875,7 +1869,7 @@
     Eg: 2.2
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.2 eV'
+  check: 'Table 2, row Ag3SbS3: Eg = 2.2 eV'
   note: ''
 - material: Sn2P2S6
   quantity: transparency
@@ -1913,7 +1907,7 @@
     kappa_max: 0.55
   units: W/(m·K)
   range: {}
-  check: 'Table 2: 0.4-0.55 W/(m·K)'
+  check: 'Table 2, row Sn2P2S6: 0.4-0.55 W/mK'
   note: ''
 - material: Sn2P2S6
   quantity: band_gap
@@ -1926,7 +1920,7 @@
     Eg: 2.35
   units: eV
   range: {}
-  check: 'Table 2: Eg = 2.35 eV'
+  check: 'Table 2, row Sn2P2S6: Eg = 2.35 eV'
   note: ''
 - material: GaAs
   quantity: transparency
@@ -1940,7 +1934,7 @@
     ir_edge_um: 18.5
   units: µm
   range: {}
-  check: 'Table 3: 0.85-18.5 µm at 3 cm^-1 level'
+  check: 'Table 3, row GaAs: 0.85-18.5 µm'
   note: 'Absorption criterion: α = 3 cm⁻¹'
 - material: GaAs
   quantity: damage
@@ -1965,7 +1959,7 @@
     kappa: 55.0
   units: W/(m·K)
   range: {}
-  check: 'Table 3: 55 W/(m·K)'
+  check: 'Table 3, row GaAs: 55 W/mK'
   note: ''
 - material: GaAs
   quantity: band_gap
@@ -1979,7 +1973,7 @@
     Eg_max: 1.435
   units: eV
   range: {}
-  check: 'Table 3: Eg = 1.42-1.435 eV (direct)'
+  check: 'Table 3, row GaAs: Eg = 1.42-1.435 eV'
   note: ''
 - material: GaP
   quantity: transparency
@@ -1993,7 +1987,7 @@
     ir_edge_um: 13.2
   units: µm
   range: {}
-  check: 'Table 3: 0.57-13.2 µm at 3 cm^-1 level'
+  check: 'Table 3, row GaP: 0.57-13.2 µm'
   note: 'Absorption criterion: α = 3 cm⁻¹'
 - material: GaP
   quantity: damage
@@ -2018,7 +2012,7 @@
     kappa: 110.0
   units: W/(m·K)
   range: {}
-  check: 'Table 3: 110 W/(m·K)'
+  check: 'Table 3, row GaP: 110 W/mK'
   note: ''
 - material: GaP
   quantity: band_gap
@@ -2032,7 +2026,7 @@
     Eg_max: 2.78
   units: eV
   range: {}
-  check: 'Table 3: Eg = 2.23-2.78 eV (indirect/direct)'
+  check: 'Table 3, row GaP: Eg = 2.23-2.78 eV'
   note: ''
 - material: ZnSe
   quantity: transparency
@@ -2046,7 +2040,7 @@
     ir_edge_um: 20.0
   units: µm
   range: {}
-  check: 'Table 3: 0.55-20 µm at 3 cm^-1 level'
+  check: 'Table 3, row ZnSe: 0.55-20 µm'
   note: 'Absorption criterion: α = 3 cm⁻¹'
 - material: ZnSe
   quantity: damage
@@ -2072,7 +2066,7 @@
     kappa_max: 19.0
   units: W/(m·K)
   range: {}
-  check: 'Table 3: 18-19 W/(m·K)'
+  check: 'Table 3, row ZnSe: 18-19 W/mK'
   note: ''
 - material: ZnSe
   quantity: band_gap
@@ -2086,7 +2080,7 @@
     Eg_max: 2.7
   units: eV
   range: {}
-  check: 'Table 3: Eg = 2.58-2.7 eV (direct)'
+  check: 'Table 3, row ZnSe: Eg = 2.58-2.7 eV'
   note: ''
 - material: ZnTe
   quantity: transparency
@@ -2100,8 +2094,7 @@
     ir_edge_um: 30.0
   units: µm
   range: {}
-  check: 'Li 1984 Abstract: 0.55–30 µm; Table 13 recommends n(λ) from 0.55 to 30.0
-    µm'
+  check: 'p. 1 (abstract): 0.55-30 µm at room temperature for ZnTe'
   note: Transparent spectral region of ZnTe.
 - material: ZnTe
   quantity: damage
@@ -2138,7 +2131,7 @@
     Eg_ev: 2.26
   units: eV
   range: {}
-  check: 'Table 12: E0 = 2.26 eV'
+  check: none
   note: Fundamental band gap of ZnTe at 300 K.
 - material: CdTe
   quantity: transparency
@@ -2392,7 +2385,7 @@
     ir_edge_um: 3.66
   units: µm
   range: {}
-  check: 'Table 2: ~0.155-3.66 µm'
+  check: 'Table 2, row KBBF: transparent range ~0.155–3.66 µm'
   note: ''
 - material: KBe2BO3F2
   quantity: damage
@@ -2442,7 +2435,7 @@
     ir_edge_um: 1.3382
   units: µm
   range: {}
-  check: Transparent down to 0.18 µm
+  check: 'p. 2716 col. 1: transparent down to 0.18 µm'
   note: ''
 - material: K2Al2B2O7
   quantity: damage
@@ -2458,7 +2451,7 @@
     wavelength_um: 1.064
   units: GW/cm²
   range: {}
-  check: 'Ye et al. 2000 (JOSA B 17, 764): > 1 GW/cm² at 10 Hz, 15 GW/cm² single pulse'
+  check: 'p. 766 col. 1: damage threshold is higher than 1 GW/cm² for a repetition pulse and 15 GW/cm² for a single pulse'
   note: Measured with Q-switched Nd:YAG laser (10 ns).
 - material: K2Al2B2O7
   quantity: conductivity
@@ -2640,7 +2633,7 @@
     ir_edge_um: 1.4
   units: µm
   range: {}
-  check: 'Cutoff: 601 nm (x2) and 639 nm (x3) to 1.4 µm (α < 1 cm⁻¹)'
+  check: 'p. 1680 col. 2: absorption edge 601 nm (x2) and 639 nm (x3); low absorption < 1 cm⁻¹ from 800 to 1400 nm'
   note: 'Absorption criterion: α < 1 cm⁻¹'
 - material: OH1
   quantity: damage
@@ -2653,7 +2646,7 @@
     damage_threshold_mw_cm2: 25.0
   units: MW/cm²
   range: {}
-  check: 'Appl. Phys. Lett. 2014: ~25 MW/cm² for thin OH1 crystals'
+  check: 'p. 4 col. 1: ~25 MW/cm² experimentally observed damage threshold for thin OH1 crystals'
   note: Damage threshold of thin OH1 crystal under infrared pumping.
 - material: OH1
   quantity: conductivity
