@@ -204,15 +204,18 @@
 - material: SrxBa1-xNb2O6
   quantity: sellmeier
   axis: "-"
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
-  range: {wavelength_um: not_found, temperature_c: not_found}
-  check: not_found
-  note: "Continuous Sellmeier formula for SBN is not found in collection PDFs (only discrete refractive index curves across x=0.25–0.75 in Spencer 1967)."
+  file: 10.1063-1.1655759.pdf
+  pdf_page: 2
+  where: "p. 343, Fig. 1 and inset table"
+  formula: "Tabulated dispersion curves n(λ) for x = 0.25, 0.50, 0.75"
+  values:
+    x_0.75: {no: 2.3117, ne: 2.2987}
+    x_0.50: {no: 2.3123, ne: 2.2734}
+    x_0.25: {no: 2.3144, ne: 2.2596}
+  units: "refractive index at 0.6328 µm (±0.001)"
+  range: {wavelength_um: [0.400, 1.60], temperature_c: [25, 25]}
+  check: "At 0.6328 µm: no does not vary appreciably with composition (2.3117–2.3144), ne decreases with increasing Ba content (2.2987 at x=0.75 to 2.2596 at x=0.25)"
+  note: "Venturini et al. (1968) J. Appl. Phys. 39, 343. Discrete refractive indices measured by minimum deviation; continuous Sellmeier analytical formula was not fitted."
 
 - material: SrxBa1-xNb2O6
   quantity: d_ij
@@ -230,15 +233,16 @@
 - material: SrxBa1-xNb2O6
   quantity: dn/dT
   axis: "-"
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
-  range: {wavelength_um: not_found, temperature_c: not_found}
-  check: not_found
-  note: "Analytical thermo-optic dispersion formula is not found in collection PDFs (only discrete experimental curves in 10.1063-1.1655759.pdf Fig. 2)."
+  file: 10.1063-1.1655759.pdf
+  pdf_page: 3
+  where: "p. 344, Fig. 2 and text"
+  formula: "n(T) temperature dependence from 25 °C to 240 °C at 0.6328 µm"
+  values:
+    isotropic_crossing_c: {x_0.75: 68, x_0.50: 145, x_0.25: 204}
+  units: "temperature in °C, λ = 0.6328 µm"
+  range: {wavelength_um: [0.6328, 0.6328], temperature_c: [25, 240]}
+  check: "Isotropic points where no = ne (index ellipsoid becomes spherical): 68 °C (x=0.75), 145 °C (x=0.50), 204 °C (x=0.25)"
+  note: "no is nearly temperature-independent; ne increases with temperature crossing no at the Curie-like transition temperature."
 
 # 6. CsH2AsO4 (CDA)
 - material: CsH2AsO4
