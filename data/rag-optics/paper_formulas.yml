@@ -684,3 +684,29 @@
     - {page: Kato-2023, direction: x, type: 4, coefficients: [6.72431, 0.26375, 0, 0.04248, 1, 608.63, 0, 756.87, 1, 0, 2], range_um: [0.901, 14.201]}
     - {page: Kato-2023, direction: y, type: 4, coefficients: [6.86603, 0.26816, 0, 0.04259, 1, 682.97, 0, 781.78, 1, 0, 2], range_um: [0.901, 14.201]}
     - {page: Kato-2023, direction: z, type: 4, coefficients: [7.16709, 0.32681, 0, 0.06973, 1, 731.86, 0, 790.16, 1, 0, 2], range_um: [0.901, 14.201]}
+
+- material: K2Al2B2O7
+  name: K2Al2B2O7 (Potassium aluminum borate, KABO)
+  doc_id: "10.1364_ao.42.002716"
+  reference: "Umemura, Ando, Suzuki, Takaoka, Katō, Hu, Yoshimura, Mori & Sasaki (2003). 200-mW-average power ultraviolet generation at 0.193 µm in K2Al2B2O7. Appl. Opt. 42, 2716. doi:10.1364/AO.42.002716"
+  doi: 10.1364/AO.42.002716
+  pdf_page: 1
+  where: "Eq. (1) (read from the page image): n² = A + B/(λ² − C) − D·λ²; o: 2.3765, 0.01303, 0.01852, 0.01317; e: 2.1752, 0.00950, 0.01530, 0.00832; 0.193–1.3382 µm at 20 °C, fitted to the phase-matching angles of Table 1 (±0.3°)"
+  entries:
+    - {page: Umemura-2003, direction: o, type: 4, coefficients: [2.3765, 0.01303, 0, 0.01852, 1, 0, 0, 0, 1, -0.01317, 2], range_um: [0.193, 1.3382]}
+    - {page: Umemura-2003, direction: e, type: 4, coefficients: [2.1752, 0.00950, 0, 0.01530, 1, 0, 0, 0, 1, -0.00832, 2], range_um: [0.193, 1.3382]}
+  checks: []  # checked in the test: the phase-matching angles and temperature bandwidths of Tables 1 and 2
+
+- material: BPO4
+  name: BPO4 (Boron phosphate, BPO)
+  doc_id: "10.1364_josab.28.002236"
+  reference: "Zhang et al. (2011). J. Opt. Soc. Am. B 28, 2236. doi:10.1364/JOSAB.28.002236"
+  doi: 10.1364/JOSAB.28.002236
+  pdf_page: 2
+  where: "Eq. (1) (read from the page image): n² = A + B/(λ² − C) − D·λ²; o: 2.51252, 0.01055, 0.01026, 0.01659; e: 2.52984, 0.01080, 0.01028, 0.01762; fitted to the minimum-deviation indices of Table 1, 0.2537–1.530 µm at 26 °C. Positive uniaxial with Δn ≈ 0.005: no birefringent phase matching of SHG"
+  entries:
+    - {page: Zhang-2011, direction: o, type: 4, coefficients: [2.51252, 0.01055, 0, 0.01026, 1, 0, 0, 0, 1, -0.01659, 2], range_um: [0.2537, 1.53]}
+    - {page: Zhang-2011, direction: e, type: 4, coefficients: [2.52984, 0.01080, 0, 0.01028, 1, 0, 0, 0, 1, -0.01762, 2], range_um: [0.2537, 1.53]}
+  checks:  # the measured indices of Table 1
+    - {direction: o, tol: 3.0e-4, points: [[0.2537, 1.64512], [0.4047, 1.60588], [0.5461, 1.59506], [1.014, 1.58298], [1.53, 1.57424]]}
+    - {direction: e, tol: 3.0e-4, points: [[0.2537, 1.65178], [0.4047, 1.61173], [0.5461, 1.60066], [1.014, 1.58818], [1.53, 1.57901]]}
