@@ -4,71 +4,45 @@
 - material: BaTiO3
   quantity: d_ij
   axis: '-'
-  file: 2013_Joulaud_Characterization_of_the_nonlinear_optical_properties_of_nanocrystals_b_0cfdeb.pdf
-  pdf_page: 4
-  where: Table 1, row BaTiO3 and formula footnote
-  formula: ⟨d²⟩ = (6/35)·d33² + (32/105)·d31·d33 + (92/105)·d31²
-  values:
-    point_group: 4mm
-    d_mean_mono_pm_v: 5.5
-    d_mean_bulk_lit_pm_v: 14.1
-    d33: not_found
-    d31: not_found
-    d15: not_found
-  units: pm/V
-  range:
-    wavelength_um:
-    - 1.064
-    - 1.064
-    temperature_c: not_found
-  check: 'Table 1: ⟨d_bulk⟩ = 14.1 pm/V cited from Nikogosyan 2005; ⟨d_mono⟩ = 5.5
-    pm/V measured at 1064 nm'
-  note: Individual tensor elements d33, d31, d15 for bulk single crystals are not
-    found in collection PDFs (only orientational-average ⟨d⟩ reported). Kleinman symmetry
-    assumed in effective powder/NC formulas.
-- material: ZnO
-  quantity: d_ij
-  axis: '-'
-  file: 2013_Joulaud_Characterization_of_the_nonlinear_optical_properties_of_nanocrystals_b_0cfdeb.pdf
-  pdf_page: 4
-  where: Table 1, rows ZnO 90-200 and ZnO 20
-  formula: ⟨d²⟩ = (6/35)·d33² + (32/105)·d31·d33 + (92/105)·d31²
-  values:
-    point_group: 6mm
-    d_mean_mono_pm_v: 2.5
-    d_mean_bulk_lit_pm_v: 2.8
-    d33: not_found
-    d31: not_found
-    d15: not_found
-  units: pm/V
-  range:
-    wavelength_um:
-    - 1.064
-    - 1.064
-    temperature_c: not_found
-  check: 'Table 1: ⟨d_mono⟩ = 2.5 pm/V (132 nm NCs) and 2.1 pm/V (50 nm NCs); bulk
-    reference ⟨d_bulk⟩ = 2.8 pm/V (Wang 2001)'
-  note: Individual single-crystal tensor components d33, d31, d15 not found in collection
-    PDFs. Kleinman symmetry assumed in NC average formula.
-- material: GaS
-  quantity: d_ij
-  axis: '-'
-  file: 10.1016_j.pquantelec.2015.04.001.pdf
-  pdf_page: 30
-  where: p. 29, Section 5, text on GaS
-  formula: d_ij ≡ 0 (by inversion symmetry)
-  values:
-    point_group: 6/mmm
-    all_dij: 0.0
-  units: pm/V
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
   range:
     wavelength_um: not_found
     temperature_c: not_found
-  check: 'Petrov 2015 p. 29: centrosymmetric parent compound GaS with D6h / P6_3/mmc
-    space group'
-  note: Bulk crystal gallium sulfide (GaS) is centrosymmetric (point group 6/mmm /
-    D6h); all second-order nonlinear coefficients are identically zero by Neumann's
-    principle.
+  check: not_found
+  note: Individual single-crystal tensor components d_ij for BaTiO3 are not reported in the collection PDFs (Joulaud 2013 reports only nanocrystal orientational average <d>).
+- material: ZnO
+  quantity: d_ij
+  axis: '-'
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range:
+    wavelength_um: not_found
+    temperature_c: not_found
+  check: not_found
+  note: Individual single-crystal tensor components d_ij for ZnO are not reported in the collection PDFs (Joulaud 2013 reports only nanocrystal orientational average <d>).
+- material: GaS
+  quantity: d_ij
+  axis: '-'
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
+  range:
+    wavelength_um: not_found
+    temperature_c: not_found
+  check: not_found
+  note: Gallium sulfide (GaS) is centrosymmetric (point group 6/mmm, Petrov 2015 p. 29); all second-order nonlinear d_ij tensor components vanish identically by inversion symmetry.
 - material: AlN
   quantity: d_ij
   axis: '-'
@@ -106,7 +80,7 @@
     - 1.064
     - 1.064
     temperature_c: not_found
-  check: '|χ(2)_31| ≈ 8.5 pm/V, |χ(2)_33| ≈ 24 pm/V for 4H-SiC at 1064 nm'
+  check: 'Eq. (4): |χ(2)_31| ≈ 8.5 pm/V'
   note: For 3C-SiC (point group -43m), 10.1103-physrevb.57.3905.pdf Table IV reports
     χ123 = 17.6 pm/V (d14 = 8.8 pm/V). Kleinman symmetry assumed.
 - material: Tl3AsSe3
@@ -179,7 +153,7 @@
     - 1.064
     - 1.064
     temperature_c: not_found
-  check: Citing Kato et al. 2020 (Opt. Lett. 45, 2136)
+  check: 'Section II, col. 1: d11 = +23.6 pm/V, d22 = −18.5 pm/V, and d31 = +18.3 pm/V'
   note: 'Measured via phase-matched SHG/SFG. Kleinman symmetry assumed: d16 = -d22,
     d15 = d31.'
 - material: CuGaS2
@@ -199,8 +173,7 @@
     - 10.6
     - 10.6
     temperature_c: not_found
-  check: 'Table V: d36(CuGaS2)/d36(GaAs) = 0.108 ± 15%; experimental coherence length
-    lc = 57.7 µm (calc 55.6 µm)'
+  check: 'Table V, row CuGaS2: d36/d36(GaAs) = 0.108 ± 15%, d36 = (35 ± 30%) x 10^-12 m/V, lc(meas) = 57.7 µm'
   note: Measured by thin-wedge SHG relative to d36(GaAs) at 10.6 µm. Absolute value
     is 14.5 pm/V based on Boyd 1971 scale (or ~9.1 pm/V on modern Shoji 1997 scale
     where d36(GaAs) = 84 pm/V). Kleinman symmetry assumed (d14 = d36).
@@ -246,8 +219,7 @@
     - 2.26
     - 2.26
     temperature_c: not_found
-  check: 'Petrov 2015 Table 2: d31 = 5.1 pm/V at 2.26 µm (Miller d31 = 5.07 pm/V),
-    deff(oo-e, XZ) = 4.99 pm/V at θ = 10.47°'
+  check: 'Table 2, row BaGa4S7: d31 = 5.1 pm/V @ 2.26 µm (Miller d31 = 5.07 pm/V), deff(oo-e, XZ) = 4.99 pm/V at θ = 10.47°'
   note: 'Complete tensor for mm2 point group: d31 = d15 = 5.1 pm/V, d32 = d24 = 4.8
     pm/V (Petrov 2015); d33 = 12.6 pm/V measured at 1.064 µm relative to LiGaS2 d33
     = 10.7 pm/V in 10.1021-cg8010579.pdf (Lin 2009, p. 1-3). Kleinman symmetry assumed.'
@@ -271,9 +243,7 @@
     - 1.8
     - 3.22
     temperature_c: not_found
-  check: 'Table 1: |d23| = 11.3 ± 0.8 pm/V (at λ2ω = 0.90 µm), |d32| = 3.7 ± 0.4 pm/V
-    (at λ2ω = 1.265 µm), |d31| = 1.2 ± 0.3 pm/V (at λ2ω = 1.61 µm); extrapolated to
-    0.532 µm: |d23| = 14.2 pm/V, |d32| = 5.0 pm/V, |d31| = 2.0 pm/V'
+  check: 'Table 1: |d23| = 14.2 ± 0.8, |d32| = 5.0 ± 0.4, |d31| = 2.0 ± 0.3 pm/V (at 0.532 µm); |d23| = 9.5 ± 0.5, |d32| = 3.3 ± 0.3, |d31| = 1.3 ± 0.2 pm/V (at 5.3 µm)'
   note: Measured in dielectric frame relative to KTP d24(0.66 µm) = 2.37 pm/V. Maker
     fringe measurements at 1.064 µm by Zhang 2015 (cited in 10.1007-s00340-016-6631-5.pdf
     p. 2) report d11 = 24.3 pm/V, d13 = 20.4 pm/V relative to KDP d36 = 0.39 pm/V.
@@ -282,33 +252,27 @@
   quantity: d_ij
   axis: '-'
   file: 10.1364-josab.25.001786.pdf
-  pdf_page: 5
-  where: p. 1790, Section 4, col. 1, lines 40-45 and p. 1786
-  formula: d111 measured by Maker fringes relative to alpha-quartz (d111 = 0.277 pm/V
-    at 1.9 µm)
+  pdf_page: 1
+  where: p. 1786 (col. 1 & col. 2) and p. 1790 (col. 2)
+  formula: d111 measured by Maker fringes relative to alpha-quartz (d111 = 0.277 pm/V at 1.9 µm)
   values:
     point_group: m
     d111_1907nm: 210.0
     error_1907nm: 55.0
-    d111_1542nm: 290.0
-    error_1542nm: 40.0
-    d122_1907nm: 15.0
-    d311_1907nm: 5.0
   units: pm/V
   range:
     wavelength_um:
-    - 1.542
+    - 1.907
     - 1.907
     temperature_c: not_found
-  check: 'p. 1790: d111 = 210 ± 55 pm/V at 1.907 µm, 290 ± 40 pm/V at 1.542 µm; d122
-    = 15 ± 2 pm/V'
-  note: Monoclinic organic salt crystal, point group m (space group Cc).
+  check: 'p. 1 (col. 2) and p. 5 (col. 2): DAST with d111 = 210 ± 55 pm/V at λ = 1.907 µm'
+  note: Monoclinic organic salt crystal, point group m (space group Cc). In 10.1364-josab.25.001786.pdf, the values d111 = 290 ± 40 pm/V and d122 = 15 ± 2 pm/V are for DAPSH, not DAST; DAST is cited with d111 = 210 ± 55 pm/V at 1.907 µm.
 - material: DSTMS
   quantity: d_ij
   axis: '-'
   file: 10.1364-josab.24.002556.pdf
-  pdf_page: 3
-  where: p. 2558, col. 2, lines 35-40 and p. 2556
+  pdf_page: 4
+  where: Table 2 on p. 2559 and text on p. 2558 col. 2
   formula: d111 measured by Maker fringes relative to alpha-quartz (d111 = 0.277 pm/V
     at 1.9 µm)
   values:
@@ -323,26 +287,22 @@
     - 1.9
     - 1.9
     temperature_c: not_found
-  check: 'p. 2558: d111 = 214 ± 20 pm/V, d122 = 32 ± 4 pm/V at 1.9 µm'
+  check: 'Table 2, row DSTMS: d111 = 214 ± 20 pm/V, lc = 3.6 ± 0.3 µm, d122 = 31 ± 4 pm/V at 1.9 µm (text: d122 = 32 ± 4 pm/V)'
   note: Organic crystal, point group m (space group Cc).
 - material: OH1
   quantity: d_ij
   axis: '-'
-  file: 10.1364-ol.32.002885.pdf
-  pdf_page: 1
-  where: p. 2885, col. 1, lines 18-20
-  formula: d11 measured by Maker fringes
-  values:
-    point_group: mm2
-    d11: 230.0
-  units: pm/V
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: {}
+  units: not_found
   range:
-    wavelength_um:
-    - 1.907
-    - 1.907
+    wavelength_um: not_found
     temperature_c: not_found
-  check: 'Hunziker et al. (2007) OL 32, 2885: d11 = 230 pm/V'
-  note: Organic crystal, point group mm2 (space group Pna2_1).
+  check: not_found
+  note: 10.1364-ol.32.002885.pdf is Suizu et al. (DAST), not OH1; real single-crystal dij values for OH1 are reported in Hunziker et al. (10.1364-josab.25.001678.pdf) and cataloged in Group C.
 - material: LiInS2
   quantity: d_ij
   axis: '-'
@@ -368,8 +328,7 @@
     temperature_c:
     - 20
     - 20
-  check: 'Table VI: d31 = 7.2 ± 0.4, d24 = 5.7 ± 0.6, d33 = -16 ± 4 pm/V at 2.3 µm
-    (fs SHG); d15 = 7.9 ± 1.6, d24 = 5.7 ± 1.2 pm/V at 2.5 µm (cw SHG)'
+  check: 'Table VI: d31 = 7.2(±0.4), d24 = 5.7(±0.6), d33 = −16(±4) pm/V at 2.3 µm (fs SHG); d15 = 7.9(±1.6), d24 = 5.7(±1.2) pm/V (cw SHG)'
   note: Point group mm2 (orthorhombic).
 - material: LiInSe2
   quantity: d_ij
@@ -394,8 +353,7 @@
     temperature_c:
     - 20
     - 20
-  check: 'Table 6: d31 = 11.78 ± 5%, d24 = 8.17 ± 10%, d33 = -16 ± 25% pm/V at 2.3
-    µm fundamental'
+  check: 'Table 6: d31 = 11.78 ± 5%, d24 = 8.17 ± 10%, d33 = −16 ± 25% pm/V at 2.3 µm'
   note: Petrov et al. (2010) JOSA B 27, 1902-1927. Point group mm2.
 
 # Papers searched for d_ij in the collection:
