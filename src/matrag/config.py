@@ -43,6 +43,9 @@ class Settings(BaseSettings):
     max_pages: int = 60
     # A conversion taking longer than this keeps only the pages done so far.
     convert_timeout_s: float = 900.0
+    # A long document gets this many seconds per page if that is more (a 400-page scanned book with OCR
+    # needs hours, not 15 minutes); a conversion that still times out is not cached (it is retried).
+    convert_timeout_per_page_s: float = 30.0
 
     # --- Chunking & embeddings ---
     embed_model: str = "BAAI/bge-base-en-v1.5"

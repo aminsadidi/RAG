@@ -81,3 +81,8 @@ def test_misread_numerator_is_flagged():
         t.numerator_power = 0
     assert any("steep" in p for p in check_formula(wrong))
     assert check_formula(bbo_e_from_paper()) == []
+
+
+def test_type4_single_pole_at_one_micron():
+    n = float(refractiveindex_info(4, [4.104676, 0.410385, 0, 0.532, 2], 1.0))  # DSTMS n1, Mutter et al. 2007
+    assert abs(n - np.sqrt(4.104676 + 0.410385 / (1 - 0.532**2))) < 1e-12

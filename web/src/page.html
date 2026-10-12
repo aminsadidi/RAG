@@ -3,8 +3,15 @@
 <head>
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MatRAG Optics</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/webp" href="/brand/icon.webp"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- fonts and pdf.js are served by the site itself: a CDN filtered or slow on the reader's network must not break the page -->
+<script>
+// Interface language: Persian (default) or English, remembered in this browser; English pages stay hidden until
+// translated (at most 2 s) so Persian text does not flash.
+const LANG = (() => { try { return localStorage.getItem("lang") === "en" ? "en" : "fa"; } catch { return "fa"; } })();
+if (LANG === "en") { document.documentElement.lang = "en"; document.documentElement.dir = "ltr"; document.documentElement.classList.add("i18n-wait"); }
+</script>
+<style>@font-face{font-family:Vazirmatn;src:url(/vendor/vazirmatn-33.0.3/Vazirmatn-wght.woff2) format("woff2");font-weight:100 900;font-display:swap}</style>
 <style>
 :root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--muted:#5b6876;--line:#dde3ea;--soft:#eef2f7;--accent:#1f6feb;--accent-ink:#fff;
 --mark:#ffe58a;--hl:rgba(255,196,0,.35);--hl-line:#e0a800;--ok:#1a7f37;--warn:#9a6700;--err:#c62828;--shadow:0 4px 18px rgba(16,24,40,.06)}
@@ -42,7 +49,7 @@ button:disabled{opacity:.55;cursor:wait}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
 .chip{font-size:12px;border-radius:20px;padding:1px 10px;background:var(--soft);color:var(--muted);direction:ltr}
 .chip.full{color:var(--ok)}.chip.abs{color:var(--warn)}
-.text{direction:ltr;text-align:left;white-space:pre-wrap;font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;line-height:1.65;background:var(--soft);border-radius:10px;padding:10px 12px;max-height:190px;overflow:hidden;position:relative}
+.text{direction:ltr;text-align:left;white-space:pre-wrap;font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:13px;line-height:1.65;background:var(--soft);border-radius:10px;padding:10px 12px;max-height:190px;overflow:hidden;position:relative}
 .text.open{max-height:none}
 .text:not(.open)::after{content:"";position:absolute;inset:auto 0 0 0;height:40px;background:linear-gradient(transparent,var(--soft))}
 mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
@@ -53,7 +60,7 @@ mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:760px){.grid2{grid-template-columns:1fr}nav{margin-inline-start:0}}
 table{border-collapse:collapse;width:100%;font-size:14px}
-th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:start}
 td.ltr,th.ltr{direction:ltr;text-align:left}
 .bars td{white-space:nowrap}.barfill{height:8px;border-radius:4px;background:var(--accent);opacity:.75}
 h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
@@ -83,7 +90,7 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 select,input{max-width:100%}
 .row label{max-width:100%;flex-wrap:wrap}
 #uftable input{width:100%;min-width:70px;max-width:130px;direction:ltr}
-#ritable td,#ritable th{text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px}
+#ritable td,#ritable th{text-align:start;font-family:ui-monospace,Consolas,monospace;font-size:13px}
 .entry .tools{display:flex;gap:6px;flex-wrap:wrap}
 .entry .tools button{font:inherit;font-size:12px;border:1px solid var(--line);background:transparent;color:var(--accent);border-radius:14px;padding:0 10px;cursor:pointer}
 .tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12px;box-shadow:var(--shadow);white-space:nowrap;display:none;direction:ltr;text-align:left}
@@ -95,7 +102,7 @@ select,input{max-width:100%}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .tile{background:var(--soft);border-radius:12px;padding:12px 14px}
-.tile b{display:block;font-size:24px;direction:ltr;text-align:right}
+.tile b{display:block;font-size:24px;direction:ltr;text-align:start}
 .tile span{color:var(--muted);font-size:13px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;direction:ltr}
 .seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:5px 12px;cursor:pointer}
@@ -108,24 +115,104 @@ body{overflow-x:hidden}
 .prow .meta{flex:1;direction:ltr;text-align:left;font-size:13px}
 .prow .meta b{font-size:14px}
 .prow .yr{flex:none;width:44px;color:var(--muted);font-size:13px}
+
+/* ===== redesign 2026-10 ===== */
+section>.card:first-child>h2:first-child{display:none}
+:root{--bg:#f6f7f9;--card:#fff;--ink:#0f1720;--muted:#5d6b7a;--line:#e3e7ec;--soft:#f1f3f6;--accent:#2f5bd3;--accent-ink:#fff;
+--accent-soft:#e9effc;--side:#0f1b2d;--side-ink:#c9d3e0;--side-on:#ffffff;--shadow:0 1px 2px rgba(16,24,40,.04),0 2px 8px rgba(16,24,40,.04);--r:12px}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1117;--card:#141b23;--ink:#e7edf3;--muted:#93a1b0;--line:#25303c;--soft:#1a232d;--accent:#6b93ff;
+--accent-soft:#1c2a45;--side:#0a0f15;--side-ink:#a9b5c3;--side-on:#fff;--shadow:none}}
+body{font-size:14.5px;line-height:1.7;display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+#side{position:sticky;top:0;height:100vh;background:var(--side);color:var(--side-ink);display:flex;flex-direction:column;padding:18px 12px;gap:6px}
+#side .brand{display:flex;gap:10px;align-items:center;padding:4px 8px 16px;color:#fff}
+#side .brand b{display:block;font-size:16px;letter-spacing:.2px}#side .brand small{display:block;color:var(--side-ink);font-size:12px;font-weight:400;margin:0}
+#side .logo{display:none;width:34px;height:34px;border-radius:9px}#side .brand .word{display:block;width:180px;height:auto}
+#side nav{display:flex;flex-direction:column;gap:2px;margin:0;overflow:visible;max-width:none}
+#side nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:start;color:var(--side-ink);padding:8px 10px;border-radius:8px;font-size:14px;font-weight:500}
+#side nav button svg{width:18px;height:18px;fill:currentColor;flex:none;opacity:.85}
+#side nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+#side nav button.on{background:rgba(79,124,255,.22);color:var(--side-on);font-weight:600}
+#side nav button.minor{margin-top:6px;font-size:13px}
+#side .navsec{font-size:11px;letter-spacing:.6px;color:#6f7f93;padding:14px 10px 4px}
+#side .logout{margin-top:auto;color:var(--side-ink);font-size:13px;padding:8px 10px;text-decoration:none;border-radius:8px}
+#side .logout:hover{background:rgba(255,255,255,.06)}
+main{max-width:1180px;width:100%;margin:0;padding:26px 32px 70px}
+#pagehead{margin:0 0 18px}#pagehead h1{font-size:22px;margin:0;font-weight:700;letter-spacing:-.2px}#pagehead p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.card{border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
+section>.card+.card,section>.card+div,section>div+.card{margin-top:14px}
+h2{font-size:15.5px;font-weight:600;margin:0 0 12px}
+textarea,input,select{border-radius:8px;padding:7px 10px;min-height:36px;transition:border-color .15s,box-shadow .15s}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+input[type=checkbox]{min-height:0;accent-color:var(--accent)}
+button.main,button.alt{font:inherit;font-size:14px;border-radius:8px;padding:7px 16px;min-height:36px;cursor:pointer}
+.row>button:not([class]){font:inherit;font-size:14px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:8px;padding:7px 16px;min-height:36px;cursor:pointer;font-weight:600}
+button.main{box-shadow:0 1px 2px rgba(47,91,211,.25)}
+button.alt{border-color:var(--line);color:var(--ink);background:var(--card)}button.alt:hover{border-color:var(--accent);color:var(--accent)}
+.row{gap:12px 16px;margin-top:12px}.row label{font-size:13.5px}
+.hint{font-size:12.5px}
+details.about{margin:0 0 4px;color:var(--muted);font-size:13px}
+details.about summary{cursor:pointer;color:var(--accent);font-size:12.5px;list-style:none;display:inline-block}
+details.about summary::-webkit-details-marker{display:none}
+details.about summary::before{content:"ⓘ ";}
+details.about[open] p{margin:6px 0 0}
+table{font-size:13.5px}th{background:var(--soft);font-weight:600;color:var(--muted);font-size:12.5px}
+th,td{padding:7px 10px}
+.examples button{background:var(--card);border-color:var(--line);font-size:12.5px;padding:3px 12px}
+.examples button:hover{border-color:var(--accent);color:var(--accent)}
+.tile{background:var(--card);border:1px solid var(--line)}
+@media (max-width:900px){
+ body{display:block}
+ #side{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;padding:8px 10px;z-index:10;gap:8px}
+ #side .brand{padding:0}#side .brand div,#side .navsec{display:none}#side .logo{display:block}
+ #side nav{flex-direction:row;overflow-x:auto;flex:1;gap:2px}
+ #side nav button{width:auto;white-space:nowrap;padding:7px 10px;font-size:13px}
+ #side nav button svg{display:none}#side nav button.minor{margin:0}
+ #side .logout{margin:0;white-space:nowrap}
+ main{padding:16px 16px 60px}
+}
+/* crystal cards of the search page */
+.xcard{border-inline-start:3px solid var(--accent)}
+.xhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:6px}
+.xhead b{font-size:1.1em}
+.xrows{border-collapse:collapse;width:100%}
+.xrows th{text-align:start;font-weight:600;white-space:nowrap;padding:3px 0;padding-inline-end:12px;vertical-align:top;width:1%}
+.xrows td{padding:3px 0}
+.xcard .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.xcard .actions button{border:1px solid var(--accent);border-radius:999px;padding:5px 12px;background:var(--accent-soft);color:var(--accent);font:inherit;font-size:.92em;cursor:pointer}
+.xcard .actions button:hover{background:var(--accent);color:#fff}
+@media (max-width:600px){.xrows th{white-space:normal}}
+#fbopen{position:fixed;inset-inline-end:16px;bottom:16px;z-index:50;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;font:inherit}
+#fbdlg{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:460px;width:calc(100% - 32px)}
+#fbdlg textarea,#fbdlg input,.fbbar input{width:100%;box-sizing:border-box;margin:6px 0;padding:8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit}
+.fbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.fbbar input{flex:1 1 100%}
+.fbhit{margin-inline-start:auto}.fbhit button{padding:2px 8px}
+html.i18n-wait body{visibility:hidden}
+html.nopdf [data-act="view"],html.nopdf [data-needpdf],html.nopdf .pagemap{display:none!important}
+html:not(.nopdf) [data-nopdfonly]{display:none!important}
+html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.nosearch #risearch{display:none!important}
+#langbtn{margin-top:6px;color:var(--side-ink);background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 </style>
 </head>
 <body>
-<header><div class="bar">
-  <div class="brand">MatRAG Optics <small>بازیابی ثابت‌های نوری از مقاله‌ها</small></div>
+<aside id="side">
+  <div class="brand"><img class="logo" src="/brand/icon.webp" alt="MatRAG" width="34" height="34"><div><img class="word" src="/brand/logo.webp" alt="MatRAG" width="180" height="41"></div></div>
   <nav>
-    <button data-tab="search" class="on">جست‌وجو</button>
-    <button data-tab="paper">مقاله</button>
-    <button data-tab="index">ضریب شکست</button>
-    <button data-tab="pm">تطبیق فاز</button>
-    <button data-tab="library">مجموعه</button>
-    <button data-tab="eval">ارزیابی</button>
-    <button data-tab="about">راهنما</button>
+    <button data-tab="search" class="on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 4a6.5 6.5 0 1 0 4.03 11.6l4.43 4.44 1.06-1.06-4.44-4.43A6.5 6.5 0 0 0 10.5 4Zm0 1.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z"/></svg><span>جست‌وجو</span></button>
+    <div class="navsec">ابزارها</div>
+    <button data-tab="index"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19h18v1.5H3V19Zm1.2-2.2 4.6-8 3.6 5 3.2-4.6 4.2 7.6-1.3.7-3-5.3-3.1 4.4-3.5-4.9-3.4 5.8-1.3-.7Z"/></svg><span>ضریب شکست</span></button>
+    <button data-tab="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 1.5a7.5 7.5 0 0 1 7.42 6.37L4.6 13.45A7.5 7.5 0 0 1 12 4.5Zm-7.03 10.4 14.6-2.55A7.5 7.5 0 0 1 4.97 14.9Z"/></svg><span>تطبیق فاز</span></button>
+    <button data-tab="spdc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a2.5 2.5 0 1 0 0 .01ZM19 6a2 2 0 1 0 0 .01ZM19 18a2 2 0 1 0 0 .01ZM7.3 11.3l9.6-4.6.6 1.3-9.6 4.6-.6-1.3Zm0 1.4.6-1.3 9.6 4.6-.6 1.3-9.6-4.6Z"/></svg><span>جفت فوتون</span></button>
+    <div class="navsec">داده</div>
+    <button data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4V4Zm5.5 0h4v16h-4V4Zm6.2.6 3.8-1 4 15.5-3.8 1-4-15.5Z"/></svg><span>مجموعه و ارزیابی</span></button>
+    <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
-  <a href="/logout" class="hint">خروج</a>
-</div></header>
+  <button id="langbtn" type="button" title="English / فارسی">English</button>
+  <a href="/logout" class="logout">خروج</a>
+</aside>
 
 <main>
+  <div id="sitebanner" class="card" hidden style="border:1px solid var(--accent);background:var(--soft)"></div>
+<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p></div>
 <section id="tab-search">
   <div class="card">
     <textarea id="q" placeholder="سؤال را به فارسی یا انگلیسی بنویسید، مثلاً: ضرایب سلمایر بلور LBO"></textarea>
@@ -138,6 +225,7 @@ body{overflow-x:hidden}
       <label>ماده <select id="material"><option value="">همه</option></select></label>
       <label><input id="fulltext" type="checkbox"> فقط متن کامل مقاله‌ها</label>
       <label title="بهترین بخش هر مقاله؛ یک مقاله نمی‌تواند همه‌ی نتیجه‌ها را بگیرد"><input id="perpaper" type="checkbox"> هر مقاله یک بار</label>
+      <label title="۳۰ نتیجه‌ی اول را یک مدل cross-encoder (bge-reranker) دوباره با خود پرسش می‌خواند و مرتب می‌کند"><input id="rerank" type="checkbox"> مرتب‌سازی دوباره</label>
     </div>
     <div class="row">
       <button class="main" id="go">جست‌وجو</button>
@@ -146,6 +234,7 @@ body{overflow-x:hidden}
     </div>
   </div>
   <div id="status"></div>
+  <div id="xcards"></div>
   <div id="hits"></div>
 </section>
 
@@ -206,7 +295,7 @@ body{overflow-x:hidden}
             <option value="10">دو قطبی با توان آزاد (Fève 2000): n² = C1 + C2·λ^C3/(λ^C3−C4) + C5·λ^C6/(λ^C6−C7)</option>
           </select></label>
         </div>
-        <div class="hint" id="ufhelp" style="direction:ltr;text-align:left;font-family:'JetBrains Mono',monospace;font-size:12px;margin-top:6px"></div>
+        <div class="hint" id="ufhelp" style="direction:ltr;text-align:left;font-family:ui-monospace,Consolas,monospace;font-size:12px;margin-top:6px"></div>
         <div class="row">
           <label style="flex:1">ضرایب <input id="ufcoef" style="flex:1;min-width:220px;direction:ltr" placeholder="1.03961212 0.00600069867 0.231792344 0.0200179144 1.01046945 103.560653"></label>
         </div>
@@ -250,7 +339,7 @@ body{overflow-x:hidden}
 <section id="tab-pm" hidden class="viz-root">
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
-    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۳۷ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
+    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۶۰ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
@@ -296,6 +385,92 @@ body{overflow-x:hidden}
   </div>
 </section>
 
+<section id="tab-spdc" hidden class="viz-root">
+  <div class="card">
+    <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
+    <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است.</p>
+    <div class="row">
+      <label>بلور <select id="spmat" style="max-width:300px"></select></label>
+      <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
+    </div>
+    <div class="row">
+      <label>طول موج پمپ <input id="splp" type="number" step="any" value="0.775" style="width:84px"> µm</label>
+      <label>طول موج فوتون ۱ <input id="spl1" type="number" step="any" value="1.55" style="width:84px"> µm</label>
+      <span id="spl2" class="hint" style="direction:ltr"></span>
+      <label>طول بلور <input id="spL" type="number" step="any" value="10" style="width:70px"> mm</label>
+    </div>
+    <div class="row">
+      <label>پهنای طیف پمپ (FWHM) <input id="spdp" type="number" step="any" value="1" style="width:96px"> nm</label>
+      <label>یا پالس محدود به تبدیل <input id="sptau" type="number" step="any" placeholder="—" style="width:70px"> ps</label>
+      <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="number" step="any" placeholder="بدون" style="width:70px"> nm</label>
+      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option></select></label>
+    </div>
+    <div class="row">
+      <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
+      <input id="spxi" type="number" step="any" value="2.84" style="width:64px">
+    </div>
+    <div class="row">
+      <label>پیکربندی <select id="spcfg" style="max-width:420px"></select></label>
+      <button id="spgo">محاسبه</button>
+    </div>
+    <p class="hint" id="spinfo"></p>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>نتیجه</h2>
+    <div id="spres" style="direction:ltr"></div>
+    <div class="row" style="align-items:flex-start;gap:18px;margin-top:10px">
+      <figure style="margin:0"><canvas id="spjsi" width="360" height="360" style="max-width:100%;border:1px solid var(--line, #ccc)"></canvas>
+        <figcaption class="hint">شدت طیفی مشترک |f|²؛ افقی: فوتون ۱، عمودی: فوتون ۲ (nm).</figcaption></figure>
+      <figure style="margin:0;flex:1;min-width:260px"><svg id="sphom" role="img" style="display:block;width:100%;height:220px;direction:ltr"></svg>
+        <figcaption class="hint" id="sphomcap">احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر (فقط حالت تبهگن).</figcaption></figure>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>جفت‌شدن به فیبر تک‌مُد</h2>
+    <p class="hint">پمپ تک‌فام گاوسی و تطبیق فاز هم‌خط (Δk = 0 روی محور)، مُدهای هم‌خوان با فیبر گاوسی، کمر همه در وسط بلور (Ljunggren &amp; Tengner 2005). ξ = L/z<sub>R</sub> با z<sub>R</sub> = k w²/2 (k درون بلور). γ₁ و γ₂: سهم فوتون‌های هر بازو که در فیبر می‌افتند؛ γc: سهم جفت‌هایی که هر دو فوتونشان در فیبرند؛ μ: احتمال شرطی (نسبت اعلام). مقاله فقط بخش متقارن چرخشی (l = 0) حالت را نگه داشته و برای همین عددهایش بزرگ‌تر است؛ هر دو حساب نشان داده می‌شود. از پیکربندی و طول موج‌های بالا استفاده می‌کند.</p>
+    <div class="row">
+      <label>ξ پمپ <input id="spxp" type="number" step="any" value="1.7" style="width:64px"></label>
+      <label>ξ فیبر ۱ <input id="spxs" type="number" step="any" value="2.3" style="width:64px"></label>
+      <label>ξ فیبر ۲ <input id="spxf2" type="number" step="any" value="2.3" style="width:64px"></label>
+      <button id="spfib">محاسبه</button>
+      <button class="alt" id="spfibopt">بهینه‌سازی کانونی</button>
+    </div>
+    <div id="spfibres" style="direction:ltr" class="hint"></div>
+  </div>
+</section>
+
+
+<section id="tab-library" hidden>
+  <div class="grid2">
+    <div class="card">
+      <h2>مجموعه‌ی داده</h2>
+      <div id="plsum" style="font-weight:600"></div><div id="stats" class="hint">در حال خواندن…</div>
+      <h3>نوع منبع</h3><table id="types"></table>
+    </div>
+    <div class="card viz-root"><h2>مقاله‌ها بر اساس سال انتشار</h2><div id="yrchart" style="position:relative;direction:ltr"><svg id="yrsvg" role="img" aria-label="papers per 5 years" style="display:block;width:100%"></svg><div class="tip" id="yrtip" style="position:absolute;display:none"></div></div>
+      <div id="yrlegend" class="chips" style="direction:ltr"></div></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h2>دسته‌ها</h2><table id="cats" class="bars"></table></div>
+  <div class="card" style="margin-top:14px">
+    <h2>فهرست مقاله‌ها</h2>
+    <div class="row" style="margin-top:0">
+      <input id="plq" placeholder="جست‌وجو در عنوان، نویسنده، DOI…" style="flex:1;min-width:200px;direction:ltr">
+      <select id="plcat"><option value="">همه‌ی دسته‌ها</option></select>
+      <label><input id="plfull" type="checkbox"> فقط متن کامل</label>
+      <span id="plcount" class="hint"></span>
+    </div>
+    <div id="pllist"></div>
+    <div class="row"><button class="alt" id="plmore" hidden>بیشتر</button></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h2>ماده‌ها (تعداد بخش)</h2><table id="materials" class="bars"></table></div>
+  <div data-needpdf class="card" style="margin-top:14px">
+    <h2>(اختیاری) PDFها از روی این رایانه</h2>
+    <p class="hint">PDF مقاله‌ها روی خود سایت هست. فقط برای مقاله‌ای که آن‌جا نیست: برای دیدن صفحه‌ی اصلی مقاله با بخشِ پیداشده‌ی رنگی، پوشه‌ی <b>RAG-Optics</b> (یا <b>01_Papers_by_Category</b>) را انتخاب کنید. فایل‌ها فقط در مرورگر خودتان باز می‌شوند و به هیچ سروری فرستاده نمی‌شوند.</p>
+    <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
+    <input type="file" id="dirinput" webkitdirectory multiple hidden>
+    <input type="file" id="fileinput" accept="application/pdf,.pdf" hidden>
+  </div>
+</section>
 <section id="tab-eval" hidden class="viz-root">
   <div class="card" id="evbig" hidden>
     <h2>ارزیابی بزرگ</h2>
@@ -325,42 +500,11 @@ body{overflow-x:hidden}
   </div>
 </section>
 
-<section id="tab-library" hidden>
-  <div class="grid2">
-    <div class="card">
-      <h2>مجموعه‌ی داده</h2>
-      <div id="plsum" style="font-weight:600"></div><div id="stats" class="hint">در حال خواندن…</div>
-      <h3>نوع منبع</h3><table id="types"></table>
-    </div>
-    <div class="card viz-root"><h2>مقاله‌ها بر اساس سال انتشار</h2><div id="yrchart" style="position:relative;direction:ltr"><svg id="yrsvg" role="img" aria-label="papers per 5 years" style="display:block;width:100%"></svg><div class="tip" id="yrtip" style="position:absolute;display:none"></div></div>
-      <div id="yrlegend" class="chips" style="direction:ltr"></div></div>
-  </div>
-  <div class="card" style="margin-top:14px"><h2>دسته‌ها</h2><table id="cats" class="bars"></table></div>
-  <div class="card" style="margin-top:14px">
-    <h2>فهرست مقاله‌ها</h2>
-    <div class="row" style="margin-top:0">
-      <input id="plq" placeholder="جست‌وجو در عنوان، نویسنده، DOI…" style="flex:1;min-width:200px;direction:ltr">
-      <select id="plcat"><option value="">همه‌ی دسته‌ها</option></select>
-      <label><input id="plfull" type="checkbox"> فقط متن کامل</label>
-      <span id="plcount" class="hint"></span>
-    </div>
-    <div id="pllist"></div>
-    <div class="row"><button class="alt" id="plmore" hidden>بیشتر</button></div>
-  </div>
-  <div class="card" style="margin-top:14px"><h2>ماده‌ها (تعداد بخش)</h2><table id="materials" class="bars"></table></div>
-  <div class="card" style="margin-top:14px">
-    <h2>(اختیاری) PDFها از روی این رایانه</h2>
-    <p class="hint">PDF مقاله‌ها روی خود سایت هست. فقط برای مقاله‌ای که آن‌جا نیست: برای دیدن صفحه‌ی اصلی مقاله با بخشِ پیداشده‌ی رنگی، پوشه‌ی <b>RAG-Optics</b> (یا <b>01_Papers_by_Category</b>) را انتخاب کنید. فایل‌ها فقط در مرورگر خودتان باز می‌شوند و به هیچ سروری فرستاده نمی‌شوند.</p>
-    <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
-    <input type="file" id="dirinput" webkitdirectory multiple hidden>
-    <input type="file" id="fileinput" accept="application/pdf,.pdf" hidden>
-  </div>
-</section>
-
 <section id="tab-about" hidden>
   <div class="card">
     <h2>این سامانه چه می‌کند؟</h2>
-    <p>این یک سامانه‌ی <b>بازیابی</b> (Retrieval) است: برای هر سؤال، بخش‌هایی از مقاله‌ها را که به سؤال مربوط‌اند پیدا می‌کند و با نام مقاله، شماره‌ی صفحه و محل دقیق روی صفحه نشان می‌دهد. خودِ سایت پاسخ نمی‌نویسد؛ بخش «تولید» (Generation) را هر مدل زبانی که بخواهید با فایل دانلودی انجام می‌دهد، و چون همه‌ی ادعاها به شماره‌ی منبع و صفحه ارجاع داده می‌شوند، قابل‌بررسی‌اند.</p>
+    <p data-needpdf>این یک سامانه‌ی <b>بازیابی</b> (Retrieval) است: برای هر سؤال، بخش‌هایی از مقاله‌ها را که به سؤال مربوط‌اند پیدا می‌کند و با نام مقاله، شماره‌ی صفحه و محل دقیق روی صفحه نشان می‌دهد. خودِ سایت پاسخ نمی‌نویسد؛ بخش «تولید» (Generation) را هر مدل زبانی که بخواهید با فایل دانلودی انجام می‌دهد، و چون همه‌ی ادعاها به شماره‌ی منبع و صفحه ارجاع داده می‌شوند، قابل‌بررسی‌اند.</p>
+    <p data-nopdfonly>این یک سامانه‌ی <b>بازیابی</b> (Retrieval) است: برای هر سؤال، بخش‌هایی از مقاله‌ها را که به سؤال مربوط‌اند پیدا می‌کند و با نام مقاله و شماره‌ی صفحه نشان می‌دهد. خودِ سایت پاسخ نمی‌نویسد؛ بخش «تولید» (Generation) را هر مدل زبانی که بخواهید با فایل دانلودی انجام می‌دهد، و چون همه‌ی ادعاها به شماره‌ی منبع و صفحه ارجاع داده می‌شوند، قابل‌بررسی‌اند.</p>
     <h3>مراحل یک جست‌وجو</h3>
     <ol class="steps">
       <li>سؤال فارسی با مدل Llama 3.3 70B و یک واژه‌نامه‌ی ثابت فیزیک به انگلیسی ترجمه می‌شود (مقاله‌ها انگلیسی‌اند). فقط ترجمه؛ هیچ پاسخی تولید نمی‌شود.</li>
@@ -370,7 +514,8 @@ body{overflow-x:hidden}
     </ol>
     <h3>بخش‌های سایت</h3>
     <ul class="steps">
-      <li><b>جست‌وجو:</b> منابع با نام مقاله، صفحه و محل روی صفحه؛ «نمایش روی صفحه‌ی مقاله» خود صفحه‌ی PDF را با بخشِ پیداشده‌ی زرد نشان می‌دهد؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
+      <li data-needpdf><b>جست‌وجو:</b> منابع با نام مقاله، صفحه و محل روی صفحه؛ «نمایش روی صفحه‌ی مقاله» خود صفحه‌ی PDF را با بخشِ پیداشده‌ی زرد نشان می‌دهد؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
+      <li data-nopdfonly><b>جست‌وجو:</b> منابع با نام مقاله و صفحه؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
       <li><b>مقاله:</b> همه‌ی بخش‌های یک مقاله، صفحه به صفحه.</li>
       <li><b>ضریب شکست:</b> n(λ) از همه‌ی داده‌های refractiveindex.info (فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده، ۲٬۲۴۶ ماده) با پیوند به مقاله‌ی منبع در همین مجموعه؛ فرمول یا نقاط اندازه‌گیری خودتان را هم می‌توانید وارد کنید، اختلاف Δn نسبت به یک منحنی مرجع را ببینید و جدول مقادیر را کپی یا CSV دانلود کنید.</li>
       <li><b>مجموعه:</b> مقاله‌ها بر اساس سال و دسته، و فهرست قابل‌جست‌وجوی همه‌ی مقاله‌ها.</li>
@@ -396,26 +541,49 @@ body{overflow-x:hidden}
   <div class="note" id="vnote"></div>
 </div></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 "use strict";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
-const fa = (n) => Number(n).toLocaleString("fa-IR");
+const fa = (n) => Number(n).toLocaleString(LANG === "en" ? "en-US" : "fa-IR");
 const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده", metadata_only: "فقط عنوان" };
 
 // ---------- tabs
+const TAB_GROUP = { library: ["library", "eval"], paper: ["paper"] };
+const TAB_TITLE = {
+  search: ["جست‌وجو در مقاله‌ها", "پرسش به فارسی یا انگلیسی؛ پاسخ با ارجاع به صفحه‌ی مقاله"],
+  paper: ["مقاله", "همه‌ی بخش‌های یک مقاله"],
+  index: ["ضریب شکست", "فرمول‌های پاشندگی، مقایسه‌ی منابع و جدول مقادیر"],
+  pm: ["تطبیق فاز", "زاویه، walk-off، پهنای پذیرش، QPM و d_eff برای SHG، SFG و OPO"],
+  spdc: ["جفت فوتون (SPDC)", "طیف مشترک، خلوص، عدد اشمیت، HOM، کانونی‌کردن و جفت‌شدن به فیبر"],
+  library: ["مجموعه و ارزیابی", "مقاله‌های مجموعه و کیفیت بازیابی"],
+  about: ["راهنما", ""],
+};
 function showTab(name) {
-  for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === name);
-  for (const s of document.querySelectorAll("main > section")) s.hidden = s.id !== "tab-" + name;
-  if (name === "library") { loadFacets(); loadPapers(); }
+  const nav = name === "paper" ? "search" : name;
+  for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === nav);
+  const show = TAB_GROUP[name] || [name];
+  for (const s of document.querySelectorAll("main > section")) s.hidden = !show.includes(s.id.slice(4));
+  const [tt, st] = TAB_TITLE[name] || ["", ""];
+  $("ptitle").textContent = tt; $("psub").textContent = st;
+  if (name === "library") { loadFacets(); loadPapers(); loadEval(); }
   if (name === "index") loadFormulas();
   if (name === "pm") window.loadPM?.();
-  if (name === "eval") loadEval();
+  if (name === "spdc") window.loadSPDC?.();
+  window.scrollTo(0, 0);
+  document.querySelector("nav button.on")?.scrollIntoView({ block: "nearest", inline: "center" });
 }
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => showTab(b.dataset.tab);
+showTab("search");
+// long introductory notes collapse behind an "about" toggle
+for (const p of document.querySelectorAll("main section > .card > p.hint")) {
+  if (p.textContent.length < 160 || p.id) continue;
+  const d = document.createElement("details"); d.className = "about";
+  d.innerHTML = "<summary>توضیح ابزار و منابع</summary>"; p.replaceWith(d); p.classList.remove("hint"); d.append(p);
+}
+
 
 // ---------- search
 const EXAMPLES = ["ضرایب سلمایر بلور LBO", "ضریب شکست LiNbO3 در طول موج 1064 نانومتر", "Sellmeier equation for ZnGeP2",
@@ -425,7 +593,7 @@ for (const b of $("examples").children) b.onclick = () => { $("q").value = b.tex
 
 function options() {
   return { q: $("q").value, mode: $("mode").value, topK: $("topk").value, material: $("material").value,
-    fullTextOnly: $("fulltext").checked, perPaper: $("perpaper").checked };
+    fullTextOnly: $("fulltext").checked, perPaper: $("perpaper").checked, rerank: $("rerank").checked };
 }
 function setBusy(busy) { for (const id of ["go", "pack"]) $(id).disabled = busy; }
 function status(text, error) { $("status").textContent = text; $("status").className = error ? "err" : ""; }
@@ -455,7 +623,19 @@ function pageMap(hit) {
     .map(([, l, t, r, b]) => `<i style="left:${l * 100}%;top:${t * 100}%;width:${(r - l) * 100}%;height:${(b - t) * 100}%"></i>`).join("") + "</div>";
 }
 
-let lastHits = [];
+let lastHits = [], lastSearch = null;
+// Feedback goes to the site owner (Telegram); the name is optional and remembered in this browser.
+function sendFeedback(extra) {
+  const nav = document.querySelector("nav button.on");
+  return api("/api/feedback", { question: lastSearch?.question, searchQuery: lastSearch?.searchQuery, who: store.get("fbwho") || "",
+    tab: nav?.dataset.tab || "", ...extra }).catch(() => {});
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-fb]"); if (!b) return;
+  const bar = b.closest(".fbbar");
+  sendFeedback({ verdict: b.dataset.fb, comment: bar.querySelector("#fbnote").value });
+  bar.innerHTML = '<span class="hint">ممنون! بازخوردتان رسید.</span>';
+});
 function renderHit(h, words, i) {
   const type = h.source_type || "";
   return `<div class="card hit" data-i="${i}">
@@ -470,7 +650,8 @@ function renderHit(h, words, i) {
       ${boxesOf(h).length ? '<button data-act="view">نمایش روی صفحه‌ی مقاله</button>' : ""}
       <button data-act="paper">کل مقاله</button>
       ${h.doi ? `<a href="https://doi.org/${esc(h.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}
-      <button data-act="copy">کپی متن</button></div>
+      <button data-act="copy">کپی متن</button>
+      <span class="fbhit"><button data-act="up" title="این منبع به سؤال مربوط بود">👍</button><button data-act="down" title="این منبع به سؤال مربوط نبود">👎</button></span></div>
   </div>`;
 }
 function bindHits(container, hits) {
@@ -482,19 +663,25 @@ function bindHits(container, hits) {
     if (act === "view") openViewer(h);
     if (act === "paper") openPaper(h.doc_id, h.node_id);
     if (act === "copy") navigator.clipboard?.writeText(`(${h.label})\n${h.text}`).then(() => { e.target.textContent = "کپی شد"; });
+    if (act === "up" || act === "down") {
+      sendFeedback({ verdict: act === "up" ? "useful" : "wrong", hit: { label: h.label, doc_id: h.doc_id } });
+      e.target.parentElement.innerHTML = '<span class="hint">ممنون!</span>';
+    }
   };
 }
 
 async function runSearch() {
   const opts = options(); if (!opts.q.trim()) return $("q").focus();
   store.set("opts", { ...opts, q: opts.q });
-  setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = "";
+  setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = ""; window.crystalCards?.([]);
   try {
     const data = await (await api("/api/search", opts)).json();
-    lastHits = data.hits;
+    lastHits = data.hits; lastSearch = data;
     const words = terms(data.searchQuery || data.question);
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
-      (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : ""));
+      (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : "") +
+      (data.degraded?.includes("translation") ? " — ترجمه در دسترس نبود؛ با متن خود پرسش جست‌وجو شد (بهتر است انگلیسی یا با فرمول بنویسید)" : "") +
+      (data.degraded?.includes("embedding") ? " — جست‌وجوی معنایی در دسترس نبود؛ فقط جست‌وجوی کلیدواژه‌ای (BM25) انجام شد" : ""));
     const list = data.hits.map((h, i) => renderHit(h, words, i)).join("");
     const r = data.relevance || { verdict: "ok" };
     const why = [
@@ -509,7 +696,13 @@ async function runSearch() {
             <p class="hint">سامانه همیشه نزدیک‌ترین بخش‌ها را برمی‌گرداند؛ این بار هیچ‌کدام جواب سؤال نیست. سؤال را دقیق‌تر بنویسید (مثلاً با فرمول شیمیایی ماده) یا فیلترها را بردارید.</p></div>
            <details><summary class="hint">نزدیک‌ترین بخش‌ها را نشان بده (احتمالاً نامرتبط)</summary>${list}</details>`
         : (r.verdict === "weak" ? `<div class="card hint" style="border:1px solid var(--warn)">منابع فقط بخشی از سؤال را پوشش می‌دهند.<ul>${why}</ul></div>` : "") + list;
+    if (data.hits.length) $("hits").insertAdjacentHTML("beforeend", `<div class="card fbbar"><b>جواب سؤالتان را پیدا کردید؟</b>
+      <button data-fb="found">بله</button><button data-fb="notfound">نه</button>
+      <input id="fbnote" placeholder="اگر خواستید بنویسید چه چیزی کم بود یا چه چیزی را دنبال می‌گشتید (اختیاری)"></div>`);
     bindHits($("hits"), data.hits);
+    window.crystalCards?.(data.materials || [], `${data.question} ${data.searchQuery || ""}`);
+    // pdf.js and its worker into the browser cache while the reader looks at the results
+    if (data.hits.some((h) => h.source_file)) (window.requestIdleCallback || setTimeout)(() => loadPdfjs().then(() => fetch(PDFJS + "pdf.worker.min.js")).catch(() => {}));
   } catch (err) { status("خطا: " + err.message, true); }
   setBusy(false);
 }
@@ -603,14 +796,9 @@ async function restoreDir() {
   } catch { return false; }
 }
 // The PDF from the site itself (papers uploaded by the Colab notebook), else from the chosen folder.
-async function serverPdf(hit) {
-  if (!hit.source_file) return null;
-  const r = await fetch("/pdf/" + hit.source_file.split("/").map(encodeURIComponent).join("/"));
-  return r.ok ? r.blob() : null;
-}
-async function pdfFor(hit) {
-  const remote = await serverPdf(hit).catch(() => null);
-  if (remote) return remote;
+const pdfUrl = (hit) => "/pdf/" + hit.source_file.split("/").map(encodeURIComponent).join("/");
+// a PDF from the folder the reader chose (when the site has no copy of it)
+async function localPdf(hit) {
   let f = pdfFiles.get(baseName(hit.source_file));
   if (!f && !pdfFiles.size && (await restoreDir())) f = pdfFiles.get(baseName(hit.source_file));
   if (!f) return null;
@@ -618,7 +806,18 @@ async function pdfFor(hit) {
 }
 
 // ---------- page viewer
-if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+// pdf.js (same files as cdnjs 3.11.174, in public/vendor) is loaded when the viewer is first opened
+const PDFJS = "/vendor/pdfjs-3.11.174/";
+let pdfjsReady = null;
+function loadPdfjs() {
+  pdfjsReady ||= new Promise((resolve, reject) => {
+    const s = Object.assign(document.createElement("script"), { src: PDFJS + "pdf.min.js" });
+    s.onload = () => { pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js"; resolve(pdfjsLib); };
+    s.onerror = () => { pdfjsReady = null; reject(new Error("کتابخانه‌ی نمایش PDF بار نشد")); };
+    document.head.append(s);
+  });
+  return pdfjsReady;
+}
 const V = { hit: null, doc: null, page: 1, zoom: 1.4, cache: new Map() };
 $("vclose").onclick = () => $("viewer").classList.remove("on");
 $("viewer").onclick = (e) => { if (e.target.id === "viewer") $("viewer").classList.remove("on"); };
@@ -628,21 +827,45 @@ $("vnext").onclick = () => { if (V.doc && V.page < V.doc.numPages) { V.page++; d
 $("vzoom").onclick = () => { V.zoom = V.zoom > 2 ? 1.1 : V.zoom + 0.5; drawPage(); };
 
 async function openViewer(hit) {
-  V.hit = hit; V.doc = null; V.page = boxesOf(hit)[0]?.[0] || hit.first_page || 1;
+  V.hit = hit; V.doc = null; V.err = ""; V.page = boxesOf(hit)[0]?.[0] || hit.first_page || 1;
   $("vtitle").textContent = hit.label || hit.citation || hit.doc_id;
   $("viewer").classList.add("on");
-  $("vbody").innerHTML = '<p class="hint">در حال باز کردن…</p>';
-  const file = await pdfFor(hit).catch(() => null);
-  if (file && window.pdfjsLib) {
-    try {
-      const key = baseName(hit.source_file);
-      if (!V.cache.has(key)) V.cache.set(key, await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise);
-      V.doc = V.cache.get(key); await drawPage();
+  $("vbody").innerHTML = '<p class="hint" id="vprog">در حال باز کردن…</p>';
+  $("vnote").textContent = "";
+  try {
+    const doc = await openDoc(hit);
+    if (V.hit !== hit) return; // another source was opened meanwhile
+    if (doc) {
+      V.doc = doc; await drawPage();
       $("vnote").textContent = "بخش پیداشده با رنگ زرد مشخص شده است.";
       return;
-    } catch (err) { $("vnote").textContent = "PDF باز نشد: " + err.message; }
-  }
+    }
+  } catch (err) { V.err = err.message.startsWith("کتابخانه") ? err.message : "PDF باز نشد: " + err.message; }
+  if (V.hit !== hit) return;
   drawSchema();
+  if (V.err) $("vnote").insertAdjacentHTML("afterbegin", `<div class="err">${esc(V.err)}</div>`);
+}
+// The site's copy by URL: pdf.js reads it in 64 KB ranges and only the parts the shown page needs, so a large
+// paper opens without downloading all of it. Else the copy in the reader's chosen folder. Documents stay cached.
+async function openDoc(hit) {
+  const key = hit.source_file ? baseName(hit.source_file) : null;
+  if (!key) return null;
+  if (V.cache.has(key)) return V.cache.get(key);
+  const lib = await loadPdfjs();
+  const progress = ({ loaded, total }) => {
+    const el = $("vprog"); if (!el || !loaded) return;
+    el.textContent = `در حال دریافت مقاله… ${fa(Math.round(loaded / 1024))}${total ? " از " + fa(Math.round(total / 1024)) : ""} کیلوبایت`;
+  };
+  let doc = null;
+  const task = lib.getDocument({ url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
+  task.onProgress = progress;
+  doc = await task.promise.catch(() => null);
+  if (!doc) {
+    const file = await localPdf(hit).catch(() => null);
+    if (file) doc = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+  }
+  if (doc) V.cache.set(key, doc);
+  return doc;
 }
 function drawSchema() {
   const boxes = boxesOf(V.hit).filter((b) => b[0] === V.page);
@@ -697,7 +920,7 @@ function loadFacets() {
 }
 
 const saved = store.get("opts");
-if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; $("perpaper").checked = !!saved.perPaper; }
+if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; $("perpaper").checked = !!saved.perPaper; $("rerank").checked = saved.rerank === true; }
 loadFacets().then(() => { if (saved?.material) $("material").value = saved.material; });
 </script>
 <script type="module">
@@ -786,7 +1009,13 @@ function show(key, on) {
 let loaded = null;
 window.loadFormulas = () => {
   loaded ||= fetch("/ri/index.json").then((r) => r.json()).then((index) => {
-    RI.index = index; RI.byName = new Map(index.map((m) => [matName(m), m]));
+    // A crystal both in refractiveindex.info (main shelf) and among the formulas read from the collection's papers
+    // (papers shelf) has one name: the first entry is the one listed, the others are shown with it.
+    RI.index = index; RI.byName = new Map(); RI.extra = new Map();
+    for (const m of index) {
+      const name = matName(m);
+      if (RI.byName.has(name)) RI.extra.set(name, [...(RI.extra.get(name) || []), m]); else RI.byName.set(name, m);
+    }
     $("rimats").innerHTML = index.map((m) => `<option value="${esc(matName(m))}">${esc(m.name ? m.name.replace(/^\S+ /, "") + " · " : "")}${m.n} (${m.formulas} formula)</option>`).join("");
     const saved = store.get("rimat2");
     selectMaterial(saved && RI.byName.has(saved) ? saved : "LiB3O5");
@@ -796,12 +1025,18 @@ window.loadFormulas = () => {
 
 async function selectMaterial(name) {
   const m = RI.byName.get(name); if (!m) return;
+  RI.req = name; // a later choice wins over this one while its files load
   $("rimat").value = name; store.set("rimat2", name);
-  $("riinfo").textContent = `${m.name ? m.name.replace(/^\S+ /, "") + " · " : ""}${fa(m.n)} منبع (${fa(m.formulas)} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
+  const parts = [m, ...(RI.extra.get(name) || [])];
+  const sum = (k) => parts.reduce((t, p) => t + (p[k] || 0), 0);
+  $("riinfo").textContent = `${m.name ? m.name.replace(/^\S+ /, "") + " · " : ""}${fa(sum("n"))} منبع (${fa(sum("formulas"))} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
   $("rientries").innerHTML = '<p class="hint">در حال خواندن…</p>';
-  const list = await (await fetch(`/ri/m/${m.i}.json`)).json();
+  const list = (await Promise.all(parts.map((p) => fetch(`/ri/m/${p.i}.json`).then((r) => r.json())))).flat();
+  if (RI.req !== name) return;
   const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
-  RI.inColl = ids.length ? await (await api("/api/incollection", { ids })).json().catch(() => ({})) : {};
+  // which sources are in the collection: a failing request (Qdrant down) only loses those marks, not the tab
+  RI.inColl = ids.length ? await api("/api/incollection", { ids }).then((r) => r.json()).catch(() => ({})) : {};
+  if (RI.req !== name) return;
   RI.mat = name; RI.byMat.set(name, list);
   // database curves of the previous material go; user curves stay as they were
   for (const k of [...RI.shown]) if (k.startsWith("db:")) show(k, false);
@@ -815,6 +1050,11 @@ async function selectMaterial(name) {
   if (!(probe >= a && probe <= b)) setProbe((a + b) / 2);
   render();
 }
+// A crystal chosen on another page (the crystal card of a search): shown now, or when this tab is first opened.
+window.riSelectCrystal = (mat) => {
+  if (!RI.byName) store.set("rimat2", mat);
+  else if (RI.byName.has(mat)) selectMaterial(mat);
+};
 $("risearch").onclick = () => {
   const m = RI.byName?.get(RI.mat); if (!m) return;
   $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
@@ -888,7 +1128,7 @@ function entryRow(c, probe, extra) {
     <input type="checkbox" ${on ? "checked" : ""} ${!on && RI.shown.size >= MAX_SERIES ? "disabled" : ""} aria-label="show">
     <div class="meta"><b><span class="sw" style="background:${on ? color(slotOf(key)) : "var(--line)"}"></span>${esc(label(e))}</b>
       ${extra}</div>
-    <div style="direction:ltr;font-family:'JetBrains Mono',monospace;min-width:90px;text-align:right">${Number.isFinite(n) ? n.toFixed(5) : "—"}</div>
+    <div style="direction:ltr;font-family:ui-monospace,Consolas,monospace;min-width:90px;text-align:right">${Number.isFinite(n) ? n.toFixed(5) : "—"}</div>
   </div>`;
 }
 
@@ -931,7 +1171,7 @@ for (const box of ["rientries", "riuser"]) $(box).addEventListener("click", (ev)
   if (act === "copy") fillForm({ name: `${label(c.e)} (کپی)`, ...(c.e.type === "tab"
     ? { kind: "points", points: c.e.points } : { kind: "formula", type: String(c.e.type), coefficients: c.e.coefficients }), range_um: c.e.range_um, note: c.e.reference });
   if (act === "edit") fillForm(c.e);
-  if (act === "del" && confirm(`«${c.e.name}» حذف شود؟`)) {
+  if (act === "del" && confirm(LANG === "en" ? `Delete “${c.e.name}”?` : `«${c.e.name}» حذف شود؟`)) {
     show(key, false); RI.user = RI.user.filter((u) => `u:${u.id}` !== key); saveUser(); render();
   }
 });
@@ -1185,10 +1425,19 @@ function inputs() {
 window.loadPM = async () => {
   if (PM.list) return;
   [PM.list, PM.dij] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({}))]);
+  // partial tensors (not all elements, or not in the dielectric frame) would give a wrong d_eff: card only
+  PM.dij = Object.fromEntries(Object.entries(PM.dij).filter(([, v]) => !v.partial));
   const saved = store.get("pm"); if (saved) { $("pmproc").value = saved.proc; $("pma").value = saved.a; $("pmb").value = saved.b; }
   const mat = saved?.mat && PM.list.some((c) => key(c) === saved.mat) ? saved.mat : "BaB2O4";
   $("pmmore").checked = !PM.dij[mat];
   fillMats(); setProc(); pick(mat);
+};
+
+window.pmSelectCrystal = (mat) => {
+  if (!PM.list) { store.set("pm", { proc: $("pmproc").value, a: +$("pma").value, b: +$("pmb").value, ...store.get("pm"), mat }); return; }
+  if (!PM.list.some((c) => key(c) === mat)) return;
+  if (!PM.dij[mat] && !$("pmmore").checked) { $("pmmore").checked = true; fillMats(); }
+  pick(mat);
 };
 
 // The crystal menu: those with nonlinear coefficients (complete data), then, if asked, the other birefringent materials.
@@ -1236,6 +1485,14 @@ function fitWaves(c, proc) {
 function pick(mat, label, fit = true) {
   const c = PM.list.find((x) => key(x) === mat); if (!c) return;
   let { proc, a, b, w } = inputs(); PM.moved = "";
+  if (c.sources[0].isotropic) { // cubic: no angle phase matching; keep the wavelengths in the formula's range
+    if (!covers(c.sources[0], w)) { // the first (preferred) formula, inside the transparency range
+      const line = LINES[proc].find(([x, y]) => covers(c.sources[0], waves(proc, x, y)));
+      if (line) { $("pma").value = line[0]; if (proc !== "shg") $("pmb").value = line[1]; ({ w } = inputs()); }
+    }
+    PM.moved = "بلور مکعبی است و تطبیق فاز زاویه‌ای ندارد؛ دوره‌ی QPM آن در پایین جدول آمده است.";
+    fit = false;
+  }
   if (fit && !label && !c.sources.some((s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, a, b).length)) {
     const fit = fitWaves(c, proc), [na, nb] = fit || [a, b];
     if (!fit) PM.moved = `این بلور با فرمول‌های موجود در هیچ طول موجی از بازه‌اش برای ${proc === "shg" ? "SHG" : proc === "sfg" ? "SFG" : "OPO"} تطبیق فاز زاویه‌ای (در صفحه‌های اصلی) ندارد؛ دوشکستی آن کم است و در عمل با قطبش تناوبی (QPM) به کار می‌رود.`;
@@ -1248,7 +1505,7 @@ function pick(mat, label, fit = true) {
   const cur = PM.crystal === c && !label ? c.sources[+$("pmsrc").value] : null;
   const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, +$("pma").value, +$("pmb").value).length;
   const best = (cur && has(cur) ? cur : null) || c.sources.find(has) || (cur && covers(cur, w) ? cur : null) || c.sources.find((s) => covers(s, w)) || c.sources[0];
-  $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · ${s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
+  $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · ${s.isotropic ? "همسان‌گرد" : s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
   $("pmsrc").value = String(c.sources.indexOf(label ? c.sources.find((s) => s.label === label) || best : best));
   PM.crystal = c; $("pmmat").value = mat;
   run();
@@ -1262,7 +1519,7 @@ function run() {
   const ref = Object.values(src.axes)[0];
   const moved = PM.moved; PM.moved = "";
   showTemp(src); $("pmncpm").innerHTML = "";
-  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "") + `${esc(c.name || c.material)} — ${src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
+  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "") + `${esc(c.name || c.material)} — ${src.isotropic ? "همسان‌گرد (مکعبی)" : src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
         + PM.dij[c.material].sources.map((s) => (s.doc_id
@@ -1271,7 +1528,7 @@ function run() {
       : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
     const other = c.sources.findIndex((s) => covers(s, w));
-    $("pmtable").innerHTML = `<tr><td class="err" style="direction:rtl;text-align:right">طول موج‌های این فرایند (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) همه باید در بازه‌ی فرمول این منبع (${src.range_um[0]}–${src.range_um[1]} µm) باشند و نیستند. `
+    $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">طول موج‌های این فرایند (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) همه باید در بازه‌ی فرمول این منبع (${src.range_um[0]}–${src.range_um[1]} µm) باشند و نیستند. `
       + (other >= 0 ? `<button id="pmother">رفتن به منبع ${esc(c.sources[other].label)} که این بازه را دارد</button>` : `<button id="pmfit">تنظیم خودکار طول موج برای این بلور</button>`) + `</td></tr>`;
     if (other >= 0) $("pmother").onclick = () => { $("pmsrc").value = String(other); run(); };
     else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
@@ -1282,7 +1539,7 @@ function run() {
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
         <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td><b>${fmtD(r)}</b>${r.phi !== undefined && r.deff > 0.005 ? ` <span class="hint">(φ = ${r.phi}°)</span>` : ""}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
         <td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
-       '<tr><td colspan="9" style="direction:rtl;text-align:right">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
+       '<tr><td colspan="9" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
@@ -1321,6 +1578,7 @@ function ncpmRun() {
 // first order, period Λ = 1 / (n3/λ3 − n1/λ1 − n2/λ2), d_eff = (2/π)·d33.
 const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
 function qpm(c, src, w) {
+  if (src.isotropic) return qpmCubic(c, src, w);
   const d33 = PM.dij[c.material]?.d["33"];
   if (!POLED.has(c.material) || d33 == null) { $("pmqpm").innerHTML = ""; return; }
   if (!covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
@@ -1329,6 +1587,18 @@ function qpm(c, src, w) {
   $("pmqpm").innerHTML = `<b>تطبیق فاز شبه‌فازی (QPM)</b> در بلور قطبیده‌ی تناوبی (مثل PPLN/PPKTP)، هر سه موج قطبیده در امتداد z (ضریب d<sub>33</sub>)، مرتبه‌ی اول، دمای اتاق: `
     + `<bdi dir="ltr">Λ = <b>${period.toFixed(2)} µm</b>, n<sub>z</sub> = ${[n1, n2, n3].map((x) => x.toFixed(4)).join(", ")}, d<sub>eff</sub> = (2/π)·|d33| = <b>${deff.toFixed(1)} pm/V</b>, d<sub>eff</sub>²/n³ = ${(deff ** 2 / (n1 * n2 * n3)).toFixed(1)} pm²/V²</bdi>`
     + ` — بدون walk-off. دوره‌ی واقعی با دما و ترکیب بلور کمی جابه‌جا می‌شود؛ این عدد از همان فرمول پاشندگی منبع انتخاب‌شده است.`;
+}
+
+// Orientation-patterned cubic semiconductors (OP-GaAs, OP-GaP): optically isotropic, so only QPM; first order,
+// d_eff = (2/π)·d14 as in the figure of merit of Petrov (2015), Table 3.
+function qpmCubic(c, src, w) {
+  const d14 = PM.dij[c.material]?.d["14"];
+  if (d14 == null || !covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
+  const n = (l) => nAt(src)(l)[0], [n1, n2, n3] = [n(w.l1), n(w.l2), n(w.l3)];
+  const period = 1 / (n3 / w.l3 - n1 / w.l1 - n2 / w.l2), deff = (2 / Math.PI) * Math.abs(d14);
+  $("pmqpm").innerHTML = `<b>بلور مکعبی و همسان‌گرد:</b> تطبیق فاز دوشکستی ندارد و فقط با الگودهی جهت بلور (OP-${esc(c.material)}) و QPM کار می‌کند. مرتبه‌ی اول، دمای اتاق: `
+    + `<bdi dir="ltr">Λ = <b>${period.toFixed(2)} µm</b>, n = ${[n1, n2, n3].map((x) => x.toFixed(4)).join(", ")}, d<sub>eff</sub> = (2/π)·d14 = <b>${deff.toFixed(1)} pm/V</b>, d<sub>eff</sub>²/n³ = ${(deff ** 2 / (n1 * n2 * n3)).toFixed(1)} pm²/V²</bdi>`
+    + ` — d14 برای SHG در 10.6 µm است (Petrov 2015، جدول ۳) و نزدیک گاف انرژی بزرگ‌تر می‌شود؛ جذب دوفوتونی پمپ را در GaAs به بالای ~1.75 µm محدود می‌کند.`;
 }
 
 // The curve takes ~100 solutions (30 ms each in a biaxial crystal): computed in slices after the table is shown,
@@ -1573,6 +1843,385 @@ function drawYears() {
   svg.onmouseleave = () => { tip.style.display = "none"; };
 }
 new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).observe($("yrchart"));
+</script>
+<script type="module">
+// ---------- SPDC tab (web/src/spdc.client.js does the physics)
+import { entryIndex } from "/dispersion.js";
+import { eigenIndices, direction, solveAll } from "/phasematch.js";
+import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, C_UM_PS } from "/spdc.js";
+
+const SP = { list: null };
+const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
+const spNAt = (s) => (lam) => (s.kind === "uniaxial" ? ["o", "o", "e"] : ["x", "y", "z"]).map((a) => entryIndex(s.axes[a], lam));
+const AXIS = { x: ["xy", 0], y: ["xy", Math.PI / 2], z: ["xz", 0] };
+const POLS = [["s", "s", "s", "نوع ۰"], ["f", "f", "f", "نوع ۰"], ["f", "s", "s", "نوع I"], ["f", "s", "f", "نوع II"], ["f", "f", "s", "نوع II"]];
+
+window.loadSPDC = async () => {
+  if (SP.list) return;
+  SP.list = (await fetch("/ri/aniso.json").then((r) => r.json())).filter((c) => !c.sources[0].isotropic);
+  $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
+  $("spmat").value = [SP.want, "KTiOPO4"].find((m) => SP.list.some((c) => c.material === m)) || SP.list[0].material;
+  $("spmat").onchange = () => { fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || ""; };
+  $("spsrc").onchange = fillCfg;
+  for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
+  $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(+$("splp").value, t).toFixed(4); };
+  $("spgo").onclick = run;
+  $("spfib").onclick = () => fiber(false);
+  $("spfibopt").onclick = () => fiber(true);
+  fillSrc(); fitWl(); fillCfg();
+};
+window.spSelectCrystal = (mat) => {
+  if (!SP.list) { SP.want = mat; return; }
+  if (!SP.list.some((c) => c.material === mat)) return;
+  $("spmat").value = mat; fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || "";
+};
+// Common degenerate pairs (pump, photon 1): when the entered wavelengths are outside every source of the crystal,
+// the first pair one of its sources covers is used instead, and the page says so.
+const SP_LINES = [[0.775, 1.55], [0.405, 0.81], [0.532, 1.064], [1.064, 2.128], [1.55, 3.1], [2.0, 4.0], [3.0, 6.0], [5.0, 10.0]];
+function fitWl() {
+  const c = SP.list.find((x) => x.material === $("spmat").value), lp = +$("splp").value, l1 = +$("spl1").value;
+  // a source takes a pair when every axis has an index at the pump and both photons (each axis has its own range)
+  const ok = (src, p, q) => { const r = 1 / (1 / p - 1 / q); return [p, q, r].every((l) => l > 0 && spNAt(src)(l).every(Number.isFinite)); };
+  SP.moved = "";
+  const cur = +$("spsrc").value;
+  if (ok(c.sources[cur], lp, l1)) return;
+  const other = c.sources.findIndex((src) => ok(src, lp, l1));
+  if (other >= 0) { $("spsrc").value = String(other); return; }
+  for (const [p, q] of SP_LINES) {
+    const i = c.sources.findIndex((src) => ok(src, p, q));
+    if (i < 0) continue;
+    $("splp").value = p; $("spl1").value = q; $("spsrc").value = String(i);
+    SP.moved = `طول موج‌های قبلی (${lp} → ${l1} µm) بیرون از گستره‌ی فرمول‌های ${c.material} بود؛ به ${p} → ${q} µm تغییر کرد.`;
+    return;
+  }
+}
+function fillSrc() {
+  const c = SP.list.find((x) => x.material === $("spmat").value);
+  $("spsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} (${s.range_um[0]}–${s.range_um[1]} µm)</option>`).join("");
+}
+// Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
+function fillCfg() {
+  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  $("spl2").textContent = Number.isFinite(l2) && l2 > 0 ? `λ₂ = ${l2.toFixed(4)} µm` : "";
+  const opts = [];
+  try {
+    for (const r of solveAll(nAt, s.kind, "opo", lp, l1)) opts.push({ label: `تطبیق فاز زاویه‌ای: صفحه‌ی ${r.plane}، ${r.type}، زاویه ${r.angle.toFixed(2)}°`, plane: r.plane, angle: r.angle * Math.PI / 180, type: r.type });
+  } catch { /* outside the formula's range */ }
+  const axes = s.kind === "uniaxial" ? ["x", "z"] : ["x", "y", "z"];
+  for (const ax of axes) {
+    const [plane, angle] = AXIS[ax], dir = direction(plane, angle), [ns, nf] = eigenIndices(nAt(lp), dir);
+    const others = { x: ["y", "z"], y: ["x", "z"], z: ["x", "y"] }[ax], idx = { x: 0, y: 1, z: 2 };
+    // the transverse axis with the larger index at the pump is the slow (s) polarization
+    const [a, b] = others, sAx = nAt(lp)[idx[a]] >= nAt(lp)[idx[b]] ? a : b, fAx = sAx === a ? b : a;
+    // all three wavelengths inside the formula's range (no index outside it)
+    if (![lp, l1, l2].every((l) => Number.isFinite(l) && l > 0 && nAt(l).every(Number.isFinite)) || !Number.isFinite(ns + nf)) continue;
+    for (const [p, q, r, name] of POLS) {
+      const nameAx = (x) => (x === "s" ? sAx : fAx);
+      opts.push({ label: `QPM در امتداد ${ax}، ${name}: ${nameAx(p)} → ${nameAx(q)} + ${nameAx(r)}`, plane, angle, pols: [p, q, r], qpm: true });
+    }
+  }
+  SP.cfg = opts;
+  $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("") || `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول این منبع است (${s.range_um[0]}–${s.range_um[1]} µm)</option>`;
+  // default: type-II QPM along x (the usual PPKTP-type source), else the first option
+  const pick = opts.findIndex((o) => o.qpm && o.plane === "xy" && o.angle === 0 && o.pols[1] !== o.pols[2]);
+  if (pick >= 0) $("spcfg").value = String(pick);
+}
+function run() {
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
+  $("spinfo").textContent = "در حال محاسبه…";
+  setTimeout(() => { try { compute(); } catch (err) { $("spres").textContent = ""; $("spinfo").textContent = "خطا در محاسبه: " + err.message; } }, 20);
+  function compute() {
+    const j = jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
+      L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value,
+      filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 90 : 120 });
+    const { purity: P, schmidt: K } = purity(j), I = intensity(j);
+    if (!Number.isFinite(P) || !I.jsi.every(Number.isFinite)) {
+      $("spres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند؛ طول موج‌ها، طول بلور یا منبع دیگری را امتحان کنید.</span>`;
+      $("spinfo").textContent = ""; return;
+    }
+    // the unfiltered sinc has long tails: also give P on a window twice as wide (same resolution)
+    let P2 = null;
+    if ($("sppm").value === "sinc" && !(fil > 0) && !$("spfoc").checked) {
+      const nm = (nu) => Math.abs(C_UM_PS / nu[0] - C_UM_PS / nu[j.n - 1]) * 1000;
+      P2 = purity(jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
+        L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: "sinc",
+        spanNm: [2 * nm(j.nu1), 2 * nm(j.nu2)], n: 2 * j.n - 1 })).purity;
+    }
+    const lam1 = j.nu1.map((v) => C_UM_PS / v * 1000), lam2 = j.nu2.map((v) => C_UM_PS / v * 1000);
+    const w1 = fwhm(lam1, I.m1), w2 = fwhm(lam2, I.m2);
+    const off = !o.qpm && Math.abs(j.dk0) * +$("spL").value * 1000 / 2 > 0.5;
+    $("spres").innerHTML = `<b>P = ${P.toFixed(4)}</b>${Number.isFinite(P2) ? ` (پنجره‌ی دوبرابر: ${P2.toFixed(4)})` : ""} &nbsp; K = ${K.toFixed(3)} &nbsp; FWHM₁ = ${w1.toFixed(3)} nm &nbsp; FWHM₂ = ${w2.toFixed(3)} nm`
+      + (j.periodUm ? ` &nbsp; Λ = ${j.periodUm.toFixed(3)} µm` : "") + (off ? ` <span style="color:#c33">(در مرکز طیف Δk·L/2 = ${(j.dk0 * +$("spL").value * 500).toFixed(2)}؛ زاویه را بازبینی کنید)</span>` : "");
+    if ($("spfoc").checked) {
+      const xi = +$("spxi").value, dir = direction(o.plane, o.angle), idx = (lam, pol) => { const [sl, fa] = eigenIndices(spNAt(s)(lam), dir); return pol === "s" ? sl : fa; };
+      const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
+      const k = (lam, pol) => 2 * Math.PI * idx(lam, pol) / lam;
+      const f = focusing({ xi, L_mm: +$("spL").value, kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]) });
+      $("spres").innerHTML += `<br>ξ = ${xi}: کمر باریکه (شعاع 1/e² میدان) پمپ ${f.wp.toFixed(1)} µm، فوتون ۱ ${f.ws.toFixed(1)} µm، فوتون ۲ ${f.wi.toFixed(1)} µm؛ `
+        + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}`;
+    }
+    drawJSI(I.jsi, j.n, lam1, lam2);
+    drawHOM(j, l1, l2);
+    $("spinfo").textContent = `شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`;
+  }
+}
+// Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
+function fiber(optimize) {
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  const dir = direction(o.plane, o.angle), pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
+  const k = (lam, pol) => { const [sl, fa] = eigenIndices(spNAt(s)(lam), dir); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
+  const base = { kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]), L_mm: +$("spL").value };
+  $("spfibres").textContent = "در حال محاسبه…";
+  setTimeout(() => {
+    if (optimize) { // pump and the two fibre foci on a grid, for the largest pair coupling (all modes)
+      let best = null;
+      for (const xp of [0.5, 0.8, 1.1, 1.4, 1.7, 2.1, 2.6, 3.2, 4, 5]) for (const xf of [1.4, 1.8, 2.3, 2.8, 3.4, 4.2]) {
+        const r = fiberCoupling({ ...base, xiP: xp, xiS: xf, xiI: xf, n: 56 });
+        if (!best || r.gammaC > best.r.gammaC) best = { xp, xf, r };
+      }
+      $("spxp").value = best.xp; $("spxs").value = best.xf; $("spxf2").value = best.xf;
+    }
+    const args = { ...base, xiP: +$("spxp").value, xiS: +$("spxs").value, xiI: +$("spxf2").value };
+    const f = fiberCoupling({ ...args, n: 100 }), z = fiberCoupling({ ...args, azimuthal: false, n: 100 });
+    const pc = (v) => (v * 100).toFixed(1) + "%";
+    $("spfibres").innerHTML = `w<sub>p</sub> = ${f.wp.toFixed(1)} µm, w₁ = ${f.ws.toFixed(1)} µm, w₂ = ${f.wi.toFixed(1)} µm<br>`
+      + `<b>all modes:</b> γ₁ = ${pc(f.gammaS)}, γ₂ = ${pc(f.gammaI)}, γc = ${pc(f.gammaC)}, μ₂|₁ = ${pc(f.muIgS)}, μ₁|₂ = ${pc(f.muSgI)}<br>`
+      + `l = 0 only (as Ljunggren &amp; Tengner): γ₁ = ${pc(z.gammaS)}, γ₂ = ${pc(z.gammaI)}, γc = ${pc(z.gammaC)}`
+      + (optimize ? `<br>best pair coupling on the grid at ξp = ${$("spxp").value}, ξ fibres = ${$("spxs").value}` : "");
+  }, 20);
+}
+// viridis-like ramp
+const RAMP = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
+const color = (v) => { const x = Math.max(0, Math.min(1, v)) * 4, i = Math.min(3, Math.floor(x)), f = x - i; return RAMP[i].map((c, k) => Math.round(c + f * (RAMP[i + 1][k] - c))); };
+function drawJSI(jsi, n, lam1, lam2) {
+  const cv = $("spjsi"), ctx = cv.getContext("2d"), W = cv.width, pad = 46, S = W - pad - 8;
+  ctx.fillStyle = getComputedStyle(document.body).backgroundColor || "#fff"; ctx.fillRect(0, 0, W, W);
+  let max = 0; for (const v of jsi) max = Math.max(max, v);
+  // show the part where |f|² exceeds 1 % of its peak, with a margin
+  let i0 = n, i1 = -1, j0 = n, j1 = -1;
+  for (let i = 0; i < n; i++) for (let jj = 0; jj < n; jj++) if (jsi[i * n + jj] > 0.01 * max) { i0 = Math.min(i0, i); i1 = Math.max(i1, i); j0 = Math.min(j0, jj); j1 = Math.max(j1, jj); }
+  const half = Math.ceil(Math.max(i1 - i0, j1 - j0) * 0.7) + 2, ci = (i0 + i1) >> 1, cj = (j0 + j1) >> 1;
+  const a0 = Math.max(0, ci - half), a1 = Math.min(n - 1, ci + half), b0 = Math.max(0, cj - half), b1 = Math.min(n - 1, cj + half);
+  const ni = a1 - a0 + 1, nj = b1 - b0 + 1, img = ctx.createImageData(ni, nj);
+  // ν increases with the index, λ decreases: λ₁ increases to the right, λ₂ upwards
+  for (let i = a0; i <= a1; i++) for (let jj = b0; jj <= b1; jj++) {
+    const [r, g, b] = color(jsi[i * n + jj] / max), px = ((jj - b0) * ni + (a1 - i)) * 4;
+    img.data[px] = r; img.data[px + 1] = g; img.data[px + 2] = b; img.data[px + 3] = 255;
+  }
+  const tmp = document.createElement("canvas"); tmp.width = ni; tmp.height = nj; tmp.getContext("2d").putImageData(img, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.drawImage(tmp, pad, 4, S, S);
+  ctx.fillStyle = getComputedStyle(document.body).color || "#000"; ctx.font = "11px sans-serif";
+  const lo1 = lam1[a1], hi1 = lam1[a0], lo2 = lam2[b1], hi2 = lam2[b0];
+  ctx.textAlign = "center"; ctx.fillText(lo1.toFixed(1), pad + 12, W - 22); ctx.fillText(hi1.toFixed(1), pad + S - 12, W - 22); ctx.fillText("λ₁ (nm)", pad + S / 2, W - 8);
+  ctx.textAlign = "right"; ctx.fillText(hi2.toFixed(1), pad - 3, 14); ctx.fillText(lo2.toFixed(1), pad - 3, S); ctx.save(); ctx.translate(12, S / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.fillText("λ₂ (nm)", 0, 0); ctx.restore();
+}
+function drawHOM(j, l1, l2) {
+  const svg = $("sphom");
+  if (Math.abs(l1 - l2) > 1e-9) { svg.innerHTML = ""; $("sphomcap").textContent = "فرورفتگی هنگ–او–مندل فقط برای جفت تبهگن (λ₁ = λ₂) رسم می‌شود."; return; }
+  const period = 1 / (j.nu1[1] - j.nu1[0]), taus = Array.from({ length: 241 }, (_, k) => (k / 240 - 0.5) * period * 0.9);
+  const c = hom(j, taus); if (!c) { svg.innerHTML = ""; return; }
+  // keep the part around the dip
+  let k0 = 0; c.forEach((v, k) => { if (v < c[k0]) k0 = k; });
+  let a = k0, b = k0; while (a > 0 && c[a] < 0.499) a--; while (b < c.length - 1 && c[b] < 0.499) b++;
+  const w = Math.max(b - a, 10), lo = Math.max(0, a - w), hi = Math.min(c.length - 1, b + w);
+  const W = svg.clientWidth || 360, H = 220, px = (t) => 40 + (t - taus[lo]) / (taus[hi] - taus[lo]) * (W - 50), py = (v) => 10 + (1 - v / 0.55) * (H - 40);
+  const d = c.slice(lo, hi + 1).map((v, k) => `${k ? "L" : "M"}${px(taus[lo + k]).toFixed(1)},${py(v).toFixed(1)}`).join("");
+  const V = (0.5 - c[k0]) / 0.5;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = `<path d="${d}" fill="none" stroke="currentColor" stroke-width="1.6"/>`
+    + `<line x1="40" x2="${W - 10}" y1="${py(0.5)}" y2="${py(0.5)}" stroke="currentColor" stroke-dasharray="3,3" opacity="0.4"/>`
+    + `<text x="40" y="${H - 6}" font-size="11" fill="currentColor">${taus[lo].toFixed(2)} ps</text><text x="${W - 10}" y="${H - 6}" font-size="11" text-anchor="end" fill="currentColor">${taus[hi].toFixed(2)} ps</text>`
+    + `<text x="4" y="${py(0.5) + 4}" font-size="11" fill="currentColor">½</text><text x="4" y="${py(0) + 4}" font-size="11" fill="currentColor">0</text>`;
+  $("sphomcap").textContent = `احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر؛ کمینه در ${taus[k0].toFixed(2)} ps، نمایانی ${(V * 100).toFixed(1)}٪.`;
+}
+</script>
+<script type="module">
+// ---------- crystal cards: a crystal named in a search question (BBO, LiB3O5, «لیتیم نیوبات») gets a card with the
+// verified data of the site (refractive index, d coefficients, thermo-optic formula), and the other tabs select it.
+import { entryIndex } from "/dispersion.js";
+
+let data = null;
+const loadData = () => (data ||= Promise.all([
+  fetch("/ri/aniso.json").then((r) => r.json()),
+  fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({})),
+  fetch("/ri/index.json").then((r) => r.json()),
+]).then(([aniso, dij, index]) => ({ aniso, dij, index })).catch((err) => { data = null; throw err; }));
+
+const KIND_FA = { uniaxial: "تک‌محوری", biaxial: "دومحوری" };
+const AXES = { uniaxial: [["o", "n<sub>o</sub>"], ["e", "n<sub>e</sub>"]], biaxial: [["x", "n<sub>x</sub>"], ["y", "n<sub>y</sub>"], ["z", "n<sub>z</sub>"]] };
+
+// n at 1.064 µm, or at the middle of the formula's range when 1.064 µm is outside it.
+function indices(src) {
+  const [lo, hi] = src.range_um, lam = lo <= 1.064 && 1.064 <= hi ? 1.064 : +((lo + hi) / 2).toPrecision(3);
+  const axes = src.isotropic ? [[Object.keys(src.axes)[0], "n"]] : AXES[src.kind] || [];
+  const vals = axes.map(([a, name]) => { const e = src.axes[a]; const n = e && entryIndex(e, lam); return Number.isFinite(n) ? `<bdi dir="ltr">${name} = ${n.toFixed(4)}</bdi>` : ""; }).filter(Boolean);
+  return vals.length ? `${vals.join("، ")} در <bdi dir="ltr">${lam} µm</bdi>` : "";
+}
+
+function dLine(d) {
+  const seen = new Set(), parts = [];
+  for (const [ij, v] of Object.entries(d.d).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]) || b[1] - a[1] || a[0].localeCompare(b[0]))) {
+    const k = `${Math.abs(v)}`; if (seen.has(k)) continue; seen.add(k); // d21 = −d22 etc.: one of them
+    parts.push(`<bdi dir="ltr">d<sub>${ij}</sub> = ${v}</bdi>`);
+    if (parts.length >= 4) break;
+  }
+  return `${parts.join("، ")} <bdi dir="ltr">pm/V</bdi>${d.point_group ? ` · گروه نقطه‌ای <bdi dir="ltr">${esc(d.point_group)}</bdi>` : ""}`;
+}
+
+function card(mat, D, synced) {
+  const c = D.aniso.find((x) => x.material === mat), d = D.dij[mat];
+  const ri = D.index.find((m) => m.material === mat && (m.shelf === "main" || m.shelf === "papers"));
+  if (!c && !d && !ri) return "";
+  const src = c?.sources[0];
+  const thermo = c ? [...new Set(c.sources.filter((s) => s.thermo).map((s) => s.label))] : [];
+  const kind = src ? (src.isotropic ? "همسان‌گرد (مکعبی)" : KIND_FA[src.kind] || "") : "";
+  const name = (c?.name || ri?.name || "").replace(/^\S+\s*/, "").replace(/^\(|\)$/g, "");
+  const facet = [...$("material").options].find((o) => o.value && o.value.split(/[_-]/).includes(mat));
+  const rows = [
+    src ? ["ضریب شکست", `${indices(src)}<span class="hint"> · ${esc(src.label)} · بازه‌ی فرمول <bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi>${c.sources.length > 1 ? ` · ${fa(c.sources.length)} منبع` : ""}</span>`]
+      : ri ? ["ضریب شکست", `${fa(ri.n)} منبع در پایگاه (${fa(ri.formulas)} فرمول) · بازه‌ی <bdi dir="ltr">${+ri.range_um[0].toPrecision(3)}–${+ri.range_um[1].toPrecision(3)} µm</bdi>`] : null,
+    ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)}</span>` : ""}`
+      + (d.partial ? `<div class="hint">ناقص: فقط بعضی عنصرها اندازه‌گیری شده‌اند${d.frame ? ` و در دستگاه <bdi dir="ltr">${esc(d.frame)}</bdi>` : ""}؛ در محاسبه‌ی d<sub>eff</sub> تطبیق فاز به کار نمی‌روند.</div>` : "")
+      : '<span class="hint">ثبت نشده</span>'],
+    ["گرمانوری (dn/dT)", thermo.length ? `فرمول وابسته به دما: ${thermo.map(esc).join("، ")}` : '<span class="hint">ثبت نشده</span>'],
+  ].filter(Boolean);
+  const btn = (act, text) => `<button class="alt" data-xact="${act}" data-mat="${esc(mat)}">${text}</button>`;
+  return `<div class="card xcard">
+    <div class="xhead"><b dir="ltr">${esc(mat)}</b>${name ? `<span class="hint">${esc(name)}</span>` : ""}${kind ? `<span class="chip">${kind}</span>` : ""}</div>
+    <table class="xrows">${rows.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</table>
+    <div class="actions">${ri ? btn("index", "نمودار ضریب شکست") : ""}${c ? btn("pm", "تطبیق فاز") : ""}${c && !src.isotropic ? btn("spdc", "جفت فوتون (SPDC)") : ""}${facet ? `<button class="alt" data-xact="filter" data-facet="${esc(facet.value)}">فقط مقاله‌های این بلور</button>` : ""}</div>
+    ${synced ? '<p class="hint" style="margin:6px 0 0">این بلور در صفحه‌های ضریب شکست، تطبیق فاز و SPDC هم انتخاب شد.</p>' : ""}
+  </div>`;
+}
+
+let cardsFor = 0; // the latest search: an older one whose data arrives late does not overwrite its cards
+// Crystals of the question found by their name in the data, so every material with a card is found, not only what
+// the server reads as a formula: elements (Si, Ge), KD2PO4, LuAl3(BO3)4, liquid crystals (E7), names in lower case
+// ("linbo3") and doped crystals written with a colon ("MgO:LiNbO3" is the card MgO-LiNbO3, not MgO and LiNbO3).
+// Lower case only for names with a digit and four characters or more ("gase", "zno", "n2" are words or symbols);
+// one-letter elements and "In", "Be", "He" … only when the search is the symbol alone.
+const NAME_WORDS = new Set(["In", "Be", "He", "Re", "Ne", "As", "No", "At", "So", "Pa"]);
+function namedIn(text, D) {
+  text = text || "";
+  const tokens = text.split(/[^\p{L}\p{N}:-]+/u).map((w) => w.replace(/:/g, "-").replace(/^-+|-+$/g, ""));
+  const lower = new Set(tokens.map((w) => w.toLowerCase())), exact = new Set(tokens);
+  const found = [];
+  for (const m of new Set([...D.aniso.map((c) => c.material), ...Object.keys(D.dij),
+    ...D.index.filter((x) => x.shelf === "main" || x.shelf === "papers").map((x) => x.material)])) {
+    const keys = m.split(" - ").map((k) => k.replace(/^\((.+)\)n$/, "$1"));
+    if (keys.some((k) => (/[\s(),]/.test(k) ? k.length > 4 && text.toLowerCase().includes(k.toLowerCase())
+      : /\d/.test(k) && k.length > 3 ? lower.has(k.toLowerCase())
+        : exact.has(k) && ((!NAME_WORDS.has(k) && k.length > 1) || text.trim() === k)))) found.push(m);
+  }
+  // in the order the question names them
+  const at = (m) => { const i = text.toLowerCase().indexOf(m.split(" - ")[0].toLowerCase()); return i < 0 ? Infinity : i; };
+  return found.sort((a, b) => at(a) - at(b));
+}
+
+window.crystalCards = async (materials, text) => {
+  const box = $("xcards"), me = ++cardsFor; box.innerHTML = "";
+  if (!materials.length && !text) return;
+  let D; try { D = await loadData(); } catch { return; }
+  if (me !== cardsFor) return;
+  const all = namedIn(text, D), parts = new Set(all.filter((m) => m.includes("-")).flatMap((m) => m.split("-")));
+  materials = [...new Set([...all, ...materials])].filter((m) => !parts.has(m));
+  const known = materials.filter((m) => D.aniso.some((c) => c.material === m) || D.dij[m] || D.index.some((x) => x.material === m && (x.shelf === "main" || x.shelf === "papers")));
+  // One crystal in the question: the other tabs take it. Two or more (a comparison): only the cards.
+  const sync = known.length === 1;
+  if (sync) for (const f of ["riSelectCrystal", "pmSelectCrystal", "spSelectCrystal"]) window[f]?.(known[0]);
+  box.innerHTML = known.slice(0, 4).map((m) => card(m, D, sync)).join("");
+};
+
+$("xcards").onclick = (e) => {
+  const b = e.target.closest("[data-xact]"); if (!b) return;
+  const act = b.dataset.xact, mat = b.dataset.mat;
+  if (act === "filter") { $("material").value = b.dataset.facet; runSearch(); return; }
+  ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
+  showTab(act);
+};
+</script>
+<script>
+// What this account may use (/api/me): tabs not allowed are taken out, PDFs hidden for accounts without them,
+// and the site announcement (set from the admin bot) shown on top.
+api("/api/me").then((r) => r.json()).then((me) => {
+  window.ME = me;
+  for (const b of document.querySelectorAll("nav button[data-tab]")) if (!me.tabs.includes(b.dataset.tab)) b.remove();
+  for (const s of document.querySelectorAll(".navsec")) {
+    let n = s.nextElementSibling; while (n && n.tagName !== "BUTTON" && !n.classList.contains("navsec")) n = n.nextElementSibling;
+    if (!n || n.classList.contains("navsec")) s.remove();
+  }
+  const on = document.querySelector("nav button.on");
+  if (!on) showTab(me.tabs[0]);
+  if (!me.pdf) document.documentElement.classList.add("nopdf");
+  if (!me.search) document.documentElement.classList.add("nosearch");
+  if (me.banner) { const b = document.getElementById("sitebanner"); b.textContent = "📢 " + me.banner; b.hidden = false; }
+}).catch(() => {});
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-xact]");
+  if (b && window.ME && b.dataset.xact !== "filter" && !window.ME.tabs.includes(b.dataset.xact)) { e.stopImmediatePropagation(); e.preventDefault(); }
+}, true);
+</script>
+<button id="fbopen" title="نظر، مشکل یا پیشنهاد">💬 بازخورد</button>
+<dialog id="fbdlg"><form method="dialog" id="fbform">
+  <h3>بازخورد</h3>
+  <p class="hint">مشکل، اشتباه در داده‌ها، بلور یا مقاله‌ای که کم است، یا هر پیشنهادی. مستقیم به سازنده‌ی سایت می‌رسد.</p>
+  <textarea id="fbtext" rows="5" required placeholder="مثلاً: ضریب d بلور … در کارت اشتباه است / مقاله‌ی … در مجموعه نیست"></textarea>
+  <input id="fbwho" placeholder="نام یا آیدی تلگرام (اختیاری، برای پاسخ)">
+  <div class="actions"><button value="send" class="primary">ارسال</button><button value="cancel" formnovalidate>انصراف</button></div>
+</form></dialog>
+<script>
+(() => {
+  const dlg = document.getElementById("fbdlg"), who = document.getElementById("fbwho");
+  document.getElementById("fbopen").onclick = () => { who.value = store.get("fbwho") || ""; dlg.showModal(); };
+  dlg.addEventListener("close", async () => {
+    if (dlg.returnValue !== "send") return;
+    const text = document.getElementById("fbtext");
+    store.set("fbwho", who.value.trim());
+    await sendFeedback({ verdict: "comment", comment: text.value });
+    text.value = ""; status("ممنون! بازخوردتان رسید.");
+  });
+})();
+</script>
+<script>
+(() => {
+  const btn = document.getElementById("langbtn");
+  btn.textContent = LANG === "en" ? "فارسی" : "English";
+  btn.onclick = () => { try { localStorage.setItem("lang", LANG === "en" ? "fa" : "en"); } catch {} location.reload(); };
+  if (LANG !== "en") return;
+  const done = () => document.documentElement.classList.remove("i18n-wait");
+  setTimeout(done, 2000);
+  // Every Persian text of the page (/i18n/en.json, keyed by the exact Persian as it is in page.html) is replaced
+  // where it stands, whole words only, so the reader's own Persian (a question) is left alone; content added
+  // later (results, messages, plots) is translated as it appears.
+  fetch("/i18n/en.json").then((r) => r.json()).then((dict) => {
+    const keys = Object.keys(dict).sort((a, b) => b.length - a.length);
+    const L = "\u0621-\u064A\u0671-\u06D3\u06FA-\u06FF";
+    const esc = (k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(?<![${L}])(?:${keys.map(esc).join("|")})(?![${L}])`, "g");
+    const PERSIAN = /[\u0600-\u06FF]/;
+    const digits = (t) => t.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/٬/g, ",").replace(/٫/g, ".")
+      .replace(/،/g, ",").replace(/؛/g, ";").replace(/؟/g, "?").replace(/٪/g, "%");
+    // "4 منبع" comes out "4 Source": English counts take the plural
+    const plural = (t) => t.replace(/\b(\d[\d,]*) (Source|source|formula|passage|point)\b/g, (m, n, w) => `${n} ${n === "1" ? w.toLowerCase() : w.toLowerCase() + "s"}`);
+    const tr = (t) => { if (!t || !PERSIAN.test(t)) return t; for (let i = 0; i < 2; i++) t = t.replace(re, (m) => dict[m]); return plural(digits(t)); };
+    const ATTRS = ["placeholder", "title", "aria-label", "alt"];
+    const walk = (root) => {
+      if (root.nodeType === 3) { const v = tr(root.nodeValue); if (v !== root.nodeValue) root.nodeValue = v; return; }
+      if (root.nodeType !== 1) return;
+      for (const a of ATTRS) if (root.hasAttribute?.(a)) { const v = tr(root.getAttribute(a)); if (v !== root.getAttribute(a)) root.setAttribute(a, v); }
+      if (root.tagName === "TEXTAREA" || root.tagName === "SCRIPT" || root.tagName === "STYLE") return;  // what the reader typed
+      if (root.tagName === "OPTION" || root.tagName === "TITLE") { const v = tr(root.textContent); if (v !== root.textContent) root.textContent = v; }
+      for (const c of root.childNodes) walk(c);
+    };
+    walk(document.documentElement);
+    new MutationObserver((ms) => { for (const m of ms) { if (m.type === "characterData") walk(m.target); else for (const n of m.addedNodes) walk(n);
+      if (m.type === "attributes") walk(m.target); } })
+      .observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+    done();
+  }).catch(done);
+})();
 </script>
 </body>
 </html>

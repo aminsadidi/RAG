@@ -122,3 +122,39 @@ def test_catalog_for_the_site():
     assert {"KTiOAsO4", "CsB3O5", "KBe2BO3F2", "CdSiP2", "YCa4O(BO3)3", "La2CaB10O19", "DAST"} <= mats
     assert all(i["shelf"] == "papers" and i["doc_id"] and i["range_um"][0] < i["range_um"][1] for i in items)
     assert paper_formulas.names(DATA)[("papers", "papers", "KBe2BO3F2")].endswith("(Potassium fluoroboratoberyllate, KBBF)")
+
+
+def test_dkdp_phase_matching_angles():
+    """Kirby & DeShazer (1987) KD*P: the type-I SHG angles Nikogosyan (2005, PDF p. 160) calculates from it
+    (1.2 µm: 35.94°, 1.0 µm: 37.47°, 0.8 µm: 43.75°; SFG 1.0642 + 0.5321 µm: 46.82°) and the measured
+    type-II SHG angle of 1.0642 µm, 53.5–54° (PDF p. 159)."""
+    no, ne = curve("KD2PO4", "Kirby-1987", "o"), curve("KD2PO4", "Kirby-1987", "e")
+
+    def ne_theta(lam, th):
+        return 1 / math.sqrt(math.cos(th) ** 2 / no(lam) ** 2 + math.sin(th) ** 2 / ne(lam) ** 2)
+
+    def type1(l1, l2):
+        l3 = 1 / (1 / l1 + 1 / l2)
+        return math.degrees(brentq(lambda t: no(l1) / l1 + no(l2) / l2 - ne_theta(l3, t) / l3, 0.01, 1.5707))
+
+    for lam, angle in ((1.2, 35.94), (1.0, 37.47), (0.8, 43.75)):
+        assert type1(lam, lam) == pytest.approx(angle, abs=0.02)
+    assert type1(1.0642, 0.5321) == pytest.approx(46.82, abs=0.02)
+    lam = 1.0642
+    th2 = math.degrees(brentq(lambda t: (no(lam) + ne_theta(lam, t)) / 2 - ne_theta(lam / 2, t), 0.01, 1.57))
+    assert 53.4 < th2 < 54.0
+
+
+def test_lithium_tantalate_temperature_curves():
+    """Abedin & Ito (1996), Fig. 3: from 25 to 300 °C, ne(468 nm) rises from about 2.237 to 2.258 and
+    no(468 nm) from 2.232 to 2.236 (the gayer form of thermo_optic.yml, with f_c = 546)."""
+    import yaml
+    block = next(b for b in yaml.safe_load(open(DATA.parent / "thermo_optic.yml")) if b.get("source") == "Abedin-1996")
+
+    def n(axis, lam, T):
+        a, b = block["axes"][axis]["a"], block["axes"][axis]["b"]
+        f = (T - 25) * (T + 25 + 546)
+        return math.sqrt(a[0] + b[0] * f + (a[1] + b[1] * f) / (lam ** 2 - (a[2] + b[2] * f) ** 2) - a[5] * lam ** 2)
+
+    assert n("e", 0.468, 25) == pytest.approx(2.237, abs=2e-3) and n("e", 0.468, 300) == pytest.approx(2.258, abs=2e-3)
+    assert n("o", 0.468, 300) - n("o", 0.468, 25) == pytest.approx(0.0045, abs=1.5e-3)

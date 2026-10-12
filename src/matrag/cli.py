@@ -317,6 +317,7 @@ def export_qdrant(
     name = collection or ws.settings.corpus
     qc = qdrant_store.client()
     n = qdrant_store.export(ws.kb, qc, name, recreate=recreate, root=str(ws.settings.corpus_root or "") or None,
+                            keep=ws.paper_list("external_points"),
                             on_progress=lambda i, total: typer.echo(f"  {i}/{total}") if i % 2048 < 64 or i == total else None)
     info = qc.get_collection(name)
     typer.echo(f"uploaded {n} chunks; collection '{name}' now holds {info.points_count} points")
@@ -356,8 +357,11 @@ def export_formulas(
     added = paper_formulas.add_to_site(out, Settings().data_dir / Settings().corpus / "paper_formulas.yml")
     typer.echo(f"{added} more materials from formulas read in the collection's papers (paper_formulas.yml)")
     thermo = Settings().data_dir / Settings().corpus / "thermo_optic.yml"
-    typer.echo(f"{anisotropic.build(out, thermo)} birefringent crystals written to aniso.json (phase-matching tab)")
     dij = Settings().data_dir / Settings().corpus / "nonlinear_coefficients.yml"
+    cubic = anisotropic.cubic_crystals(dij)
+    prefer = anisotropic.preferred(Settings().data_dir / Settings().corpus / "paper_formulas.yml")
+    typer.echo(f"{anisotropic.build(out, thermo, cubic, prefer)} crystals written to aniso.json (phase-matching tab; "
+               f"{len(cubic)} cubic, for QPM only)")
     typer.echo(f"{anisotropic.build_nonlinear(out, dij)} crystals with nonlinear coefficients written to dij.json")
 
 

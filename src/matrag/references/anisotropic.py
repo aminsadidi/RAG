@@ -11,6 +11,15 @@ from pathlib import Path
 
 AXIS = {"o": "o", "e": "e", "x": "x", "y": "y", "z": "z", "alpha": "x", "beta": "y", "gamma": "z",
         "1": "x", "2": "y", "3": "z"}
+# Database sources kept out of the phase-matching tab (they stay in the refractive index tab): a formula
+# whose stated range is wider than its validity gives phase-matching angles that do not exist.
+EXCLUDE = {
+    # Barker & Ilegems (1973) fit infrared lattice vibrations; the e formula has no UV pole, so in the
+    # visible/near-IR it gives ne < no, while GaN is positive uniaxial (Sanford et al. 2003: ne − no ≈ +0.035
+    # at 1.064 µm). With it, SHG of 1.064 µm "phase-matches" at 63.6°; with measured indices it does not.
+    ("GaN", "Barker"),
+}
+
 KEEP = ("type", "coefficients", "points", "range_um", "reference", "doc_id", "doi", "page", "direction")
 
 
@@ -44,18 +53,45 @@ def sources(entries: list[dict]) -> list[dict]:
     return out
 
 
-def build(out: Path, thermo_path: Path | None = None) -> int:
+def isotropic_sources(entries: list[dict]) -> list[dict]:
+    """Each index set of an optically isotropic (cubic) crystal as a source with o = e, for quasi-phase
+    matching in orientation-patterned crystals (OP-GaAs, OP-GaP): no birefringent solution exists."""
+    out = [{"label": e["page"], "kind": "uniaxial", "isotropic": True, "range_um": list(e["range_um"]),
+            "axes": {a: {k: e[k] for k in KEEP if k in e} for a in ("o", "e")}}
+           for e in entries if not e.get("direction") and e["range_um"][1] > e["range_um"][0]]
+    # formulas first, then the sets covering most of the 1–12 µm range where these crystals are used
+    cover = lambda s: max(0.0, min(s["range_um"][1], 12.0) - max(s["range_um"][0], 1.0))
+    return sorted((s for s in out if cover(s) > 0), key=lambda s: (s["axes"]["o"]["type"] == "tab", -cover(s)))
+
+
+def preferred(path: Path) -> dict[str, str]:
+    """Material -> label of the paper source marked ``prefer: true`` in paper_formulas.yml (put first in
+    the phase-matching tab, ahead of a database source with a wider but less reliable range)."""
+    import yaml
+
+    rows = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else []
+    return {r["material"]: r["entries"][0]["page"] for r in rows or [] if r.get("prefer")}
+
+
+def build(out: Path, thermo_path: Path | None = None, isotropic: tuple[str, ...] = (),
+          prefer: dict[str, str] | None = None) -> int:
     """Write ``aniso.json`` next to the site's ``index.json``; returns the number of crystals.
 
     A crystal listed on several shelves (e.g. LBO in refractiveindex.info and in the papers of the
     collection) is one entry with all its sources. ``thermo_path`` (thermo_optic.yml) adds the
-    temperature dependence to the sources it names."""
+    temperature dependence to the sources it names. ``isotropic`` names cubic crystals (from the
+    main shelf) added for quasi-phase matching."""
     index = json.loads((out / "index.json").read_text(encoding="utf-8"))
     crystals: dict[str, dict] = {}
     for m in index:
         if m["shelf"] == "specs":
             continue
         found = sources(json.loads((out / "m" / f"{m['i']}.json").read_text(encoding="utf-8")))
+        if not found and m["material"] in isotropic and m["shelf"] in ("main", "papers"):
+            found = isotropic_sources(json.loads((out / "m" / f"{m['i']}.json").read_text(encoding="utf-8")))
+        if not found:
+            continue
+        found = [s for s in found if (m["material"], s["label"]) not in EXCLUDE]
         if not found:
             continue
         if m["material"] in crystals:
@@ -63,6 +99,13 @@ def build(out: Path, thermo_path: Path | None = None) -> int:
         else:
             crystals[m["material"]] = {"material": m["material"], "name": m.get("name", ""), "shelf": m["shelf"],
                                        "group": m["group"], "sources": found}
+    for material, label in (prefer or {}).items():
+        crystal = crystals.get(material)
+        src = next((s for s in crystal["sources"] if s["label"] == label), None) if crystal else None
+        if src is None:
+            raise ValueError(f"paper_formulas.yml: prefer, but no source {label!r} of {material}")
+        crystal["sources"].remove(src)
+        crystal["sources"].insert(0, src)
     if thermo_path is not None and thermo_path.exists():
         add_thermo(crystals, thermo_path)
     (out / "aniso.json").write_text(json.dumps(list(crystals.values()), ensure_ascii=False, separators=(",", ":")),
@@ -80,15 +123,27 @@ def add_thermo(crystals: dict[str, dict], path: Path) -> None:
         src = next((s for s in crystal["sources"] if s["label"] == block["source"]), None) if crystal else None
         if src is None:
             raise ValueError(f"thermo_optic.yml: no source {block['source']!r} of {block['material']}")
-        if set(block["axes"]) != set(src["axes"]):
+        # partial: true, a paper that measured only some axes (KTA: y and z); the others stay at t0
+        if not (set(block["axes"]) <= set(src["axes"]) if block.get("partial") else set(block["axes"]) == set(src["axes"])):
             raise ValueError(f"thermo_optic.yml: {block['material']} axes {sorted(block['axes'])} "
                              f"do not match the source's {sorted(src['axes'])}")
-        src["thermo"] = {k: block[k] for k in ("form", "t0_c", "cite", "doc_id", "pdf_page", "where") if k in block}
+        src["thermo"] = {k: block[k] for k in ("form", "t0_c", "cite", "doc_id", "pdf_page", "where", "partial") if k in block}
         for axis, spec in block["axes"].items():
             src["axes"][axis]["thermo"] = spec
         if block.get("prefer"):
             crystal["sources"].remove(src)
             crystal["sources"].insert(0, src)
+
+
+CUBIC = ("-43m", "43m", "23", "432")
+
+
+def cubic_crystals(path: Path) -> tuple[str, ...]:
+    """The crystals of nonlinear_coefficients.yml with a cubic point group."""
+    import yaml
+
+    rows = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else []
+    return tuple(r["material"] for r in rows or [] if str(r["point_group"]) in CUBIC)
 
 
 def build_nonlinear(out: Path, path: Path) -> int:
@@ -102,7 +157,10 @@ def build_nonlinear(out: Path, path: Path) -> int:
             # YAML reads an unquoted id of digits, dots and '_' as a number (10.1088_1464_4258_10_10_104011)
             if "doc_id" in s and not isinstance(s["doc_id"], str):
                 raise ValueError(f"{r['material']}: quote the doc_id {s['doc_id']!r} in {path.name}")
+    # `partial`: not the full tensor in the dielectric frame; shown, but kept out of d_eff by the site
     data = {r["material"]: {"point_group": str(r["point_group"]), "d": {str(k): float(v) for k, v in r["d"].items()},
-                            "sources": r["sources"], "notes": r.get("notes", "")} for r in rows or []}
+                            "sources": r["sources"], "notes": r.get("notes", ""),
+                            **({"partial": True, "frame": r.get("frame", "")} if r.get("partial") else {})}
+            for r in rows or []}
     (out / "dij.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return len(data)

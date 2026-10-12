@@ -11,6 +11,11 @@ binding = "AI"
 [assets]
 directory = "./public"
 
+# Cache of model outputs (translations, query embeddings): a repeated question costs no Neurons.
+[[kv_namespaces]]
+binding = "AICACHE"
+id = "3ef1d04b9af6433f90e76bb70c4278b8"
+
 [[services]]
 binding = "PDFS"
 service = "matrag-pdfs"
@@ -19,6 +24,7 @@ service = "matrag-pdfs"
 COLLECTION = "rag-optics"
 TRANSLATE_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 EMBED_MODEL = "@cf/baai/bge-base-en-v1.5"
+RERANK_MODEL = "@cf/baai/bge-reranker-base"
 
 # Secrets (npx wrangler secret put NAME): QDRANT_URL, QDRANT_API_KEY, SITE_PASSWORD
 
