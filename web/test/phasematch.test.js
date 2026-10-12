@@ -581,3 +581,16 @@ test("thermo-optic: KDP (Phillips 1966) tuning rate and KTA (Emanueli & Arie 200
   assert.ok(Math.abs(d("z", 0.532) - 2.97e-5) < 0.1e-5 && Math.abs(d("y", 1.064) - 1.33e-5) < 0.1e-5);
   assert.equal(kta.thermo.partial, true);
 });
+
+test("KABO (Umemura et al. 2003): type-I SHG angles of Table 1 and temperature bandwidths of Table 2", () => {
+  const s = source("K2Al2B2O7", "Umemura-2003");
+  const n = (ax, l, T) => entryIndex(s.axes[ax], l) + thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], l), l, T);
+  const nth = (l, th, T) => 1 / Math.sqrt(Math.cos(th) ** 2 / n("o", l, T) ** 2 + Math.sin(th) ** 2 / n("e", l, T) ** 2);
+  for (const [l1, angle, bw] of [[1.0642, 27.3, 41.9], [0.5321, 57.2, 4.1]]) {
+    const f = (th, T) => nth(l1 / 2, th, T) - n("o", l1, T);
+    let lo = 0.01, hi = 1.57; for (let i = 0; i < 80; i++) { const m = (lo + hi) / 2; f(lo, 20) * f(m, 20) <= 0 ? hi = m : lo = m; }
+    assert.ok(Math.abs(lo * 180 / Math.PI - angle) < 0.3, `angle at ${l1}`);
+    const dk = 4 * Math.PI / (l1 * 1e-4) * (f(lo, 21) - f(lo, 19)) / 2; // cm⁻¹ per °C
+    assert.ok(Math.abs(5.566 / Math.abs(dk) / bw - 1) < 0.05, `ΔT·l at ${l1}: ${5.566 / Math.abs(dk)}`);
+  }
+});
