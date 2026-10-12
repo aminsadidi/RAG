@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MatRAG Optics</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/webp" href="/brand/icon.webp"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>@font-face{font-family:Vazirmatn;src:url(/vendor/vazirmatn-33.0.3/Vazirmatn-wght.woff2) format("woff2");font-weight:100 900;font-display:swap}</style>
 <style>
 :root{--bg:#f4f6f9;--card:#fff;--ink:#16202b;--muted:#5b6876;--line:#dde3ea;--accent:#1f6feb;--err:#c62828}
 @media (prefers-color-scheme:dark){:root{--bg:#0f141a;--card:#18202a;--ink:#e6edf3;--muted:#98a4b1;--line:#2a3542;--accent:#4c8dff;--err:#ff6b6b}}
@@ -18,11 +18,14 @@ button{margin-top:12px;width:100%;padding:11px;border:0;border-radius:9px;backgr
 </head>
 <body>
 <form method="post" action="/login">
+<img src="/brand/logo.webp" alt="MatRAG" width="220" height="50" style="display:block;margin:0 auto 16px">
 <h1>جست‌وجو در مقاله‌های اپتیک</h1>
-<p>سامانه‌ی بازیابی (RAG) ثابت‌های نوری. این صفحه خصوصی است؛ رمز را وارد کنید.</p>
-<input type="password" name="password" placeholder="رمز" autocomplete="current-password" autofocus required>
+<h2 dir="ltr" lang="en" style="font-size:15px;margin:0 0 4px">MatRAG — search the nonlinear-optics literature</h2>
+<p>سامانه‌ی بازیابی (RAG) ثابت‌های نوری. این صفحه خصوصی است؛ نام کاربری و رمزی را که گرفته‌اید وارد کنید.<br><span dir="ltr" lang="en">A retrieval system for optical constants. This page is private; enter the username and password you were given.</span></p>
+<input type="text" name="username" placeholder="نام کاربری / Username" autocomplete="username" autocapitalize="none" spellcheck="false" autofocus dir="ltr">
+<input type="password" name="password" placeholder="رمز / Password" autocomplete="current-password" required dir="ltr" style="margin-top:8px">
 <!--error-->
-<button type="submit">ورود</button>
+<button type="submit">ورود / Sign in</button>
 </form>
 </body>
 </html>

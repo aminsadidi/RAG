@@ -11,7 +11,9 @@ in papers are reported in tables.
 
 import gzip
 import json
+import logging
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -26,6 +28,8 @@ from llama_index.core.schema import NodeRelationship, RelatedNodeInfo, TextNode
 from matrag.config import Settings
 from matrag.metadata import PaperInfo
 from matrag.textfix import clean_text
+
+log = logging.getLogger(__name__)
 
 SUPPORTED_SUFFIXES = {".pdf", ".md", ".html", ".docx"}
 
@@ -42,9 +46,11 @@ def make_converter(settings: Settings) -> DocumentConverter:
         from docling.datamodel.pipeline_options import RapidOcrOptions
 
         pdf_options.ocr_options = RapidOcrOptions(force_full_page_ocr=True, lang=[settings.ocr_lang])
-    return DocumentConverter(
+    converter = DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
     )
+    converter.matrag_timeout_per_page_s = settings.convert_timeout_per_page_s
+    return converter
 
 
 def make_chunker(settings: Settings, tokenizer: BaseTokenizer | None = None) -> HybridChunker:
@@ -89,6 +95,34 @@ def cached_names(cache_dir: Path) -> set[str]:
     return names
 
 
+def page_count(path: Path) -> int:
+    """Pages of a PDF (0 if it cannot be read)."""
+    try:
+        import pypdfium2
+
+        pdf = pypdfium2.PdfDocument(str(path))
+        try:
+            return len(pdf)
+        finally:
+            pdf.close()
+    except Exception:
+        return 0
+
+
+def extend_timeout(converter: DocumentConverter, path: Path, max_pages: int | None = None) -> None:
+    """Raise the converter's timeout for a long PDF (only ever raised: a changed value makes Docling set
+    up a new pipeline, so the usual papers keep using the one already made)."""
+    options = getattr(converter, "format_to_options", {}).get(InputFormat.PDF)
+    options = getattr(options, "pipeline_options", None)
+    per_page = getattr(converter, "matrag_timeout_per_page_s", 0.0)
+    if options is None or options.document_timeout is None or not per_page or path.suffix.lower() != ".pdf":
+        return
+    pages = min(page_count(path), max_pages or sys.maxsize)
+    needed = pages * per_page
+    if needed > options.document_timeout:
+        options.document_timeout = needed
+
+
 def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str | None = None,
             max_pages: int | None = None) -> DoclingDocument:
     """Convert a paper, caching the result as compressed JSON under ``name`` (default: file name).
@@ -102,15 +136,60 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
     doc = cached_document(cache_dir, name)
     if doc is not None:
         return doc
-    page_range = (1, max_pages) if max_pages else (1, sys.maxsize)
-    doc = converter.convert(path, page_range=page_range).document
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    target = cache_dir / f"{name}.json.gz"
+    pages = min(page_count(path), max_pages or sys.maxsize) if path.suffix.lower() == ".pdf" else 0
+    extend_timeout(converter, path, max_pages)
+    if pages > PART_PAGES:
+        doc = _convert_in_parts(path, converter, cache_dir / "parts" / name, pages)
+    else:
+        doc = _convert_pages(path, converter, (1, max_pages) if max_pages else (1, sys.maxsize))
+    _write(doc, cache_dir / f"{name}.json.gz")
+    if pages > PART_PAGES:
+        shutil.rmtree(cache_dir / "parts" / name, ignore_errors=True)
+    return doc
+
+
+# A book is converted PART_PAGES pages at a time, each part cached as it is done, so a run cut off by a
+# disconnect (an OCR'd book takes hours) carries on from the last finished part instead of page 1.
+PART_PAGES = 40
+
+
+def _convert_in_parts(path: Path, converter: DocumentConverter, parts_dir: Path, pages: int) -> DoclingDocument:
+    parts = []
+    for start in range(1, pages + 1, PART_PAGES):
+        end = min(start + PART_PAGES - 1, pages)
+        target = parts_dir / f"{start:05d}-{end:05d}.json.gz"
+        part = cached_document(parts_dir, target.name[: -len(".json.gz")])
+        if part is None:
+            part = _convert_pages(path, converter, (start, end))
+            _write(part, target)
+            log.info("%s: pages %d-%d of %d converted", path.name, start, end, pages)
+        # concatenate() numbers each part's pages on from the previous part's last page, which is right only
+        # if every page of the part is there; a page Docling dropped would shift all later page numbers.
+        missing = set(range(start, end + 1)) - set(part.pages)
+        if missing:
+            raise RuntimeError(f"pages {sorted(missing)[:5]} missing from the conversion of {path.name}")
+        parts.append(part)
+    return DoclingDocument.concatenate(parts)
+
+
+def _convert_pages(path: Path, converter: DocumentConverter, page_range: tuple[int, int]) -> DoclingDocument:
+    result = converter.convert(path, page_range=page_range)
+    # Docling stops at its timeout and returns the pages done so far; cached, that half would pass for the
+    # whole paper on every later run. Not cached and reported instead, so the next run converts it again.
+    timed_out = [e for e in result.errors if str(getattr(e, "category", "")).lower().endswith("timeout")]
+    if timed_out:
+        raise RuntimeError(f"conversion timed out ({len(timed_out)} pages not converted); not cached, "
+                           f"it is retried on the next run")
+    return result.document
+
+
+def _write(doc: DoclingDocument, target: Path) -> None:
+    """Write in one step (via a temporary file): a write cut off by a disconnect leaves no cache file."""
+    target.parent.mkdir(parents=True, exist_ok=True)
     tmp = target.with_name(f".{target.name}.{os.getpid()}.tmp")
     with gzip.open(tmp, "wt", encoding="utf-8") as f:
         json.dump(doc.export_to_dict(), f)
     os.replace(tmp, target)
-    return doc
 
 
 def chunk_document(

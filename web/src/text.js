@@ -7,9 +7,17 @@ const PERSIAN = /[؀-ۿ]/;
 
 export const isPersian = (text) => PERSIAN.test(text || "");
 
+// Subscript (LiNbO₃), Persian (LiNbO۳), Arabic-Indic and full-width digits as ASCII digits, so a formula
+// typed or pasted with them is still a formula.
+const DIGIT_BLOCKS = [0x2080, 0x06f0, 0x0660, 0xff10];
+export const foldDigits = (text) => text.replace(/[\u2080-\u2089\u06f0-\u06f9\u0660-\u0669\uff10-\uff19]/g, (c) => {
+  const code = c.charCodeAt(0);
+  return String(code - DIGIT_BLOCKS.find((b) => code >= b && code <= b + 9));
+});
+
 // 'LiB 3 O 5' -> 'LiB3O5'; runs with fewer than two capitals ('Eq 5') are kept.
 export function normalizeFormulas(text) {
-  return text.replace(SPACED_FORMULA, (s) => ((s.match(/[A-Z]/g) || []).length >= 2 ? s.replace(/\s+/g, "") : s));
+  return foldDigits(text).replace(SPACED_FORMULA, (s) => ((s.match(/[A-Z]/g) || []).length >= 2 ? s.replace(/\s+/g, "") : s));
 }
 
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -72,6 +80,13 @@ export function queryTerms(query) {
   const phrases = [];
   for (let i = 1; i < tokens.length; i++) if (isWord(tokens[i - 1]) && isWord(tokens[i])) phrases.push(`${tokens[i - 1]} ${tokens[i]}`);
   return { materials: [...new Set([...formulas, ...abbrs, ...named, ...all.filter(chemical)])], words, phrases: [...new Set(phrases)] };
+}
+// The crystals a query names, as formulas (BBO -> BaB2O4, "lithium niobate" -> LiNbO3), for the crystal cards of the
+// search page; words that only look chemical ("zirconate") are left out.
+// Abbreviations are also read in lower case ("bbo", "ktp"), except the two-letter ones ("ln", "lt" are words).
+export function crystalsIn(query) {
+  const lower = Object.keys(S.SYNONYMS).filter((n) => n.length >= 3 && new RegExp(`\\b${escape(n.toLowerCase())}\\b`).test(query || ""));
+  return [...new Set([...queryTerms(query).materials, ...lower].map((m) => S.SYNONYMS[m] || m).filter((m) => /[A-Z]/.test(m)))];
 }
 const CHEM_WORDS = new Set(["estimate", "accurate", "separate", "moderate", "appropriate", "approximate", "intermediate",
   "substrate", "aggregate", "elaborate", "calculate", "evaluate", "indicate", "investigate", "demonstrate", "integrate",

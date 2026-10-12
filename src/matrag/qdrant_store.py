@@ -41,16 +41,21 @@ SYNONYMS = {
 }
 
 
+# Subscript (LiNbO₃), Persian (LiNbO۳), Arabic-Indic and full-width digits, read as ASCII digits.
+_DIGITS = {start + i: str(i) for start in (0x2080, 0x06F0, 0x0660, 0xFF10) for i in range(10)}
+
+
 def normalize_formulas(text: str) -> str:
     """Join spaced-out subscripts of chemical formulas: 'LiB 3 O 5' -> 'LiB3O5', 'KTiOPO 4' -> 'KTiOPO4'.
 
     Only runs with at least two capital letters are joined, so 'Eq 5' or 'N 2' stay as they are.
+    Subscript and Persian digits become ASCII digits first: 'LiNbO₃' -> 'LiNbO3'.
     """
     def join(m: re.Match) -> str:
         s = m.group(0)
         return re.sub(r"\s+", "", s) if sum(c.isupper() for c in s) >= 2 else s
 
-    return _SPACED_FORMULA.sub(join, text)
+    return _SPACED_FORMULA.sub(join, text.translate(_DIGITS))
 
 
 def expand_query(query: str) -> str:
@@ -155,15 +160,17 @@ def chroma_embeddings(kb, ids: list[str]) -> dict[str, list[float]]:
 
 
 def export(kb, qc, name: str, recreate: bool = False, batch: int = 64, skip_existing: bool = True,
-           prune: bool = True, root: str | None = None,
+           prune: bool = True, root: str | None = None, keep: Iterable[str] = (),
            on_progress: Callable[[int, int], None] | None = None) -> int:
     """Upload every chunk of ``kb`` to the Qdrant collection ``name``; returns the number uploaded.
 
     Resumable: with ``skip_existing`` chunks already in the collection with the same text are not
     sent again (a chunk whose text changed is); with ``prune`` points of chunks no longer in ``kb``
-    are deleted, so the collection mirrors it.
+    are deleted, so the collection mirrors it. Papers in ``keep`` are left as they are in the
+    collection: their points were made elsewhere (scripts/ocr_gh, from a conversion ``kb`` lacks).
     """
-    nodes = kb.nodes()
+    keep = set(keep)
+    nodes = [n for n in kb.nodes() if n.metadata.get("doc_id") not in keep]
     if not nodes:
         return 0
     first = chroma_embeddings(kb, [nodes[0].node_id])
@@ -172,8 +179,10 @@ def export(kb, qc, name: str, recreate: bool = False, batch: int = 64, skip_exis
     if skip_existing and not recreate:
         offset = None
         while True:
-            points, offset = qc.scroll(name, limit=1000, offset=offset, with_payload=["text_hash"], with_vectors=False)
-            existing |= {str(p.id): (p.payload or {}).get("text_hash") for p in points}
+            points, offset = qc.scroll(name, limit=1000, offset=offset, with_payload=["text_hash", "doc_id"],
+                                       with_vectors=False)
+            existing |= {str(p.id): (p.payload or {}).get("text_hash") for p in points
+                         if (p.payload or {}).get("doc_id") not in keep}
             if offset is None:
                 break
     wanted = {point_id(n.node_id) for n in nodes}

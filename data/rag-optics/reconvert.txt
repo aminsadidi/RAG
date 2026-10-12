@@ -1,0 +1,1 @@
+# "doc_id YYYY-MM-DDTHH:MM" (UTC): a cached conversion older than this is converted again, once.

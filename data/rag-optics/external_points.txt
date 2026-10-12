@@ -1,0 +1,17 @@
+# Papers whose points on the site come from the OCR workflow (.github/workflows/ocr.yml,
+# scripts/ocr_gh), not from the index on Drive: export-qdrant leaves them as they are.
+10.1007_978_3_540_46793_9
+10.1007_b138685
+10.1002_j.1538_7305.1967.tb01727.x
+10.1364_aop.10.000043
+10.1002_lpor.201900094
+10.1016_j.ccr.2018.02.017
+10.1016_j.pquantelec.2015.04.001
+10.1063_1.1868059
+10.1063_1.1992666
+10.1063_1.371145
+10.1063_1.555624
+10.1103_revmodphys.54.437
+10.1103_revmodphys.75.473
+10.1364_aop.411024
+2012_Dahlstro_m_Introduction_to_attosecond_delays_in_photoionization_e507dd
