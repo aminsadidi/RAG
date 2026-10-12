@@ -19,26 +19,30 @@
   axis: y
   file: 10.1364-ao.42.006661.pdf
   pdf_page: 3
-  where: "Table 2, KTA y-axis column n1"
-  formula: "Δn(λ,T) = n1(λ)(T − 25 °C) + n2(λ)(T − 25 °C)², n1 = Σ a_m/λ^m"
-  values: {a0: -4.1053, a1: 44.261, a2: -38.012, a3: 11.302}
-  units: "n1 in 1e-6 /°C, λ in µm"
+  where: "Table 2, KTA y-axis columns n1 and n2"
+  formula: "Δn(λ,T) = n1(λ)(T − 25 °C) + n2(λ)(T − 25 °C)², n1 = Σ a_m/λ^m, n2 = Σ b_m/λ^m"
+  values:
+    n1: {a0: -4.1053, a1: 44.261, a2: -38.012, a3: 11.302}
+    n2: {b0: 0.5857, b1: 3.9386, b2: -4.0081, b3: 1.4316}
+  units: "n1 in 1e-6 /°C, n2 in 1e-8 /°C², λ in µm"
   range: {wavelength_um: [0.532, 1.585], temperature_c: [25, 200]}
   check: "Fig. 4: n1(y) ≈ 1.37e-5 /°C at 1.064 µm"
-  note: "n2 is independent of λ: n2(y) = 2.404e-8 /°C² (Table 2)."
+  note: "Emanueli & Arie (2003) Table 2: KTA y-axis"
 
 - material: KTiOAsO4
   quantity: dn/dT
   axis: z
   file: 10.1364-ao.42.006661.pdf
   pdf_page: 3
-  where: "Table 2, KTA z-axis column n1"
-  formula: "Δn(λ,T) = n1(λ)(T − 25 °C) + n2(λ)(T − 25 °C)², n1 = Σ a_m/λ^m"
-  values: {a0: 9.9587, a1: 44.905, a2: -38.448, a3: 13.481}
-  units: "n1 in 1e-6 /°C, λ in µm"
+  where: "Table 2, KTA z-axis columns n1 and n2"
+  formula: "Δn(λ,T) = n1(λ)(T − 25 °C) + n2(λ)(T − 25 °C)², n1 = Σ a_m/λ^m, n2 = Σ b_m/λ^m"
+  values:
+    n1: {a0: -6.1537, a1: 64.505, a2: -56.447, a3: 17.169}
+    n2: {b0: -0.96751, b1: 13.192, b2: -11.78, b3: 3.6292}
+  units: "n1 in 1e-6 /°C, n2 in 1e-8 /°C², λ in µm"
   range: {wavelength_um: [0.532, 1.585], temperature_c: [25, 200]}
   check: "Fig. 4: n1(z) ≈ 3.45e-5 /°C at 1.064 µm"
-  note: "n2 is independent of λ: n2(z) = 3.655e-8 /°C² (Table 2)."
+  note: "Emanueli & Arie (2003) Table 2: KTA z-axis. With mid-IR correction of Eq. (4) for OPO."
 
 - material: GaN
   quantity: dn/dT
