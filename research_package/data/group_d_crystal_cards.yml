@@ -1,18 +1,18 @@
 # Summary:
 # Total entries: 210
-# Sourced entries: 193
-# not_found entries: 17
+# Sourced entries: 192
+# not_found entries: 18
 # DOIs cited in collection PDFs for missing data (recommended for retrieval):
-# - CsB3O5 (conductivity): 10.1016/j.jcrysgro.2004.04.095
+# - BiB3O6 (conductivity, band_gap): 10.1016/j.jcrysgro.2004.04.095, 10.1016/j.optmat.2005.09.068
+# - CsLiB6O10 (conductivity): 10.1016/S0925-3467(00)00002-1
+# - CsB3O5 (conductivity, band_gap): 10.1016/j.jcrysgro.2004.04.095
 # - KTiOAsO4 (conductivity, band_gap): 10.1063/1.112841, 10.1364/AO.37.008527
 # - RbTiOAsO4 (band_gap): 10.1063/1.112841
 # - RbTiOPO4 (conductivity, band_gap): 10.1016/0022-0248(94)91011-8
 # - KNbO3 (band_gap): 10.1103/PhysRevB.50.11411
-# - CdSiP2 (conductivity, band_gap): 10.1063/1.3327431
 # - LiGaTe2 (damage, conductivity): 10.1063/1.4723645
 # - BaGa2GeSe6 (damage, conductivity): 10.1364/OL.44.003328, 10.1016/j.optmat.2018.12.040
-# - HgGa2S4 (conductivity, band_gap): 10.1016/j.optmat.2004.10.013
-# - AgGaGeS4 (conductivity, band_gap): 10.1016/j.jallcom.2013.08.067
+# - ZnTe (band_gap): 10.1103/PhysRevB.4.4592, 10.1063/1.1713411
 # - KBe2BO3F2 (conductivity): 10.1039/c3tc31287a
 # - OH1 (conductivity): 10.1364/JOSAB.25.001678
 
@@ -624,16 +624,15 @@
 - material: CsB3O5
   quantity: band_gap
   axis: '-'
-  file: 2018_Wu_Recent_advances_in_ultraviolet_and_deep-ultraviolet_second-order_nonli_f23d74.pdf
-  pdf_page: 6
-  where: Section 2 text
-  formula: Eg
-  values:
-    Eg: 7.4
-  units: eV
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: not_found
+  units: not_found
   range: {}
-  check: none
-  note: ''
+  check: not_found
+  note: Band gap for CsB3O5 is not reported in collection PDFs.
 - material: KTiOAsO4
   quantity: transparency
   axis: '-'
@@ -748,15 +747,18 @@
 - material: RbTiOPO4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 266
+  where: p. 258, Transparency range
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.35
+    ir_edge_um: 4.5
+    criterion: 'transmittance "0" level'
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for RbTiOPO4 is not reported in collection PDFs.
+  check: 'p. 258: Transparency range at "0" transmittance level: 0.35 - 4.5 µm [1] with the orthophosphate overtone at 3.5 µm [4]; UV transmission cutoff (α = 2 cm⁻¹) is at 0.360 µm (E∥X), 0.370 µm (E∥Y), 0.384 µm (E∥Z) [4]'
+  note: Rubidium titanyl phosphate (RTP). Transparency range 0.35–4.5 µm with orthophosphate overtone at 3.5 µm.
 - material: RbTiOPO4
   quantity: damage
   axis: '-'
@@ -912,17 +914,18 @@
 - material: AgGaS2
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1007_b138685.pdf
+  pdf_page: 86
+  where: p. 76, Transparency range
+  formula: T(λ) optical transmission window
   values:
-    uv_edge_um: 0.53
-    ir_edge_um: 12.0
+    uv_edge_um: 0.47
+    ir_edge_um: 13.0
+    criterion: 'transmittance "0" level'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 76: Transparency range at "0" transmittance level: 0.47–13 µm [16]; at α = 1 cm⁻¹ level: 0.48–11.4 µm [8]; at α = 3 cm⁻¹ level: 0.50–13.2 µm [14]'
+  note: Silver thiogallate (AGS).
 - material: AgGaS2
   quantity: damage
   axis: '-'
@@ -980,17 +983,18 @@
 - material: AgGaSe2
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1007_b138685.pdf
+  pdf_page: 97
+  where: p. 87, Transparency range
+  formula: T(λ) optical transmission window
   values:
     uv_edge_um: 0.71
-    ir_edge_um: 18.0
+    ir_edge_um: 19.0
+    criterion: 'transmittance "0" level'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 87: Transparency range at "0" transmittance level: 0.71–19 µm [8], [17]; at α = 1 cm⁻¹ level: 0.76–17 µm [7]; at α = 3 cm⁻¹ level: 0.78–18 µm [13]'
+  note: Silver gallium selenide (AGSe).
 - material: AgGaSe2
   quantity: damage
   axis: '-'
@@ -1036,17 +1040,18 @@
 - material: ZnGeP2
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1007_b138685.pdf
+  pdf_page: 106
+  where: p. 96, Transparency range
+  formula: T(λ) optical transmission window
   values:
     uv_edge_um: 0.74
     ir_edge_um: 12.0
+    criterion: 'transmittance "0" level'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 96: Transparency range at "0" transmittance level: 0.74–12 µm [11], [12]'
+  note: Zinc germanium phosphide (ZGP).
 - material: ZnGeP2
   quantity: damage
   axis: '-'
@@ -1090,17 +1095,18 @@
 - material: GaSe
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1007_b138685.pdf
+  pdf_page: 118
+  where: p. 108, Transparency range
+  formula: T(λ) optical transmission window
   values:
-    uv_edge_um: 0.65
-    ir_edge_um: 18.0
+    uv_edge_um: 0.62
+    ir_edge_um: 20.0
+    criterion: 'transmittance "0" level'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 108: Transparency range at "0" transmittance level: 0.62–20 µm [4]'
+  note: Gallium selenide.
 - material: GaSe
   quantity: damage
   axis: '-'
@@ -1202,17 +1208,18 @@
 - material: CdSiP2
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 31
+  where: p. 31, col. 1, lines 6-10 and Fig. 9
+  formula: T(λ) optical transparency window
   values:
     uv_edge_um: 1.0
     ir_edge_um: 6.5
+    criterion: 'optical transparency window'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 31 col. 1: "main limitation is the ~6.5 µm upper wavelength limit which is the shortest in Table 2"; Fig. 9 plots CSP transparency extending to ~6.5 µm'
+  note: Cadmium silicon phosphide (CSP).
 - material: CdSiP2
   quantity: damage
   axis: '-'
@@ -1375,17 +1382,18 @@
 - material: LiInS2
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1007_b138685.pdf
+  pdf_page: 270
+  where: p. 262, Transparency range
+  formula: T(λ) optical transmission window
   values:
-    uv_edge_um: 0.4
-    ir_edge_um: 12.0
+    uv_edge_um: 0.34
+    ir_edge_um: 13.2
+    criterion: 'transmittance "0" level'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 262: Transparency range at "0" transmittance level: 0.34–13.2 µm [3], [5]; at 0.5 transmittance level: 0.43–11.5 µm [4]'
+  note: Lithium thioindate (LIS).
 - material: LiInS2
   quantity: damage
   axis: '-'
@@ -1457,17 +1465,18 @@
 - material: LiInSe2
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1007_b138685.pdf
+  pdf_page: 275
+  where: p. 267, Transparency range
+  formula: T(λ) optical transmission window
   values:
-    uv_edge_um: 0.5
+    uv_edge_um: 0.46
     ir_edge_um: 14.0
+    criterion: 'α = 15 cm⁻¹ level'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 267: Transparency range for as-grown yellow crystal: at α = 15 cm⁻¹ level: 0.46–14 µm [1]; at α = 1 cm⁻¹ level: 0.72–10.4 µm [1]'
+  note: Lithium indium selenide (LISe).
 - material: LiInSe2
   quantity: damage
   axis: '-'
@@ -1594,17 +1603,18 @@
 - material: BaGa4S7
   quantity: transparency
   axis: '-'
-  file: 10.1109-lpt.2024.3457910.pdf
-  pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 27
+  where: p. 27, Fig. 9 and p. 30 Table 2
+  formula: T(λ) optical transparency window
   values:
     uv_edge_um: 0.35
     ir_edge_um: 13.7
+    criterion: 'optical transparency window'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 27 Fig. 9: BGS transparency range plotted from ~0.35 to 13.7 µm; Table 2 gives bandgap Eg = 3.54 eV (~0.35 µm)'
+  note: Barium gallium sulfide (BGS).
 - material: BaGa4S7
   quantity: damage
   axis: '-'
@@ -1740,15 +1750,16 @@
   axis: '-'
   file: 10.1109-lpt.2024.3457910.pdf
   pdf_page: 1
-  where: Section I, col. 1
-  formula: T(λ)
+  where: p. 1, Section I, lines 18-24 and col. 2
+  formula: T(λ) optical transmission window
   values:
     uv_edge_um: 0.52
     ir_edge_um: 18.0
+    criterion: 'transmittance cutoff / bandgap'
   units: µm
   range: {}
-  check: none
-  note: ''
+  check: 'p. 1 col. 2: bandgap Eg = 2.81 eV (corresponding to ~0.44-0.52 µm edge), and non-oxide selenides transmit up to ~18 µm; widely tunable 3–15 µm OPA demonstrated'
+  note: Barium gallium germanium selenide (BGGSe).
 - material: BaGa2GeSe6
   quantity: damage
   axis: '-'
@@ -2320,16 +2331,15 @@
 - material: ZnTe
   quantity: band_gap
   axis: '-'
-  file: 10.1063-1.555705.pdf
-  pdf_page: 42
-  where: Table 12, row ZnTe
-  formula: Fundamental absorption edge E0
-  values:
-    Eg_ev: 2.26
-  units: eV
+  file: not_found
+  pdf_page: null
+  where: not_found
+  formula: not_found
+  values: not_found
+  units: not_found
   range: {}
-  check: none
-  note: Fundamental band gap of ZnTe at 300 K.
+  check: not_found
+  note: Band gap for ZnTe is not reported in collection PDFs.
 - material: CdTe
   quantity: transparency
   axis: '-'
