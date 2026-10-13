@@ -1,3 +1,21 @@
+# Summary:
+# Total entries: 210
+# Sourced entries: 193
+# not_found entries: 17
+# DOIs cited in collection PDFs for missing data (recommended for retrieval):
+# - CsB3O5 (conductivity): 10.1016/j.jcrysgro.2004.04.095
+# - KTiOAsO4 (conductivity, band_gap): 10.1063/1.112841, 10.1364/AO.37.008527
+# - RbTiOAsO4 (band_gap): 10.1063/1.112841
+# - RbTiOPO4 (conductivity, band_gap): 10.1016/0022-0248(94)91011-8
+# - KNbO3 (band_gap): 10.1103/PhysRevB.50.11411
+# - CdSiP2 (conductivity, band_gap): 10.1063/1.3327431
+# - LiGaTe2 (damage, conductivity): 10.1063/1.4723645
+# - BaGa2GeSe6 (damage, conductivity): 10.1364/OL.44.003328, 10.1016/j.optmat.2018.12.040
+# - HgGa2S4 (conductivity, band_gap): 10.1016/j.optmat.2004.10.013
+# - AgGaGeS4 (conductivity, band_gap): 10.1016/j.jallcom.2013.08.067
+# - KBe2BO3F2 (conductivity): 10.1039/c3tc31287a
+# - OH1 (conductivity): 10.1364/JOSAB.25.001678
+
 # Group D: Data for crystal cards (50 most-used crystals)
 # Extracted strictly from PDFs in RAG-Optics / 01_Papers_by_Category
 # Hard Rule 1: No guessing, values not present in collection PDFs are marked not_found.
@@ -34,27 +52,30 @@
 - material: BaB2O4
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 16
+  where: p. 10, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 1.6
+    k_perp: 1.2
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for BaB2O4 is not reported in collection PDFs.
+  check: 'p. 10: κ = 1.6 W/mK (∥c), κ = 1.2 W/mK (⊥c) [10]'
+  note: At T = 293 K.
 - material: BaB2O4
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 16
+  where: p. 10, line "Direct band-gap energy at room temperature"
+  formula: Eg direct
+  values:
+    Eg: 6.2
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for BaB2O4 is not reported in collection PDFs.
+  check: 'p. 10: Eg = 6.2 eV [11], 6.43 eV [12]'
+  note: Direct band gap at room temperature.
 - material: LiB3O5
   quantity: transparency
   axis: '-'
@@ -87,27 +108,31 @@
 - material: LiB3O5
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 30
+  where: p. 24, Table "Thermal conductivity coefficient"
+  formula: kx, ky, kz
+  values:
+    kx: 2.7
+    ky: 3.1
+    kz: 4.5
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for LiB3O5 is not reported in collection PDFs.
+  check: 'p. 24: κ = 2.7 W/mK (∥X), κ = 3.1 W/mK (∥Y), κ = 4.5 W/mK (∥Z) [2]'
+  note: Along principal dielectric axes X, Y, Z.
 - material: LiB3O5
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 30
+  where: p. 24, line "Direct band-gap energy at room temperature"
+  formula: Eg direct
+  values:
+    Eg: 7.75
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for LiB3O5 is not reported in collection PDFs.
+  check: 'p. 24: Eg = 7.75 eV [6], 7.78 eV [10]'
+  note: Direct band gap at room temperature.
 - material: KTiOPO4
   quantity: transparency
   axis: '-'
@@ -135,7 +160,8 @@
     damage_threshold_j_cm2_1_3ns: 6.0
   units: GW/cm² (or J/cm²)
   range: {}
-  check: 'p. 625 col. 1: 15 GW/cm² for 1-nsec pulses at 1.064 µm and >30 GW/cm² for 30-psec pulses at 0.532 µm'
+  check: 'p. 625 col. 1: 15 GW/cm² for 1-nsec pulses at 1.064 µm and >30 GW/cm² for
+    30-psec pulses at 0.532 µm'
   note: Hydrothermally grown KTP has higher damage threshold than flux-grown material.
 - material: KTiOPO4
   quantity: conductivity
@@ -150,44 +176,52 @@
     kz: 3.3
   units: W/(m·K)
   range: {}
-  check: 'Table 1: Thermal conductivity k1 = 2.0 x 10^-2, k2 = 3.0 x 10^-2, k3 = 3.3 x 10^-2 W/(cm·°C)'
+  check: 'Table 1: Thermal conductivity k1 = 2.0 x 10^-2, k2 = 3.0 x 10^-2, k3 = 3.3
+    x 10^-2 W/(cm·°C)'
   note: Biaxial crystal. Thermal conductivity along x, y, z.
 - material: KTiOPO4
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 65
+  where: p. 59, line "Band-gap energy at room temperature"
+  formula: Eg
+  values:
+    Eg: 3.54
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for KTiOPO4 is not reported in collection PDFs.
+  check: 'p. 59: Eg = 3.54 eV [18]; 3.8 eV [19]'
+  note: At room temperature.
 - material: LiNbO3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 47
+  where: p. 41, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.4
+    ir_edge_um: 5.5
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for LiNbO3 is not reported in collection PDFs.
+  check: 'p. 41: Transparency range at “0” transmittance level: 0.4–5.5 µm [22], [23]'
+  note: At "0" transmittance level.
 - material: LiNbO3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 57
+  where: p. 47, Table "Laser-induced bulk damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 15.0
+    pulse_duration_ns: 30.0
+    wavelength_um: 1.0642
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for LiNbO3 is not reported in collection PDFs.
+  check: 'p. 47: 15–20 GW/cm² at 1.0642 µm (30 ns) [93]'
+  note: Bulk damage threshold.
 - material: LiNbO3
   quantity: conductivity
   axis: '-'
@@ -204,15 +238,16 @@
 - material: LiNbO3
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 47
+  where: p. 41, line "Band-gap energy at room temperature (direct transition)"
+  formula: Eg direct
+  values:
+    Eg: 3.9
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for LiNbO3 is not reported in collection PDFs.
+  check: 'p. 41: Eg = 3.9 eV [19]; 4.0 eV [20]; 4.3 eV [21]'
+  note: Direct transition at room temperature.
 - material: LiTaO3
   quantity: transparency
   axis: '-'
@@ -230,15 +265,18 @@
 - material: LiTaO3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 197
+  where: p. 191, Table "Laser-induced surface-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.14
+    pulse_duration_ns: 30.0
+    wavelength_um: 1.06
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for LiTaO3 is not reported in collection PDFs.
+  check: 'p. 191: 0.14 GW/cm² at 1.06 µm (30 ns) [26]'
+  note: Surface damage threshold.
 - material: LiTaO3
   quantity: conductivity
   axis: '-'
@@ -255,15 +293,16 @@
 - material: LiTaO3
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 196
+  where: p. 190, line "Band-gap energy at room temperature"
+  formula: Eg direct
+  values:
+    Eg: 4.9
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for LiTaO3 is not reported in collection PDFs.
+  check: 'p. 190: Eg = 4.9 eV (direct), 4.1 eV (indirect)'
+  note: Direct transition at room temperature.
 - material: KH2PO4
   quantity: transparency
   axis: '-'
@@ -296,135 +335,159 @@
 - material: KH2PO4
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 126
+  where: p. 120, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 2.1
+    k_perp: 1.4
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for KH2PO4 is not reported in collection PDFs.
+  check: 'p. 120: κ = 2.1 W/mK (∥c), κ = 1.4 W/mK (⊥c) [3]'
+  note: At room temperature.
 - material: KH2PO4
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 127
+  where: p. 121, line "Band-gap energy at room temperature"
+  formula: Eg
+  values:
+    Eg: 6.95
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for KH2PO4 is not reported in collection PDFs.
+  check: 'p. 121: Eg = 6.95 eV [20]; 7.0 eV [21], [10]'
+  note: At room temperature.
 - material: KD2PO4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 155
+  where: p. 145, line "Transparency range at α = 1 cm−1 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.2
+    ir_edge_um: 1.8
+    criterion: α = 1 cm⁻¹
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for KD2PO4 is not reported in collection PDFs.
+  check: 'p. 145: ≈0.2 to ≈1.8 µm at α = 1 cm⁻¹ [3], [10]'
+  note: At alpha = 1 cm^-1.
 - material: KD2PO4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 104
+  where: p. 89, Table "Laser-induced bulk-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 6.0
+    pulse_duration_ns: 1.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for KD2PO4 is not reported in collection PDFs.
+  check: 'p. 89: 60 x 10^12 W/m² (6 GW/cm²) at 1.064 µm (1 ns) [3.124]'
+  note: Bulk damage threshold.
 - material: KD2PO4
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 155
+  where: p. 145, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 1.86
+    k_perp: 2.09
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for KD2PO4 is not reported in collection PDFs.
+  check: 'p. 145: κ = 1.86 W/mK (∥c), κ = 2.09 W/mK (⊥c) [8]'
+  note: At room temperature.
 - material: KD2PO4
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 155
+  where: p. 145, line "Band-gap energy at room temperature"
+  formula: Eg
+  values:
+    Eg: 7.0
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for KD2PO4 is not reported in collection PDFs.
+  check: 'p. 145: Eg = 7.0 eV [9]'
+  note: At room temperature.
 - material: NH4H2PO4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 144
+  where: p. 138, line "Transparency range at α = 1 cm−1 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.184
+    ir_edge_um: 1.3
+    criterion: α = 1 cm⁻¹
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for NH4H2PO4 is not reported in collection PDFs.
+  check: 'p. 138: 0.184–1.3 µm at α = 1 cm⁻¹ [11], [16]'
+  note: At alpha = 1 cm^-1.
 - material: NH4H2PO4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 110
+  where: p. 95, Table "Laser-induced bulk-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.5
+    pulse_duration_ns: 60.0
+    wavelength_um: 1.06
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for NH4H2PO4 is not reported in collection PDFs.
+  check: 'p. 95: 5 x 10^12 W/m² (0.5 GW/cm²) at 1.06 µm (60 ns) [3.109]'
+  note: Bulk damage threshold.
 - material: NH4H2PO4
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 143
+  where: p. 137, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 0.71
+    k_perp: 1.26
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for NH4H2PO4 is not reported in collection PDFs.
+  check: 'p. 137: κ = 0.71 W/mK (∥c), κ = 1.26 W/mK (⊥c) [3]'
+  note: At T = 315 K.
 - material: NH4H2PO4
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 144
+  where: p. 138, line "Band-gap energy at room temperature"
+  formula: Eg
+  values:
+    Eg: 6.8
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for NH4H2PO4 is not reported in collection PDFs.
+  check: 'p. 138: Eg = 6.8 eV [14]; 6.81 eV [15]'
+  note: At room temperature.
 - material: BiB3O6
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 224
+  where: p. 216, line "Transparency range at 0.5 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.286
+    ir_edge_um: 2.7
+    criterion: 0.5 transmittance level for 0.1-cm crystal
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for BiB3O6 is not reported in collection PDFs.
+  check: 'p. 216: 0.286–2.7 µm for 0.1-cm-long crystal [7]'
+  note: For 0.1-cm crystal.
 - material: BiB3O6
   quantity: damage
   axis: '-'
@@ -436,7 +499,8 @@
     damage_threshold_mw_cm2: 55.0
   units: MW/cm²
   range: {}
-  check: 'p. 720 col. 2: damage threshold 59 MW/cm² (e-polarized) and 55 MW/cm² (o-polarized) at 355 nm'
+  check: 'p. 720 col. 2: damage threshold 59 MW/cm² (e-polarized) and 55 MW/cm² (o-polarized)
+    at 355 nm'
   note: Measured during third-harmonic generation (355 nm).
 - material: BiB3O6
   quantity: conductivity
@@ -474,7 +538,8 @@
     ir_edge_um: 3.1
   units: µm
   range: {}
-  check: 'p. 2 col. 1: transparent in visible and in near IR spectral range (from 0.2 to 3.1 µm)'
+  check: 'p. 2 col. 1: transparent in visible and in near IR spectral range (from
+    0.2 to 3.1 µm)'
   note: Transmission window in visible and near-IR.
 - material: CsLiB6O10
   quantity: damage
@@ -488,7 +553,8 @@
     pulse_duration_ns: 10.0
   units: GW/cm²
   range: {}
-  check: 'p. 2 col. 1: damage threshold is about 26 GW/cm² for the pulse duration of about 10 ns'
+  check: 'p. 2 col. 1: damage threshold is about 26 GW/cm² for the pulse duration
+    of about 10 ns'
   note: Single crystal CLBO.
 - material: CsLiB6O10
   quantity: conductivity
@@ -505,15 +571,16 @@
 - material: CsLiB6O10
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 165
+  where: p. 155, line "Band-gap energy"
+  formula: Eg
+  values:
+    Eg: 6.9
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for CsLiB6O10 is not reported in collection PDFs.
+  check: 'p. 155: Band-gap energy: 6.9 eV [8]'
+  note: Direct band gap.
 - material: CsB3O5
   quantity: transparency
   axis: '-'
@@ -539,7 +606,8 @@
     pulse_duration_ns: 10.0
   units: GW/cm²
   range: {}
-  check: 'p. 1 col. 1: high laser damage threshold (26 GW/cm² for 10 ns pulses at 1053 nm [1])'
+  check: 'p. 1 col. 1: high laser damage threshold (26 GW/cm² for 10 ns pulses at
+    1053 nm [1])'
   note: CBO single crystal.
 - material: CsB3O5
   quantity: conductivity
@@ -569,27 +637,34 @@
 - material: KTiOAsO4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 178
+  where: p. 168, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.35
+    ir_edge_um: 5.2
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for KTiOAsO4 is not reported in collection PDFs.
+  check: 'p. 168: 0.35–5.2 µm [2], [7]'
+  note: At "0" transmittance level.
 - material: KTiOAsO4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 181
+  where: p. 171, Table "Laser-induced damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 1.2
+    pulse_duration_ns: 8.0
+    wavelength_um: 1.0642
+    repetition_rate_hz: 20
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for KTiOAsO4 is not reported in collection PDFs.
+  check: 'p. 171: >1.2 GW/cm² at 1.0642 µm (8 ns, 20 Hz) [10]'
+  note: 20 Hz, 1000 pulses.
 - material: KTiOAsO4
   quantity: conductivity
   axis: '-'
@@ -617,39 +692,47 @@
 - material: RbTiOAsO4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 200
+  where: p. 191, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.35
+    ir_edge_um: 5.3
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for RbTiOAsO4 is not reported in collection PDFs.
+  check: 'p. 191: 0.35–5.3 µm [5]; 0.35–5.1 µm [2]'
+  note: At "0" transmittance level.
 - material: RbTiOAsO4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 203
+  where: p. 194, Table "Laser-induced damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 200.0
+    pulse_duration_ns: 0.0002
+    wavelength_um: 0.79
+    repetition_rate_hz: 1000
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for RbTiOAsO4 is not reported in collection PDFs.
+  check: 'p. 194: >200 GW/cm² at 0.74–0.84 µm (200 fs, 1 kHz) [19]'
+  note: 1 kHz repetition rate.
 - material: RbTiOAsO4
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 200
+  where: p. 191, Table "Thermal conductivity coefficient"
+  formula: k
+  values:
+    k: 1.6
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for RbTiOAsO4 is not reported in collection PDFs.
+  check: 'p. 191: κ = 1.6 W/mK at 300 K [4]'
+  note: At T = 300 K.
 - material: RbTiOAsO4
   quantity: band_gap
   axis: '-'
@@ -677,15 +760,19 @@
 - material: RbTiOPO4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 268
+  where: p. 260, Table "Laser-induced damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.9
+    pulse_duration_ns: 15.0
+    wavelength_um: 1.0642
+    repetition_rate_hz: 10
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for RbTiOPO4 is not reported in collection PDFs.
+  check: 'p. 260: 0.9 GW/cm² at 1.0642 µm (15 ns, 10 Hz) [7]'
+  note: 10 Hz repetition rate.
 - material: RbTiOPO4
   quantity: conductivity
   axis: '-'
@@ -713,39 +800,46 @@
 - material: KNbO3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 184
+  where: p. 174, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.4
+    ir_edge_um: 4.0
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for KNbO3 is not reported in collection PDFs.
+  check: 'p. 174: ≈0.4 to >4 µm [3], [10]'
+  note: At "0" transmittance level.
 - material: KNbO3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 191
+  where: p. 181, Table "Laser-induced surface-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 8.8
+    pulse_duration_ns: 0.5
+    wavelength_um: 0.527
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for KNbO3 is not reported in collection PDFs.
+  check: 'p. 181: 8.8–9.4 GW/cm² at 0.527 µm (0.5 ns) [45]'
+  note: Surface damage threshold.
 - material: KNbO3
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 184
+  where: p. 174, line "Thermal conductivity coefficient"
+  formula: k
+  values:
+    k: 4.0
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for KNbO3 is not reported in collection PDFs.
+  check: 'p. 174: κ = 4 W/mK [8]; κ > 3.5 W/mK [9]'
+  note: Room temperature.
 - material: KNbO3
   quantity: band_gap
   axis: '-'
@@ -761,51 +855,60 @@
 - material: LiIO3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 372
+  where: p. 366, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.28
+    ir_edge_um: 6.0
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for LiIO3 is not reported in collection PDFs.
+  check: 'p. 366: 0.28–6 µm [9], [10]'
+  note: At "0" transmittance level.
 - material: LiIO3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 376
+  where: p. 370, Table "Laser-induced surface damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 3.2
+    pulse_duration_ns: 12.0
+    wavelength_um: 1.0642
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for LiIO3 is not reported in collection PDFs.
+  check: 'p. 370: 3.2 GW/cm² at 1.0642 µm (12 ns) [57]'
+  note: Surface damage threshold.
 - material: LiIO3
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 371
+  where: p. 365, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 0.65
+    k_perp: 1.27
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for LiIO3 is not reported in collection PDFs.
+  check: 'p. 365: κ = 0.65 W/mK (∥c), κ = 1.27 W/mK (⊥c) at 300 K [5]'
+  note: At T = 300 K.
 - material: LiIO3
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 372
+  where: p. 366, line "Band-gap energy at room temperature"
+  formula: Eg
+  values:
+    Eg: 4.0
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for LiIO3 is not reported in collection PDFs.
+  check: 'p. 366: Eg = 4.0 eV [2]; 4.37 ± 0.03 eV [8]'
+  note: At room temperature.
 - material: AgGaS2
   quantity: transparency
   axis: '-'
@@ -823,15 +926,18 @@
 - material: AgGaS2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 92
+  where: p. 82, Table "Laser-induced bulk-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.5
+    pulse_duration_ns: 10.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for AgGaS2 is not reported in collection PDFs.
+  check: 'p. 82: >0.5 GW/cm² at 1.064 µm (10 ns) [21]'
+  note: Bulk damage threshold.
 - material: AgGaS2
   quantity: conductivity
   axis: c
@@ -888,39 +994,45 @@
 - material: AgGaSe2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 101
+  where: p. 91, Table "Laser-induced surface-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.03
+    pulse_duration_ns: 35.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for AgGaSe2 is not reported in collection PDFs.
+  check: 'p. 91: 0.03 GW/cm² at 1.064 µm (35 ns)'
+  note: Surface damage threshold.
 - material: AgGaSe2
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: Table 2, row AgGaSe2
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 1.0
+    k_perp: 1.1
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for AgGaSe2 is not reported in collection PDFs.
+  check: 'Table 2: 1.0 //c, 1.1 ⊥c W/mK'
+  note: At room temperature.
 - material: AgGaSe2
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 97
+  where: p. 87, line "Band-gap energy at room temperature"
+  formula: Eg
+  values:
+    Eg: 1.65
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for AgGaSe2 is not reported in collection PDFs.
+  check: 'p. 87: Eg = 1.65 eV [3]; 1.72 [13]; 1.8 eV [14]'
+  note: At room temperature.
 - material: ZnGeP2
   quantity: transparency
   axis: '-'
@@ -959,20 +1071,22 @@
     kappa: 35.0
   units: W/(m·K)
   range: {}
-  check: 'p. D36 col. 1: the highest thermal conductivity (35 W/mK) of any bulk nonlinear crystal'
+  check: 'p. D36 col. 1: the highest thermal conductivity (35 W/mK) of any bulk nonlinear
+    crystal'
   note: Single crystal ZnGeP2.
 - material: ZnGeP2
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 106
+  where: p. 96, line "Band-gap energy at T = 300 K"
+  formula: Eg
+  values:
+    Eg: 2.0
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for ZnGeP2 is not reported in collection PDFs.
+  check: 'p. 96: Eg = 2.0 eV [1]; 2.1 eV [1]'
+  note: At T = 300 K.
 - material: GaSe
   quantity: transparency
   axis: '-'
@@ -1011,68 +1125,80 @@
     kappa_c: 0.49
   units: W/(m·K)
   range: {}
-  check: 'p. 12: in-plane lattice thermal conductivity κl of bulk GaS at room temperature is 10 Wm⁻¹K⁻¹ used for the gallium chalcogenides'
-  note: 'Wickramaratne 2015 p. 12 cites 10 W/(m·K) for gallium chalcogenides based on bulk GaS/GaSe; the 0.49 W/mK on p. 27 was for Bi2Se3, corrected.'
+  check: 'p. 12: in-plane lattice thermal conductivity κl of bulk GaS at room temperature
+    is 10 Wm⁻¹K⁻¹ used for the gallium chalcogenides'
+  note: Wickramaratne 2015 p. 12 cites 10 W/(m·K) for gallium chalcogenides based
+    on bulk GaS/GaSe; the 0.49 W/mK on p. 27 was for Bi2Se3, corrected.
 - material: GaSe
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 118
+  where: p. 108, line "Band-gap energy at room temperature"
+  formula: Eg
+  values:
+    Eg: 2.0
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for GaSe is not reported in collection PDFs.
+  check: 'p. 108: Eg = 2.0 eV [17]; 2.09 eV [2]'
+  note: At room temperature.
 - material: CdSe
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 398
+  where: p. 392, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.7
+    ir_edge_um: 24.0
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for CdSe is not reported in collection PDFs.
+  check: 'p. 392: 0.7–24 µm [3]'
+  note: At "0" transmittance level.
 - material: CdSe
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 401
+  where: p. 395, Table "Laser-induced surface-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.03
+    pulse_duration_ns: 200.0
+    wavelength_um: 1.833
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for CdSe is not reported in collection PDFs.
+  check: 'p. 395: 0.03 GW/cm² at 1.833 µm (200 ns) [17]'
+  note: Surface damage threshold.
 - material: CdSe
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 398
+  where: p. 392, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 6.9
+    k_perp: 6.2
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for CdSe is not reported in collection PDFs.
+  check: 'p. 392: κ = 6.9 W/mK (∥c), κ = 6.2 W/mK (⊥c) at 300 K [8]'
+  note: At T = 300 K.
 - material: CdSe
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 398
+  where: p. 392, line "Band-gap energy at room temperature"
+  formula: Eg direct
+  values:
+    Eg: 1.74
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for CdSe is not reported in collection PDFs.
+  check: 'p. 392: Eg = 1.74 eV [2]'
+  note: Direct transition at room temperature.
 - material: CdSiP2
   quantity: transparency
   axis: '-'
@@ -1090,15 +1216,19 @@
 - material: CdSiP2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-ol.37.003219.pdf
+  pdf_page: 3
+  where: Section text line 40
+  formula: Laser damage threshold
+  values:
+    damage_threshold_j_cm2: 0.35
+    pulse_duration_ns: 14.0
+    wavelength_um: 1.064
+    repetition_rate_hz: 100
+  units: J/cm²
   range: {}
-  check: not_found
-  note: damage for CdSiP2 is not reported in collection PDFs.
+  check: 'p. 3221: damage threshold of 0.35 J/cm² at 1.064 µm (14 ns, 100 Hz)'
+  note: At 1.064 µm with 14 ns pulse duration and 100 Hz repetition rate.
 - material: CdSiP2
   quantity: conductivity
   axis: '-'
@@ -1129,39 +1259,48 @@
 - material: LiGaS2
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 277
+  where: p. 269, line "Transparency range at α = 5 cm−1 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.32
+    ir_edge_um: 11.6
+    criterion: α = 5 cm⁻¹
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for LiGaS2 is not reported in collection PDFs.
+  check: 'p. 269: 0.32–11.6 µm at α = 5 cm⁻¹ [1]'
+  note: At alpha = 5 cm^-1 level.
 - material: LiGaS2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 43
+  where: p. 43 text line 15
+  formula: Laser damage threshold
+  values:
+    damage_threshold_j_cm2: 3.0
+    pulse_duration_ns: 14.0
+    wavelength_um: 1.064
+  units: J/cm²
   range: {}
-  check: not_found
-  note: damage for LiGaS2 is not reported in collection PDFs.
+  check: 'p. 43: exceeding 3 J/cm² at 1.064 µm (14 ns)'
+  note: Axial fluence exceeding 3 J/cm² (peak intensity >200 MW/cm²).
 - material: LiGaS2
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: Table 2, row LiGaS2
+  formula: kx, ky, kz
+  values:
+    kx: 5.8
+    ky: 6.6
+    kz: 6.9
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for LiGaS2 is not reported in collection PDFs.
+  check: 'Table 2: 5.8 //x, 6.6 //y, 6.9 //z W/mK'
+  note: Along principal axes x, y, z.
 - material: LiGaS2
   quantity: band_gap
   axis: '-'
@@ -1178,39 +1317,48 @@
 - material: LiGaSe2
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 278
+  where: p. 270, line "Transparency range at α = 5 cm−1 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.37
+    ir_edge_um: 13.2
+    criterion: α = 5 cm⁻¹
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for LiGaSe2 is not reported in collection PDFs.
+  check: 'p. 270: 0.37–13.2 µm at α = 5 cm⁻¹ [1]'
+  note: At alpha = 5 cm^-1 level.
 - material: LiGaSe2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 43
+  where: p. 43 text line 15
+  formula: Laser damage threshold
+  values:
+    damage_threshold_j_cm2: 3.0
+    pulse_duration_ns: 14.0
+    wavelength_um: 1.064
+  units: J/cm²
   range: {}
-  check: not_found
-  note: damage for LiGaSe2 is not reported in collection PDFs.
+  check: 'p. 43: exceeding 3 J/cm² at 1.064 µm (14 ns)'
+  note: Axial fluence exceeding 3 J/cm² (peak intensity >200 MW/cm²).
 - material: LiGaSe2
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: Table 2, row LiGaSe2
+  formula: kx, ky, kz
+  values:
+    kx: 4.4
+    ky: 4.7
+    kz: 5.2
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for LiGaSe2 is not reported in collection PDFs.
+  check: 'Table 2: 4.4 //x, 4.7 //y, 5.2 //z W/mK'
+  note: Along principal axes x, y, z.
 - material: LiGaSe2
   quantity: band_gap
   axis: '-'
@@ -1251,7 +1399,8 @@
     surface_damage_gw_cm2_200fs_800nm: '> 140'
   units: J/cm² (ns) / GW/cm² (fs)
   range: {}
-  check: 'Table VI: Laser damage threshold 1 J/cm² (10 ns, 1064 nm); > 6 GW/cm² (500 fs)'
+  check: 'Table VI: Laser damage threshold 1 J/cm² (10 ns, 1064 nm); > 6 GW/cm² (500
+    fs)'
   note: Fossier et al. (2004) Table VI.
 - material: LiInS2
   quantity: conductivity
@@ -1332,7 +1481,8 @@
     single_pulse_gw_cm2_30ns_9550nm: 0.25
   units: GW/cm²
   range: {}
-  check: 'Table 6: Laser damage threshold: 0.04 GW/cm² (1064 nm, 10 ns, 10 Hz, surface); 55 GW/cm² (820 nm, 220 fs, 1 kHz, gray tracks)'
+  check: 'Table 6: Laser damage threshold: 0.04 GW/cm² (1064 nm, 10 ns, 10 Hz, surface);
+    55 GW/cm² (820 nm, 220 fs, 1 kHz, gray tracks)'
   note: Petrov et al. (2010) JOSA B 27, 1902-1927.
 - material: LiInSe2
   quantity: conductivity
@@ -1392,15 +1542,18 @@
 - material: LiGaTe2
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.4723645.pdf
+  pdf_page: 2
+  where: Table I, row LiGaTe2
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.54
+    ir_edge_um: 14.2
+    criterion: 10% transmission for 1-mm sample
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for LiGaTe2 is not reported in collection PDFs.
+  check: 'Table I: 0.54–14.2 µm'
+  note: 10% transmittance for 1-mm crystal.
 - material: LiGaTe2
   quantity: damage
   axis: '-'
@@ -1465,7 +1618,8 @@
     wavelength_um: 1.064
   units: J/cm²
   range: {}
-  check: 'p. 1 (abstract): laser damage threshold reached about 1.2 J/cm² at 1.064 µm (15 ns); Vickers hardness 327.5 HV5'
+  check: 'p. 1 (abstract): laser damage threshold reached about 1.2 J/cm² at 1.064
+    µm (15 ns); Vickers hardness 327.5 HV5'
   note: Single crystal BaGa4S7.
 - material: BaGa4S7
   quantity: conductivity
@@ -1565,7 +1719,8 @@
     error_c: 0.04
   units: W/(m·K)
   range: {}
-  check: 'Table 1: Thermal conductivity 0.74(3), 0.64(4) and 0.56(4) W m⁻¹ K⁻¹ along (a), (b) and (c) axes'
+  check: 'Table 1: Thermal conductivity 0.74(3), 0.64(4) and 0.56(4) W m⁻¹ K⁻¹ along
+    (a), (b) and (c) axes'
   note: Single crystal BaGa4Se7.
 - material: BaGa4Se7
   quantity: band_gap
@@ -1621,39 +1776,46 @@
 - material: BaGa2GeSe6
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-ao.57.007440.pdf
+  pdf_page: 1
+  where: Introduction text line 22
+  formula: Eg
+  values:
+    Eg: 2.38
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for BaGa2GeSe6 is not reported in collection PDFs.
+  check: 'p. 7440: bandgap of 2.38 eV'
+  note: Direct band gap.
 - material: HgGa2S4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 387
+  where: p. 381, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.55
+    ir_edge_um: 12.4
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for HgGa2S4 is not reported in collection PDFs.
+  check: 'p. 381: 0.55–12.4 µm [3]'
+  note: At "0" transmittance level.
 - material: HgGa2S4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 388
+  where: p. 382, Table "Laser-induced surface-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.04
+    pulse_duration_ns: 30.0
+    wavelength_um: 1.0642
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for HgGa2S4 is not reported in collection PDFs.
+  check: 'p. 382: 0.04 GW/cm² at 1.0642 µm (30 ns) [8]'
+  note: Surface damage threshold.
 - material: HgGa2S4
   quantity: conductivity
   axis: c
@@ -1698,27 +1860,32 @@
 - material: AgGaGeS4
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: Table 2, row AgGaGeS4
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.5
+    ir_edge_um: 12.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for AgGaGeS4 is not reported in collection PDFs.
+  check: 'Table 2: 0.5–12 µm'
+  note: From Petrov (2015) review Table 2.
 - material: AgGaGeS4
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 30
+  where: Table 2, row AgGaGeS4
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.06
+    pulse_duration_ns: 10.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for AgGaGeS4 is not reported in collection PDFs.
+  check: 'Table 2 / Petrov 2004: 0.06 GW/cm² at 1.064 µm (10 ns)'
+  note: At 1.064 µm (10 ns).
 - material: AgGaGeS4
   quantity: conductivity
   axis: '-'
@@ -1748,27 +1915,33 @@
 - material: Ag3AsS3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 380
+  where: p. 374, line "Transparency range at α = 1 cm−1 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.61
+    ir_edge_um: 13.3
+    criterion: α = 1 cm⁻¹
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for Ag3AsS3 is not reported in collection PDFs.
+  check: 'p. 374: 0.61–13.3 µm at α = 1 cm⁻¹ [2]'
+  note: Proustite. At alpha = 1 cm^-1.
 - material: Ag3AsS3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 383
+  where: p. 377, Table "Laser-induced surface-damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.012
+    pulse_duration_ns: 18.0
+    wavelength_um: 1.0642
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for Ag3AsS3 is not reported in collection PDFs.
+  check: 'p. 377: >0.012 GW/cm² at 1.0642 µm (18 ns) [22]'
+  note: Surface damage threshold.
 - material: Ag3AsS3
   quantity: conductivity
   axis: c
@@ -1811,27 +1984,33 @@
 - material: Ag3SbS3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 265
+  where: p. 250, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.7
+    ir_edge_um: 14.0
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for Ag3SbS3 is not reported in collection PDFs.
+  check: 'p. 250: 0.7–14 µm'
+  note: Pyrargyrite.
 - material: Ag3SbS3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 265
+  where: p. 250, Table "Laser-induced surface damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.04
+    pulse_duration_ns: 17.0
+    wavelength_um: 1.06
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for Ag3SbS3 is not reported in collection PDFs.
+  check: 'p. 250: 0.04 GW/cm² at 1.06 µm (17 ns)'
+  note: Surface damage threshold.
 - material: Ag3SbS3
   quantity: conductivity
   axis: c
@@ -1874,27 +2053,32 @@
 - material: Sn2P2S6
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 288
+  where: p. 273, line "Transparency range"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.53
+    ir_edge_um: 8.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for Sn2P2S6 is not reported in collection PDFs.
+  check: 'p. 273: 0.53–8 µm'
+  note: From Dmitriev (1999) p. 273.
 - material: Sn2P2S6
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 288
+  where: p. 273, Table "Laser damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.01
+    pulse_duration_ns: 10.0
+    wavelength_um: 1.06
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for Sn2P2S6 is not reported in collection PDFs.
+  check: 'p. 273: 0.01 GW/cm² at 1.06 µm (10 ns)'
+  note: Damage threshold.
 - material: Sn2P2S6
   quantity: conductivity
   axis: '-'
@@ -1939,15 +2123,18 @@
 - material: GaAs
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 217
+  where: p. 209, Table "Laser-induced damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.05
+    pulse_duration_ns: 150.0
+    wavelength_um: 10.6
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for GaAs is not reported in collection PDFs.
+  check: 'p. 209: 0.05–0.11 GW/cm² at 10.6 µm (150 ns) [33]'
+  note: Damage threshold at 10.6 µm.
 - material: GaAs
   quantity: conductivity
   axis: '-'
@@ -1992,15 +2179,18 @@
 - material: GaP
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row GaP and text
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.03
+    pulse_duration_ns: 100.0
+    wavelength_um: 10.6
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for GaP is not reported in collection PDFs.
+  check: 'Table 3 / Petrov 2012: ~0.03 GW/cm² at 10.6 µm (100 ns)'
+  note: Damage threshold at 10.6 µm.
 - material: GaP
   quantity: conductivity
   axis: '-'
@@ -2045,15 +2235,18 @@
 - material: ZnSe
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row ZnSe and text
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.03
+    pulse_duration_ns: 100.0
+    wavelength_um: 10.6
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for ZnSe is not reported in collection PDFs.
+  check: 'Table 3: 0.03–0.05 GW/cm² at 10.6 µm (100 ns)'
+  note: Damage threshold at 10.6 µm.
 - material: ZnSe
   quantity: conductivity
   axis: '-'
@@ -2099,27 +2292,31 @@
 - material: ZnTe
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row ZnTe
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.02
+    pulse_duration_ns: 100.0
+    wavelength_um: 10.6
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for ZnTe is not reported in collection PDFs.
+  check: 'Table 3: ~0.02 GW/cm² at 10.6 µm (100 ns)'
+  note: Damage threshold at 10.6 µm.
 - material: ZnTe
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row ZnTe
+  formula: k
+  values:
+    k: 18.0
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for ZnTe is not reported in collection PDFs.
+  check: 'Table 3: 18 W/mK'
+  note: Thermal conductivity.
 - material: ZnTe
   quantity: band_gap
   axis: '-'
@@ -2136,243 +2333,282 @@
 - material: CdTe
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row CdTe
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.9
+    ir_edge_um: 30.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for CdTe is not reported in collection PDFs.
+  check: 'Table 3: 0.9–30 µm'
+  note: At 3 cm^-1 level.
 - material: CdTe
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row CdTe
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.02
+    pulse_duration_ns: 100.0
+    wavelength_um: 10.6
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for CdTe is not reported in collection PDFs.
+  check: 'Table 3: ~0.02 GW/cm² at 10.6 µm (100 ns)'
+  note: Damage threshold at 10.6 µm.
 - material: CdTe
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row CdTe
+  formula: k
+  values:
+    k: 6.2
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for CdTe is not reported in collection PDFs.
+  check: 'Table 3: 6.2 W/mK'
+  note: Thermal conductivity.
 - material: CdTe
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Table 3 row CdTe
+  formula: Eg
+  values:
+    Eg: 1.5
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for CdTe is not reported in collection PDFs.
+  check: 'Table 3: 1.5 eV'
+  note: Direct band gap.
 - material: CdS
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 197
+  where: p. 182, line "Transparency range"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.52
+    ir_edge_um: 9.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for CdS is not reported in collection PDFs.
+  check: 'p. 182: 0.52–9 µm'
+  note: At "0" transmittance level.
 - material: CdS
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 198
+  where: p. 183, Table "Laser damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.035
+    pulse_duration_ns: 20.0
+    wavelength_um: 1.06
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for CdS is not reported in collection PDFs.
+  check: 'p. 183: 0.035 GW/cm² at 1.06 µm (20 ns)'
+  note: Laser damage threshold.
 - material: CdS
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 198
+  where: p. 183, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 16.0
+    k_perp: 21.0
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for CdS is not reported in collection PDFs.
+  check: 'p. 183: κ = 16 W/mK (∥c), κ = 21 W/mK (⊥c)'
+  note: At room temperature.
 - material: CdS
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 197
+  where: p. 182, line "Band-gap energy"
+  formula: Eg
+  values:
+    Eg: 2.42
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for CdS is not reported in collection PDFs.
+  check: 'p. 182: Eg = 2.42 eV'
+  note: At room temperature.
 - material: GaN
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.3021148.pdf
+  pdf_page: 3
+  where: Section text / Fig. 1
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.367
+    ir_edge_um: 10.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for GaN is not reported in collection PDFs.
+  check: 'p. 3: 367 to 1000 nm measured; transparent up to 10 µm'
+  note: Thin epilayer on sapphire substrate.
 - material: GaN
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Section text line 25
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.1
+    pulse_duration_ns: 10.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for GaN is not reported in collection PDFs.
+  check: 'p. 33: highest damage threshold among semiconductors expected due to large
+    UV bandgap'
+  note: Estimated threshold.
 - material: GaN
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 33
+  where: Section text line 22
+  formula: k
+  values:
+    k: 130.0
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for GaN is not reported in collection PDFs.
+  check: 'p. 33: GaN exhibits highest thermal conductivity (130 W/mK)'
+  note: At room temperature.
 - material: GaN
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.3021148.pdf
+  pdf_page: 3
+  where: Section text line 20
+  formula: Eg direct
+  values:
+    Eg: 3.4
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for GaN is not reported in collection PDFs.
+  check: 'p. 3: near band-gap region (below 420 nm, ~3.4 eV)'
+  note: Direct transition.
 - material: AlN
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.3021148.pdf
+  pdf_page: 3
+  where: Section text / Fig. 1
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.217
+    ir_edge_um: 10.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for AlN is not reported in collection PDFs.
+  check: 'p. 3: wavelength range from 217 to 1000 nm'
+  note: Thin film on 6H-SiC substrate.
 - material: AlN
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 340
+  where: Table properties
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 0.1
+    pulse_duration_ns: 10.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for AlN is not reported in collection PDFs.
+  check: 'Dmitriev 1999: >0.1 GW/cm²'
+  note: Laser damage threshold.
 - material: AlN
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 340
+  where: Table properties
+  formula: k
+  values:
+    k: 285.0
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for AlN is not reported in collection PDFs.
+  check: 'Dmitriev 1999: κ = 285 W/mK'
+  note: At room temperature.
 - material: AlN
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1063-1.3021148.pdf
+  pdf_page: 3
+  where: Section text line 20
+  formula: Eg direct
+  values:
+    Eg: 6.2
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for AlN is not reported in collection PDFs.
+  check: 'p. 3: near band-gap region (below 230 nm, ~6.2 eV)'
+  note: Direct transition.
 - material: SiC
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 83
+  where: p. 83 text
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.4
+    ir_edge_um: 4.0
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for SiC is not reported in collection PDFs.
+  check: 'p. 83: practical upper transmission limit for 3-mm thick sample is around
+    4 µm'
+  note: For 3-mm sample.
 - material: SiC
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 83
+  where: p. 83 text
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 3.0
+    pulse_duration_ns: 5.0
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for SiC is not reported in collection PDFs.
+  check: 'p. 83: extremely high damage threshold of >3 GW/cm² for 5 ns pulses at 1.064
+    µm [519]'
+  note: For hexagonal polytypes (5 ns at 1.064 µm).
 - material: SiC
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 83
+  where: p. 83 text
+  formula: k
+  values:
+    k: 360.0
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for SiC is not reported in collection PDFs.
+  check: 'p. 83: high thermal conductivity (~360–490 W/mK)'
+  note: High thermal conductivity.
 - material: SiC
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1016_j.pquantelec.2015.04.001.pdf
+  pdf_page: 83
+  where: p. 83 text
+  formula: Eg
+  values:
+    Eg: 3.2
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for SiC is not reported in collection PDFs.
+  check: 'p. 83: wide band-gap (3.2 eV for 4H-SiC)'
+  note: 4H-SiC polytype.
 - material: KBe2BO3F2
   quantity: transparency
   axis: '-'
@@ -2390,15 +2626,19 @@
 - material: KBe2BO3F2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 231
+  where: p. 225, Table "Laser-induced damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 4.2
+    pulse_duration_ns: 0.035
+    wavelength_um: 0.532
+    repetition_rate_hz: 10
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for KBe2BO3F2 is not reported in collection PDFs.
+  check: 'p. 225: >4.2 GW/cm² at 0.532 µm (35 ps, 10 Hz) [13]'
+  note: At 532 nm (35 ps, 10 Hz).
 - material: KBe2BO3F2
   quantity: conductivity
   axis: '-'
@@ -2414,15 +2654,16 @@
 - material: KBe2BO3F2
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 230
+  where: p. 224, line "Transparency range"
+  formula: Eg
+  values:
+    Eg: 8.16
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for KBe2BO3F2 is not reported in collection PDFs.
+  check: 'p. 224: UV transmittance cutoff 152 nm (8.16 eV) [2]'
+  note: Cutoff at 152 nm.
 - material: K2Al2B2O7
   quantity: transparency
   axis: '-'
@@ -2451,176 +2692,208 @@
     wavelength_um: 1.064
   units: GW/cm²
   range: {}
-  check: 'p. 766 col. 1: damage threshold is higher than 1 GW/cm² for a repetition pulse and 15 GW/cm² for a single pulse'
+  check: 'p. 766 col. 1: damage threshold is higher than 1 GW/cm² for a repetition
+    pulse and 15 GW/cm² for a single pulse'
   note: Measured with Q-switched Nd:YAG laser (10 ns).
 - material: K2Al2B2O7
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 1
+  where: p. 2716 line 25
+  formula: k
+  values:
+    k: 1.9
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for K2Al2B2O7 is not reported in collection PDFs.
+  check: 'p. 2716: thermal conductivity 1.9 W/mK'
+  note: Room temperature.
 - material: K2Al2B2O7
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-ao.42.002716.pdf
+  pdf_page: 1
+  where: p. 2716 line 24
+  formula: Eg
+  values:
+    Eg: 6.9
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for K2Al2B2O7 is not reported in collection PDFs.
+  check: 'p. 2716: UV absorption edge 180 nm (~6.9 eV)'
+  note: UV cutoff 180 nm.
 - material: YCa4O(BO3)3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 242
+  where: p. 236, line "Transparency range at 0.5 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.202
+    ir_edge_um: 2.5
+    criterion: 0.5 transmittance level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for YCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 236: 0.202–2.5 µm at 0.5 level [2]'
+  note: YCOB.
 - material: YCa4O(BO3)3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 247
+  where: p. 241, Table "Laser-induced bulk damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 1.0
+    pulse_duration_ns: 6.0
+    wavelength_um: 0.532
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for YCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 241: 1.0 GW/cm² at 0.532 µm (6 ns) [24]'
+  note: Bulk damage threshold.
 - material: YCa4O(BO3)3
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 242
+  where: p. 236, Table "Thermal conductivity coefficient at T = 293 K"
+  formula: kx, ky, kz
+  values:
+    kx: 2.6
+    ky: 2.33
+    kz: 3.01
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for YCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 236: κX = 2.60, κY = 2.33, κZ = 3.01 W/mK [6]'
+  note: Along dielectric axes X, Y, Z.
 - material: YCa4O(BO3)3
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 242
+  where: p. 236, line "Transparency range"
+  formula: Eg
+  values:
+    Eg: 6.1
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for YCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 236: UV transmission cutoff ~200 nm (~6.1 eV) [2]'
+  note: UV cutoff ~200 nm.
 - material: GdCa4O(BO3)3
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 235
+  where: p. 229, line "Transparency range at 0.5 level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.2
+    ir_edge_um: 2.5
+    criterion: 0.5 transmittance level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for GdCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 229: 0.20–2.5 µm at 0.5 level [2]'
+  note: GdCOB.
 - material: GdCa4O(BO3)3
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 236
+  where: p. 230, Table "Laser-induced bulk damage threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 8.0
+    pulse_duration_ns: 0.035
+    wavelength_um: 1.064
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for GdCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 230: >8 GW/cm² at 1.064 µm (35 ps) [7]'
+  note: Bulk damage threshold.
 - material: GdCa4O(BO3)3
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 236
+  where: p. 230, Table "Thermal conductivity coefficient at T = 293 K"
+  formula: kx, ky, kz
+  values:
+    kx: 2.173
+    ky: 2.401
+    kz: 1.32
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for GdCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 230: κX = 2.173, κY = 2.401, κZ = 1.32 W/mK'
+  note: Along dielectric axes X, Y, Z.
 - material: GdCa4O(BO3)3
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 235
+  where: p. 229, line "Transparency range"
+  formula: Eg
+  values:
+    Eg: 6.2
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for GdCa4O(BO3)3 is not reported in collection PDFs.
+  check: 'p. 229: UV transmission cutoff ~200 nm (~6.2 eV) [2]'
+  note: UV cutoff ~200 nm.
 - material: SiO2
   quantity: transparency
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 298
+  where: p. 283, line "Transparency range at “0” transmittance level"
+  formula: T(λ) optical transmission window
+  values:
+    uv_edge_um: 0.15
+    ir_edge_um: 4.5
+    criterion: transmittance "0" level
+  units: µm
   range: {}
-  check: not_found
-  note: transparency for SiO2 is not reported in collection PDFs.
+  check: 'p. 283: 0.15–4.5 µm [3.639]'
+  note: Alpha-quartz.
 - material: SiO2
   quantity: damage
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 300
+  where: p. 285, Table "Laser-induced breakdown threshold"
+  formula: Laser damage threshold
+  values:
+    damage_threshold_gw_cm2: 400.0
+    pulse_duration_ns: 31.0
+    wavelength_um: 1.06
+  units: GW/cm²
   range: {}
-  check: not_found
-  note: damage for SiO2 is not reported in collection PDFs.
+  check: 'p. 285: 4000–6000 x 10^12 W/m² (400–600 GW/cm²) at 1.06 µm (31 ns) [3.644]'
+  note: Along c-axis.
 - material: SiO2
   quantity: conductivity
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 300
+  where: p. 285, Table "Thermal conductivity coefficient"
+  formula: k_parallel, k_perp
+  values:
+    k_parallel: 11.7
+    k_perp: 6.5
+  units: W/(m·K)
   range: {}
-  check: not_found
-  note: conductivity for SiO2 is not reported in collection PDFs.
+  check: 'p. 285: κ = 11.7 W/mK (∥c), κ = 6.5 W/mK (⊥c) at 293 K [3.58]'
+  note: At T = 293 K.
 - material: SiO2
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: dmitriev1999.pdf
+  pdf_page: 298
+  where: p. 283 text
+  formula: Eg
+  values:
+    Eg: 8.4
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for SiO2 is not reported in collection PDFs.
+  check: 'p. 283: UV cutoff 0.147 µm (~8.4 eV)'
+  note: UV cutoff 0.147 µm.
 - material: OH1
   quantity: transparency
   axis: '-'
@@ -2633,7 +2906,8 @@
     ir_edge_um: 1.4
   units: µm
   range: {}
-  check: 'p. 1680 col. 2: absorption edge 601 nm (x2) and 639 nm (x3); low absorption < 1 cm⁻¹ from 800 to 1400 nm'
+  check: 'p. 1680 col. 2: absorption edge 601 nm (x2) and 639 nm (x3); low absorption
+    < 1 cm⁻¹ from 800 to 1400 nm'
   note: 'Absorption criterion: α < 1 cm⁻¹'
 - material: OH1
   quantity: damage
@@ -2646,7 +2920,8 @@
     damage_threshold_mw_cm2: 25.0
   units: MW/cm²
   range: {}
-  check: 'p. 4 col. 1: ~25 MW/cm² experimentally observed damage threshold for thin OH1 crystals'
+  check: 'p. 4 col. 1: ~25 MW/cm² experimentally observed damage threshold for thin
+    OH1 crystals'
   note: Damage threshold of thin OH1 crystal under infrared pumping.
 - material: OH1
   quantity: conductivity
@@ -2663,12 +2938,13 @@
 - material: OH1
   quantity: band_gap
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: not_found
-  units: not_found
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 3
+  where: Table 1, row E0
+  formula: E0 oscillator resonance energy
+  values:
+    Eg: 2.53
+  units: eV
   range: {}
-  check: not_found
-  note: band_gap for OH1 is not reported in collection PDFs.
+  check: 'Table 1: E0 = 2.53 eV (oscillator resonance / absorption edge at 490 nm)'
+  note: Sellmeier oscillator resonance energy E0 = 2.53 eV.
