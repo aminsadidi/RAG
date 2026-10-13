@@ -1,9 +1,8 @@
 # Summary:
 # Total entries: 19
-# Sourced entries: 14
-# not_found entries: 5
+# Sourced entries: 15
+# not_found entries: 4
 # DOIs cited in collection PDFs for missing data (recommended for retrieval):
-# - BaTiO3 (bulk single-crystal d33, d31, d15): 10.1103/PhysRev.134.A1313
 # - ZnO (bulk single-crystal d33, d31, d15): 10.1364/AO.40.005436
 # - GaS (centrosymmetric 6/mmm, all d_ij = 0 by inversion symmetry; Petrov 2015 p. 29): 10.1016/j.pquantelec.2015.04.001
 # - CdGa2S4 (single-crystal d36): 10.1063/1.1663448
@@ -16,17 +15,24 @@
 - material: BaTiO3
   quantity: d_ij
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 208
+  where: p. 199, section "Values of second-order nonlinear coefficient [21], recalculated using new absolute values for d36(KDP) [22]"
+  formula: 'dooe = d31·sin θ (Kleinman symmetry valid: d15 = d24 = d31 = d32)'
+  values:
+    point_group: 4mm
+    d15: 13.7
+    d31: 14.4
+    d32: 14.4
+    d33: 5.5
+  units: pm/V
   range:
-    wavelength_um: not_found
+    wavelength_um:
+    - 1.06
+    - 1.06
     temperature_c: not_found
-  check: not_found
-  note: Individual single-crystal tensor components d_ij for BaTiO3 are not reported in the collection PDFs (Joulaud 2013 reports only nanocrystal orientational average <d>).
+  check: 'p. 199: d15(1.06 µm) = 13.7 ± 1.2 pm/V, d32(1.06 µm) = 14.4 ± 1.2 pm/V, d33(1.06 µm) = 5.5 ± 0.4 pm/V [21], [22]; dooe = d31 sin θ [20]'
+  note: 'Nikogosyan (2005) p. 199. Ferroelectric tetragonal phase at room temperature (point group 4mm). Experimental values from Miller (1964) [21] recalculated using new absolute scale for d36(KDP) by Roberts (1992) [22]. Kleinman symmetry assumed valid (d15 = d24 = d31 = d32). Effective nonlinearity dooe = d31·sin θ [20].'
 - material: ZnO
   quantity: d_ij
   axis: '-'
@@ -391,7 +397,6 @@
 # 10.1109-jqe.1976.1069169.pdf, 10.1002-cphc.200700002.pdf, 10.1016-j.jnoncrysol.2004.07.003.pdf,
 # 10.1080-01442358909353223.pdf, 10.1063-1.1658643.pdf, 10.1063-1.1660761.pdf
 # External papers cited for remaining missing d_ij data (DOIs for retrieval):
-# BaTiO3 (bulk single-crystal d33, d31, d15): 10.1103/PhysRev.134.A1313
 # ZnO (bulk single-crystal d33, d31): 10.1364/AO.40.005436
 # Tl3AsSe3 (d22, d31): 10.1063/1.1661413
 # CdGa2S4 (d36): 10.1063/1.1663448 (Levine et al. 1974 cited in 10.1109-jqe.1976.1069169.pdf)
