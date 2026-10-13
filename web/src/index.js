@@ -119,9 +119,10 @@ function filterOf(opts) {
   if (opts.category) must.push({ key: "category", match: { value: opts.category } });
   if (opts.fullTextOnly) must.push({ key: "source_type", match: { value: "full_text_pdf" } });
   if (opts.docIds?.length) must.push({ key: "doc_id", match: { any: opts.docIds } });
-  // Passages SubQ found to have no scientific content (cover pages, reference lists, garbled text; the
-  // `junk` field of scripts/quality/enrich.py) are left out; passages without the field stay in.
-  return { ...(must.length ? { must } : {}), must_not: [{ key: "junk", range: { gt: 0.9 } }] };
+  // The `junk` field (scripts/quality/enrich.py) is not used as a filter: leaving junk > 0.9 out lowered the
+  // MRR@10 of the 200 gold questions from 0.511 to 0.485 (scripts/quality/reports), as cover pages, with the
+  // title and the crystal's name, were among the "junk" and are what finds some papers.
+  return must.length ? { must } : undefined;
 }
 
 async function search(env, opts) {
