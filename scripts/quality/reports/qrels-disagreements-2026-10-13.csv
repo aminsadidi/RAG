@@ -1,0 +1,319 @@
+id,doc_id,grade,subq,reason
+ri-Ag-1,10.1016_j.mssp.2018.03.003,2,0.13893094658851624,Title reports refractive index and dispersion data for silver (Ag).
+ri-Ag-2,10.1016_j.mssp.2018.03.003,2,0.05188176408410072,Title reports refractive index and dispersion data for silver (Ag).
+ri-Ag-3,10.1016_j.mssp.2018.03.003,2,0.07839218527078629,Title reports refractive index and dispersion data for silver (Ag).
+ri-AgGaS2-2,10.1021_acs.chemmater.0c03008,2,0.1135280504822731,Title reports refractive index and dispersion data for AgGaS2.
+ri-Al-1,10.1364_ome.441088,2,0.042670588940382004,Title reports refractive index and dispersion data for aluminium (Al).
+ri-Al-2,10.1364_ome.441088,2,0.04587214067578316,Title reports refractive index and dispersion data for aluminium (Al).
+ri-Al-3,10.1364_ome.441088,2,0.11256446689367294,Title reports refractive index and dispersion data for aluminium (Al).
+ri-Al2O3-1,10.1016_0022_0248_89_90200_5,2,0.1083916425704956,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-1,10.1063_1.1564870,2,0.14082710444927216,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-1,10.1063_1.1598276,2,0.15461643040180206,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-1,10.1063_1.370744,2,0.16420945525169373,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-1,10.1103_physrevb.52.r17028,2,0.18736374378204346,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-2,10.1016_0022_0248_89_90200_5,2,0.054611582309007645,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-2,10.1063_1.119157,2,0.19588908553123474,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-2,10.1063_1.1564870,2,0.11777382344007492,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-2,10.1063_1.1592306,2,0.11026972532272339,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-2,10.1063_1.1598276,2,0.06551626324653625,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-2,10.1063_1.370744,2,0.12111124396324158,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-2,10.1103_physrevb.52.r17028,2,0.14810724556446075,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-3,10.1016_0022_0248_89_90200_5,2,0.04639613628387451,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-3,10.1063_1.119157,2,0.07510509341955185,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-3,10.1063_1.1564870,2,0.09451499581336975,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-3,10.1063_1.1592306,2,0.06345571577548981,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-3,10.1063_1.1598276,2,0.077373206615448,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-3,10.1063_1.370744,2,0.1026165708899498,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-Al2O3-3,10.1103_physrevb.52.r17028,2,0.07861322164535522,Title reports refractive index and dispersion data for Al2O3 (sapphire).
+ri-AlAs-2,10.1088_1361_6463_ae172c,2,0.13512872159481049,Title reports refractive index and dispersion data for AlAs.
+ri-AlAs-2,10.1103_physrevresearch.5.033048,2,0.04450952261686325,Title reports refractive index and dispersion data for AlAs.
+ri-AlN-1,10.1103_physrevb.58.12899,2,0.03935176879167557,Title reports refractive index and dispersion data for AlN.
+ri-AlN-1,10.1103_physrevb.61.6720,2,0.04356730356812477,Title reports refractive index and dispersion data for AlN.
+ri-AlN-2,10.1016_0022_0248_89_90200_5,2,0.08904042840003967,Title reports refractive index and dispersion data for AlN.
+ri-AlN-2,10.1103_physrevb.58.12899,2,0.05256516486406326,Title reports refractive index and dispersion data for AlN.
+ri-AlN-2,10.1103_physrevb.61.6720,2,0.06135425344109535,Title reports refractive index and dispersion data for AlN.
+ri-AlN-3,10.1016_0022_0248_89_90200_5,2,0.12671233713626862,Title reports refractive index and dispersion data for AlN.
+ri-AlN-3,10.1103_physrevb.58.12899,2,0.05271178483963013,Title reports refractive index and dispersion data for AlN.
+ri-AlN-3,10.1103_physrevb.61.6720,2,0.05912255123257637,Title reports refractive index and dispersion data for AlN.
+ri-Au-3,10.1016_j.ijleo.2021.166950,2,0.12066114693880081,Title reports refractive index and dispersion data for gold (Au).
+ri-BaB2O4-3,10.1364_josab.6.000616,0,0.8088778257369995,"Title discusses LiB3O5, not BaB2O4 (BBO)."
+ri-BaGa4S7-3,10.1016_j.optmat.2019.109564,0,0.8539104461669922,"Title discusses BaGa4Se7, not BaGa4S7 (BGS)."
+ri-BaGa4S7-3,10.1038_s41598_018_34552_y,0,0.818306028842926,"Title discusses BaGa4Se7, not BaGa4S7 (BGS)."
+ri-BaGa4S7-3,10.1364_ol.41.002731,0,0.8893393278121948,"Title discusses BaGa4Se7, not BaGa4S7 (BGS)."
+ri-BaGa4Se7-1,10.1016_j.omx.2024.100319,0,0.8057135939598083,"Title discusses Barium chalcogenides, not BaGa4Se7 (BGSe)."
+ri-BaTiO3-1,10.1063_1.1649820,2,0.026581507176160812,Title reports refractive index and dispersion data for BaTiO3.
+ri-BaTiO3-1,10.1080_00150199808009159,2,0.025980491191148758,Title reports refractive index and dispersion data for BaTiO3.
+ri-BaTiO3-2,10.1063_1.1649820,2,0.06038561835885048,Title reports refractive index and dispersion data for BaTiO3.
+ri-BaTiO3-2,10.1063_1.4807791,2,0.1864113211631775,Title reports refractive index and dispersion data for BaTiO3.
+ri-BaTiO3-2,10.1080_00150199808009159,2,0.028655800968408585,Title reports refractive index and dispersion data for BaTiO3.
+ri-BaTiO3-3,10.1063_1.1649820,2,0.08814281225204468,Title reports refractive index and dispersion data for BaTiO3.
+ri-BaTiO3-3,10.1080_00150199808009159,2,0.037432339042425156,Title reports refractive index and dispersion data for BaTiO3.
+ri-Bi-1,10.2971_jeos.2013.13010,2,0.031475674360990524,Title reports refractive index and dispersion data for bismuth (Bi).
+ri-Bi-2,10.2971_jeos.2013.13010,2,0.020847994834184647,Title reports refractive index and dispersion data for bismuth (Bi).
+ri-Bi-3,10.2971_jeos.2013.13010,2,0.04118070751428604,Title reports refractive index and dispersion data for bismuth (Bi).
+ri-BiB3O6-1,10.1007_s00339_005_3443_6,2,0.06476598232984543,Title reports refractive index and dispersion data for BiB3O6 (BiBO).
+ri-BiB3O6-2,10.1007_s00339_005_3443_6,2,0.04297643154859543,Title reports refractive index and dispersion data for BiB3O6 (BiBO).
+ri-BiB3O6-3,10.1007_s00339_005_3443_6,2,0.034602999687194824,Title reports refractive index and dispersion data for BiB3O6 (BiBO).
+ri-BiB3O6-3,10.1103_physrevb.106.195126,2,0.11733625084161758,Title reports refractive index and dispersion data for BiB3O6 (BiBO).
+ri-C-1,10.1016_j.ijleo.2021.166378,2,0.07156071811914444,Title reports refractive index and dispersion data for carbon (C).
+ri-C-1,10.1063_1.1530716,2,0.06792488694190979,Title reports refractive index and dispersion data for carbon (C).
+ri-C-1,10.1063_1.3021148,2,0.03463433310389519,Title reports refractive index and dispersion data for carbon (C).
+ri-C-1,10.1366_0003702963905385,2,0.06235947087407112,Title reports optical constants and dispersion of carbon (C).
+ri-C-2,10.1063_1.1530716,2,0.027976486831903458,Title reports refractive index and dispersion data for carbon (C).
+ri-C-2,10.1063_1.3021148,2,0.018730981275439262,Title reports refractive index and dispersion data for carbon (C).
+ri-C-2,10.1364_ao.25.002650,2,0.04774688184261322,Title reports optical constants and dispersion of carbon (C).
+ri-C-2,10.1364_oe.27.027229,2,0.03916957229375839,Title reports refractive index and dispersion data for carbon (C).
+ri-C-2,10.1366_0003702963905385,2,0.027475416660308838,Title reports optical constants and dispersion of carbon (C).
+ri-C-3,10.1016_j.ijleo.2021.166378,2,0.08852235972881317,Title reports refractive index and dispersion data for carbon (C).
+ri-C-3,10.1063_1.3021148,2,0.06075451523065567,Title reports refractive index and dispersion data for carbon (C).
+ri-C-3,10.1366_0003702963905385,2,0.13563284277915955,Title reports optical constants and dispersion of carbon (C).
+ri-CsLiB6O10-1,10.1080_00150190590963273,0,0.9685063362121582,"Title discusses Transmission and, not CsLiB6O10 (CLBO)."
+ri-CsLiB6O10-2,10.1080_00150190590963273,0,0.9582415819168091,"Title discusses Transmission and, not CsLiB6O10 (CLBO)."
+ri-CsLiB6O10-3,10.1080_00150190590963273,0,0.941022515296936,"Title discusses Transmission and, not CsLiB6O10 (CLBO)."
+ri-Cu-1,10.1016_j.scriptamat.2020.08.027,2,0.11164917796850204,Title reports refractive index and dispersion data for copper (Cu).
+ri-Cu-2,10.1016_j.scriptamat.2020.08.027,2,0.12335499376058578,Title reports refractive index and dispersion data for copper (Cu).
+ri-Cu-3,10.1016_j.scriptamat.2020.08.027,2,0.16054295003414154,Title reports refractive index and dispersion data for copper (Cu).
+ri-GaAs-1,10.1038_s41699_017_0047_x,2,0.03128962218761444,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-1,10.1063_1.358632,2,0.09831798076629639,Title reports optical constants and dispersion of GaAs (gallium arsenide).
+ri-GaAs-1,10.1103_physrevb.21.3513,2,0.032224707305431366,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-1,10.1103_physrevb.25.7867,2,0.06976620107889175,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-1,10.1103_physrevb.38.1865,0,0.8391236066818237,"Title discusses Optical properties, not GaAs (gallium arsenide)."
+ri-GaAs-1,10.1103_physrevlett.48.406,2,0.11877264082431793,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-1,10.1103_physrevlett.67.3298,2,0.031795527786016464,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-2,10.1038_s41699_017_0047_x,2,0.02982904016971588,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-2,10.1103_physrevb.21.3513,2,0.033794984221458435,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-2,10.1103_physrevb.25.7867,2,0.13440293073654175,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-2,10.1103_physrevb.38.1865,0,0.875994861125946,"Title discusses Optical properties, not GaAs (gallium arsenide)."
+ri-GaAs-2,10.1103_physrevlett.48.406,2,0.1679978221654892,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-2,10.1103_physrevlett.67.3298,2,0.07330123335123062,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-2,10.1364_josab.7.002006,0,0.8060246706008911,"Title discusses Far-infrared time-domain, not GaAs (gallium arsenide)."
+ri-GaAs-3,10.1038_s41699_017_0047_x,2,0.05647852271795273,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-3,10.1063_1.358632,2,0.0673498809337616,Title reports optical constants and dispersion of GaAs (gallium arsenide).
+ri-GaAs-3,10.1103_physrevb.21.3513,2,0.04120710864663124,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-3,10.1103_physrevb.25.7867,2,0.12543432414531708,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-3,10.1103_physrevb.38.1865,0,0.8516438007354736,"Title discusses Optical properties, not GaAs (gallium arsenide)."
+ri-GaAs-3,10.1103_physrevlett.48.406,2,0.08589059859514236,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-3,10.1103_physrevlett.67.3298,2,0.08010229468345642,Title reports refractive index and dispersion data for GaAs (gallium arsenide).
+ri-GaAs-3,10.1364_josab.7.002006,0,0.8110696077346802,"Title discusses Far-infrared time-domain, not GaAs (gallium arsenide)."
+ri-GaN-1,10.1103_physrevb.58.12899,2,0.049163006246089935,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-1,10.1103_physrevb.61.6720,2,0.03396877646446228,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-1,10.1103_physrevlett.86.906,2,0.026397747918963432,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-2,10.1103_physrevb.48.4335,0,0.8026279211044312,"Title discusses Electronic, optical,, not GaN (gallium nitride)."
+ri-GaN-2,10.1103_physrevb.58.12899,2,0.04362938180565834,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-2,10.1103_physrevb.61.6720,2,0.04173385351896286,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-2,10.1103_physrevlett.86.906,2,0.0285622738301754,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-3,10.1103_physrevb.58.12899,2,0.056234318763017654,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-3,10.1103_physrevb.61.6720,2,0.05119342729449272,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaN-3,10.1103_physrevlett.86.906,2,0.03586357459425926,Title reports refractive index and dispersion data for GaN (gallium nitride).
+ri-GaP-1,10.1002_crat.200410391,2,0.024830814450979233,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1002_pssb.2221310202,2,0.1800682246685028,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1007_s00339_010_5680_6,2,0.017463644966483116,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1016_j.ijleo.2020.164641,2,0.022183431312441826,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1016_j.materresbull.2016.03.039,2,0.018546180799603462,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1063_1.373462,2,0.041153643280267715,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1103_physrevb.12.1172,2,0.03298894315958023,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1103_physrevb.47.7213,2,0.015939626842737198,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1103_physrevb.62.10696,2,0.058659594506025314,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1103_physrevlett.65.3152,2,0.09478794783353806,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1103_physrevlett.65.96,2,0.11847192049026489,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.1103_physrevmaterials.3.044602,2,0.17470227181911469,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-1,10.3390_ma13081917,2,0.04261137545108795,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1002_crat.200410391,2,0.022098876535892487,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1002_pssb.2221310202,2,0.15654385089874268,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1007_s00339_010_5680_6,2,0.015623395331203938,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1016_j.ijleo.2020.164641,2,0.017145726829767227,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1016_j.materresbull.2016.03.039,2,0.016355479136109352,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1063_1.373462,2,0.029995273798704147,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1103_physrevb.12.1172,2,0.030903276056051254,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1103_physrevb.47.7213,2,0.01543465070426464,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1103_physrevb.62.10696,2,0.07274637371301651,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1103_physrevlett.65.3152,2,0.13403598964214325,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.1103_physrevlett.65.96,2,0.14056017994880676,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-2,10.3390_ma13081917,2,0.04416399449110031,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1002_crat.200410391,2,0.03798525780439377,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1007_s00339_010_5680_6,2,0.01848253235220909,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1016_j.ijleo.2020.164641,2,0.022158829495310783,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1016_j.materresbull.2016.03.039,2,0.025842661038041115,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1063_1.373462,2,0.0422445684671402,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1103_physrevb.12.1172,2,0.05103015527129173,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1103_physrevb.47.7213,2,0.020627658814191818,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1103_physrevlett.65.3152,2,0.11353706568479538,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.1103_physrevlett.65.96,2,0.1529504656791687,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaP-3,10.3390_ma13081917,2,0.07960757613182068,Title reports refractive index and dispersion data for GaP (gallium phosphide).
+ri-GaS-1,10.1016_j.physb.2019.411718,2,0.01652929186820984,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-1,10.1103_physrevb.25.7867,2,0.02498275600373745,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-1,10.1364_oe.24.014086,2,0.024287238717079163,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-2,10.1016_j.physb.2019.411718,2,0.019401393830776215,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-2,10.1103_physrevb.25.7867,2,0.024699456989765167,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-2,10.1364_oe.24.014086,2,0.03442522883415222,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-3,10.1016_0030_4018_95_00228_z,0,0.9448367357254028,"Title discusses New dispersion, not GaS (gallium sulfide)."
+ri-GaS-3,10.1016_j.physb.2019.411718,2,0.02200017124414444,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-3,10.1103_physrevb.13.3534,0,0.8696706891059875,"Title discusses GaSxSe1, not GaS (gallium sulfide)."
+ri-GaS-3,10.1103_physrevb.25.7867,2,0.08198754489421844,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaS-3,10.1364_ao.18.003847,0,0.9544571042060852,"Title discusses Temperature variation, not GaS (gallium sulfide)."
+ri-GaS-3,10.1364_josab.26.000a58,0,0.8372145891189575,"Title discusses Optical properties, not GaS (gallium sulfide)."
+ri-GaS-3,10.1364_josab.395844,0,0.8217118978500366,"Title discusses AgGaSe, not GaS (gallium sulfide)."
+ri-GaS-3,10.1364_oe.24.014086,2,0.04128008708357811,Title reports refractive index and dispersion data for GaS (gallium sulfide).
+ri-GaSe-1,10.1038_s41699_017_0047_x,2,0.04322044178843498,Title reports refractive index and dispersion data for GaSe (gallium selenide).
+ri-GaSe-2,10.1038_s41699_017_0047_x,2,0.11891914904117584,Title reports refractive index and dispersion data for GaSe (gallium selenide).
+ri-GaSe-3,10.1038_s41699_017_0047_x,2,0.11260810494422913,Title reports refractive index and dispersion data for GaSe (gallium selenide).
+ri-Ge-1,10.1116_1.4963075,0,0.93437659740448,"Title discusses Optical constants, not germanium (Ge)."
+ri-Ge-1,10.1364_ao.43.002054,2,0.0359848253428936,Title reports refractive index and dispersion data for germanium (Ge).
+ri-Ge-1,10.1364_josab.18.001307,2,0.02963121607899666,Title provides Sellmeier equations for germanium (Ge).
+ri-Ge-2,10.1116_1.4963075,0,0.9526046514511108,"Title discusses Optical constants, not germanium (Ge)."
+ri-Ge-2,10.1364_ao.43.002054,2,0.03490368649363518,Title reports refractive index and dispersion data for germanium (Ge).
+ri-Ge-2,10.1364_josab.18.001307,2,0.035388391464948654,Title provides Sellmeier equations for germanium (Ge).
+ri-Ge-3,10.1116_1.4963075,0,0.951361358165741,"Title discusses Optical constants, not germanium (Ge)."
+ri-Ge-3,10.1364_ao.43.002054,2,0.05617573857307434,Title reports refractive index and dispersion data for germanium (Ge).
+ri-Ge-3,10.1364_josab.18.001307,2,0.05354756861925125,Title provides Sellmeier equations for germanium (Ge).
+ri-KCl-1,10.1103_physrevb.27.3662,2,0.03177732974290848,Title reports refractive index and dispersion data for potassium chloride (KCl).
+ri-KCl-3,10.1103_physrevb.27.3662,2,0.03693970665335655,Title reports refractive index and dispersion data for potassium chloride (KCl).
+ri-KNbO3-1,10.1080_00150197808236790,2,0.0875658243894577,Title reports refractive index and dispersion data for potassium niobate (KNbO3).
+ri-KNbO3-2,10.1080_00150197808236790,2,0.08637124300003052,Title reports refractive index and dispersion data for potassium niobate (KNbO3).
+ri-KNbO3-3,10.1080_00150197808236790,2,0.0842866450548172,Title reports refractive index and dispersion data for potassium niobate (KNbO3).
+ri-KTiOPO4-2,10.1063_1.371251,2,0.18752658367156982,Title reports refractive index and dispersion data for KTiOPO4 (KTP).
+ri-KTiOPO4-3,10.1063_1.112556,0,0.859978973865509,"Title discusses KTiOAsO4, not KTiOPO4 (KTP)."
+ri-KTiOPO4-3,10.1364_josab.12.000794,0,0.9520791172981262,"Title discusses Infrared corrected, not KTiOPO4 (KTP)."
+ri-LiF-1,10.1103_physrevb.27.3662,2,0.024809187278151512,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-1,10.1103_physrevlett.46.437,2,0.03186571225523949,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-1,10.1364_josa.70.001244,2,0.08017139881849289,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-2,10.1103_physrevb.27.3662,2,0.02418360859155655,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-2,10.1103_physrevlett.46.437,2,0.04519860818982124,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-2,10.1364_josa.70.001244,2,0.07489033788442612,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-3,10.1103_physrevb.27.3662,2,0.0360746905207634,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-3,10.1103_physrevlett.46.437,2,0.10312150418758392,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiF-3,10.1364_josa.70.001244,2,0.10521108657121658,Title reports refractive index and dispersion data for lithium fluoride (LiF).
+ri-LiIO3-1,10.1021_je00054a009,2,0.17788101732730865,Title reports refractive index and dispersion data for lithium iodate (LiIO3).
+ri-LiNbO3-1,10.1063_1.113517,2,0.07224313169717789,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-1,10.1063_1.1653854,2,0.15977981686592102,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-1,10.1364_ol.42.002275,2,0.014678074046969414,Title provides Sellmeier equations for lithium niobate (LiNbO3).
+ri-LiNbO3-1,10.1364_ome.528491,0,0.8958582878112793,"Title discusses Temperature dependence, not lithium niobate (LiNbO3)."
+ri-LiNbO3-2,10.1063_1.113517,2,0.15380704402923584,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-2,10.1063_1.1653854,2,0.07791158556938171,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-2,10.1063_1.1655807,2,0.1833161860704422,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-2,10.1063_1.331268,2,0.16863688826560974,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-2,10.1364_ol.42.002275,2,0.017190251499414444,Title provides Sellmeier equations for lithium niobate (LiNbO3).
+ri-LiNbO3-2,10.1364_ome.528491,0,0.8517085909843445,"Title discusses Temperature dependence, not lithium niobate (LiNbO3)."
+ri-LiNbO3-3,10.1063_1.113517,2,0.10293201357126236,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-3,10.1063_1.1653854,2,0.08633777499198914,Title reports refractive index and dispersion data for lithium niobate (LiNbO3).
+ri-LiNbO3-3,10.1364_ol.34.002578,2,0.15319426357746124,Title provides Sellmeier equations for lithium niobate (LiNbO3).
+ri-LiNbO3-3,10.1364_ol.42.002275,2,0.025979379191994667,Title provides Sellmeier equations for lithium niobate (LiNbO3).
+ri-LiNbO3-3,10.1364_ome.528491,0,0.9338821172714233,"Title discusses Temperature dependence, not lithium niobate (LiNbO3)."
+ri-Mg-1,10.1103_physrevb.50.751,2,0.06197365000844002,Title reports refractive index and dispersion data for magnesium (Mg).
+ri-Mg-1,10.7567_jjap.52.032601,2,0.06831462681293488,Title provides Sellmeier equations for magnesium (Mg).
+ri-Mg-2,10.1103_physrevb.50.751,2,0.03870872035622597,Title reports refractive index and dispersion data for magnesium (Mg).
+ri-Mg-2,10.7567_jjap.52.032601,2,0.06999996304512024,Title provides Sellmeier equations for magnesium (Mg).
+ri-Mg-3,10.1103_physrevb.50.751,2,0.10009951889514923,Title reports refractive index and dispersion data for magnesium (Mg).
+ri-Mg-3,10.7567_jjap.52.032601,2,0.12559908628463745,Title provides Sellmeier equations for magnesium (Mg).
+ri-MgF2-2,10.1364_ao.22.003191,0,0.8007487654685974,"Title discusses Determination of, not magnesium fluoride (MgF2)."
+ri-MgF2-3,10.1016_j.ijleo.2021.166950,2,0.14986205101013184,Title reports refractive index and dispersion data for magnesium fluoride (MgF2).
+ri-MgO-1,10.1007_s00340_006_2414_8,2,0.05075431987643242,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-1,10.1007_s00340_008_2998_2,2,0.04771675914525986,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-1,10.1007_s00340_008_3316_8,2,0.06353170424699783,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-1,10.1063_1.4994104,2,0.032497864216566086,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-1,10.1143_jjap.41.l465,2,0.04739520326256752,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-1,10.1364_ao.31.006695,2,0.056064292788505554,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-1,10.1364_josab.14.003319,2,0.051272787153720856,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-1,10.1364_josab.30.000950,2,0.03461195528507233,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-1,10.1364_oe.547726,2,0.039035625755786896,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-1,10.1364_ol.34.002578,2,0.06272032856941223,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-1,10.1364_ome.585330,2,0.08211172372102737,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-1,10.7567_jjap.56.040303,2,0.04734683036804199,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-2,10.1007_s00340_006_2414_8,2,0.03811071068048477,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-2,10.1007_s00340_008_2998_2,2,0.04314931482076645,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-2,10.1007_s00340_008_3316_8,2,0.05652682110667229,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-2,10.1063_1.4994104,2,0.037243638187646866,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-2,10.1143_jjap.41.l465,2,0.03414880111813545,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-2,10.1364_ao.31.006695,2,0.0287556741386652,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-2,10.1364_josab.14.003319,2,0.047318797558546066,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-2,10.1364_josab.30.000950,2,0.03762451559305191,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-2,10.1364_oe.547726,2,0.035892508924007416,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-2,10.1364_ol.34.002578,2,0.07705634832382202,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-2,10.1364_ome.585330,2,0.05398120731115341,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-2,10.7567_jjap.56.040303,2,0.03994959965348244,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-3,10.1007_s00340_006_2414_8,2,0.08438341319561005,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-3,10.1007_s00340_008_2998_2,2,0.12082111090421677,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-3,10.1007_s00340_008_3316_8,2,0.148215189576149,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-3,10.1063_1.4994104,2,0.08839654922485352,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-3,10.1143_jjap.41.l465,2,0.06812331825494766,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-3,10.1364_ao.31.006695,2,0.10374091565608978,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-3,10.1364_josab.14.003319,2,0.13780520856380463,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-3,10.1364_josab.30.000950,2,0.06655722111463547,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-3,10.1364_oe.547726,2,0.09311968833208084,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-3,10.1364_ol.34.002578,2,0.13990317285060883,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-MgO-3,10.1364_ome.585330,2,0.13572801649570465,Title reports refractive index and dispersion data for magnesium oxide (MgO).
+ri-MgO-3,10.7567_jjap.56.040303,2,0.06536928564310074,Title provides Sellmeier equations for magnesium oxide (MgO).
+ri-NH4H2PO4-1,10.1016_0022_0248_83_90357_3,2,0.03483397886157036,Title reports refractive index and dispersion data for NH4H2PO4 (ADP).
+ri-NH4H2PO4-1,10.1038_nsmb.3059,2,0.01497980859130621,Title reports refractive index and dispersion data for NH4H2PO4 (ADP).
+ri-NH4H2PO4-2,10.1016_0022_0248_83_90357_3,2,0.028655588626861572,Title reports refractive index and dispersion data for NH4H2PO4 (ADP).
+ri-NH4H2PO4-2,10.1038_nsmb.3059,2,0.016425281763076782,Title reports refractive index and dispersion data for NH4H2PO4 (ADP).
+ri-NH4H2PO4-3,10.1016_0022_0248_83_90357_3,2,0.03150491043925285,Title reports refractive index and dispersion data for NH4H2PO4 (ADP).
+ri-NH4H2PO4-3,10.1038_nsmb.3059,2,0.03558960556983948,Title reports refractive index and dispersion data for NH4H2PO4 (ADP).
+ri-NH4H2PO4-3,10.1364_josa.56.001407,2,0.1629505306482315,Title reports refractive index and dispersion data for NH4H2PO4 (ADP).
+ri-NaCl-3,10.1002_pssb.19670210131,2,0.18820315599441528,Title reports refractive index and dispersion data for sodium chloride (NaCl).
+ri-NaF-1,10.1103_physrevb.27.3662,2,0.03237607702612877,Title reports refractive index and dispersion data for sodium fluoride (NaF).
+ri-NaF-2,10.1103_physrevb.27.3662,2,0.030039755627512932,Title reports refractive index and dispersion data for sodium fluoride (NaF).
+ri-NaF-3,10.1103_physrevb.27.3662,2,0.039095018059015274,Title reports refractive index and dispersion data for sodium fluoride (NaF).
+ri-RbTiOPO4-1,10.1002_adom.202301163,2,0.018682347610592842,Title reports refractive index and dispersion data for RbTiOPO4 (RTP).
+ri-RbTiOPO4-2,10.1002_adom.202301163,2,0.026437873020768166,Title reports refractive index and dispersion data for RbTiOPO4 (RTP).
+ri-RbTiOPO4-3,10.1002_adom.202301163,2,0.13317646086215973,Title reports refractive index and dispersion data for RbTiOPO4 (RTP).
+ri-Sc2O3-1,10.1088_1464_4258_3_3_303,2,0.17951342463493347,Title gives refractive index and dispersion of rare earth oxide Sc2O3.
+ri-Si-1,10.1063_1.1563293,2,0.05020015314221382,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-1,10.1063_1.4943652,2,0.09343409538269043,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-1,10.1063_1.5018016,2,0.058043673634529114,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-1,10.1103_physrevb.12.1172,2,0.02942567691206932,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-2,10.1063_1.1563293,2,0.03466297686100006,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-2,10.1063_1.4943652,2,0.05870300158858299,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-2,10.1063_1.5018016,2,0.04436665028333664,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-2,10.1103_physrevb.12.1172,2,0.026304326951503754,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-3,10.1063_1.1563293,2,0.07485030591487885,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-3,10.1063_1.4943652,2,0.08081364631652832,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-3,10.1063_1.5018016,2,0.10726767033338547,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si-3,10.1103_physrevb.12.1172,2,0.03807754069566727,Title reports refractive index and dispersion data for silicon (Si).
+ri-Si3N4-3,10.1364_ol.40.004823,2,0.1879144012928009,Title reports refractive index and dispersion data for silicon nitride (Si3N4).
+ri-SiC-1,10.1111_j.1151_2916.1976.tb09418.x,2,0.08034443855285645,Title reports refractive index and dispersion data for silicon carbide (SiC).
+ri-SiC-2,10.1111_j.1151_2916.1976.tb09418.x,2,0.13830237090587616,Title reports refractive index and dispersion data for silicon carbide (SiC).
+ri-SiO2-1,10.1088_0022_3719_13_36_014,2,0.032708540558815,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-1,10.1117_12.2227580,0,0.9617471694946289,"Title discusses Optical characterization, not silicon dioxide (SiO2)."
+ri-SiO2-1,10.1364_oe.23.028985,0,0.8275175094604492,"Title discusses Terahertz-field-induced optical, not silicon dioxide (SiO2)."
+ri-SiO2-1,10.1364_ol.9.000010,2,0.13316050171852112,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-2,10.1063_1.1319329,2,0.15794336795806885,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-2,10.1088_0022_3719_13_36_014,2,0.042916346341371536,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-2,10.1117_12.2227580,0,0.9528734683990479,"Title discusses Optical characterization, not silicon dioxide (SiO2)."
+ri-SiO2-2,10.1364_ao.37.000546,2,0.15097913146018982,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-2,10.1364_oe.23.028985,0,0.8099574446678162,"Title discusses Terahertz-field-induced optical, not silicon dioxide (SiO2)."
+ri-SiO2-2,10.1364_ol.9.000010,2,0.1271001547574997,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-3,10.1088_0022_3719_13_36_014,2,0.045111071318387985,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-3,10.1117_12.2227580,0,0.9606856107711792,"Title discusses Optical characterization, not silicon dioxide (SiO2)."
+ri-SiO2-3,10.1364_ao.37.000546,2,0.1674385666847229,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-SiO2-3,10.1364_ol.9.000010,2,0.17929424345493317,Title reports refractive index and dispersion data for silicon dioxide (SiO2).
+ri-Te-1,10.1103_physrevb.47.7213,2,0.10009247809648514,Title reports refractive index and dispersion data for tellurium (Te).
+ri-Te-2,10.1103_physrevb.47.7213,2,0.049565162509679794,Title reports refractive index and dispersion data for tellurium (Te).
+ri-TeO2-2,10.1016_s0022_3093_01_00793_1,2,0.16823069751262665,Title reports refractive index and dispersion data for tellurium dioxide (TeO2).
+ri-Ti-1,10.1103_physrev.126.1710,2,0.14173023402690887,Title reports refractive index and dispersion data for titanium (Ti).
+ri-Ti-2,10.1103_physrev.126.1710,2,0.14888176321983337,Title reports refractive index and dispersion data for titanium (Ti).
+ri-TiO2-1,10.1016_j.scriptamat.2020.08.027,2,0.08814043551683426,Title reports refractive index and dispersion data for titanium dioxide (TiO2).
+ri-TiO2-1,10.1080_02772248809357253,2,0.025789393112063408,Title reports refractive index and dispersion data for titanium dioxide (TiO2).
+ri-TiO2-1,10.1103_physrev.126.1710,0,0.8430922627449036,"Title discusses Far Infrared, not titanium dioxide (TiO2)."
+ri-TiO2-2,10.1016_j.scriptamat.2020.08.027,2,0.05313961207866669,Title reports refractive index and dispersion data for titanium dioxide (TiO2).
+ri-TiO2-2,10.1080_02772248809357253,2,0.028058761730790138,Title reports refractive index and dispersion data for titanium dioxide (TiO2).
+ri-TiO2-3,10.1016_j.scriptamat.2020.08.027,2,0.06801635771989822,Title reports refractive index and dispersion data for titanium dioxide (TiO2).
+ri-TiO2-3,10.1080_02772248809357253,2,0.021214712411165237,Title reports refractive index and dispersion data for titanium dioxide (TiO2).
+ri-YLiF4-3,10.1364_oe.22.030683,2,0.19826540350914001,Title reports refractive index and dispersion data for YLiF4 (YLF).
+ri-YVO4-2,10.1364_oe.18.001553,2,0.09026239812374115,Title reports refractive index and dispersion data for YVO4 (yttrium orthovanadate).
+ri-ZnGeP2-1,10.1364_ao.43.002054,0,0.9663537740707397,"Title discusses Refractive-index measurements, not ZnGeP2 (ZGP)."
+ri-ZnGeP2-2,10.1109_jqe.1972.1076982,0,0.8621324300765991,"Title discusses Linear and, not ZnGeP2 (ZGP)."
+ri-ZnGeP2-2,10.1364_ao.43.002054,0,0.891649603843689,"Title discusses Refractive-index measurements, not ZnGeP2 (ZGP)."
+ri-ZnGeP2-3,10.1364_ao.43.002054,0,0.8813254237174988,"Title discusses Refractive-index measurements, not ZnGeP2 (ZGP)."
+ri-ZnS-1,10.1063_1.1681581,2,0.028250399976968765,Title reports refractive index and dispersion data for ZnS (zinc sulfide).
+ri-ZnS-2,10.1063_1.1681581,2,0.0357552170753479,Title reports refractive index and dispersion data for ZnS (zinc sulfide).
+ri-ZnS-3,10.1063_1.1681581,2,0.03731931746006012,Title reports refractive index and dispersion data for ZnS (zinc sulfide).
+ri-ZnSe-1,10.1021_nl025596y,2,0.029749082401394844,Title reports refractive index and dispersion data for ZnSe (zinc selenide).
+ri-ZnSe-2,10.1021_nl025596y,2,0.03699719160795212,Title reports refractive index and dispersion data for ZnSe (zinc selenide).
+ri-ZnSe-3,10.1021_nl025596y,2,0.034473761916160583,Title reports refractive index and dispersion data for ZnSe (zinc selenide).
+ri-ZnSiAs2-1,10.1109_jqe.1972.1076982,0,0.8155046701431274,"Title discusses Linear and, not ZnSiAs2."
+ri-ZnSiAs2-2,10.1109_jqe.1972.1076982,0,0.8089008331298828,"Title discusses Linear and, not ZnSiAs2."
+ri-ZnSiAs2-3,10.1109_jqe.1972.1076982,0,0.8360995054244995,"Title discusses Linear and, not ZnSiAs2."
+ri-ZnTe-1,10.1063_1.1681581,2,0.02782163769006729,Title reports refractive index and dispersion data for ZnTe (zinc telluride).
+ri-ZnTe-2,10.1063_1.1681581,2,0.029808182269334793,Title reports refractive index and dispersion data for ZnTe (zinc telluride).
+ri-ZnTe-3,10.1063_1.1681581,2,0.036257993429899216,Title reports refractive index and dispersion data for ZnTe (zinc telluride).
