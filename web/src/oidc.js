@@ -1,6 +1,6 @@
 // GitHub Actions OIDC tokens: which repository and workflow a runner runs (for the OCR workflow's keys).
 const OIDC_ISSUER = "https://token.actions.githubusercontent.com";
-const CI_REPO = "aminsadidi/RAG", CI_WORKFLOWS = ["ocr.yml", "quality.yml"].map((w) => `${CI_REPO}/.github/workflows/${w}@`);
+const CI_REPO = "aminsadidi/RAG", CI_WORKFLOWS = ["ocr.yml", "quality.yml", "datamap.yml"].map((w) => `${CI_REPO}/.github/workflows/${w}@`);
 const b64url = (s) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(s.length / 4) * 4, "=")),
   (c) => c.charCodeAt(0));
 
