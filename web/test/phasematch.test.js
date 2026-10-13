@@ -594,3 +594,21 @@ test("KABO (Umemura et al. 2003): type-I SHG angles of Table 1 and temperature b
     assert.ok(Math.abs(5.566 / Math.abs(dk) / bw - 1) < 0.05, `ΔT·l at ${l1}: ${5.566 / Math.abs(dk)}`);
   }
 });
+
+test("BaGa4Se7 d_ij (Guo et al. 2022): d_eff in the three principal planes, Eqs. (3)–(5)", () => {
+  // Monoclinic: θ on the two sides of an axis are different directions. The paper's sphere gives one of them
+  // (Eqs. 3–5, e.g. |d21 cosθ − d31 sinθ| in yz); the other has the + sign. The site reports the larger as deff
+  // and their difference as spread. Walk-off neglected.
+  const s = source("BaGa4Se7"), n = nAt(s);
+  for (const [l, plane, type, A, B] of [[3.3, "yz", "IIa", 5.3, 1.5], [2.3, "yz", "IIa", 5.3, 1.5],
+    [2.5, "xz", "I", 5.3, 14.2], [2.4, "xy", "IIa", -5.0, -1.5]]) {
+    const sol = solveAll(n, s.kind, "shg", l, 0).find((r) => r.plane === plane && r.type === type);
+    const sq = plane !== "yz", t = sol.angle * Math.PI / 180, [c, si] = sq ? [Math.cos(t) ** 2, Math.sin(t) ** 2] : [Math.cos(t), Math.sin(t)];
+    // xz (Eq. 4, d21 cos²θ + d23 sin²θ) and xy (Eq. 5, d31 sin²φ + d32 cos²φ) are the same on both sides
+    const r = effectiveD(n, s.kind, sol, D.BaGa4Se7.d);
+    const hi = sq ? Math.abs(A * c - B * si) : Math.abs(A * c) + Math.abs(B * si);
+    const lo = sq ? hi : Math.abs(Math.abs(A * c) - Math.abs(B * si));
+    assert.ok(Math.abs(r.deff - hi) < 0.12 * hi + 0.2, `${plane} ${type} at ${l} µm: ${r.deff} vs ${hi}`);
+    assert.ok(Math.abs(r.deff - r.spread - lo) < 0.12 * hi + 0.2, `${plane} ${type} at ${l} µm, other side: ${r.deff - r.spread} vs ${lo}`);
+  }
+});
