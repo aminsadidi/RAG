@@ -1,0 +1,58 @@
+name: Fix Contributors
+
+on:
+  workflow_dispatch:
+
+  permissions:
+    contents: write
+
+    jobs:
+      fix-contributors:
+          runs-on: ubuntu-latest
+              steps:
+                    - name: Checkout repository
+                            uses: actions/checkout@v4
+                                    with:
+                                              fetch-depth: 0
+
+                                                    - name: Configure git identity and inspect previous commits
+                                                            run: |
+                                                                      echo "=== Inspecting Git History ==="
+                                                                                AMINSADIDI_NAME=$(git log --all --format="%an" | grep -i -v "claude" | grep -i -v "anthropic" | head -n 1)
+                                                                                          AMINSADIDI_EMAIL=$(git log --all --format="%ae" | grep -i -v "claude" | grep -i -v "anthropic" | head -n 1)
+                                                                                                    
+                                                                                                              if [ -z "$AMINSADIDI_NAME" ]; then
+                                                                                                                          AMINSADIDI_NAME="aminsadidi"
+                                                                                                                                    fi
+                                                                                                                                              if [ -z "$AMINSADIDI_EMAIL" ]; then
+                                                                                                                                                          AMINSADIDI_EMAIL="aminsadidi@users.noreply.github.com"
+                                                                                                                                                                    fi
+                                                                                                                                                                    
+                                                                                                                                                                              echo "Detected User Name: $AMINSADIDI_NAME"
+                                                                                                                                                                                        echo "Detected User Email: $AMINSADIDI_EMAIL"
+                                                                                                                                                                                        
+                                                                                                                                                                                                  git config user.name "$AMINSADIDI_NAME"
+                                                                                                                                                                                                            git config user.email "$AMINSADIDI_EMAIL"
+                                                                                                                                                                                                            
+                                                                                                                                                                                                                      export FILTER_BRANCH_SQUELCH_WARNING=1
+                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                git filter-branch -f \
+                                                                                                                                                                                                                                            --env-filter '
+                                                                                                                                                                                                                                                          export GIT_AUTHOR_NAME="'"$AMINSADIDI_NAME"'"
+                                                                                                                                                                                                                                                                        export GIT_AUTHOR_EMAIL="'"$AMINSADIDI_EMAIL"'"
+                                                                                                                                                                                                                                                                                      export GIT_COMMITTER_NAME="'"$AMINSADIDI_NAME"'"
+                                                                                                                                                                                                                                                                                                    export GIT_COMMITTER_EMAIL="'"$AMINSADIDI_EMAIL"'"
+                                                                                                                                                                                                                                                                                                                ' \
+                                                                                                                                                                                                                                                                                                                            --msg-filter '
+                                                                                                                                                                                                                                                                                                                                          sed -E "/[Cc]o-authored-by:.*[Cc]laude/d; /[Cc]o-authored-by:.*[Aa]nthropic/d"
+                                                                                                                                                                                                                                                                                                                                                      ' \
+                                                                                                                                                                                                                                                                                                                                                                  -- --all
+                                                                                                                                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                                                                                                            git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d || true
+                                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                                                      git push origin --all --force
+                                                                                                                                                                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                                                                                                                                git rm -f .github/workflows/fix-contributors.yml || true
+                                                                                                                                                                                                                                                                                                                                                                                                          git commit -m "Remove temporary fix-contributors workflow" || true
+                                                                                                                                                                                                                                                                                                                                                                                                                    git push origin HEAD --force
+                                                                                                                                                                                                                                                                                                                                                                                                                    
