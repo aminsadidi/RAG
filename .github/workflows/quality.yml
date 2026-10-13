@@ -56,7 +56,7 @@ jobs:
         run: |
           git config user.name "matrag-quality"; git config user.email "quality@users.noreply.github.com"
           git add scripts/quality/reports
-          git diff --cached --quiet || { git commit -q -m "Quality reports $(date -u +%F)"; git pull -q --rebase origin "${GITHUB_REF_NAME}"; git push -q origin "HEAD:${GITHUB_REF_NAME}"; }
+          git diff --cached --quiet || { git commit -q -m "Quality reports $(date -u +%F)"; for i in 1 2 3; do git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done; }
       - name: Search below the baseline
         if: steps.search.outcome == 'failure'
         run: exit 1

@@ -1,0 +1,47 @@
+# Data map of the collection (scripts/quality/datamap.py): SubQ reads every passage on the site and scores
+# which kinds of data it holds, on 20 runners in parallel; the merge job writes data/rag-optics/datamap.json.gz
+# and a report. Only scores and page numbers leave the runners, never paper text (the repository is public).
+# Started by hand (Actions -> Data map) or by a commit that changes scripts/quality/datamap-run.json.
+name: Data map
+
+on:
+  workflow_dispatch:
+  push:
+    paths: [scripts/quality/datamap-run.json]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  shard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix: { k: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keys from the site
+        run: KEYS="QDRANT_URL QDRANT_API_KEY SUBQ_KEYS" bash scripts/ocr_gh/keys.sh
+      - name: Score the passages
+        run: python3 scripts/quality/datamap.py shard ${{ matrix.k }} 20 "shard-${{ matrix.k }}.jsonl"
+      - uses: actions/upload-artifact@v4
+        with: { name: "datamap-${{ matrix.k }}", path: "shard-${{ matrix.k }}.jsonl", retention-days: 7 }
+
+  merge:
+    needs: shard
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: "datamap-*", path: shards }
+      - name: Merge
+        run: python3 scripts/quality/datamap.py merge shards | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Keep the map
+        run: |
+          git config user.name "matrag-quality"; git config user.email "quality@users.noreply.github.com"
+          git add data/rag-optics/datamap.json.gz scripts/quality/reports
+          git commit -q -m "Data map $(date -u +%F)"
+          for i in 1 2 3; do git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done
