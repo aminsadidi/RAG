@@ -117,8 +117,30 @@ async function online(env) {
     keyboard: [...rows.filter((e) => e.user !== "owner" && e.user !== "?").slice(0, 6).map((e) => [btn(`👤 ${e.user}`, `u:${e.user}`)]), [btn("🔄 تازه‌سازی", "online"), ...BACK]] };
 }
 
-const created = (name, password, days, role) =>
-  `✅ حساب ساخته شد\n\nآدرس: ${SITE}\nنام کاربری: ${name}\nرمز: ${password}\nسطح دسترسی: ${ROLES[role].label}\n${days ? `اعتبار: ${days} روز` : "اعتبار: بی‌پایان"}\n\n(این پیام را می‌توانید مستقیم برای کاربر بفرستید)`;
+// For the owner: the account as set up. For the user: a separate message to forward as it is, with nothing
+// about the access level (a user without PDFs must not learn that the feature exists).
+const created = (name, days, role) =>
+  `✅ حساب «${name}» ساخته شد — ${ROLES[role].label}، ${days ? `${days} روز` : "بی‌پایان"}\n\nپیام بعدی را همان‌طور که هست برای کاربر فوروارد کنید.`;
+const forUser = (name, password, days) => `سلام 👋
+حساب کاربری شما در MatRAG، سامانه‌ی جست‌وجو در مقاله‌های اپتیک غیرخطی، آماده است.
+
+🔗 آدرس: ${SITE}
+👤 نام کاربری: ${name}
+🔑 رمز: ${password}${days ? `\n📅 اعتبار: ${days} روز` : ""}
+
+چند نکته:
+• سؤال را به فارسی یا انگلیسی بنویسید؛ مثلاً «ضرایب سلمایر بلور LBO» یا «ضریب غیرخطی KTP».
+• اگر نام یا فرمول بلور را بنویسید، کارت خلاصه‌ی آن بلور بالای نتایج می‌آید.
+• هر پاسخ با منبع و شماره‌ی صفحه‌ی مقاله آمده است.
+• از دکمه‌ی «بازخورد» گوشه‌ی صفحه هر نظر یا اشکالی را بنویسید؛ مستقیم به دست ما می‌رسد.
+
+اگر سایت باز نشد، با فیلترشکن امتحان کنید.
+لطفاً نام کاربری و رمز را با کس دیگری به اشتراک نگذارید.`;
+const passwordFor = (name, password) => `🔑 رمز تازه‌ی حساب MatRAG شما
+
+🔗 آدرس: ${SITE}
+👤 نام کاربری: ${name}
+🔑 رمز: ${password}`;
 
 // ---------- button presses
 async function onButton(env, data) {
@@ -128,7 +150,8 @@ async function onButton(env, data) {
     case "ul": return userList(env, Number(a) || 0);
     case "u": return userCard(env, a);
     case "ua": return { ...(await logScreen(env, `🕘 فعالیت‌های ${a}`, (e) => e.user === a, 180, 30)), keyboard: [[btn(`👤 ${a}`, `u:${a}`)], BACK] };
-    case "ur": { const { password } = await updateUser(env, a, { resetPassword: true }); return userCard(env, a, `🔑 رمز تازه‌ی ${a}: ${password}`); }
+    case "ur": { const { password } = await updateUser(env, a, { resetPassword: true });
+      return { ...(await userCard(env, a, `🔑 رمز ${a} عوض شد؛ پیام بعدی را برایش فوروارد کنید.`)), forward: passwordFor(a, password) }; }
     case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ همین حالا از سایت بیرون است.");
     case "uon": await updateUser(env, a, { active: true }); return userCard(env, a, "✅ دوباره فعال شد.");
     case "uro": return { text: `🎚 سطح دسترسی ${a}\n\n${ROLE_HELP}`, keyboard: roleKeyboard(`urs:${a}`, btn("↩️ بازگشت", `u:${a}`)) };
@@ -151,7 +174,7 @@ async function onButton(env, data) {
       const s = await getState(env); if (!s?.name || !s.role) return home(env);
       const password = await createUser(env, s.name, Number(a), s.note || "", s.role);
       await setState(env, null);
-      return { text: created(s.name, password, Number(a), s.role), keyboard: [[btn(`👤 ${s.name}`, `u:${s.name}`), btn("➕ یکی دیگر", "new")], BACK] };
+      return { text: created(s.name, Number(a), s.role), forward: forUser(s.name, password, Number(a)), keyboard: [[btn(`👤 ${s.name}`, `u:${s.name}`), btn("➕ یکی دیگر", "new")], BACK] };
     }
     case "stats": return stats(env);
     case "online": return online(env);
@@ -208,6 +231,7 @@ export async function telegramWebhook(request, env) {
     await tg(env, "answerCallbackQuery", { callback_query_id: cb.id });
     await tg(env, "editMessageText", { chat_id: cb.message.chat.id, message_id: cb.message.message_id, text: fit(screen.text),
       reply_markup: { inline_keyboard: screen.keyboard }, disable_web_page_preview: true });
+    if (screen.forward) await tg(env, "sendMessage", { chat_id: cb.message.chat.id, text: screen.forward, disable_web_page_preview: true });
     return new Response("ok");
   }
   if (!msg?.text || String(msg.from?.id) !== owner || msg.chat?.type !== "private") return new Response("ok");
