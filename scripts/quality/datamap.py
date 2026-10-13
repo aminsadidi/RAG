@@ -47,17 +47,17 @@ def formulas(text):
     return out[:12]
 
 
-def qdrant(path, body):
+def qdrant(path, body, method="POST"):
     req = urllib.request.Request(os.environ["QDRANT_URL"].rstrip("/") + path, json.dumps(body).encode(),
-                                 {"content-type": "application/json", "api-key": os.environ["QDRANT_API_KEY"]})
+                                 {"content-type": "application/json", "api-key": os.environ["QDRANT_API_KEY"]}, method=method)
     return json.load(urllib.request.urlopen(req, timeout=120))["result"]
 
 
-def points(doc_ids):
+def points(doc_ids, fields=("doc_id", "node_id", "pages", "first_page", "text", "content_type")):
     """Every point of these papers (scroll with a doc_id filter)."""
     offset = None
     while True:
-        body = {"limit": 256, "with_payload": ["doc_id", "node_id", "pages", "first_page", "text", "content_type"],
+        body = {"limit": 256, "with_payload": list(fields),
                 "filter": {"must": [{"key": "doc_id", "match": {"any": doc_ids}}]}}
         if offset is not None:
             body["offset"] = offset

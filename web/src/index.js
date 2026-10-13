@@ -119,7 +119,9 @@ function filterOf(opts) {
   if (opts.category) must.push({ key: "category", match: { value: opts.category } });
   if (opts.fullTextOnly) must.push({ key: "source_type", match: { value: "full_text_pdf" } });
   if (opts.docIds?.length) must.push({ key: "doc_id", match: { any: opts.docIds } });
-  return must.length ? { must } : undefined;
+  // Passages SubQ found to have no scientific content (cover pages, reference lists, garbled text; the
+  // `junk` field of scripts/quality/enrich.py) are left out; passages without the field stay in.
+  return { ...(must.length ? { must } : {}), must_not: [{ key: "junk", range: { gt: 0.9 } }] };
 }
 
 async function search(env, opts) {
