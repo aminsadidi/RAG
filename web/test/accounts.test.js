@@ -61,7 +61,11 @@ test("admin panel: buttons, a user made in three steps, only the owner", async (
   await press("new"); await text("sara دانشجوی آزمایشگاه"); assert.ok(buttons().includes("nr:guest"));
   await press("nr:guest"); assert.ok(buttons().includes("nd:30"));
   await press("nd:30");
-  assert.match(last().text, /نام کاربری: sara\nرمز: \S{10}\nسطح دسترسی: مهمان/);
+  // the owner's screen names the access level; the message to forward to the user does not
+  const [panel, toUser] = sent.filter((x) => x.text).slice(-2);
+  assert.match(panel.text, /sara.*مهمان/);
+  assert.match(toUser.text, /نام کاربری: sara\n🔑 رمز: \S{10}/);
+  assert.ok(!toUser.reply_markup && !/مهمان|دسترسی|PDF|pdf/.test(toUser.text));
   const u = await e.AICACHE.get("user:sara", "json");
   assert.equal(u.role, "guest"); assert.equal(u.note, "دانشجوی آزمایشگاه");
   // user card actions
