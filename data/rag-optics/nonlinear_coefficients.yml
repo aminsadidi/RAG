@@ -456,12 +456,11 @@
 
 - material: BaGa4Se7
   point_group: m
-  partial: true
-  frame: "crystal-physical XYZ (Badikov et al. 2011), not the dielectric frame"
-  d: {11: 24.3, 13: 20.4}
+  d: {21: 5.3, 16: 5.3, 22: 6.2, 23: -14.2, 34: -14.2, 31: 1.5, 15: 1.5, 32: -5.0, 24: -5.0}
   sources:
-    - {doc_id: "10.1364_oe.23.000552", doi: 10.1364/OE.23.000552, cite: "Zhang et al. (2015)", pdf_page: 7, what: "d11 = 24.3 ± 1.5, d13 = 20.4 ± 1.1 pm/V (Eqs. 6–7, Maker fringes against d36(KDP)); d12 has the sign opposite to d13"}
-  notes: "m (Pc); d12, d15, d24, d33 not measured"
+    - {doc_id: "10.1364_ol.449826", doi: 10.1364/OL.449826, cite: "Guo et al. (2022)", pdf_page: 3, what: "dielectric frame (x ∥ b, the frame of the Boursier et al. 2016 Sellmeier equations), at 0.532 µm: d21 = 5.3 ± 0.8, |d22| = 6.2 ± 0.9, d23 = −14.2 ± 0.8, d31 = 1.5 ± 0.1, d32 = −5.0 ± 0.4 pm/V; magnitudes from non-phase-matched SHG of slabs, relative signs from the phase-matched d_eff of a sphere in the three principal planes (Figs. 6–8); d33 below the detection level"}
+    - {doc_id: "10.1364_oe.23.000552", doi: 10.1364/OE.23.000552, cite: "Zhang et al. (2015)", pdf_page: 7, what: "in the crystal-physical frame, d11 = 24.3, d13 = 20.4 pm/V; Guo et al. note a strong disagreement with these (p. 4)"}
+  notes: "m with x normal to the mirror plane; Kleinman: d16 = d21, d15 = d31, d24 = d32, d34 = d23. The sign of d22 is not determined (it enters only outside the principal planes); d33 is left out (not measured). Values at 0.532 µm, not scaled by Miller's rule"
 
 - material: K2Al2B2O7
   point_group: "32"
