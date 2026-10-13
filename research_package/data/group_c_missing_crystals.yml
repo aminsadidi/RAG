@@ -198,7 +198,7 @@
     temperature_c:
     - 20
     - 20
-  check: 'p. 283: at 0.5461 µm, no = 1.77999; at 1.064 µm, no = 1.765'
+  check: 'p. 283: Experimental values [14] list no = 1.77999 at 0.5461 µm, 1.765 at 1.064 µm; Sellmeier formula evaluates to no = 1.7804 at 0.5461 µm and 1.7619 at 1.064 µm'
   note: Negative uniaxial crystal, point group 32 (NYAB/YAB with 10 at.% Nd).
 - material: YAl3(BO3)4
   quantity: sellmeier
@@ -219,7 +219,7 @@
     temperature_c:
     - 20
     - 20
-  check: 'p. 283: at 0.5461 µm, ne = 1.70455; at 1.064 µm, ne = 1.694'
+  check: 'p. 283: Experimental values [14] list ne = 1.70455 at 0.5461 µm, 1.694 at 1.064 µm; Sellmeier formula evaluates to ne = 1.7047 at 0.5461 µm and 1.6888 at 1.064 µm'
   note: Negative uniaxial crystal, point group 32 (NYAB/YAB with 10 at.% Nd).
 - material: YAl3(BO3)4
   quantity: d_ij
@@ -348,13 +348,13 @@
   formula: Tabulated dispersion curves n(λ) for x = 0.25, 0.50, 0.75
   values:
     x_0.75:
-      false: 2.3117
+      'no': 2.3117
       ne: 2.2987
     x_0.50:
-      false: 2.3123
+      'no': 2.3123
       ne: 2.2734
     x_0.25:
-      false: 2.3144
+      'no': 2.3144
       ne: 2.2596
   units: refractive index at 0.6328 µm (±0.001)
   range:
@@ -634,7 +634,7 @@
     - 0.6
     - 2.2
     temperature_c: not_found
-  check: 'Table 1, row n3: n0 = 1.5744 ± 0.01, λ0 = 490.2 ± 2 nm, q = 1.865 ± 0.04 (printed Ed = 2.53 ± 0.3 eV, E0 = 4.72 ± 0.1 eV; physically E0 = hc/λ0 = 2.53 eV and Ed = q·E0 = 4.72 eV)'
+  check: 'Table 1, row n3: n0 = 1.5744 ± 0.01, λ0 = 490.2 ± 2 nm, q = 1.865 ± 0.04; with q = 1.865 and λ0 = 0.4902 µm, Eq. (1) yields n3(1.0 µm) = 2.221 matching Fig. 4; note published Table 1 header swapped the values 2.53 eV and 4.72 eV under Ed and E0 columns (since E0 = hc/λ0 = 2.53 eV and Ed = q·E0 = 4.72 eV)'
   note: 'Single-oscillator model. Uniaxial point occurs at λ* = 820 nm where n1 = n2. Note: Table 1 columns Ed and E0 are inverted in the published paper for row n3 (since E0 = hc/λ0 = 2.53 eV and Ed = q·E0 = 4.72 eV); Sellmeier equation (1) uses q = 1.865 and λ0 = 0.4902 µm directly.'
 - material: OH1
   quantity: d_ij

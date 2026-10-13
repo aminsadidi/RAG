@@ -64,7 +64,7 @@
     temperature_c:
     - 25
     - 200
-  check: none
+  check: "Table 2: at 0.532 µm, n1 = 1.98e-5 /°C, n2 = 3.65e-8 /°C²; at 1.064 µm, n1 = 1.33e-5 /°C, n2 = 1.94e-8 /°C² (matching Fig. 4)"
   note: 'Emanueli & Arie (2003) Table 2: KTA y-axis'
 - material: KTiOAsO4
   quantity: dn/dT
@@ -93,7 +93,7 @@
     temperature_c:
     - 25
     - 200
-  check: none
+  check: "Table 2: at 0.532 µm, n1 = 2.97e-5 /°C, n2 = 7.15e-8 /°C²; at 1.064 µm, n1 = 1.89e-5 /°C, n2 = 4.04e-8 /°C² (matching Fig. 4); p. 5 col. 1: DFG tuning slope calculated from Eq. (4) is -1.14 nm/°C (measured -0.94 nm/°C) and FWHM = 42°"
   note: 'Emanueli & Arie (2003) Table 2: KTA z-axis. With mid-IR correction of Eq.
     (4) for OPO.'
 - material: GaN
@@ -116,7 +116,7 @@
     temperature_c:
     - 21
     - 515
-  check: 'p. 4, Eq. (2): at 500 nm, ∂n_o/∂T = 1.061e-4 K⁻¹; at 1000 nm, ∂n_o/∂T = 6.77e-5 K⁻¹'
+  check: 'p. 4, Eq. (2): at 441.6 nm, ∂n_o/∂T = 1.38e-4 K⁻¹; at 500 nm, ∂n_o/∂T = 1.061e-4 K⁻¹; at 1000 nm, ∂n_o/∂T = 6.77e-5 K⁻¹ (note: Tisch et al. Ref 6 had reported 1.53e-4 K⁻¹ at 441.6 nm without separating no/ne as discussed on p. 4 col. 1)'
   note: 'Watanabe et al. (2008) Eq. (2): measured on wurtzite GaN epilayer (5.18 and 10.6 µm thick) from room temperature (21 °C) to 515 °C. Fit valid for 450–1000 nm.'
 - material: GaN
   quantity: dn/dT
@@ -257,7 +257,7 @@
     temperature_c:
     - 20
     - 200
-  check: 'p. 385: at T = 293 K and lambda = 10.6 um, dno/dT = 1.88e-4 K^-1, dne/dT = 1.49e-4 K^-1; at lambda = 2.65 um, dno/dT = 2.05e-4 K^-1, dne/dT = 1.64e-4 K^-1'
+  check: 'p. 385: at T = 293 K and lambda = 10.6 um, dno/dT = 1.88e-4 K^-1, dne/dT = 1.49e-4 K^-1; at lambda = 2.65 um, dno/dT = 2.05e-4 K^-1, dne/dT = 1.64e-4 K^-1; p. 386 Table lists experimental temperature bandwidth ΔT = 41 K for o+e=>o SHG at 10.6 um [20]'
   note: 'CdGeAs2 temperature derivatives upon heating from room temperature to T [K] for spectral range 2.65–10.6 µm, from Tanaka & Kato (1998) [20] as cited in Nikogosyan p. 385.'
 - material: ZnTe
   quantity: dn/dT
