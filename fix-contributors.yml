@@ -1,0 +1,29 @@
+name: Fix Contributors
+on:
+  workflow_dispatch:
+  permissions:
+    contents: write
+    jobs:
+      fix-contributors:
+          runs-on: ubuntu-latest
+              steps:
+                    - uses: actions/checkout@v4
+                            with:
+                                      fetch-depth: 0
+                                            - run: |
+                                                      NAME=$(git log --all --format="%an <%ae>" | grep -i -v "claude" | grep -i -v "anthropic" | head -n 1)
+                                                                ANAME=$(echo "$NAME" | sed 's/ <.*//')
+                                                                          AEMAIL=$(echo "$NAME" | sed 's/.*<\(.*\)>/\1/')
+                                                                                    if [ -z "$ANAME" ]; then ANAME="aminsadidi"; fi
+                                                                                              if [ -z "$AEMAIL" ]; then AEMAIL="32998399+aminsadidi@users.noreply.github.com"; fi
+                                                                                                        echo "User: $ANAME <$AEMAIL>"
+                                                                                                                  git config user.name "$ANAME"
+                                                                                                                            git config user.email "$AEMAIL"
+                                                                                                                                      export FILTER_BRANCH_SQUELCH_WARNING=1
+                                                                                                                                                git filter-branch -f --env-filter "export GIT_AUTHOR_NAME='$ANAME'; export GIT_AUTHOR_EMAIL='$AEMAIL'; export GIT_COMMITTER_NAME='$ANAME'; export GIT_COMMITTER_EMAIL='$AEMAIL'" --msg-filter 'sed -E "/[Cc]o-authored-by:.*[Cc]laude/d; /[Cc]o-authored-by:.*[Aa]nthropic/d"' -- --all
+                                                                                                                                                          git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d || true
+                                                                                                                                                                    git push origin --all --force
+                                                                                                                                                                              git rm -f .github/workflows/fix-contributors.yml || true
+                                                                                                                                                                                        git commit -m "Remove temporary fix-contributors workflow" || true
+                                                                                                                                                                                                  git push origin HEAD --force
+                                                                                                                                                                                                  
