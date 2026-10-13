@@ -1,5 +1,17 @@
+# Summary:
+# Total entries: 19
+# Sourced entries: 14
+# not_found entries: 5
+# DOIs cited in collection PDFs for missing data (recommended for retrieval):
+# - BaTiO3 (bulk single-crystal d33, d31, d15): 10.1103/PhysRev.134.A1313
+# - ZnO (bulk single-crystal d33, d31, d15): 10.1364/AO.40.005436
+# - GaS (centrosymmetric 6/mmm, all d_ij = 0 by inversion symmetry; Petrov 2015 p. 29): 10.1016/j.pquantelec.2015.04.001
+# - CdGa2S4 (single-crystal d36): 10.1063/1.1663448
+# - TeO2 (paratellurite 422, non-zero Kleinman-forbidden d14): 10.1103/PhysRevB.4.4592
+
 # Group B: Second-order nonlinear coefficients d_ij (pm/V) for crystals that have none
 # Extracted strictly from PDFs in RAG-Optics / 01_Papers_by_Category
+
 
 - material: BaTiO3
   quantity: d_ij
@@ -86,19 +98,22 @@
 - material: Tl3AsSe3
   quantity: d_ij
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 396
+  where: p. 390, text under Second-order nonlinear coefficient
+  formula: d+(10.6 µm) = |d31|·sin(θ_pm + ρ) + |d22|·cos(θ_pm + ρ)
   values:
     point_group: 3m
-  units: not_found
+    d_plus: 67.5
+    d_plus_ratio_ag3ass3: 3.47
+  units: pm/V
   range:
-    wavelength_um: not_found
+    wavelength_um:
+    - 10.6
+    - 10.6
     temperature_c: not_found
-  check: not_found
-  note: TAS (Tl3AsSe3) tensor elements d22 and d31 are not tabulated in the collection
-    PDFs (Petrov 2015 p. 28 discusses TAS only qualitatively).
+  check: 'p. 390: d+(10.6 µm) = (3.47 ± 1.04) × d+(Ag3AsS3) = 67.5 ± 31.3 pm/V [2], [8], [6]; d+(10.6 µm) = (3.3 ± 1.0) × d+(Ag3SbS3) = 36.5 ± 12.5 pm/V [2], [10], [6]'
+  note: 'Nikogosyan 2005 p. 390 (and Dmitriev 1999 p. 239 / PDF p. 254). Effective nonlinearity in phase-matching direction: dooe = d31·sin θ - d22·cos θ·sin 3ϕ, deoe = doee = d22·cos² θ·cos 3ϕ.'
 - material: CdGa2S4
   quantity: d_ij
   axis: '-'
@@ -166,6 +181,7 @@
   values:
     point_group: -42m
     d36: 14.5
+    d36_cgs: 3.5e-08
     ratio_to_GaAs: 0.108
   units: pm/V
   range:
@@ -173,7 +189,7 @@
     - 10.6
     - 10.6
     temperature_c: not_found
-  check: 'Table V, row CuGaS2: d36/d36(GaAs) = 0.108 ± 15%, d36 = (35 ± 30%) x 10^-12 m/V, lc(meas) = 57.7 µm'
+  check: 'Table V, row CuGaS2: d36/d36(GaAs) = 0.108 ± 15%, d36 = 14.5 × 10^-12 m/V ± 30% (35 × 10^-9 cm/statvolt ± 30%), using d36(GaAs) = (3.2 ± 1) × 10^-7 CGS (p. 6, col. 1); lc(meas) = 57.7 µm'
   note: Measured by thin-wedge SHG relative to d36(GaAs) at 10.6 µm. Absolute value
     is 14.5 pm/V based on Boyd 1971 scale (or ~9.1 pm/V on modern Shoji 1997 scale
     where d36(GaAs) = 84 pm/V). Kleinman symmetry assumed (d14 = d36).
@@ -182,7 +198,27 @@
   axis: '-'
   file: 10.1364-josab.14.002268.pdf
   pdf_page: 20
-  where: Table 11, row α-ZnS
+  where: Table 11, col 1.548 µm, row α-ZnS
+  formula: Absolute wedge SHG measurement
+  values:
+    point_group: 6mm
+    d33: 9.0
+    d31: 4.8
+    d15: 4.3
+  units: pm/V
+  range:
+    wavelength_um:
+    - 1.548
+    - 1.548
+    temperature_c: not_found
+  check: 'Table 11: at 1.548 µm, d33 = 9.0 pm/V, d31 = 4.8 pm/V, d15 = 4.3 pm/V'
+  note: Hexagonal wurtzite α-ZnS (point group 6mm). Absolute wedge SHG measurement without assuming Kleinman symmetry.
+- material: ZnS
+  quantity: d_ij
+  axis: '-'
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: Table 11, col 1.064 µm, row α-ZnS
   formula: Absolute wedge SHG measurement
   values:
     point_group: 6mm
@@ -195,10 +231,28 @@
     - 1.064
     - 1.064
     temperature_c: not_found
-  check: 'At 1.548 µm: d33 = 9.0 pm/V, d31 = 4.8 pm/V, d15 = 4.3 pm/V; at 0.852 µm:
-    d33 = 17.0 pm/V, d31 = 8.1 pm/V, d15 = 8.0 pm/V'
-  note: For hexagonal wurtzite α-ZnS (point group 6mm). Independent determination
-    of d15 and d31 without assuming Kleinman symmetry (d15 ≈ d31 within 6%).
+  check: 'Table 11: at 1.064 µm, d33 = 12.5 pm/V, d31 = 6.2 pm/V, d15 = 5.8 pm/V'
+  note: Hexagonal wurtzite α-ZnS (point group 6mm). Absolute wedge SHG measurement without assuming Kleinman symmetry.
+- material: ZnS
+  quantity: d_ij
+  axis: '-'
+  file: 10.1364-josab.14.002268.pdf
+  pdf_page: 20
+  where: Table 11, col 0.852 µm, row α-ZnS
+  formula: Absolute wedge SHG measurement
+  values:
+    point_group: 6mm
+    d33: 17.0
+    d31: 8.1
+    d15: 8.0
+  units: pm/V
+  range:
+    wavelength_um:
+    - 0.852
+    - 0.852
+    temperature_c: not_found
+  check: 'Table 11: at 0.852 µm, d33 = 17.0 pm/V, d31 = 8.1 pm/V, d15 = 8.0 pm/V'
+  note: Hexagonal wurtzite α-ZnS (point group 6mm). Absolute wedge SHG measurement without assuming Kleinman symmetry.
 - material: BaGa4S7
   quantity: d_ij
   axis: '-'
@@ -209,10 +263,6 @@
   values:
     point_group: mm2
     d31: 5.1
-    d15: 5.1
-    d32: 4.8
-    d24: 4.8
-    d33: 12.6
   units: pm/V
   range:
     wavelength_um:
@@ -220,34 +270,7 @@
     - 2.26
     temperature_c: not_found
   check: 'Table 2, row BaGa4S7: d31 = 5.1 pm/V @ 2.26 µm (Miller d31 = 5.07 pm/V), deff(oo-e, XZ) = 4.99 pm/V at θ = 10.47°'
-  note: 'Complete tensor for mm2 point group: d31 = d15 = 5.1 pm/V, d32 = d24 = 4.8
-    pm/V (Petrov 2015); d33 = 12.6 pm/V measured at 1.064 µm relative to LiGaS2 d33
-    = 10.7 pm/V in 10.1021-cg8010579.pdf (Lin 2009, p. 1-3). Kleinman symmetry assumed.'
-- material: BaGa4Se7
-  quantity: d_ij
-  axis: '-'
-  file: 10.1364-ol.40.004591.pdf
-  pdf_page: 4
-  where: Table 1 and p. 4, col. 1, text
-  formula: d_ij measured via angle NCPM SHG along dielectric axes
-  values:
-    point_group: m
-    d23: 11.3
-    d32: 3.7
-    d31: 1.2
-    d11: 24.3
-    d13: 20.4
-  units: pm/V
-  range:
-    wavelength_um:
-    - 1.8
-    - 3.22
-    temperature_c: not_found
-  check: 'Table 1: |d23| = 14.2 ± 0.8, |d32| = 5.0 ± 0.4, |d31| = 2.0 ± 0.3 pm/V (at 0.532 µm); |d23| = 9.5 ± 0.5, |d32| = 3.3 ± 0.3, |d31| = 1.3 ± 0.2 pm/V (at 5.3 µm)'
-  note: Measured in dielectric frame relative to KTP d24(0.66 µm) = 2.37 pm/V. Maker
-    fringe measurements at 1.064 µm by Zhang 2015 (cited in 10.1007-s00340-016-6631-5.pdf
-    p. 2) report d11 = 24.3 pm/V, d13 = 20.4 pm/V relative to KDP d36 = 0.39 pm/V.
-    Kleinman symmetry assumed.
+  note: 'Petrov 2015 Table 2 reports only d31 = 5.1 pm/V at 2.26 µm for BaGa4S7 (point group mm2). Other tensor components are not determined in this source.'
 - material: DAST
   quantity: d_ij
   axis: '-'
@@ -292,17 +315,23 @@
 - material: OH1
   quantity: d_ij
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
+  file: 10.1364-josab.25.001678.pdf
+  pdf_page: 5
+  where: Table 2, row dijk and p. 1681 text
+  formula: Maker-fringe technique relative to quartz d111
+  values:
+    point_group: mm2
+    d333: 120.0
+    d223: 13.0
+    d322: 8.5
+  units: pm/V
   range:
-    wavelength_um: not_found
+    wavelength_um:
+    - 1.907
+    - 1.907
     temperature_c: not_found
-  check: not_found
-  note: 10.1364-ol.32.002885.pdf is Suizu et al. (DAST), not OH1; real single-crystal dij values for OH1 are reported in Hunziker et al. (10.1364-josab.25.001678.pdf) and cataloged in Group C.
+  check: 'Table 2: d333 = 120 ± 10 pm/V, d223 = 13 ± 2 pm/V, d322 = 8.5 ± 2 pm/V at λ = 1.9 µm; quartz d111 = 0.277 pm/V'
+  note: 'Non-contracted notation dijk: d333 = d33, d223 = d24, d322 = d32. Orthorhombic crystal (point group mm2). Kleinman symmetry assumed.'
 - material: LiInS2
   quantity: d_ij
   axis: '-'

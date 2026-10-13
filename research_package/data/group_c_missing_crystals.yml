@@ -1,5 +1,19 @@
+# Summary:
+# Total entries: 38
+# Sourced entries: 24
+# not_found entries: 14
+# DOIs cited in collection PDFs for missing data (recommended for retrieval):
+# - Sr2Be2B2O7 (SBBO Sellmeier and dn/dT): 10.1063/1.116358, 10.1364/OE.19.012585
+# - BPO4 (boron phosphate dn/dT): 10.1016/j.optmat.2011.05.021
+# - SrxBa1-xNb2O6 (SBN d_ij): 10.1063/1.1657032
+# - β-Ga2O3 (beta-gallium oxide Sellmeier, d_ij, dn/dT): 10.1364/AO.50.006006, 10.1063/5.0046522
+# - La3Ga5SiO14 (langasite LGS Sellmeier, d_ij, dn/dT): 10.1002/pssa.2210800223, 10.1070/QE2001v031n09ABEH002052
+# - OH1 (organic salt dn/dT): 10.1364/JOSAB.25.001678, 10.1002/adfm.200800368
+# - HMQ-TMS (organic crystal Sellmeier, d_ij, dn/dT): 10.1002/adfm.201300847, 10.1364/OE.22.017014
+
 # Group C: Crystals that are missing completely
 # Extracted strictly from PDFs in RAG-Optics / 01_Papers_by_Category
+
 
 - material: Sr2Be2B2O7
   quantity: sellmeier
@@ -129,10 +143,10 @@
   file: 10.1364-ao.42.002716.pdf
   pdf_page: 2
   where: p. 2717, Eq. (2) dno/dT
-  formula: dno/dT = −(1.6101 + 0.0361·λ) × 10⁻⁵
+  formula: dno/dT = (1.6101 + 0.0361·λ) × 10⁻⁵
   values:
-    a0: -1.6101e-05
-    a1: -3.61e-07
+    a0: 1.6101e-05
+    a1: 3.61e-07
   units: °C⁻¹, λ in µm
   range:
     wavelength_um:
@@ -141,21 +155,20 @@
     temperature_c:
     - 20
     - 120
-  check: 'Table 2: temperature phase-matching bandwidth ΔT·l = 41.9 °C·cm at 1.0642
-    µm SHG, 4.1 °C·cm at 0.5321 µm SHG'
-  note: Negative thermo-optic coefficient.
+  check: 'Table 2: temperature phase-matching bandwidth ΔT·l = 41.9 °C·cm at 1.0642 µm SHG, 4.1 °C·cm at 0.5321 µm SHG'
+  note: Positive thermo-optic coefficient.
 - material: K2Al2B2O7
   quantity: dn/dT
   axis: e
   file: 10.1364-ao.42.002716.pdf
   pdf_page: 2
   where: p. 2717, Eq. (2) dne/dT
-  formula: dne/dT = −(0.0015/λ³ − 0.0083/λ² + 0.0956/λ + 1.9905) × 10⁻⁵
+  formula: dne/dT = (-0.0015/λ³ + 0.0083/λ² + 0.0956/λ + 1.9905) × 10⁻⁵
   values:
     a_minus3: -1.5e-08
     a_minus2: 8.3e-08
-    a_minus1: -9.56e-07
-    a0: -1.9905e-05
+    a_minus1: 9.56e-07
+    a0: 1.9905e-05
   units: °C⁻¹, λ in µm
   range:
     wavelength_um:
@@ -165,52 +178,87 @@
     - 20
     - 120
   check: 'Table 2: SFG 1.0642 + 0.2358 -> 0.1930 µm ΔT·l = 2.2 °C·cm (calc 2.2 °C·cm)'
-  note: Negative thermo-optic coefficient.
+  note: Positive thermo-optic coefficient overall.
 - material: YAl3(BO3)4
   quantity: sellmeier
-  axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
+  axis: o
+  file: 10.1007_b138685.pdf
+  pdf_page: 290
+  where: p. 283, Dispersion relations for 10 at.% Nd
+  formula: no² = 1 + 2.08192923·λ²/(λ² − 0.1098684²)
+  values:
+    A: 1.0
+    B: 2.08192923
+    C: 0.01207106
+  units: λ in µm
   range:
-    wavelength_um: not_found
-    temperature_c: not_found
-  check: not_found
-  note: Sellmeier equation for YAB is not found in collection PDFs (Buchen 2018 discusses
-    only twinning and optical activity).
+    wavelength_um:
+    - 0.4047
+    - 1.318
+    temperature_c:
+    - 20
+    - 20
+  check: 'p. 283: at 0.5461 µm, no = 1.77999; at 1.064 µm, no = 1.765'
+  note: Negative uniaxial crystal, point group 32 (NYAB/YAB with 10 at.% Nd).
+- material: YAl3(BO3)4
+  quantity: sellmeier
+  axis: e
+  file: 10.1007_b138685.pdf
+  pdf_page: 290
+  where: p. 283, Dispersion relations for 10 at.% Nd
+  formula: ne² = 1 + 1.83465945·λ²/(λ² − 0.1067225²)
+  values:
+    A: 1.0
+    B: 1.83465945
+    C: 0.01138969
+  units: λ in µm
+  range:
+    wavelength_um:
+    - 0.4047
+    - 1.318
+    temperature_c:
+    - 20
+    - 20
+  check: 'p. 283: at 0.5461 µm, ne = 1.70455; at 1.064 µm, ne = 1.694'
+  note: Negative uniaxial crystal, point group 32 (NYAB/YAB with 10 at.% Nd).
 - material: YAl3(BO3)4
   quantity: d_ij
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 291
+  where: p. 284, Values of second-order nonlinear coefficient
+  formula: dooe = d11·cos θ·cos 3ϕ
   values:
     point_group: '32'
-  units: not_found
+    d11: 1.51
+    d11_err: 0.25
+  units: pm/V
   range:
-    wavelength_um: not_found
+    wavelength_um:
+    - 1.064
+    - 1.064
     temperature_c: not_found
-  check: not_found
-  note: Point group 32 (space group R32, huntite type); individual numerical d11 values
-    are not reported in collection PDFs.
+  check: 'p. 284: d11(1.064 µm) = 1.51 ± 0.25 pm/V [9]; d11(1.062 µm) = 3.9 × d36(KDP) = 1.52 pm/V [14], [24]'
+  note: 'Point group 32. Kleinman symmetry assumed: d11 = -d12 = -d26.'
 - material: YAl3(BO3)4
   quantity: dn/dT
-  axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
+  axis: o, e
+  file: 10.1007_b138685.pdf
+  pdf_page: 290
+  where: p. 283, Temperature-dependent dispersion relation for 5.6% Nd
+  formula: 'no² = 1 + 172.4727/[(0.10985 + 7.7e-7·T − 2.38e-9·T²)⁻² − λ⁻²]; ne² = 1 + 161.08069/[(0.10669 + 1.3e-6·T − 3.2e-9·T²)⁻² − λ⁻²]'
+  values:
+    formula_type: temperature_dependent_sellmeier
+  units: λ in µm, T in K
   range:
-    wavelength_um: not_found
-    temperature_c: not_found
-  check: not_found
-  note: Thermo-optic dispersion formula dn/dT is not found in collection PDFs.
+    wavelength_um:
+    - 0.4
+    - 0.7
+    temperature_c:
+    - 20
+    - 200
+  check: 'p. 285: dθpm/dT = 1.52e-3 deg/K for SHG 1.06 -> 0.53 µm at θpm = 30° [21]'
+  note: Nikogosyan 2005 p. 283 [21]. Valid for 293 K < T < 473 K.
 - material: BPO4
   quantity: sellmeier
   axis: o
@@ -361,49 +409,91 @@
     no at the Curie-like transition temperature.
 - material: CsH2AsO4
   quantity: sellmeier
-  axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
+  axis: o
+  file: 10.1007_b138685.pdf
+  pdf_page: 345
+  where: p. 339, Best set of dispersion relations
+  formula: no² = 1.8776328 − 0.03602222·λ² + 0.005234121·λ⁴ + 0.5503951·λ²/(λ² − 0.1625700²)
+  values:
+    A: 1.8776328
+    B: -0.03602222
+    C: 0.005234121
+    D: 0.5503951
+    lambda0_sq: 0.0264290049
+  units: λ in µm
   range:
-    wavelength_um: not_found
-    temperature_c: not_found
-  check: not_found
-  note: CDA (cesium dihydrogen arsenate) Sellmeier equation is not found in collection
-    PDFs.
+    wavelength_um:
+    - 0.3472
+    - 1.0642
+    temperature_c:
+    - 20
+    - 20
+  check: 'p. 339: at 0.6943 µm, no = 1.5632; at 1.0642 µm, no = 1.5516'
+  note: Negative uniaxial crystal, point group -42m. Ref [5] Eimerl et al.
+- material: CsH2AsO4
+  quantity: sellmeier
+  axis: e
+  file: 10.1007_b138685.pdf
+  pdf_page: 345
+  where: p. 339, Best set of dispersion relations
+  formula: ne² = 1.6862889 − 0.01372244·λ² + 0.003948463·λ⁴ + 0.6694571·λ²/(λ² − 0.1464712²)
+  values:
+    A: 1.6862889
+    B: -0.01372244
+    C: 0.003948463
+    D: 0.6694571
+    lambda0_sq: 0.0214538124
+  units: λ in µm
+  range:
+    wavelength_um:
+    - 0.3472
+    - 1.0642
+    temperature_c:
+    - 20
+    - 20
+  check: 'p. 339: at 0.6943 µm, ne = 1.5429; at 1.0642 µm, ne = 1.5330'
+  note: Negative uniaxial crystal, point group -42m. Ref [5] Eimerl et al.
 - material: CsH2AsO4
   quantity: d_ij
   axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
+  file: 10.1007_b138685.pdf
+  pdf_page: 345
+  where: p. 339, Absolute value of second-order nonlinear coefficient
+  formula: dooe = -d36·sin θ·sin 2ϕ
   values:
     point_group: -42m
-  units: not_found
+    d36: 0.4
+    d36_err: 0.05
+  units: pm/V
   range:
-    wavelength_um: not_found
+    wavelength_um:
+    - 1.0642
+    - 1.0642
     temperature_c: not_found
-  check: not_found
-  note: Point group -42m (isomorphous to KDP); nonlinear coefficients not found in
-    collection PDFs.
+  check: 'p. 339: d36(1.0642 µm) = 0.40 ± 0.05 pm/V [3]'
+  note: 'Point group -42m (CDA). Kleinman symmetry assumed: d14 = d25 = d36.'
 - material: CsH2AsO4
   quantity: dn/dT
-  axis: '-'
-  file: not_found
-  pdf_page: null
-  where: not_found
-  formula: not_found
-  values: {}
-  units: not_found
+  axis: o, e
+  file: 10.1007_b138685.pdf
+  pdf_page: 345
+  where: p. 339, Table Temperature derivatives of refraction indices
+  formula: 'Tabulated values: dno/dT and dne/dT'
+  values:
+    dno_dt_546nm: -2.59e-05
+    dne_dt_546nm: -2.12e-05
+    dno_dt_633nm: -2.8e-05
+    dne_dt_633nm: -2.56e-05
+  units: K⁻¹
   range:
-    wavelength_um: not_found
-    temperature_c: not_found
-  check: not_found
-  note: Thermo-optic dispersion formula dn/dT is not found in collection PDFs.
+    wavelength_um:
+    - 0.405
+    - 0.633
+    temperature_c:
+    - 20
+    - 20
+  check: 'p. 339: at 0.546 µm, dno/dT = -2.59e-5 K⁻¹, dne/dT = -2.12e-5 K⁻¹; at 0.633 µm, dno/dT = -2.80e-5 K⁻¹, dne/dT = -2.56e-5 K⁻¹ [8]'
+  note: Negative thermo-optic coefficient. Measured by Kato (Ref [8]).
 - material: β-Ga2O3
   quantity: sellmeier
   axis: '-'
@@ -544,8 +634,8 @@
     - 0.6
     - 2.2
     temperature_c: not_found
-  check: 'Table 1, row n3: n0 = 1.5744 ± 0.01, Ed = 2.53 ± 0.3 eV, E0 = 4.72 ± 0.1 eV, λ0 = 490.2 ± 2 nm'
-  note: Single-oscillator model. Uniaxial point occurs at λ* = 820 nm where n1 = n2.
+  check: 'Table 1, row n3: n0 = 1.5744 ± 0.01, λ0 = 490.2 ± 2 nm, q = 1.865 ± 0.04 (printed Ed = 2.53 ± 0.3 eV, E0 = 4.72 ± 0.1 eV; physically E0 = hc/λ0 = 2.53 eV and Ed = q·E0 = 4.72 eV)'
+  note: 'Single-oscillator model. Uniaxial point occurs at λ* = 820 nm where n1 = n2. Note: Table 1 columns Ed and E0 are inverted in the published paper for row n3 (since E0 = hc/λ0 = 2.53 eV and Ed = q·E0 = 4.72 eV); Sellmeier equation (1) uses q = 1.865 and λ0 = 0.4902 µm directly.'
 - material: OH1
   quantity: d_ij
   axis: '-'
