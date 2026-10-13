@@ -1,0 +1,32 @@
+# Two fields on every passage of the site's search collection (scripts/quality/enrich.py): `junk` (from the
+# data map; the site leaves junk > 0.9 out of the search) and `crystals` (the crystals SubQ confirms the
+# passage is about), on 20 runners. Started by hand or by a commit that changes scripts/quality/enrich-run.json.
+name: Enrich passages
+
+on:
+  workflow_dispatch:
+  push:
+    paths: [scripts/quality/enrich-run.json]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: KEYS="QDRANT_URL QDRANT_API_KEY" bash scripts/ocr_gh/keys.sh
+      - run: python3 scripts/quality/enrich.py index
+  shard:
+    needs: index
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix: { k: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
+    steps:
+      - uses: actions/checkout@v4
+      - run: KEYS="QDRANT_URL QDRANT_API_KEY SUBQ_KEYS" bash scripts/ocr_gh/keys.sh
+      - run: python3 scripts/quality/enrich.py shard ${{ matrix.k }} 20 | tee -a "$GITHUB_STEP_SUMMARY"
