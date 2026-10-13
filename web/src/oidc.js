@@ -1,6 +1,6 @@
 // GitHub Actions OIDC tokens: which repository and workflow a runner runs (for the OCR workflow's keys).
 const OIDC_ISSUER = "https://token.actions.githubusercontent.com";
-const CI_REPO = "aminsadidi/RAG", CI_WORKFLOW = `${CI_REPO}/.github/workflows/ocr.yml@`;
+const CI_REPO = "aminsadidi/RAG", CI_WORKFLOWS = ["ocr.yml", "quality.yml"].map((w) => `${CI_REPO}/.github/workflows/${w}@`);
 const b64url = (s) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(s.length / 4) * 4, "=")),
   (c) => c.charCodeAt(0));
 
@@ -22,7 +22,7 @@ async function check(token, now, fetchJwks) {
   const key = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
   const ok = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64url(sig), new TextEncoder().encode(`${h}.${p}`));
   const valid = ok && claims.iss === OIDC_ISSUER && claims.aud === "matrag" && claims.exp > now && claims.nbf <= now + 60
-    && claims.repository === CI_REPO && (claims.job_workflow_ref || "").startsWith(CI_WORKFLOW)
+    && claims.repository === CI_REPO && CI_WORKFLOWS.some((w) => (claims.job_workflow_ref || "").startsWith(w))
     && claims.event_name !== "pull_request" && claims.event_name !== "pull_request_target";
   return valid ? claims : null;
 }
