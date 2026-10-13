@@ -1,6 +1,6 @@
 # Summary:
-# Total entries: 38
-# Sourced entries: 24
+# Total entries: 40
+# Sourced entries: 26
 # not_found entries: 14
 # DOIs cited in collection PDFs for missing data (recommended for retrieval):
 # - Sr2Be2B2O7 (SBBO Sellmeier and dn/dT): 10.1063/1.116358, 10.1364/OE.19.012585
@@ -732,6 +732,48 @@
   check: 'p. 4 col. 1: ~25 MW/cm² experimentally observed damage threshold for thin OH1 crystals'
   note: Hunziker et al. (2014) APL 105, 141103. Damage threshold of thin OH1 crystal
     under infrared pumping.
+- material: GaS
+  quantity: sellmeier
+  axis: o
+  file: 10.1364-ol.36.000746.pdf
+  pdf_page: 1
+  where: p. 746, col. 1, Eq. (2) no
+  formula: no² = 7.12996 + 0.26073/(λ² − 0.04627) + 127.335/(λ² − 258.431)
+  values:
+    A: 7.12996
+    B: 0.26073
+    C: 0.04627
+    D: 127.335
+    E: 258.431
+  units: λ in µm
+  range:
+    wavelength_um:
+    - 0.633
+    - 10.591
+    temperature_c: 20
+  check: 'p. 746, Eq. (2): evaluates to no = 2.71517 at 0.633 µm, no = 2.62206 at 1.064 µm, and no = 2.50234 at 10.591 µm; reproduces phase-matching angles for SHG of Er:YSGG at 2.7960 µm and CO2 at 9.5862 and 10.5910 µm in GaSxSe1-x'
+  note: 'Kato & Umemura (2011), Optics Letters 36(5), 746–747. Negative uniaxial layered crystal (hexagonal, point group -6m2). Constructed from Allakhverdiev et al. (1982) [8] in the IR, McMath & Irwin (1976) [9] in the visible, and Zhang et al. (2008) [10] SHG tuning points in GaSxSe1-x (x = 0.004–0.412).'
+- material: GaS
+  quantity: sellmeier
+  axis: e
+  file: 10.1364-ol.36.000746.pdf
+  pdf_page: 1
+  where: p. 746, col. 1, Eq. (2) ne
+  formula: ne² = 5.30813 + 0.20852/(λ² − 0.05251) + 101.479/(λ² − 302.223)
+  values:
+    A: 5.30813
+    B: 0.20852
+    C: 0.05251
+    D: 101.479
+    E: 302.223
+  units: λ in µm
+  range:
+    wavelength_um:
+    - 0.633
+    - 10.591
+    temperature_c: 20
+  check: 'p. 746, Eq. (2): evaluates to ne = 2.36025 at 0.633 µm, ne = 2.27250 at 1.064 µm, and ne = 2.18542 at 10.591 µm; reproduces SHG phase-matching curves in Fig. 1 crossing GaSe curves at ~6 µm'
+  note: 'Kato & Umemura (2011), Optics Letters 36(5), 746–747. Negative uniaxial layered crystal (hexagonal, point group -6m2). Valid for 0.633–10.591 µm.'
 
 # Papers searched for Group C missing crystals:
 # 10.1364-josab.17.000764.pdf, 10.1063-1.4897639.pdf, 10.1364-ol.32.002885.pdf,
