@@ -4,7 +4,7 @@
 set -euo pipefail
 oidc=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=matrag" | jq -r .value)
 keys=$(curl -sSf -X POST -H "Authorization: Bearer $oidc" "${SITE_URL:-https://matrag.ethanjamescarter1995.workers.dev}/ci/keys")
-for k in SITE_KEY QDRANT_URL QDRANT_API_KEY ARTIFACT_KEY; do
+for k in ${KEYS:-SITE_KEY QDRANT_URL QDRANT_API_KEY ARTIFACT_KEY}; do
   v=$(jq -r --arg k "$k" '.[$k]' <<<"$keys")
   echo "::add-mask::$v"
   echo "$k=$v" >> "$GITHUB_ENV"

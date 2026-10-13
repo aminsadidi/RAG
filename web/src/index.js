@@ -252,9 +252,9 @@ function packFile(found) {
 // gets the keys, so none has to be stored in the (public) repository.
 async function ciKeys(request, env) {
   const claims = await verifyOidc((request.headers.get("authorization") || "").replace(/^Bearer /i, ""));
-  if (!claims) return json({ error: "not this repository's OCR workflow" }, 403);
+  if (!claims) return json({ error: "not this repository's OCR or quality workflow" }, 403);
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`ocr-artifacts:${env.QDRANT_API_KEY}`));
-  return json({ SITE_KEY: env.SITE_PASSWORD, QDRANT_URL: env.QDRANT_URL, QDRANT_API_KEY: env.QDRANT_API_KEY,
+  return json({ SITE_KEY: env.SITE_PASSWORD, QDRANT_URL: env.QDRANT_URL, QDRANT_API_KEY: env.QDRANT_API_KEY, SUBQ_KEYS: env.SUBQ_KEYS || "",
     ARTIFACT_KEY: [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") });
 }
 

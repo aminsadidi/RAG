@@ -1,0 +1,62 @@
+# Search quality, tested on GitHub (scripts/quality): the gold questions against the live site, in the site's
+# order and reranked by SubQ, and a second judge (SubQ) for the relevance judgments of qrels.csv. Reports go
+# to scripts/quality/reports; the search job fails when the site's MRR@10 drops below the baseline.
+# Runs every Monday, by hand (Actions -> Search quality), or by a commit that changes scripts/quality/run.json.
+# The keys come from the site, as for the OCR workflow (scripts/ocr_gh/keys.sh, GitHub's OIDC token).
+name: Search quality
+
+on:
+  workflow_dispatch:
+    inputs:
+      search: { description: "Search evaluation", type: boolean, default: true }
+      qrels: { description: "Second judge for qrels.csv", type: boolean, default: false }
+  push:
+    paths: [scripts/quality/run.json]
+  schedule:
+    - cron: "17 5 * * 1"
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency: { group: quality, cancel-in-progress: false }
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - name: Keys from the site
+        run: KEYS="SITE_KEY SUBQ_KEYS" bash scripts/ocr_gh/keys.sh
+      - name: What to run
+        id: what
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "search=${{ inputs.search }}" >> "$GITHUB_OUTPUT"; echo "qrels=${{ inputs.qrels }}" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            echo "search=$(jq -r .search scripts/quality/run.json)" >> "$GITHUB_OUTPUT"; echo "qrels=$(jq -r .qrels scripts/quality/run.json)" >> "$GITHUB_OUTPUT"
+          else
+            echo "search=true" >> "$GITHUB_OUTPUT"; echo "qrels=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Search evaluation
+        id: search
+        if: steps.what.outputs.search == 'true'
+        continue-on-error: true
+        run: python3 scripts/quality/search_eval.py 200 | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Second judge for qrels.csv
+        if: steps.what.outputs.qrels == 'true'
+        run: |
+          git fetch -q origin gemini/drafts
+          git show origin/gemini/drafts:research_package/qrels/qrels.csv > "$RUNNER_TEMP/qrels.csv"
+          python3 scripts/quality/qrels_judge.py "$RUNNER_TEMP/qrels.csv" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Keep the reports
+        if: always()
+        run: |
+          git config user.name "matrag-quality"; git config user.email "quality@users.noreply.github.com"
+          git add scripts/quality/reports
+          git diff --cached --quiet || { git commit -q -m "Quality reports $(date -u +%F)"; git pull -q --rebase origin "${GITHUB_REF_NAME}"; git push -q origin "HEAD:${GITHUB_REF_NAME}"; }
+      - name: Search below the baseline
+        if: steps.search.outcome == 'failure'
+        run: exit 1

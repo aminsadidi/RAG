@@ -17,7 +17,7 @@ const good = { iss: "https://token.actions.githubusercontent.com", aud: "matrag"
   repository: "aminsadidi/RAG", event_name: "workflow_dispatch",
   job_workflow_ref: "aminsadidi/RAG/.github/workflows/ocr.yml@refs/heads/claude/festive-bardeen-nnw123" };
 
-test("only this repository's OCR workflow, with a valid signature, gets through", async () => {
+test("only this repository's OCR and quality workflows, with a valid signature, get through", async () => {
   assert.ok(await verifyOidc(await token(good), now, jwks));
   for (const bad of [{ repository: "someone/RAG" }, { aud: "other" }, { exp: now - 1 },
     { job_workflow_ref: "aminsadidi/RAG/.github/workflows/evil.yml@refs/heads/x" }, { event_name: "pull_request" }]) {
