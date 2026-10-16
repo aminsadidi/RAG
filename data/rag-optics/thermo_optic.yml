@@ -24,6 +24,8 @@
 #   form "phillips": dn/dT = −c·(n² + a·n + b), constant in T, n the index at t0 (Phillips 1966, Eqs. 7–9).
 #   form "emanueli": Δn = n1·ΔT + n2·ΔT², n1 = Σ a_m/λ^m × 10⁻⁶, n2 = Σ b_m/λ^m × 10⁻⁸ (m = 0..3); `corr` adds
 #                 B(λ − λ0)/(1 + exp(−γ(λ − λ0))) to n1 (B1, 10⁻⁶) and n2 (B2, 10⁻⁹) (Emanueli & Arie 2003, Eqs. 2–4).
+#   form "pomeroy": n² = a0 + a1T² + (b0 + b1T²)/(λ² − (c0 + c1T² + c2T⁴)) − dλ², T in K, c = [a0, a1, b0, b1, c0, c1, c2, d]
+#                 (Pomeroy 1971); Δn = n(T) − n(t0) of that equation.
 # partial: true marks a paper that measured only some of the axes; the others keep their t0 index.
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
 # phase-matching temperatures the papers report.
@@ -778,3 +780,16 @@
   axes:
     o: [{range_um: [0.4, 2.05], terms: [[0.211, 0], [0.1074, -2], [-0.0028, -4], [0.0042, -6]]}]
     e: [{range_um: [0.4, 2.05], terms: [[-0.022, 0], [0.0879, -2], [-0.0049, -4], [0.0041, -6]]}]
+
+- material: Ba2NaNb5O15
+  source: Pomeroy-1971
+  doc_id: 10.1007_bf01419439
+  cite: "Pomeroy (1971)"
+  pdf_page: 2
+  where: "Table I (p. 149), read from the page image; the same paper's equations at 20 °C are its dispersion entries. They reproduce the paper's noncritical SHG temperatures of 1.064 µm, 372.2 K (nb, nc) and 345.2 K (na, nc)"
+  t0_c: 20
+  form: pomeroy
+  axes:
+    x: {c: [4.6576, 1.195e-7, 0.08903, 5.48e-8, 0.050, 9.05e-8, -3.34e-13, 0.032]}
+    y: {c: [5.012, -1.05e-7, 0.137, -2.19e-8, 0.0583, -1.41e-8, 4.8e-14, 0.036]}
+    z: {c: [5.0524, -2.83e-7, 0.1208, 5.25e-8, 0.070, -4.029e-8, -2.56e-15, 0.0374]}

@@ -108,6 +108,11 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const n2 = (d) => poly(spec.g[0], d) + [1, 2, 3].reduce((s, i) => s + poly(spec.g[i], d) / (poly(spec.lam[i - 1], d) ** -2 - lam ** -2), 0);
     return Math.sqrt(n2(T - t0)) - Math.sqrt(n2(0));
   }
+  if (form === "pomeroy") { // n² = a0 + a1T² + (b0 + b1T²)/(λ² − (c0 + c1T² + c2T⁴)) − dλ², T in K (Pomeroy 1971, BSN)
+    const l2 = lam * lam, n2 = (t) => { const K = t + 273.15, K2 = K * K, [a0, a1, b0, b1, c0, c1, c2, d] = spec.c;
+      return a0 + a1 * K2 + (b0 + b1 * K2) / (l2 - (c0 + c1 * K2 + c2 * K2 * K2)) - d * l2; };
+    return Math.sqrt(n2(T)) - Math.sqrt(n2(t0));
+  }
   if (form === "wei") { // n² = A(T) + B(T)/(λ² − C) + D(T)/(λ² − E), A, B, D quadratic in T (K) (Wei et al. 2018, GaP)
     const q = (c, t) => c[0] + c[1] * t + c[2] * t * t, l2 = lam * lam;
     const n2 = (t) => q(spec.A, t) + q(spec.B, t) / (l2 - spec.C) + q(spec.D, t) / (l2 - spec.E);

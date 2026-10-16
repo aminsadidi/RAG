@@ -503,3 +503,24 @@
   sources:
     - {doc_id: 10.1007_b138685, cite: "Nikogosyan (2005)", pdf_page: 345, what: "book p. 339: d36(1.0642 µm) = 0.40 ± 0.05 pm/V [3]; the book's Sellmeier equations give the 90° SHG angle as 88.7° against the measured 83.5–84.4°, so they are not used"}
   notes: "−42m, Kleinman: d14 = d25 = d36"
+
+- material: MNA
+  point_group: "m"
+  d: {33: 150, 31: 22.5, 15: 22.5}
+  sources:
+    - {doc_id: 10.1063_1.326248, cite: "Levine et al. (1979)", pdf_page: 4, what: "d11/d11(quartz) = 500 ± 25 % (Eq. 10, Maker fringes) and d12/d11(quartz) = 75 ± 25 % (Eq. 20, phase-matched SHG of 1.064 µm), with d11(quartz) = 0.30 pm/V: d11 = 150, d12 = 22.5 pm/V (the often quoted 250 pm/V used d11(quartz) = 0.5 pm/V)"}
+  notes: "In the frame of the dispersion formulas (Morita et al. 1987, here x = Z, y = Y = the symmetry axis b, z = X), Levine's d11 (X along the molecular axis) is d33 and d12 (X, with the field along the in-plane axis normal to X) is d31; d15 = d31 by Kleinman symmetry. The other elements are about 10^-3 of d11 (p. 2525) and are left out"
+
+- material: POM
+  point_group: "222"
+  d: {14: 6.0, 25: 6.0, 36: 6.0}
+  sources:
+    - {doc_id: 10.1364_josab.8.001732, cite: "Dou, Josse, Zyss (1991)", pdf_page: 6, what: "d14 = 23 × 10^-9 esu against d36(KDP) = 1.5 × 10^-9 esu in the same scale (p. 1737): 15.3 × d36(KDP) = 6.0 pm/V with d36(KDP) = 0.39 pm/V"}
+  notes: "222: d14 = d25 = d36 under Kleinman symmetry"
+
+- material: LiRbB4O7
+  point_group: "222"
+  d: {14: 0.45, 25: 0.45, 36: 0.45}
+  sources:
+    - {doc_id: 10.1016_s0022_0248_03_01458_1, cite: "Komatsu et al. (2003)", pdf_page: 1, what: "d14 ≈ 0.45 pm/V, from phase-matched SHG compared with KDP (abstract, p. 167)"}
+  notes: "222 with Kleinman symmetry: d14 = d25 = d36, the same in any labelling of the axes"
