@@ -113,6 +113,13 @@
     - {doc_id: 10.1364_josab.14.002268, cite: "Shoji et al. (1997)", pdf_page: 14, what: "α-quartz d11 = 0.30 pm/V at 1.064 µm (Table 10)"}
   notes: "32: d12 = d26 = −d11"
 
+- material: La3Ga5.5Ta0.5O14
+  point_group: "32"
+  d: {11: 2.4, 12: -2.4, 26: -2.4}
+  sources:
+    - {doc_id: 10.1364_ol.39.004033, cite: "Boursier et al. (2014)", pdf_page: 3, what: "|d11(0.67 µm)| = 2.4 ± 0.4 pm/V, type-I SHG of 1.34 µm at θ = 79° relative to type-II SHG in KTP, d24(0.66 µm) = 2.37 pm/V (pp. 3–4)"}
+  notes: "32: d12 = d26 = −d11; d14 was not measured (zero under Kleinman symmetry); measured for SHG of 1.34 µm, not 1.064 µm"
+
 - material: LiIO3
   point_group: "6"
   d: {31: -4.1, 32: -4.1, 15: -4.1, 24: -4.1}

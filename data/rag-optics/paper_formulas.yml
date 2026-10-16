@@ -725,3 +725,28 @@
     - {direction: o, tol: 4.0e-3, points: [[0.4358, 1.79271], [0.5461, 1.77999], [0.7065, 1.77234]]}
     - {direction: e, tol: 4.0e-3, points: [[0.4358, 1.71475], [0.5461, 1.70455], [0.7065, 1.69913]]}
 
+
+- material: La3Ga5.5Ta0.5O14
+  name: La3Ga5.5Ta0.5O14 (Langatate, LGT)
+  doc_id: "10.1364_ol.39.004033"
+  reference: "Boursier et al. (2014). Phase-matching directions, refined Sellmeier equations, and second-order nonlinear coefficient of the infrared Langatate crystal La3Ga5.5Ta0.5O14. Opt. Lett. 39, 4033. doi:10.1364/OL.39.004033"
+  doi: 10.1364/OL.39.004033
+  pdf_page: 3
+  where: "Eq. (1) (p. 2) and Table 1 (p. 3), read from the page images: n² = A + B/(λ² − C) − D·λ²; o: 3.6485, 0.0444, 0.0138, 0.0096; e: 3.7451, 0.0360, 0.2503, 0.0102. Fitted to type-I SHG, type-I SFG and type-II DFG sphere measurements in the (y, z) plane; valid 0.55–1.6 µm for no and 1–5.5 µm for ne (Fig. 5). Positive uniaxial, trigonal 32"
+  entries:
+    - {page: Boursier-2014, direction: o, type: 4, coefficients: [3.6485, 0.0444, 0, 0.0138, 1, 0, 0, 0, 1, -0.0096, 2], range_um: [0.55, 1.6]}
+    - {page: Boursier-2014, direction: e, type: 4, coefficients: [3.7451, 0.0360, 0, 0.2503, 1, 0, 0, 0, 1, -0.0102, 2], range_um: [1.0, 5.5]}
+  checks: []  # the paper prints no index values; tests/test_paper_formulas.py recomputes its type-I SHG angles (Fig. 2, p. 3 text)
+
+- material: BaGa4Se7
+  name: BaGa4Se7 (Barium gallium selenide, BGSe)
+  doc_id: "10.1364_ol.41.002731"
+  reference: "Boursier et al. (2016). Phase-matching directions and refined Sellmeier equations of the monoclinic acentric crystal BaGa4Se7. Opt. Lett. 41, 2731. doi:10.1364/OL.41.002731"
+  doi: 10.1364/OL.41.002731
+  pdf_page: 3
+  where: "Eq. (1) and Table 1 (p. 3), read from the page image: n² = A1 + A2/(λ² − A3) + A4/(λ² − A5), A3 fixed to Badikov et al. (2011); fitted to SHG and 1.064 µm pumped DFG sphere measurements in the (x, z) and (y, z) planes, Δn/n better than 1e-4, reliable about 1–12 µm (Fig. 9)"
+  entries:
+    - {page: Boursier-2016, direction: x, type: 4, coefficients: [7.405114, 0.225316, 0, 0.051215, 1, 1782.091, 0, 1170.528, 1, 0, 0], range_um: [1.0, 12.0]}
+    - {page: Boursier-2016, direction: y, type: 4, coefficients: [7.388458, 0.224481, 0, 0.052725, 1, 1778.441, 0, 1238.145, 1, 0, 0], range_um: [1.0, 12.0]}
+    - {page: Boursier-2016, direction: z, type: 4, coefficients: [7.622884, 0.238018, 0, 0.069734, 1, 1885.307, 0, 1303.370, 1, 0, 0], range_um: [1.0, 12.0]}
+  checks: []  # no index values printed; tests/test_paper_formulas.py recomputes the NCPM and OPG angles of the text

@@ -612,3 +612,24 @@ test("BaGa4Se7 d_ij (Guo et al. 2022): d_eff in the three principal planes, Eqs.
     assert.ok(Math.abs(r.deff - r.spread - lo) < 0.12 * hi + 0.2, `${plane} ${type} at ${l} µm, other side: ${r.deff - r.spread} vs ${lo}`);
   }
 });
+
+test("thermo-optic formulas of SiC, GaN, AlN and YVO4 reproduce the papers' values", () => {
+  const dndt = (mat, label, ax, lam, T) => {
+    const s = source(mat, label), e = s.axes[ax], n0 = entryIndex(e, lam);
+    return (thermoShift(s.thermo.form, e.thermo, s.thermo.t0_c, n0, lam, T + 0.5) - thermoShift(s.thermo.form, e.thermo, s.thermo.t0_c, n0, lam, T - 0.5));
+  };
+  const shift = (mat, label, ax, lam, T) => { const s = source(mat, label), e = s.axes[ax];
+    return thermoShift(s.thermo.form, e.thermo, s.thermo.t0_c, entryIndex(e, lam), lam, T); };
+  // Xu et al. 2014, p. 4: no of 4H-SiC at 450 nm and 493 K, 8.18e-5 /K; of 6H-SiC at 1523 nm and 493 K, 5.94e-5 /K
+  assert.ok(Math.abs(dndt("SiC", "Wang-4H", "o", 0.45, 493 - 273.15) - 8.18e-5) < 0.35e-5);
+  assert.ok(Math.abs(dndt("SiC", "Wang-6H", "o", 1.523, 493 - 273.15) - 5.94e-5) < 0.1e-5);
+  // Watanabe et al. 2008, Fig. 2: no of GaN at 500 nm 2.415 -> 2.465, of AlN at 250 nm 2.33 -> 2.375, from about 20 to 515 °C
+  assert.ok(Math.abs(shift("GaN", "Sanford-2003", "o", 0.5, 515) - 0.050) < 0.005);
+  assert.ok(Math.abs(shift("AlN", "Pastrnak", "o", 0.25, 515) - 0.045) < 0.005);
+  // Loiko et al. 2013, Table 2 (10^-6 /K): YVO4 dno/dT and dne/dT
+  for (const [lam, o, e] of [[0.53, 7.5, 4.1], [0.63, 5.3, 2.3], [1.06, 3.1, 0.6], [1.54, 2.6, 0.2], [2.05, 2.4, 0.1]]) {
+    assert.ok(Math.abs(dndt("YVO4", "Birnbaum", "o", lam, 25) * 1e6 - o) < 0.1, `YVO4 o ${lam}`);
+    // beyond the 0.4–1.1 µm of the fit the formula's dne/dT is up to 0.11 below the table's
+    assert.ok(Math.abs(dndt("YVO4", "Birnbaum", "e", lam, 25) * 1e6 - e) < (lam > 1.1 ? 0.15 : 0.1), `YVO4 e ${lam}`);
+  }
+});
