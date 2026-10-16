@@ -2053,8 +2053,19 @@ const KIND_FA = { uniaxial: "تک‌محوری", biaxial: "دومحوری" };
 const AXES = { uniaxial: [["o", "n<sub>o</sub>"], ["e", "n<sub>e</sub>"]], biaxial: [["x", "n<sub>x</sub>"], ["y", "n<sub>y</sub>"], ["z", "n<sub>z</sub>"]] };
 
 // n at 1.064 µm, or at the middle of the formula's range when 1.064 µm is outside it.
+// The wavelength named in the question ("at 1064 nm", "2.1 µm"), in µm, or null.
+function askedLam(text) {
+  const m = String(text || "").match(/(\d+(?:\.\d+)?)\s*(nm|µm|μm|um|micron)/i);
+  if (!m) return null;
+  const v = parseFloat(m[1]) / (m[2].toLowerCase() === "nm" ? 1000 : 1);
+  return v > 0.1 && v < 100 ? v : null;
+}
+let cardLam = null; // set by crystalCards from the question
+
+// n at the question's wavelength if it is in the formula's range, else at 1.064 µm, else mid-range.
 function indices(src) {
-  const [lo, hi] = src.range_um, lam = lo <= 1.064 && 1.064 <= hi ? 1.064 : +((lo + hi) / 2).toPrecision(3);
+  const [lo, hi] = src.range_um, inside = (x) => x !== null && lo <= x && x <= hi;
+  const lam = inside(cardLam) ? cardLam : inside(1.064) ? 1.064 : +((lo + hi) / 2).toPrecision(3);
   const axes = src.isotropic ? [[Object.keys(src.axes)[0], "n"]] : AXES[src.kind] || [];
   const vals = axes.map(([a, name]) => { const e = src.axes[a]; const n = e && entryIndex(e, lam); return Number.isFinite(n) ? `<bdi dir="ltr">${name} = ${n.toFixed(4)}</bdi>` : ""; }).filter(Boolean);
   return vals.length ? `${vals.join("، ")} در <bdi dir="ltr">${lam} µm</bdi>` : "";
@@ -2125,6 +2136,7 @@ window.crystalCards = async (materials, text) => {
   if (!materials.length && !text) return;
   let D; try { D = await loadData(); } catch { return; }
   if (me !== cardsFor) return;
+  cardLam = askedLam(text);
   const all = namedIn(text, D), parts = new Set(all.filter((m) => m.includes("-")).flatMap((m) => m.split("-")));
   materials = [...new Set([...all, ...materials])].filter((m) => !parts.has(m));
   const known = materials.filter((m) => D.aniso.some((c) => c.material === m) || D.dij[m] || D.index.some((x) => x.material === m && (x.shelf === "main" || x.shelf === "papers")));

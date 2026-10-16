@@ -179,13 +179,24 @@ async function search(env, opts) {
   const materials = queryTerms(query).materials;
   const named = materials.length ? [{ query: { text: expandQuery(materials.join(" ")), model: shared.BM25_MODEL },
     using: shared.SPARSE, filter, limit: 50 }] : [];
+  // One more dense search inside the same request (no extra subrequest), among the passages SubQ found to be
+  // about the crystals of the question (`crystals`, scripts/quality/enrich.py). On the 200 gold questions it
+  // raised the MRR@10 from 0.518 to 0.538 (refractive-index questions 0.353 -> 0.399). Restricting it further to
+  // passages that hold the kind of data asked for (`has`, the data map) did worse (0.529), so that is not used.
+  // opts.focus: false turns it off (for comparisons).
+  const crystals = crystalsIn(searchQuery ? `${question} ${searchQuery}` : question);
+  const focused = (v) => opts.focus === false || !crystals.length ? [] : [{ query: v, using: shared.DENSE, limit: 30,
+    filter: { must: [...(filter?.must || []), { key: "crystals", match: { any: crystals } }] } }];
   let body;
   // The query vector is needed in every mode: its best cosine similarity is one signal of the relevance check.
   const vector = await embed(env, query).catch(() => { degraded.push("embedding"); return null; });
   if (!vector) mode = "bm25";
-  const bestCosine = mode === "vector" || !vector ? null
-    : qdrant(env, `/collections/${env.COLLECTION}/points/query`, { query: vector, using: shared.DENSE, filter, limit: 1 })
-      .then((r) => r.points[0]?.score ?? 0);
+  // The best cosine similarity rides in the same request as the search (/points/query/batch) when it can: one
+  // subrequest instead of two (perPaper needs the groups endpoint, so it keeps its own request).
+  const cosine = { query: vector, using: shared.DENSE, filter, limit: 1 };
+  const together = !opts.perPaper && mode !== "vector" && Boolean(vector);
+  let bestCosine = mode === "vector" || !vector || together ? null
+    : qdrant(env, `/collections/${env.COLLECTION}/points/query`, cosine).then((r) => r.points[0]?.score ?? 0);
   if (mode === "bm25") {
     body = named.length
       ? { prefetch: [{ query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named], query: { fusion: "rrf" }, limit }
@@ -195,15 +206,22 @@ async function search(env, opts) {
       ? { query: vector, using: shared.DENSE, filter, limit }
       : {
         prefetch: [{ query: vector, using: shared.DENSE, filter, limit: 50 },
-          { query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named],
+          { query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named, ...focused(vector)],
         query: { fusion: "rrf" }, limit,
       };
   }
   // perPaper: the best passage of each paper (Qdrant groups by doc_id), so one paper cannot fill the list.
-  const points = opts.perPaper
-    ? (await qdrant(env, `/collections/${env.COLLECTION}/points/query/groups`,
-      { ...body, group_by: "doc_id", group_size: 1, with_payload: PAYLOAD })).groups.map((g) => g.hits[0])
-    : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
+  let points;
+  if (together) {
+    const [main, best] = await qdrant(env, `/collections/${env.COLLECTION}/points/query/batch`,
+      { searches: [{ ...body, with_payload: PAYLOAD }, cosine] });
+    points = main.points; bestCosine = best.points[0]?.score ?? 0;
+  } else {
+    points = opts.perPaper
+      ? (await qdrant(env, `/collections/${env.COLLECTION}/points/query/groups`,
+        { ...body, group_by: "doc_id", group_size: 1, with_payload: PAYLOAD })).groups.map((g) => g.hits[0])
+      : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
+  }
   // A failing reranker (Workers AI quota, outage) leaves the first-stage order rather than failing the search.
   let reranked = rerank, ranked = points.slice(0, topK);
   if (rerank) ranked = await within(12000, subq ? subqRerank(env, query, points, topK) : rerankPoints(env, query, points, topK))
