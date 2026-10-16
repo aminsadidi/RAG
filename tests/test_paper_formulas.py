@@ -158,3 +158,29 @@ def test_lithium_tantalate_temperature_curves():
 
     assert n("e", 0.468, 25) == pytest.approx(2.237, abs=2e-3) and n("e", 0.468, 300) == pytest.approx(2.258, abs=2e-3)
     assert n("o", 0.468, 300) - n("o", 0.468, 25) == pytest.approx(0.0045, abs=1.5e-3)
+
+
+def test_langatate_shg_tuning_curve():
+    """Boursier et al. (2014), LGT type-I SHG (e + e → o) in the (y, z) plane: the slab for 1.34 µm was cut at
+    θ = 79° from the fitted tuning curve (p. 3); Fig. 2's fitted curve reaches 90° near 1.30 and 3.27 µm and
+    its turning point is at about 55° near 2.05 µm."""
+    no, ne = (curve("La3Ga5.5Ta0.5O14", "Boursier-2014", d) for d in "oe")
+
+    def theta(lam):
+        s2 = (no(lam / 2) ** -2 - no(lam) ** -2) / (ne(lam) ** -2 - no(lam) ** -2)
+        return math.degrees(math.asin(math.sqrt(s2)))
+    assert theta(1.34) == pytest.approx(79, abs=1)
+    assert min(theta(1.6 + 0.01 * i) for i in range(100)) == pytest.approx(55, abs=1)
+
+
+def test_bgse_boursier_phase_matching():
+    """Boursier et al. (2016), p. 3: NCPM SHG along x at 1.80 µm (type I) and 2.53 µm (type II); p. 4: type-I OPG
+    pumped at 2.37 µm, degenerate at 4.74 µm, at θ = 41° in the (x, z) plane."""
+    nx, ny, nz = (curve("BaGa4Se7", "Boursier-2016", d) for d in "xyz")
+    assert brentq(lambda lam: nz(lam) - ny(lam / 2), 1.5, 2.2) == pytest.approx(1.80, abs=0.01)
+    assert brentq(lambda lam: (ny(lam) + nz(lam)) / 2 - ny(lam / 2), 2.2, 3.0) == pytest.approx(2.53, abs=0.04)
+
+    def ne(lam, t):
+        return (math.cos(t) ** 2 / nx(lam) ** 2 + math.sin(t) ** 2 / nz(lam) ** 2) ** -0.5
+    t = brentq(lambda t: ny(2.37) / 2.37 - 2 * ne(4.74, t) / 4.74, math.radians(20), math.radians(60))
+    assert math.degrees(t) == pytest.approx(41, abs=0.6)

@@ -463,6 +463,6 @@
  "— خالی =": "— empty =",
  "✓ در مجموعه (": "✓ in the collection (",
  "💬 بازخورد": "💬 Feedback",
- "۳۰ نتیجه‌ی اول را یک مدل داور دوباره با خود پرسش می‌خواند و مرتب می‌کند؛ دقیق‌تر، ولی چند ثانیه کندتر": "A judge model rereads the first 30 results with the question and reorders them: more accurate, but a few seconds slower",
+ "۳۰ نتیجه‌ی اول را یک مدل داور دوباره با خود پرسش می‌خواند و مرتب می‌کند؛ دقیق‌تر، حدود یک ثانیه کندتر": "A judge model rereads the first 30 results with the question and reorders them: more accurate, about one second slower",
  "مرتب‌سازی دقیق": "Precise ranking"
 }

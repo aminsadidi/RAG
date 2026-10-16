@@ -78,7 +78,9 @@
   "CDA": "CsH2AsO4",
   "YAG": "Y3Al5O12",
   "YVO": "YVO4",
-  "SBN": "SrxBa1-xNb2O6"
+  "SBN": "SrxBa1-xNb2O6",
+  "LGT": "La3Ga5.5Ta0.5O14",
+  "Langatate": "La3Ga5.5Ta0.5O14"
  },
  "SPACED_FORMULA": "\\b(?:[A-Z][a-z]?)+(?:\\s+\\d{1,3}(?:\\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![\\w.])",
  "PAYLOAD_KEYS": [
