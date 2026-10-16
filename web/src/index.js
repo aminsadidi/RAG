@@ -153,6 +153,54 @@ function filterOf(opts) {
   return must.length ? { must } : undefined;
 }
 
+// The point id of a passage, as the indexer makes it: uuid5(URL namespace, "matrag:" + node_id).
+async function pointId(nodeId) {
+  const ns = [0x6b, 0xa7, 0xb8, 0x11, 0x9d, 0xad, 0x11, 0xd1, 0x80, 0xb4, 0x00, 0xc0, 0x4f, 0xd4, 0x30, 0xc8];
+  const data = new Uint8Array([...ns, ...new TextEncoder().encode(`matrag:${nodeId}`)]);
+  const h = new Uint8Array(await crypto.subtle.digest("SHA-1", data)).slice(0, 16);
+  h[6] = (h[6] & 0x0f) | 0x50; h[8] = (h[8] & 0x3f) | 0x80;
+  const x = [...h].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `${x.slice(0, 8)}-${x.slice(8, 12)}-${x.slice(12, 16)}-${x.slice(16, 20)}-${x.slice(20)}`;
+}
+
+// A long table is cut into several passages (41% of the tables), so a hit often holds only some of its
+// rows. The passages just before and after a table hit (same paper, heading and page, also tables) are
+// fetched in one request and joined to it in order, so the shown hit and the answer see the whole table.
+const STITCH_SPAN = 3, STITCH_MAX = 6000;
+async function stitchTables(env, hits) {
+  const tables = hits.filter((h) => h.content_type === "table" && /::\d+$/.test(String(h.node_id)));
+  if (!tables.length) return;
+  const want = new Map();
+  for (const h of tables) {
+    const [base, n] = [String(h.node_id).replace(/::\d+$/, ""), Number(String(h.node_id).split("::").pop())];
+    for (let d = -STITCH_SPAN; d <= STITCH_SPAN; d++) if (d && n + d >= 0) want.set(`${base}::${n + d}`, null);
+  }
+  const ids = await Promise.all([...want.keys()].map(pointId));
+  const got = await qdrant(env, `/collections/${env.COLLECTION}/points`,
+    { ids, with_payload: ["node_id", "text", "content_type", "headings", "pages"], with_vector: false });
+  const byNode = new Map(got.map((p) => [String(p.payload.node_id), p.payload]));
+  for (const h of tables) {
+    const base = String(h.node_id).replace(/::\d+$/, ""), n = Number(String(h.node_id).split("::").pop());
+    const same = (p) => p && p.content_type === "table" && p.headings === h.headings && String(p.pages) === String(h.pages);
+    const before = [], after = [];
+    for (let d = 1; d <= STITCH_SPAN; d++) { const p = byNode.get(`${base}::${n - d}`); if (!same(p)) break; before.unshift(p); }
+    for (let d = 1; d <= STITCH_SPAN; d++) { const p = byNode.get(`${base}::${n + d}`); if (!same(p)) break; after.push(p); }
+    // too long: the parts farthest from the hit go first, so the hit's own rows always stay
+    const size = () => [...before, h, ...after].reduce((s, p) => s + String(p.text).length, 0);
+    while (size() > STITCH_MAX && (before.length || after.length)) {
+      if (before.length >= after.length) before.shift(); else after.pop();
+    }
+    if (!before.length && !after.length) continue;
+    // each part starts with the section heading; it is kept only once
+    const head = String(h.headings || "");
+    h.text = [...before, h, ...after].map((p, i) => {
+      const t = String(p.text);
+      return i && head && t.startsWith(head) ? t.slice(head.length).trimStart() : t;
+    }).join("\n");
+    h.stitched = before.length + after.length;
+  }
+}
+
 async function search(env, opts) {
   const question = foldDigits(String(opts.q || "")).trim().slice(0, 1000);
   if (!question) throw Object.assign(new Error("empty question"), { status: 400 });
@@ -227,6 +275,7 @@ async function search(env, opts) {
   if (rerank) ranked = await within(12000, subq ? subqRerank(env, query, points, topK) : rerankPoints(env, query, points, topK))
     .catch((e) => { console.log("rerank", String(e)); degraded.push("rerank"); reranked = false; return ranked; });
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
+  if (opts.stitch !== false) await stitchTables(env, hits).catch((e) => { console.log("stitch", String(e)); degraded.push("stitch"); });
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
   return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started };
 }
