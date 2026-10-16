@@ -750,3 +750,110 @@
     - {page: Boursier-2016, direction: y, type: 4, coefficients: [7.388458, 0.224481, 0, 0.052725, 1, 1778.441, 0, 1238.145, 1, 0, 0], range_um: [1.0, 12.0]}
     - {page: Boursier-2016, direction: z, type: 4, coefficients: [7.622884, 0.238018, 0, 0.069734, 1, 1885.307, 0, 1303.370, 1, 0, 0], range_um: [1.0, 12.0]}
   checks: []  # no index values printed; tests/test_paper_formulas.py recomputes the NCPM and OPG angles of the text
+
+- material: Ba2NaNb5O15
+  name: Ba2NaNb5O15 (Barium sodium niobate, BNN/BSN)
+  doc_id: "10.1007_bf01419439"
+  reference: "Pomeroy (1971). The temperature dependence of the refractive indices of barium sodium niobate. Opto-Electronics 3, 148. doi:10.1007/BF01419439"
+  doi: 10.1007/BF01419439
+  pdf_page: 2
+  where: "Temperature-dependent Sellmeier equations (p. 148) and Table I (p. 149), read from the page images: n² = a0 + a1T² + (b0 + b1T²)/(λ² − (c0 + c1T² + c2T⁴)) − dλ², T in K; written here at 20 °C (293.15 K); the temperature dependence is in thermo_optic.yml. Minimum deviation, 0.4–3.56 µm, 20–200 °C, σ ≈ 4e-4. Orthorhombic mm2 with nb > na > nc: here x = c, y = a, z = b"
+  entries:
+    - {page: Pomeroy-1971, direction: x, type: 4, coefficients: [4.667869, 0.093739, 0, 0.055311, 1, 0, 0, 0, 1, -0.032, 2], range_um: [0.4, 3.56]}
+    - {page: Pomeroy-1971, direction: y, type: 4, coefficients: [5.002977, 0.135118, 0, 0.057443, 1, 0, 0, 0, 1, -0.036, 2], range_um: [0.4, 3.56]}
+    - {page: Pomeroy-1971, direction: z, type: 4, coefficients: [5.02808, 0.125312, 0, 0.066519, 1, 0, 0, 0, 1, -0.0374, 2], range_um: [0.4, 3.56]}
+  checks:  # Table II, this letter's values at 20 °C (nc, na, nb)
+    - {direction: x, tol: 6.0e-4, points: [[1.064, 2.1720], [0.5321, 2.2517], [0.5017, 2.2661], [0.4579, 2.2953]]}
+    - {direction: y, tol: 6.0e-4, points: [[1.064, 2.2556], [0.5321, 2.3646], [0.5017, 2.3850], [0.4579, 2.4255]]}
+    - {direction: z, tol: 6.0e-4, points: [[1.064, 2.2585], [0.5321, 2.3656], [0.5017, 2.3868], [0.4579, 2.4281]]}
+
+- material: MNA
+  name: MNA (2-Methyl-4-nitroaniline, C7H8N2O2)
+  doc_id: "10.1143_jjap.26.l1711"
+  reference: "Morita, Ogasawara, Umegaki, Ito (1987). Refractive indices of 2-methyl-4-nitroaniline (MNA). Jpn. J. Appl. Phys. 26, L1711. doi:10.1143/JJAP.26.L1711"
+  doi: 10.1143/JJAP.26.L1711
+  pdf_page: 3
+  where: "Eq. (12) and Table I (p. L1713), read from the page image: n² = A + B/(1 − C/λ²); X: 1.27, 1.56, 0.172; Y: 1.37, 0.78, 0.174; Z: 1.53, 0.26, 0.204. Ellipsometry on a 3 µm single-crystal film, 0.5–1.1 µm; the paper's Y is the symmetry axis of the monoclinic crystal (m) and nX > nY > nZ, so here x = Z, y = Y, z = X. A thin-film measurement: the absolute indices are less accurate than prism data"
+  entries:
+    - {page: Morita-1987, direction: x, type: 4, coefficients: [1.53, 0.26, 2, 0.204, 1, 0, 0, 0, 1, 0, 2], range_um: [0.5, 1.1]}
+    - {page: Morita-1987, direction: y, type: 4, coefficients: [1.37, 0.78, 2, 0.174, 1, 0, 0, 0, 1, 0, 2], range_um: [0.5, 1.1]}
+    - {page: Morita-1987, direction: z, type: 4, coefficients: [1.27, 1.56, 2, 0.172, 1, 0, 0, 0, 1, 0, 2], range_um: [0.5, 1.1]}
+  checks: []  # the page prints no index values; Fig. 4 shows about 1.75, 1.51, 1.35 at 1.1 µm
+
+- material: POM
+  name: POM (3-Methyl-4-nitropyridine-1-oxide, C6H6N2O3)
+  doc_id: "10.1364_josab.8.001732"
+  reference: "Dou, Josse, Zyss (1991). Noncritical properties of noncollinear phase-matched second-harmonic and sum-frequency generation in 3-methyl-4-nitropyridine-1-oxide. J. Opt. Soc. Am. B 8, 1732. doi:10.1364/JOSAB.8.001732"
+  doi: 10.1364/JOSAB.8.001732
+  pdf_page: 2
+  where: "Table 1 (p. 1733): Sellmeier coefficients A, B, C, D and the indices at five wavelengths; the form n² = A + Bλ²/(λ² − C) − Dλ² reproduces the table's indices within 5e-5. Orthorhombic 222, nx < ny < nz"
+  entries:
+    - {page: Dou-1991, direction: x, type: 4, coefficients: [2.20867, 0.35950, 2, 0.09628, 1, 0, 0, 0, 1, -0.00638, 2], range_um: [0.53, 1.34]}
+    - {page: Dou-1991, direction: y, type: 4, coefficients: [2.32286, 0.43106, 2, 0.11994, 1, 0, 0, 0, 1, -0.01239, 2], range_um: [0.53, 1.34]}
+    - {page: Dou-1991, direction: z, type: 4, coefficients: [2.31775, 0.96144, 2, 0.12124, 1, 0, 0, 0, 1, -0.00858, 2], range_um: [0.53, 1.34]}
+  checks:  # Table 1, the indices printed next to the coefficients
+    - {direction: x, tol: 1.0e-4, points: [[1.064, 1.6107], [0.532, 1.6588], [1.338, 1.6054], [0.669, 1.6321], [0.5927, 1.6437]]}
+    - {direction: y, tol: 1.0e-4, points: [[1.064, 1.6706], [0.532, 1.7514], [1.338, 1.6621], [0.669, 1.7048], [0.5927, 1.7243]]}
+    - {direction: z, tol: 1.0e-4, points: [[1.064, 1.8398], [0.532, 1.9993], [1.338, 1.8258], [0.669, 1.9059], [0.5927, 1.9450]]}
+
+- material: LiCOOH
+  name: LiCOOH (Lithium formate monohydrate, HCOOLi·H2O, LFM)
+  doc_id: "10.1007_bf01421792"
+  reference: "Naito, Inaba (1973). Measurement of the refractive indices of crystalline lithium formate, HCOOLi·H2O. Opto-electronics 5, 256. doi:10.1007/BF01421792"
+  doi: 10.1007/BF01421792
+  pdf_page: 4
+  where: "Eq. (2) and the constants on p. 259, read from the page image: n² = A + Bλ²/(λ² − λ0²) − Cλ²; x: 1.4376, 0.4045, 0.1301 µm, 0.0005; y: 1.6586, 0.5006, 0.1530 µm, 0.0127; z: 1.6714, 0.5928, 0.1592 µm, 0.0153. Fitted to Table I (p. 258), 29 wavelengths 0.35–1.5 µm at 20 °C, ±0.0005; the fit is within 0.0013 of every measured value. Orthorhombic mm2"
+  entries:
+    - {page: Naito-1973, direction: x, type: 4, coefficients: [1.4376, 0.4045, 2, 0.1301, 2, 0, 0, 0, 1, -0.0005, 2], range_um: [0.35, 1.5]}
+    - {page: Naito-1973, direction: y, type: 4, coefficients: [1.6586, 0.5006, 2, 0.1530, 2, 0, 0, 0, 1, -0.0127, 2], range_um: [0.35, 1.5]}
+    - {page: Naito-1973, direction: z, type: 4, coefficients: [1.6714, 0.5928, 2, 0.1592, 2, 0, 0, 0, 1, -0.0153, 2], range_um: [0.35, 1.4]}
+  checks:  # Table I, measured
+    - {direction: x, tol: 1.5e-3, points: [[0.35, 1.381], [0.4, 1.3748], [0.5, 1.3686], [0.6, 1.3643], [0.7, 1.3623], [0.8, 1.3614], [1.0, 1.3595], [1.2, 1.3587], [1.4, 1.3583]]}
+    - {direction: y, tol: 1.5e-3, points: [[0.35, 1.5073], [0.4, 1.4981], [0.5, 1.4862], [0.6, 1.4796], [0.7, 1.4751], [0.8, 1.4729], [1.0, 1.4694], [1.2, 1.4658], [1.4, 1.463]]}
+    - {direction: z, tol: 1.5e-3, points: [[0.35, 1.554], [0.4, 1.5405], [0.5, 1.5257], [0.6, 1.5174], [0.7, 1.5126], [0.8, 1.5099], [1.0, 1.5055], [1.2, 1.5011], [1.4, 1.497]]}
+
+- material: Tl4HgI6
+  name: Tl4HgI6 (Thallium mercury iodide)
+  doc_id: "10.1016_s0925_3467_03_00023_5"
+  reference: "Avdienko, Badikov, Badikov, Chizhikov, Panyutin, Shevyrdyaeva (2003). Optical properties of thallium mercury iodide. Opt. Mater. 23, 569. doi:10.1016/S0925-3467(03)00023-5"
+  doi: 10.1016/S0925-3467(03)00023-5
+  pdf_page: 3
+  where: "Eq. (1) and Table 2 (p. 571), read from the page image: n² = A1 + A3/(A2 − λ²) + A5/(A4 − λ²); fitted to Table 1, prism measurements 1.2–10 µm (±0.002) and values 10–40 µm estimated by shifting the KRS-5 indices; rms error 0.0005. Black-phase crystal, optically positive uniaxial, acentric"
+  entries:
+    - {page: Avdienko-2003, direction: o, type: 4, coefficients: [8.500975, 0.2989675, 0, 0.1379023, 1, 19684.543, 0, 7043.0, 1, 0, 0], range_um: [1.2, 40.0]}
+    - {page: Avdienko-2003, direction: e, type: 4, coefficients: [8.642436, 0.3401912, 0, 0.1266011, 1, 17056.320, 0, 6547.0, 1, 0, 0], range_um: [1.2, 40.0]}
+  checks:  # Table 1 (above 10 µm the values are estimates from KRS-5, not measurements)
+    - {direction: o, tol: 1.5e-3, points: [[1.2, 2.4360], [1.5, 2.4183], [2.0, 2.4035], [3.0, 2.3950], [5.0, 2.3895], [10.0, 2.3815], [20.0, 2.3534], [40.0, 2.2101]]}
+    - {direction: e, tol: 2.0e-3, points: [[1.2, 2.5087], [1.5, 2.4897], [2.0, 2.4736], [3.0, 2.4630], [5.0, 2.4574], [10.0, 2.4512], [20.0, 2.4225], [40.0, 2.2792]]}
+
+- material: MgBaF4
+  name: MgBaF4 (Magnesium barium fluoride)
+  doc_id: "10.1007_bf00883447"
+  reference: "Bechthold, Haussühl (1977). Nonlinear optical properties of orthorhombic barium formate and magnesium barium fluoride. Appl. Phys. 14, 403. doi:10.1007/BF00883447"
+  doi: 10.1007/BF00883447
+  pdf_page: 5
+  where: "Sellmeier equation and Table 6 (p. 407), read from the page image: n² = B1 + B2/(λ² − B3); b: 2.0771, 0.00762, 0.00799; c: 2.12385, 0.00863, 0; a: 2.14629, 0.007366, 0.00908; fitted to visible-range indices. Orthorhombic Cmc21 (mm2), nb < nc < na: here x = b, y = c, z = a"
+  entries:
+    - {page: Bechthold-1977, direction: x, type: 4, coefficients: [2.0771, 0.00762, 0, 0.00799, 1, 0, 0, 0, 1, 0, 0], range_um: [0.4, 1.1]}
+    - {page: Bechthold-1977, direction: y, type: 4, coefficients: [2.12385, 0.00863, 0, 0.0, 1, 0, 0, 0, 1, 0, 0], range_um: [0.4, 1.1]}
+    - {page: Bechthold-1977, direction: z, type: 4, coefficients: [2.14629, 0.007366, 0, 0.00908, 1, 0, 0, 0, 1, 0, 0], range_um: [0.4, 1.1]}
+  checks:  # Table 5 (p. 407): indices at 1.064 and 0.532 µm
+    - {direction: x, tol: 5.0e-4, points: [[1.064, 1.4436], [0.532, 1.4508]]}
+    - {direction: y, tol: 5.0e-4, points: [[1.064, 1.4604], [0.532, 1.4678]]}
+    - {direction: z, tol: 5.0e-4, points: [[1.064, 1.4674], [0.532, 1.4742]]}
+
+- material: LiRbB4O7
+  name: LiRbB4O7 (Lithium rubidium tetraborate, LRB4)
+  doc_id: "10.1016_s0022_0248_03_01458_1"
+  reference: "Komatsu, Ono, Kajitani, Rotermund, Petrov (2003). Optical properties of a new nonlinear borate crystal LiRbB4O7. J. Cryst. Growth 257, 165. doi:10.1016/S0022-0248(03)01458-1"
+  doi: 10.1016/S0022-0248(03)01458-1
+  pdf_page: 3
+  where: "Eq. (1) (p. 167), read from the page image: n² = 1 + Bλ²/(λ² − C) − Dλ²; X: 1.2610153, 0.0087354, 0.0135545; Y: 1.3458727, 0.0080394, 0.0330918; Z: 1.3510711, 0.0091806, 0.0074562. Fitted to the prism indices of Table 1, 0.40–0.70 µm (fit error 6e-4 to 9e-4); the paper notes the fit is an extrapolation outside that range. Orthorhombic 222, a b c = Z X Y"
+  entries:
+    - {page: Komatsu-2003, direction: x, type: 4, coefficients: [1, 1.2610153, 2, 0.0087354, 1, 0, 0, 0, 1, -0.0135545, 2], range_um: [0.4, 0.7]}
+    - {page: Komatsu-2003, direction: y, type: 4, coefficients: [1, 1.3458727, 2, 0.0080394, 1, 0, 0, 0, 1, -0.0330918, 2], range_um: [0.4, 0.7]}
+    - {page: Komatsu-2003, direction: z, type: 4, coefficients: [1, 1.3510711, 2, 0.0091806, 1, 0, 0, 0, 1, -0.0074562, 2], range_um: [0.4, 0.7]}
+  checks:  # Table 1 (p. 166), measured
+    - {direction: x, tol: 1.0e-3, points: [[0.4005, 1.5266], [0.5005, 1.5177], [0.6215, 1.5116], [0.7005, 1.50925]]}
+    - {direction: y, tol: 1.0e-3, points: [[0.4005, 1.55276], [0.5005, 1.54367], [0.6215, 1.53686], [0.7005, 1.53365]]}
+    - {direction: z, tol: 1.0e-3, points: [[0.4005, 1.55924], [0.5005, 1.54943], [0.6215, 1.54324], [0.7005, 1.54054]]}

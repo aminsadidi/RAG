@@ -633,3 +633,12 @@ test("thermo-optic formulas of SiC, GaN, AlN and YVO4 reproduce the papers' valu
     assert.ok(Math.abs(dndt("YVO4", "Birnbaum", "e", lam, 25) * 1e6 - e) < (lam > 1.1 ? 0.15 : 0.1), `YVO4 e ${lam}`);
   }
 });
+
+test("Ba2NaNb5O15, Pomeroy (1971): noncritical SHG of 1.064 µm at 372.2 K (nb, nc) and 345.2 K (na, nc)", () => {
+  const s = source("Ba2NaNb5O15", "Pomeroy-1971");
+  const n = (ax, lam, T) => { const e = s.axes[ax], n0 = entryIndex(e, lam); return n0 + thermoShift(s.thermo.form, e.thermo, s.thermo.t0_c, n0, lam, T); };
+  const root = (f) => { let lo = 0, hi = 200; for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2; if ((f(lo) > 0) === (f(m) > 0)) lo = m; else hi = m; } return lo; };
+  // here x = c, y = a, z = b
+  assert.ok(Math.abs(root((T) => n("z", 1.064, T) - n("x", 0.532, T)) + 273.15 - 372.2) < 1);
+  assert.ok(Math.abs(root((T) => n("y", 1.064, T) - n("x", 0.532, T)) + 273.15 - 345.2) < 1);
+});

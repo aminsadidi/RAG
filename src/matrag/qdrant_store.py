@@ -39,6 +39,7 @@ SYNONYMS = {
     "ZGP": "ZnGeP2", "CSP": "CdSiP2", "AGS": "AgGaS2", "AGSe": "AgGaSe2", "BGS": "BaGa4S7", "BGSe": "BaGa4Se7",
     "LGS": "LiGaS2", "LIS": "LiInS2", "KABO": "K2Al2B2O7", "YAB": "YAl3(BO3)4", "CDA": "CsH2AsO4", "YAG": "Y3Al5O12", "YVO": "YVO4", "SBN": "SrxBa1-xNb2O6",
     "LGT": "La3Ga5.5Ta0.5O14", "Langatate": "La3Ga5.5Ta0.5O14",
+    "BNN": "Ba2NaNb5O15", "BSN": "Ba2NaNb5O15", "LFM": "LiCOOH", "LRB4": "LiRbB4O7",
 }
 
 
