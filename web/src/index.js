@@ -159,8 +159,8 @@ async function search(env, opts) {
   let mode = MODES.includes(opts.mode) ? opts.mode : "hybrid";
   const topK = Math.min(Math.max(parseInt(opts.topK, 10) || 8, 1), 30);
   // Off by default: on 200 gold questions it lowered MRR@10 (0.439 -> 0.401), see docs/reranker_eval.md.
-  // SubQ reranking is on unless the request says rerank: false; the bge reranker only when asked and without SubQ.
-  const subq = Boolean(env.SUBQ_KEYS) && opts.rerank !== false;
+  // SubQ reranking only when asked (rerank: true); it is off by default until it fits in the subrequest limit.
+  const subq = Boolean(env.SUBQ_KEYS) && opts.rerank === true;
   const rerank = subq || (opts.rerank === true && Boolean(env.RERANK_MODEL));
   // With the reranker, Qdrant returns a wider candidate list and the cross-encoder picks the topK of it.
   const limit = rerank ? Math.max(topK, RERANK_POOL) : topK;
