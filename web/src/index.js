@@ -113,6 +113,34 @@ async function rerankPoints(env, query, points, topK) {
     .sort((a, b) => b.score - a.score).slice(0, topK);
 }
 
+// SubQ (subq-snap-preview): the probability that each passage of the top-30 pool answers the question; the
+// pool is ordered by it. On the 200 gold questions it raised the MRR@10 from 0.511 to 0.609
+// (scripts/quality/reports). SUBQ_KEYS holds several keys: one that is spent or refused passes to the next.
+// One KV entry per question and pool (the free KV plan allows 1000 writes a day). Any failure keeps the
+// site's own order.
+async function subqScore(env, q, text) {
+  let subqAt = 0;
+  const keys = String(env.SUBQ_KEYS || "").split(",").map((k) => k.trim()).filter(Boolean);
+  const body = JSON.stringify({ model: "subq-snap-preview", state: `Search question: ${q}\n\nPassage: ${text}`,
+    questions: { rel: { type: "noul", instructions: "Does the passage come from a paper that answers the search question (same material and same quantity)?",
+      criteria: { true: "The passage gives or directly concerns the requested data for this material", false: "Another material, another quantity, or unrelated" } } } });
+  while (subqAt < keys.length) {
+    const r = await fetch("https://api.subq.ai/v1/systemone", { method: "POST", body,
+      headers: { "content-type": "application/json", authorization: `Bearer ${keys[subqAt]}` } });
+    if (r.status === 401 || r.status === 402) { subqAt++; continue; } // this key is spent or refused: the next one
+    if (!r.ok) throw new Error(`SubQ ${r.status} ${(await r.text()).slice(0, 200)}`);
+    return (await r.json()).answers.rel.noul;
+  }
+  throw new Error("no SubQ key left");
+}
+async function subqRerank(env, query, points, topK) {
+  if (points.length < 2) return points;
+  const scores = await cached(env, "subq-snap-preview", `${query}\n${points.map((p) => p.id).join(",")}`, () =>
+    Promise.all(points.map((p) => subqScore(env, query, `${p.payload.citation || ""} — ${String(p.payload.text || "").slice(0, 1200)}`))));
+  return points.map((p, i) => ({ ...p, score: scores[i] })).sort((a, b) => b.score - a.score).slice(0, topK);
+}
+const within = (ms, promise) => Promise.race([promise, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
+
 function filterOf(opts) {
   const must = [];
   if (opts.material) must.push({ key: "material", match: { value: opts.material } });
@@ -131,7 +159,9 @@ async function search(env, opts) {
   let mode = MODES.includes(opts.mode) ? opts.mode : "hybrid";
   const topK = Math.min(Math.max(parseInt(opts.topK, 10) || 8, 1), 30);
   // Off by default: on 200 gold questions it lowered MRR@10 (0.439 -> 0.401), see docs/reranker_eval.md.
-  const rerank = opts.rerank === true && Boolean(env.RERANK_MODEL);
+  // SubQ reranking is on unless the request says rerank: false; the bge reranker only when asked and without SubQ.
+  const subq = Boolean(env.SUBQ_KEYS) && opts.rerank !== false;
+  const rerank = subq || (opts.rerank === true && Boolean(env.RERANK_MODEL));
   // With the reranker, Qdrant returns a wider candidate list and the cross-encoder picks the topK of it.
   const limit = rerank ? Math.max(topK, RERANK_POOL) : topK;
   const started = Date.now();
@@ -176,7 +206,8 @@ async function search(env, opts) {
     : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
   // A failing reranker (Workers AI quota, outage) leaves the first-stage order rather than failing the search.
   let reranked = rerank, ranked = points.slice(0, topK);
-  if (rerank) ranked = await rerankPoints(env, query, points, topK).catch(() => { reranked = false; return ranked; });
+  if (rerank) ranked = await within(12000, subq ? subqRerank(env, query, points, topK) : rerankPoints(env, query, points, topK))
+    .catch((e) => { console.log("rerank", String(e)); degraded.push("rerank"); reranked = false; return ranked; });
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
   return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started };
