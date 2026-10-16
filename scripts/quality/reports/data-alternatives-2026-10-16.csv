@@ -1,0 +1,252 @@
+id,doc_id,cite,subq
+data-dij-Ag3AsS3,10.1364_josab.10.001723,Vodopyanov (1993),0.808
+data-dij-AgGaGeS4,10.1016_j.pquantelec.2015.04.001,Petrov (2015),0.947
+data-dij-AgGaS2,10.1143_jjap.36.700,Harasaki & Katō (1997),0.955
+data-dij-AgGaS2,10.1109_jqe.1971.1076588,Boyd et al. (1971),0.949
+data-dij-AgGaS2,10.1007_b138685,Nikogosyan (2005),0.927
+data-dij-AgGaS2,10.1002_anie.201903976,Zhou et al. (2019),0.92
+data-dij-AgGaSe2,10.1063_1.1655096,Byer et al. (1974),0.918
+data-dij-AgGaSe2,10.1109_jqe.1972.1076900,Boyd et al. (1972),0.872
+data-dij-BaB2O4,10.1364_ome.3.000357,Bache et al. (2013),0.948
+data-dij-BaB2O4,10.1364_josab.17.002086,Kaindl et al. (2000),0.947
+data-dij-BaB2O4,10.1007_s00340_004_1645_9,Chen et al. (2004),0.939
+data-dij-BaB2O4,10.1080_01442358909353223,Chen et al. (1989),0.931
+data-dij-BiB3O6,10.1007_b138685,Nikogosyan (2005),0.946
+data-dij-CdGeAs2,10.1109_jqe.1974.1068091,Chemla et al. (1974),0.925
+data-dij-CdGeAs2,10.1002_anie.202010319,Chen et al. (2020),0.878
+data-dij-CdSe,10.1007_b138685,Nikogosyan (2005),0.826
+data-dij-CdSiP2,10.1021_acsaom.3c00070,Carnio et al. (2023),0.863
+data-dij-CdSiP2,10.1016_j.jallcom.2019.06.166,Wang et al. (2019),0.83
+data-dij-CdTe,10.1002_j.1538_7305.1967.tb01721.x,Robinson (1967),0.894
+data-dij-CsB3O5,10.1007_b138685,Nikogosyan (2005),0.946
+data-dij-CsB3O5,10.1063_1.368904,Petrov et al. (1998),0.911
+data-dij-CsB3O5,10.1063_1.109262,Wu et al. (1993),0.871
+data-dij-CsB3O5,10.1007_s00340_007_2713_8,Guo et al. (2007),0.865
+data-dij-CsLiB6O10,10.1063_1.115413,Mori et al. (1995),0.952
+data-dij-CsLiB6O10,10.1016_s0925_3467_03_00160_5,Sifi et al. (2003),0.947
+data-dij-CsLiB6O10,10.1007_978_3_540_46793_9,Dmitriev et al. (1999),0.94
+data-dij-CsLiB6O10,10.1007_b138685,Nikogosyan (2005),0.939
+data-dij-CsLiB6O10,10.1021_acs.chemmater.7b00243,Zhang et al. (2017),0.929
+data-dij-CsLiB6O10,10.1021_acs.cgd.6b01857,Wu et al. (2017),0.913
+data-dij-DAST,10.1021_cm00044a012,Marder et al. (1994),0.955
+data-dij-DAST,10.1109_jstqe.2008.921407,Jazbinšek et al. (2008),0.937
+data-dij-DSTMS,10.1002_adfm.200601117,Yang et al. (2007),0.802
+data-dij-GaAs,10.1002_j.1538_7305.1967.tb01721.x,Robinson (1967),0.913
+data-dij-GaAs,10.1364_ol.27.000628,Skauli et al. (2002),0.887
+data-dij-GaAs,10.1109_jqe.1972.1076982,Boyd et al. (1972),0.869
+data-dij-GaN,10.1063_1.4800554,Rigler et al. (2013),0.855
+data-dij-GaP,10.1002_j.1538_7305.1967.tb01721.x,Robinson (1967),0.908
+data-dij-GaP,10.1063_1.1656779,Nelson & Turner (1968),0.864
+data-dij-GaSe,10.1680_emr.11.00012,Singh et al. (2012),0.922
+data-dij-GaSe,10.1134_s1054660x09050375,Allakhverdiev et al. (2009),0.899
+data-dij-GaSe,10.1007_b138685,Nikogosyan (2005),0.816
+data-dij-HgGa2S4,10.1109_jqe.1976.1069169,Levine et al. (1976),0.938
+data-dij-HgGa2S4,10.1016_j.optcom.2011.09.067,Umemura et al. (2011),0.853
+data-dij-K2Al2B2O7,10.1088_0256_307x_19_5_322,Lu et al. (2002),0.893
+data-dij-K2Al2B2O7,10.1002_ange.201612236,Tran et al. (2017),0.887
+data-dij-K2Al2B2O7,10.1143_jjap.37.l1093,Hu et al. (1998),0.856
+data-dij-K2Al2B2O7,10.1063_1.1577816,Lin et al. (2003),0.842
+data-dij-KBe2BO3F2,10.1021_acs.accounts.9b00448,Kang et al. (2019),0.937
+data-dij-KBe2BO3F2,10.1039_c9qi01589b,Gong et al. (2020),0.925
+data-dij-KBe2BO3F2,10.1002_sici_1521_4095_199909_11_13_1071_aid_adma1071_3.0.co_2_g,Chen et al. (1999),0.897
+data-dij-KBe2BO3F2,10.1063_1.116358,Chen et al. (1996),0.877
+data-dij-KBe2BO3F2,10.1021_jacs.7b05943,Shi et al. (2017),0.851
+data-dij-KBe2BO3F2,10.1002_ange.201802058,Mutailipu et al. (2018),0.839
+data-dij-KBe2BO3F2,10.1002_anie.201802058,Mutailipu et al. (2018),0.839
+data-dij-KD2PO4,10.1364_ao.45.000565,Zhao et al. (2006),0.876
+data-dij-KD2PO4,10.1364_josab.18.000524,Alford & Smith (2001),0.839
+data-dij-KH2PO4,10.1109_3.55534,Eckardt et al. (1990),0.961
+data-dij-KH2PO4,10.1364_josab.18.000524,Alford & Smith (2001),0.959
+data-dij-KH2PO4,10.1038_s41377_022_00899_1,Kang & Lin (2022),0.955
+data-dij-KH2PO4,10.1364_josab.17.002086,Kaindl et al. (2000),0.937
+data-dij-KH2PO4,10.1109_3.159516,Roberts (1992),0.905
+data-dij-KH2PO4,10.1021_acs.cgd.6b01857,Wu et al. (2017),0.863
+data-dij-KH2PO4,10.1364_josab.15.002298,Gehr & Smith (1998),0.826
+data-dij-KH2PO4,10.1109_jqe.1968.1074994,Bjorkholm (1968),0.8
+data-dij-KNbO3,10.1364_josab.14.002268,Shoji et al. (1997),0.976
+data-dij-KNbO3,10.1143_jjap.13.1362,Uematsu (1974),0.869
+data-dij-KNbO3,10.1364_josab.18.000524,Alford & Smith (2001),0.815
+data-dij-KTiOAsO4,10.1007_b138685,Nikogosyan (2005),0.965
+data-dij-KTiOAsO4,10.1007_s003400000313,Cussat-Blanc et al. (2000),0.927
+data-dij-KTiOPO4,10.1021_acs.chemmater.6b01756,Zhang et al. (2016),0.827
+data-dij-LiB3O5,10.1364_josab.6.000616,Chen et al. (1989),0.953
+data-dij-LiB3O5,10.1063_1.368904,Petrov et al. (1998),0.887
+data-dij-LiB3O5,10.1109_3.135177,Velsko et al. (1991),0.839
+data-dij-LiB3O5,10.1007_s00340_004_1645_9,Chen et al. (2004),0.834
+data-dij-LiGaS2,10.1002_anie.201903976,Zhou et al. (2019),0.832
+data-dij-LiInS2,10.7498_aps.67.20181591,Jia et al. (2018),0.931
+data-dij-LiInS2,10.1063_1.4723645,Yèlisseyev et al. (2012),0.912
+data-dij-LiInS2,10.1007_b138685,Nikogosyan (2005),0.898
+data-dij-LiInSe2,10.1007_b138685,Nikogosyan (2005),0.956
+data-dij-LiNbO3,10.1364_aop.411024,Zhu et al. (2021),0.938
+data-dij-LiNbO3,10.1063_1.1723604,Boyd et al. (1964),0.937
+data-dij-LiNbO3,2019_Fu_lo_p_LaserDriven_StrongField_Terahertz_Sources_705e39,2019_Fu_lo_p_LaserDriven_StrongField_Terahertz_Sources_705e39,0.906
+data-dij-LiNbO3,10.1103_physrevb.14.1693,Choy & Byer (1976),0.905
+data-dij-LiNbO3,10.1143_jjap.13.1362,Uematsu (1974),0.867
+data-dij-LiNbO3,10.1364_josab.18.000524,Alford & Smith (2001),0.854
+data-dij-LiTaO3,10.1007_b138685,Nikogosyan (2005),0.893
+data-dij-LiTaO3,10.1007_s00340_009_3502_3,Dolev et al. (2009),0.81
+data-dij-MgO_LiNbO3,10.1007_b138685,Nikogosyan (2005),0.903
+data-dij-NH4H2PO4,10.1364_ao.34.008276,Hagimoto & Mito (1995),0.964
+data-dij-NH4H2PO4,10.1103_physrev.143.597,François (1966),0.95
+data-dij-NH4H2PO4,10.1109_3.159516,Roberts (1992),0.927
+data-dij-RbBe2BO3F2,10.1021_acs.accounts.9b00448,Kang et al. (2019),0.944
+data-dij-RbTiOPO4,10.1063_1.123602,Karlsson et al. (1999),0.902
+data-dij-SiO2,10.1109_3.159516,Roberts (1992),0.908
+data-dij-YCa4O_BO3_3,10.1364_josab.17.000566,Chen et al. (2000),0.855
+data-dij-ZnGeP2,10.1063_1.1653673,Boyd et al. (1971),0.928
+data-dij-ZnGeP2,10.1007_b138685,Nikogosyan (2005),0.872
+data-dij-ZnGeP2,10.1364_josab.16.001579,Vodopyanov (1999),0.802
+data-dij-ZnSe,10.1364_josab.14.002268,Shoji et al. (1997),0.956
+data-dij-ZnSe,10.1002_j.1538_7305.1967.tb01721.x,Robinson (1967),0.923
+data-dij-ZnTe,10.1002_j.1538_7305.1967.tb01721.x,Robinson (1967),0.916
+data-dndt-AgGaS2,10.1364_ao.22.002492,Bhar et al. (1983),0.918
+data-dndt-AgGaSe2,10.1063_1.354273,Bhar et al. (1993),0.956
+data-dndt-AgGaSe2,10.1364_ao.44.002673,Aggarwal & Fan (2005),0.908
+data-dndt-AlN,10.1143_jjap.51.112101,Watanabe et al. (2012),0.958
+data-dndt-AlN,10.1063_1.1616988,Jiang et al. (2003),0.916
+data-dndt-AlN,10.1364_ome.8.001091,Bowman et al. (2018),0.886
+data-dndt-BaB2O4,10.1007_bf00323647,Nikogosyan (1991),0.958
+data-dndt-BaGa4Se7,10.3390_cryst7030062,Zhai et al. (2017),0.961
+data-dndt-BiB3O6,10.1088_0022_3727_42_22_225109,Lingxiong et al. (2009),0.892
+data-dndt-CdSe,10.1002_pssb.19690310146,Lisitsa et al. (1969),0.848
+data-dndt-CdSe,10.1364_ao.22.002492,Bhar et al. (1983),0.832
+data-dndt-CdSe,10.1364_josab.7.000918,Bertolotti et al. (1990),0.826
+data-dndt-CdSe,10.1098_rspa.1961.0106,Parsons et al. (1961),0.809
+data-dndt-CdSiP2,10.1364_ome.8.000235,Wei et al. (2018),0.862
+data-dndt-CdSiP2,openalex_W2790500049,Wei et al. (2018),0.862
+data-dndt-CsLiB6O10,10.1007_b138685,Nikogosyan (2005),0.963
+data-dndt-CuGaS2,10.1109_jqe.1974.1068198,Bhar & Smith (1974),0.86
+data-dndt-GaAs,10.1364_ol.32.000536,Kim & Sarangan (2007),0.953
+data-dndt-GaAs,10.1063_1.1308529,Corte et al. (2000),0.934
+data-dndt-GaN,10.1143_jjap.51.112101,Watanabe et al. (2012),0.96
+data-dndt-GaN,10.1143_jjap.39.20,Siozade et al. (2000),0.919
+data-dndt-GaN,10.1364_ome.4.001287,Bowman et al. (2014),0.882
+data-dndt-GaN,10.1063_1.366309,Brunner et al. (1997),0.844
+data-dndt-GaN,10.1002_pssa.2210060212,Ejder (1971),0.825
+data-dndt-GaSe,10.1007_b138685,Nikogosyan (2005),0.972
+data-dndt-GaSe,10.1103_physrevb.60.15866,Errandonea et al. (1999),0.931
+data-dndt-GaSe,10.1364_ao.18.003847,Antonioli et al. (1979),0.903
+data-dndt-HgGa2S4,openalex_W7145353704,Umemura (2013),0.804
+data-dndt-KD2PO4,10.1364_josa.56.001407,Yamazaki & Ogawa (1966),0.905
+data-dndt-KD2PO4,10.1364_josa.56.000629,Phillips (1966),0.903
+data-dndt-KH2PO4,10.1364_josa.56.001407,Yamazaki & Ogawa (1966),0.971
+data-dndt-KNbO3,10.1063_1.371251,Zhang et al. (1999),0.964
+data-dndt-KTiOPO4,10.1364_ol.18.001208,Wiechmann et al. (1993),0.972
+data-dndt-KTiOPO4,10.1109_3.8565,Gettemy et al. (1988),0.933
+data-dndt-KTiOPO4,10.1007_978_3_540_46793_9,Dmitriev et al. (1999),0.914
+data-dndt-KTiOPO4,10.1364_ao.42.006661,Emanueli & Arie (2003),0.881
+data-dndt-LiB3O5,10.1364_josab.12.002147,Kafka et al. (1995),0.865
+data-dndt-LiB3O5,10.1364_josab.12.000638,Tang et al. (1995),0.851
+data-dndt-LiIO3,10.1109_3.59687,Webb & Velsko (1990),0.956
+data-dndt-LiInS2,10.1364_josab.21.001981,Fossier et al. (2004),0.944
+data-dndt-LiInSe2,10.1063_1.1784616,Yelisseyev et al. (2004),0.976
+data-dndt-LiInSe2,10.1016_j.jcrysgro.2004.11.229,Yèlisseyev et al. (2004),0.95
+data-dndt-LiInSe2,10.1364_josab.21.001981,Fossier et al. (2004),0.941
+data-dndt-LiInSe2,10.1364_josab.27.001902,Petrov et al. (2010),0.894
+data-dndt-LiNbO3,10.1063_1.1709786,Boyd et al. (1967),0.886
+data-dndt-LiNbO3,10.1080_00150199408215934,Schlarb & Betzler (1994),0.849
+data-dndt-LiNbO3,10.1103_physrevb.50.751,Schlarb & Betzler (1994),0.84
+data-dndt-LiNbO3,10.1063_1.1988987,Moretti et al. (2005),0.801
+data-dndt-LiTaO3,10.1007_b138685,Nikogosyan (2005),0.941
+data-dndt-LiTaO3,10.1364_ol.19.001391,Ghosh (1994),0.835
+data-dndt-MgO_LiNbO3,10.1364_josab.30.000950,Kießling et al. (2013),0.956
+data-dndt-MgO_LiNbO3,10.1364_ao.31.006695,Shen et al. (1992),0.935
+data-dndt-MgO_LiNbO3,10.1063_1.1709786,Boyd et al. (1967),0.879
+data-dndt-MgO_LiNbO3,10.1103_physrevb.50.751,Schlarb & Betzler (1994),0.833
+data-dndt-MgO_LiNbO3,10.1007_s00340_010_4203_7,Gayer et al. (2010),0.821
+data-dndt-Mg_LiTaO3,10.1088_0256_307x_25_12_033,Wen-Le et al. (2008),0.939
+data-dndt-Mg_LiTaO3,10.7567_jjap.52.032601,Lim et al. (2013),0.93
+data-dndt-Mg_LiTaO3,10.1364_ao.31.006695,Shen et al. (1992),0.888
+data-dndt-NH4H2PO4,10.1364_josa.56.001407,Yamazaki & Ogawa (1966),0.959
+data-dndt-RbTiOAsO4,10.1007_s00340_004_1498_2,Yutsis et al. (2004),0.854
+data-dndt-RbTiOPO4,10.1364_josab.28.000873,Mangin et al. (2011),0.883
+data-dndt-RbTiOPO4,10.1007_s00340_004_1498_2,Yutsis et al. (2004),0.831
+data-dndt-SiC,10.1016_j.infrared.2006.04.001,Ravindra et al. (2006),0.957
+data-dndt-SiC,10.1063_1.1308529,Corte et al. (2000),0.946
+data-dndt-SiC,10.1143_jjap.51.112101,Watanabe et al. (2012),0.887
+data-dndt-YVO4,10.1364_ome.4.000876,Sato & Taira (2014),0.975
+data-dndt-YVO4,10.1364_ao.49.000644,Zelmon et al. (2010),0.967
+data-dndt-YVO4,10.1364_ome.2.001624,Ter-Gabrielyan et al. (2012),0.93
+data-dndt-YVO4,10.1364_ao.56.001682,Soharab et al. (2017),0.865
+data-sellmeier-AgGaS2,10.1364_josab.14.002481,Zondy et al. (1997),0.945
+data-sellmeier-AgGaS2,10.1007_b138685,Nikogosyan (2005),0.925
+data-sellmeier-AgGaS2,10.1063_1.88933,Seymour & Zernike (1976),0.917
+data-sellmeier-BPO4,10.1021_cm040121o,Li et al. (2004),0.899
+data-sellmeier-BaB2O4,10.1007_b138685,Nikogosyan (2005),0.917
+data-sellmeier-BaB2O4,10.1364_josab.17.002086,Kaindl et al. (2000),0.895
+data-sellmeier-BaB2O4,10.1007_bf00323647,Nikogosyan (1991),0.894
+data-sellmeier-BaB2O4,10.1364_ao.28.000202,Bhar et al. (1989),0.841
+data-sellmeier-BaGa4Se7,10.3390_cryst7030062,Zhai et al. (2017),0.956
+data-sellmeier-BaGa4Se7,10.1021_ic1006742,Yao et al. (2010),0.946
+data-sellmeier-BaGa4Se7,10.1364_ao.56.002978,Katō et al. (2017),0.869
+data-sellmeier-BaGa4Se7,10.1002_pssr.201004425,Badikov et al. (2010),0.819
+data-sellmeier-CdSiP2,10.1016_j.commatsci.2016.02.014,Xiao et al. (2016),0.94
+data-sellmeier-CdSiP2,10.1039_c3ce27003c,Zhang et al. (2013),0.928
+data-sellmeier-CdSiP2,10.1364_ol.36.001800,Kemlin et al. (2011),0.921
+data-sellmeier-CdSiP2,10.1016_s0921_5107_02_00158_7,Chiker et al. (2003),0.888
+data-sellmeier-CsB3O5,10.1007_978_3_540_46793_9,Dmitriev et al. (1999),0.973
+data-sellmeier-CsB3O5,10.12693_aphyspola.141.365,Buryy et al. (2022),0.972
+data-sellmeier-CsB3O5,10.1007_b138685,Nikogosyan (2005),0.97
+data-sellmeier-CsB3O5,10.1143_jjap.39.l1164,Kagebayashi et al. (2000),0.903
+data-sellmeier-CsB3O5,10.1063_1.109262,Wu et al. (1993),0.89
+data-sellmeier-CsLiB6O10,10.1007_b138685,Nikogosyan (2005),0.965
+data-sellmeier-CsLiB6O10,10.1007_978_3_540_46793_9,Dmitriev et al. (1999),0.959
+data-sellmeier-CsLiB6O10,10.1063_1.115413,Mori et al. (1995),0.862
+data-sellmeier-CsTiOAsO4,10.1016_s0925_3467_02_00359_2,Guillien et al. (2003),0.869
+data-sellmeier-DAST,10.1364_ao.41.005275,Daimon & Masumura (2002),0.888
+data-sellmeier-DAST,10.1007_978_3_540_46793_9,Dmitriev et al. (1999),0.86
+data-sellmeier-DSTMS,10.1016_s0925_3467_02_00359_2,Guillien et al. (2003),0.819
+data-sellmeier-GaN,10.1063_1.2947598,Pezzagna et al. (2008),0.959
+data-sellmeier-GaN,10.1364_ome.4.001287,Bowman et al. (2014),0.945
+data-sellmeier-GaN,10.1063_1.365671,Kawashima et al. (1997),0.863
+data-sellmeier-GaN,10.1063_1.1341212,Tisch et al. (2001),0.824
+data-sellmeier-GaP,10.1103_physrevb.27.985,Aspnes & Studna (1983),0.957
+data-sellmeier-GaS0.4Se0.6,10.1007_978_3_540_46793_9,Dmitriev et al. (1999),0.829
+data-sellmeier-GdCa4O_BO3_3,10.1364_ol.41.005290,Guo et al. (2016),0.913
+data-sellmeier-HgGa2S4,10.1109_jqe.2008.920324,Chen et al. (2008),0.805
+data-sellmeier-K2Al2B2O7,10.1364_josab.17.000764,Ye et al. (2000),0.942
+data-sellmeier-KBe2BO3F2,10.1063_1.358814,Chen et al. (1995),0.962
+data-sellmeier-KBe2BO3F2,10.1016_0925_3467_95_00050_x,Wu et al. (1996),0.94
+data-sellmeier-KBe2BO3F2,10.1364_ao.55.010423,Li et al. (2016),0.874
+data-sellmeier-KBe2BO3F2,10.1007_978_3_540_46793_9,Dmitriev et al. (1999),0.83
+data-sellmeier-KD2PO4,10.1364_josa.56.000629,Phillips (1966),0.971
+data-sellmeier-KD2PO4,10.1364_josa.56.001407,Yamazaki & Ogawa (1966),0.91
+data-sellmeier-KNbO3,10.1143_jjap.13.1362,Uematsu (1974),0.973
+data-sellmeier-KNbO3,10.1364_josab.9.000380,Zysset et al. (1992),0.96
+data-sellmeier-KNbO3,10.1364_ao.38.000991,Umemura et al. (1999),0.928
+data-sellmeier-KTiOAsO4,10.1063_1.101552,Bierlein et al. (1989),0.945
+data-sellmeier-KTiOAsO4,10.3390_cryst10090730,Huang et al. (2020),0.945
+data-sellmeier-KTiOAsO4,10.1063_1.108953,Cheng et al. (1993),0.9
+data-sellmeier-KTiOAsO4,10.1143_jjap.36.l403,Katō & Tanaka (1997),0.878
+data-sellmeier-KTiOAsO4,10.1016_s0925_3467_02_00359_2,Guillien et al. (2003),0.838
+data-sellmeier-La2CaB10O19,10.1364_oe.21.020641,Zhai et al. (2013),0.951
+data-sellmeier-LiB3O5,10.1109_3.135177,Velsko et al. (1991),0.97
+data-sellmeier-LiB3O5,10.1016_j.ijleo.2011.03.029,Shen et al. (2011),0.865
+data-sellmeier-LiGaSe2,10.1007_b138685,Nikogosyan (2005),0.939
+data-sellmeier-LiGaSe2,10.15330_pcss.23.4.728_740,Kumari et al. (2022),0.862
+data-sellmeier-LiInSe2,10.1063_1.1478139,Isaenko et al. (2002),0.978
+data-sellmeier-LiNbO3,10.1063_1.352951,Schlarb & Betzler (1993),0.951
+data-sellmeier-LiNbO3,10.1364_josab.14.003319,Zelmon et al. (1997),0.901
+data-sellmeier-LiNbO3,10.1007_s00340_009_3502_3,Dolev et al. (2009),0.893
+data-sellmeier-LiNbO3,10.1364_oe.547726,Liu et al. (2024),0.886
+data-sellmeier-LiNbO3,10.1007_s00340_010_4203_7,Gayer et al. (2010),0.885
+data-sellmeier-LiNbO3,10.1103_physrevb.48.15613,Schlarb & Betzler (1993),0.878
+data-sellmeier-LiNbO3,2021_Mu_ller_Modeling_of_Random_Quasi-Phase-Matching_in_Birefringent_Disordered_,Müller et al. (2021),0.87
+data-sellmeier-LiNbO3,10.1080_00150199408215934,Schlarb & Betzler (1994),0.827
+data-sellmeier-LiTaO3,10.1007_s00340_009_3434_y,Barboza & Cudney (2009),0.941
+data-sellmeier-LiTaO3,10.1007_b138685,Nikogosyan (2005),0.939
+data-sellmeier-LiTaO3,10.1051_jeos_2024034,Ousaid et al. (2024),0.939
+data-sellmeier-LiTaO3,10.1051_epjconf_202328705021,Ousaid et al. (2023),0.932
+data-sellmeier-LiTaO3,10.1088_0256_307x_25_12_033,Wen-Le et al. (2008),0.896
+data-sellmeier-LiTaO3,10.1364_josab.23.000276,Juvalta et al. (2006),0.831
+data-sellmeier-LiTaO3,10.1007_s00340_009_3502_3,Dolev et al. (2009),0.817
+data-sellmeier-Mg_LiTaO3,10.1088_0256_307x_25_12_033,Wen-Le et al. (2008),0.832
+data-sellmeier-NH4H2PO4,10.1117_12.637003,Ghosh (1992),0.965
+data-sellmeier-NH4H2PO4,10.1364_josa.54.001215,Zernike (1964),0.949
+data-sellmeier-NH4H2PO4,10.3788_col201513.041601,Zhu et al. (2015),0.902
+data-sellmeier-RbTiOPO4,10.1088_0953_8984_19_11_116214,Carvajal et al. (2007),0.939
+data-sellmeier-RbTiOPO4,10.1364_josab.28.000873,Mangin et al. (2011),0.936
+data-sellmeier-RbTiOPO4,10.1007_b138685,Nikogosyan (2005),0.913
+data-sellmeier-RbTiOPO4,10.1016_0925_3467_94_90035_3,Oseledchik et al. (1994),0.803
+data-sellmeier-YCa4O_BO3_3,10.1007_b138685,Nikogosyan (2005),0.961
