@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 13
+VERSION = 14
 WORKERS = 4
 
 
@@ -473,6 +473,23 @@ import csv, json, pathlib, shutil
 from matrag.catalog import PAPERS_DIR, doi_key, index_file, load_catalog, plan
 root = pathlib.Path(open(f'{WORK}/data/rag-optics/corpus_root.txt').read().strip())
 downloads = pathlib.Path(DOWNLOADS)
+# Every other PDF named after its DOI (10.1063_1.1790952.pdf) that is one of the papers asked for
+# (data/rag-optics/requested_papers.json: DOI, crystal, folder, title) is added the same way.
+from matrag.new_papers import auto_papers, needs_ocr
+auto, unmatched = auto_papers(downloads, pathlib.Path('/content/RAG/data/rag-optics/requested_papers.json'), set(PAPERS))
+PAPERS.update(auto)
+print(f'{len(auto)} more PDFs recognised from their DOI file names')
+if unmatched:
+    print(f'⚠️ {len(unmatched)} PDFs match no requested paper and are left as they are:', ', '.join(unmatched[:30]))
+# Scanned PDFs (no text layer) are converted with full-page OCR: their doc_ids go to the OCR list.
+ocr_list = pathlib.Path(f'{WORK}/data/rag-optics/ocr_papers.txt')
+listed = set(ocr_list.read_text(encoding='utf-8').split()) if ocr_list.exists() else set()
+scanned = [doi_key(doi) for name, (doi, *_r) in PAPERS.items()
+           if (downloads / name).exists() and doi_key(doi) not in listed and needs_ocr(downloads / name)]
+if scanned:
+    with ocr_list.open('a', encoding='utf-8') as f:
+        f.write('\\n# new papers without a text layer\\n' + '\\n'.join(scanned) + '\\n')
+    print(f'{len(scanned)} scanned PDFs will be converted with OCR:', ', '.join(scanned))
 known = {e.key for e in load_catalog(root)}
 print('1/4 Looking for the papers in the collection...')
 have = {i.doc_id: i.pdf for i in plan(root).items if i.pdf is not None}  # a PDF under any file name
@@ -515,8 +532,9 @@ def new_papers() -> dict:
         md(f"""
 # افزودن مقاله‌های تازه به مجموعه و سایت (نسخه‌ی {VERSION})
 
-PDFها باید در پوشه‌ی `proDownloads` در Drive باشند، با همان نام‌هایی که دانلود شده‌اند (مثل `petrov2015.pdf`،
-`kato2018.pdf`، `pack2004.pdf`؛ فهرست کامل در کد). مقاله‌هایی که از قبل اضافه شده‌اند دوباره اضافه نمی‌شوند. فقط یک سلول دارد: روی ▶️ بزنید و اجازه‌ی دسترسی به
+PDFها باید در پوشه‌ی `proDownloads` در Drive باشند: یا با نام DOI (مثل `10.1063_1.1790952.pdf`؛ هر مقاله‌ای از
+فهرست مقاله‌های درخواستی خودبه‌خود شناخته می‌شود و پوشه‌ی بلورش معلوم است) یا با نام‌های فهرست داخل کد (مثل `petrov2015.pdf`).
+PDFهای اسکن‌شده (بدون لایه‌ی متن) خودبه‌خود با OCR خوانده می‌شوند. مقاله‌هایی که از قبل اضافه شده‌اند دوباره اضافه نمی‌شوند. فقط یک سلول دارد: روی ▶️ بزنید و اجازه‌ی دسترسی به
 Google Drive را بدهید. کارت گرافیک لازم نیست. حدود ۳۰ تا ۶۰ دقیقه طول می‌کشد.
 
 ۱) هر PDF با نام DOI در پوشه‌ی دسته و بلور خودش در `RAG-Optics` **کپی** می‌شود (چیزی پاک یا جابه‌جا نمی‌شود)؛
