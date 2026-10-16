@@ -475,3 +475,24 @@
   sources:
     - {doc_id: 10.1364_josab.28.002236, cite: "Zhang et al. (2011)", pdf_page: 3, what: "d36 = 1.938·d36(KDP) = 0.76 pm/V at 1.064 µm, Maker fringes with d36(KDP) = 0.39 pm/V; d15 gave no analyzable fringes"}
   notes: "−4 with Kleinman symmetry: d14 = d25 = d36, d15 = −d24 = d31 = −d32 (not measured, left out)"
+
+- material: YAl3(BO3)4
+  point_group: "32"
+  d: {11: 1.43, 12: -1.43, 26: -1.43}
+  sources:
+    - {doc_id: 10.1007_b138685, cite: "Nikogosyan (2005)", pdf_page: 290, what: "book p. 283: d11(1.062 µm) = 1.43 pm/V [23] (d11(0.71 µm) = 1.68 ± 0.34 pm/V [9]); Nd-doped YAB"}
+  notes: "32 with Kleinman: d12 = d26 = −d11"
+
+- material: BaTiO3
+  point_group: 4mm
+  d: {15: 13.7, 24: 13.7, 31: 14.4, 32: 14.4, 33: 5.5}
+  sources:
+    - {doc_id: 10.1007_b138685, cite: "Nikogosyan (2005)", pdf_page: 208, what: "book p. 199: d15 = 13.7 ± 1.2, d32 = 14.4 ± 1.2, d33 = 5.5 ± 0.4 pm/V at 1.06 µm (ref. [21], recalculated with the new d36(KDP)); magnitudes"}
+  notes: "4mm: d15 = d24, d31 = d32; the book's d_ooe = d31 sin θ"
+
+- material: CsH2AsO4
+  point_group: -42m
+  d: {36: 0.40, 14: 0.40, 25: 0.40}
+  sources:
+    - {doc_id: 10.1007_b138685, cite: "Nikogosyan (2005)", pdf_page: 345, what: "book p. 339: d36(1.0642 µm) = 0.40 ± 0.05 pm/V [3]; the book's Sellmeier equations give the 90° SHG angle as 88.7° against the measured 83.5–84.4°, so they are not used"}
+  notes: "−42m, Kleinman: d14 = d25 = d36"

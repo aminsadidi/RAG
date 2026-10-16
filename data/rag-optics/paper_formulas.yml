@@ -710,3 +710,18 @@
   checks:  # the measured indices of Table 1
     - {direction: o, tol: 3.0e-4, points: [[0.2537, 1.64512], [0.4047, 1.60588], [0.5461, 1.59506], [1.014, 1.58298], [1.53, 1.57424]]}
     - {direction: e, tol: 3.0e-4, points: [[0.2537, 1.65178], [0.4047, 1.61173], [0.5461, 1.60066], [1.014, 1.58818], [1.53, 1.57901]]}
+
+- material: YAl3(BO3)4
+  name: YAl3(BO3)4 (Yttrium aluminum borate, YAB; 10 at.% Nd)
+  doc_id: "10.1007_b138685"
+  reference: "Nikogosyan (2005). Nonlinear Optical Crystals: A Complete Survey. Springer. doi:10.1007/b138685"
+  doi: 10.1007/b138685
+  pdf_page: 290
+  where: "Book p. 283, 'Dispersion relations for 10 at.% Nd' (read from the page image; ref. [20] of the book): n² = 1 + Bλ²/(λ² − λ0²); o: 2.08192923, 0.1098684; e: 1.83465945, 0.1067225. Nd-doped crystal; checked against the measured indices of the same page"
+  entries:
+    - {page: Nikogosyan-2005, direction: o, type: 4, coefficients: [1, 2.08192923, 2, 0.1098684, 2, 0, 0, 0, 1, 0, 2], range_um: [0.4047, 1.318]}
+    - {page: Nikogosyan-2005, direction: e, type: 4, coefficients: [1, 1.83465945, 2, 0.1067225, 2, 0, 0, 0, 1, 0, 2], range_um: [0.4047, 1.318]}
+  checks:  # "Experimental values of refractive indices for 10 at.% Nd [14]", same page (another crystal than the fit's [20]: up to 3.3e-3 apart, with opposite signs at the two ends)
+    - {direction: o, tol: 4.0e-3, points: [[0.4358, 1.79271], [0.5461, 1.77999], [0.7065, 1.77234]]}
+    - {direction: e, tol: 4.0e-3, points: [[0.4358, 1.71475], [0.5461, 1.70455], [0.7065, 1.69913]]}
+

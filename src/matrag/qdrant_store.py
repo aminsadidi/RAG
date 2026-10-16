@@ -37,7 +37,7 @@ SYNONYMS = {
     "KBBF": "KBe2BO3F2", "KTP": "KTiOPO4", "KTA": "KTiOAsO4", "RTP": "RbTiOPO4", "KDP": "KH2PO4",
     "DKDP": "KD2PO4", "ADP": "NH4H2PO4", "LN": "LiNbO3", "PPLN": "LiNbO3", "LT": "LiTaO3", "PPLT": "LiTaO3",
     "ZGP": "ZnGeP2", "CSP": "CdSiP2", "AGS": "AgGaS2", "AGSe": "AgGaSe2", "BGS": "BaGa4S7", "BGSe": "BaGa4Se7",
-    "LGS": "LiGaS2", "LIS": "LiInS2", "KABO": "K2Al2B2O7", "YAG": "Y3Al5O12", "YVO": "YVO4", "SBN": "SrxBa1-xNb2O6",
+    "LGS": "LiGaS2", "LIS": "LiInS2", "KABO": "K2Al2B2O7", "YAB": "YAl3(BO3)4", "CDA": "CsH2AsO4", "YAG": "Y3Al5O12", "YVO": "YVO4", "SBN": "SrxBa1-xNb2O6",
 }
 
 
