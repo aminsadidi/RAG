@@ -14,9 +14,9 @@ import urllib.parse
 import urllib.error
 from pathlib import Path
 
-# Ensure SUBQ key is set BEFORE importing subq
-if "SUBQ_KEYS" not in os.environ or not os.environ["SUBQ_KEYS"]:
-    os.environ["SUBQ_KEYS"] = "sk-proj-gkxmN3Ohd59yx1Jq9tHeJs1eEJJSMvnG"
+# SubQ keys come from the environment (SUBQ_KEYS, comma-separated), never from the code: the repository is public.
+if not os.environ.get("SUBQ_KEYS"):
+    sys.exit("SUBQ_KEYS is not set")
 
 # Add scripts/quality for subq module
 HERE = Path(__file__).resolve().parent
