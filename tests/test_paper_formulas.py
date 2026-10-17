@@ -184,3 +184,39 @@ def test_bgse_boursier_phase_matching():
         return (math.cos(t) ** 2 / nx(lam) ** 2 + math.sin(t) ** 2 / nz(lam) ** 2) ** -0.5
     t = brentq(lambda t: ny(2.37) / 2.37 - 2 * ne(4.74, t) / 4.74, math.radians(20), math.radians(60))
     assert math.degrees(t) == pytest.approx(41, abs=0.6)
+
+
+@pytest.mark.parametrize("material, cases", [
+    # Dmitriev, Gurzadyan, Nikogosyan (1999): calculated θpm of o + o ⇒ e SHG (and SFG) from the same equations
+    ("NH4D2PO4", [(1.0642, None, 36.93), (0.5321, None, 79.53), (1.0642, 0.5321, 46.44)]),
+    ("RbH2PO4", [(1.0642, None, 51.08), (0.6328, None, 81.31), (1.0642, 0.5321, 60.86)]),
+    ("RbD2PO4", [(1.0642, None, 47.19), (0.6328, None, 81.66), (1.0642, 0.5321, 60.01)]),
+    ("KH2AsO4", [(1.0642, None, 41.89), (0.6328, None, 74.64), (1.0642, 0.5321, 54.29)]),
+    ("NH4H2AsO4", [(1.0642, None, 41.71), (0.6328, None, 67.42), (1.0642, 0.5321, 53.05)]),
+    ("NH4D2AsO4", [(1.0642, None, 39.04), (0.6328, None, 68.11), (1.0642, 0.5321, 52.89)]),
+    ("RbH2AsO4", [(1.0642, None, 49.52), (0.6943, None, 79.06), (1.0642, 0.5321, 67.35)]),
+    ("RbD2AsO4", [(1.0642, None, 46.62), (1.3188, None, 42.98), (1.0642, 0.5321, 69.79)]),
+    ("BeSO4·4H2O", [(1.0642, None, 41.88), (0.6943, None, 50.32), (1.0642, 0.3547, 62.50)]),
+])
+def test_dmitriev_kdp_isomorphs(material, cases):
+    no, ne = curve(material, "Dmitriev-1999", "o"), curve(material, "Dmitriev-1999", "e")
+
+    def ne_theta(lam, th):
+        return (math.cos(th) ** 2 / no(lam) ** 2 + math.sin(th) ** 2 / ne(lam) ** 2) ** -0.5
+    for l1, l2, theta in cases:
+        l2 = l2 or l1
+        l3 = 1 / (1 / l1 + 1 / l2)
+        t = brentq(lambda t: no(l1) / l1 + no(l2) / l2 - ne_theta(l3, t) / l3, 0.01, 1.5707)
+        assert math.degrees(t) == pytest.approx(theta, abs=0.03), (l1, l2)
+
+
+def test_kb5_xy_plane_shg():
+    """Dmitriev et al. (1999), p. 144: type-I SHG in the XY plane (book frame), φtheor = 80.4°, 54.1°, 32.8° at
+    0.4384, 0.50, 0.630 µm (column 3.402). Book X, Y, Z = z, y, x here; the second harmonic is polarized along
+    the book's Z (x here), the fundamental in the XY plane at φ from X."""
+    nx, ny, nz = (curve("KB5O8·4H2O", "Dmitriev-1999", d) for d in "xyz")
+    for lam, phi in ((0.4384, 80.4), (0.50, 54.1), (0.630, 32.8)):
+        def n_phi(p):  # wave in the book's XY plane, direction at φ from X, polarized in the plane
+            return (math.cos(p) ** 2 / ny(lam) ** 2 + math.sin(p) ** 2 / nz(lam) ** 2) ** -0.5
+        p = brentq(lambda p: n_phi(p) - nx(lam / 2), 0.01, 1.5707)
+        assert math.degrees(p) == pytest.approx(phi, abs=0.2), lam
