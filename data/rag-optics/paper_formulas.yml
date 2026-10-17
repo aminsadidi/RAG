@@ -998,3 +998,64 @@
     - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [1, 1.028084809594581, 2, 0.09498507179319898, 2, 0, 0, 0, 1], range_um: [0.2, 1.4]}
     - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [1, 1.179082046895866, 2, 0.09370938779368021, 2, 0, 0, 0, 1], range_um: [0.2, 1.4]}
   checks: []  # checked in the test: the book's calculated phase-matching angles
+
+- material: NaCOOH
+  name: NaCOOH (Sodium formate)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 222
+  where: "Book p. 207, section 3.3.15 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.533): n² = A + Bλ²/(λ² − C) − Dλ²; X: 1.2646, 0.6381, 0.01212201, 0.0011; Y: 1.2589, 0.8423, 0.01447209, 0.0005; Z: 1.2515, 1.0729, 0.01726596, 0.0013. They give 2Vz = 92.6° at 0.54 µm (book 92.5°) and φ = 4.7° for o + e ⇒ e SFG of 1.0642 + 0.5321 µm in the XY plane (book φtheor 4.61°, measured 2.2°). Orthorhombic mm2, X, Y, Z = a, b, c, nX < nY < nZ (the frame here); transparency 0.23–2.2 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [1.2646, 0.6381, 2, 0.01212201, 1, 0, 0, 0, 1, -0.0011, 2], range_um: [0.25, 2.2]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [1.2589, 0.8423, 2, 0.01447209, 1, 0, 0, 0, 1, -0.0005, 2], range_um: [0.25, 2.2]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [1.2515, 1.0729, 2, 0.01726596, 1, 0, 0, 0, 1, -0.0013, 2], range_um: [0.25, 2.2]}
+  checks: []
+
+- material: Ba(COOH)2
+  name: Ba(COOH)2 (Barium formate)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 224
+  where: "Book p. 209, section 3.3.16 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.512): n² = A + B/(λ² − C); X: 2.619, 0.0177, 0.039; Y: 2.491, 0.0184, 0.035; Z: 2.421, 0.0160, 0.042. They reproduce the book's θtheor = 35.26° of e + e ⇒ o SHG of 1.0642 µm in the XZ plane (measured 33.3°) and the measured indices of the same page within 0.0023. Orthorhombic 222; the book's X, Y, Z (= a, b, c, nX > nY > nZ) are z, y, x here; transparency 0.245–2.2 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.421, 0.016, 0, 0.042, 1, 0, 0, 0, 1], range_um: [0.25, 2.2]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.491, 0.0184, 0, 0.035, 1, 0, 0, 0, 1], range_um: [0.25, 2.2]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.619, 0.0177, 0, 0.039, 1, 0, 0, 0, 1], range_um: [0.25, 2.2]}
+  checks:
+    - {direction: x, tol: 2.5e-3, points: [[0.5321, 1.5773], [1.0642, 1.5585]]}
+    - {direction: y, tol: 2.5e-3, points: [[0.5321, 1.6019], [1.0642, 1.5819]]}
+    - {direction: z, tol: 2.5e-3, points: [[0.5321, 1.6407], [1.0642, 1.6214]]}
+
+- material: HIO3
+  name: HIO3 (α-Iodic acid)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 231
+  where: "Book p. 216, section 3.3.20 (read from the page image): best set of Sellmeier equations at 293 K (the book's ref. 3.543): n² = A + B/(λ² − C); X: 3.739, 0.07128, 0.05132; Y: 3.654, 0.06721, 0.04234; Z: 3.239, 0.05353, 0.017226. They agree with the measured indices of pp. 214–215 (ref. 3.542) within 0.005 at 0.5–1.0 µm (0.016 at 0.40 µm, 0.011 at 1.5 µm) and give θ = 50.5° and 63.7° for e + o ⇒ e SHG of 1.0642 µm in the YZ and XZ planes, 0.5° above the book's calculated 49.92° and 63.21° (measured 50.4–52° and 64.9–66°). Orthorhombic 222; the book's X, Y, Z (= b, c, a, nX > nY > nZ) are z, y, x here; transparency 0.32–1.7 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [3.239, 0.05353, 0, 0.017226, 1, 0, 0, 0, 1], range_um: [0.45, 1.6]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [3.654, 0.06721, 0, 0.04234, 1, 0, 0, 0, 1], range_um: [0.45, 1.6]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [3.739, 0.07128, 0, 0.05132, 1, 0, 0, 0, 1], range_um: [0.45, 1.6]}
+  checks:
+    - {direction: x, tol: 2.5e-3, points: [[0.50, 1.8624], [0.60, 1.8405], [0.80, 1.8248], [1.00, 1.8150]]}
+    - {direction: y, tol: 2.5e-3, points: [[0.50, 1.9926], [0.60, 1.9665], [0.80, 1.9409], [1.00, 1.9286]]}
+    - {direction: z, tol: 5.0e-3, points: [[0.50, 2.0194], [0.60, 1.9918], [0.80, 1.9668], [1.00, 1.9541]]}
+
+- material: K2La(NO3)5·2H2O
+  name: K2La(NO3)5·2H2O (Potassium lanthanum nitrate dihydrate)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 233
+  where: "Book p. 218, section 3.3.21 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.550): n² = A + B/(λ² − C) − Dλ²; X: 2.20094, 0.0142619, 0.0313420, 0.00617543; Y: 2.31901, 0.0200108, 0.0247406, 0.00586460; Z: 2.38504, 0.0208525, 0.0269388, 0.00873084. They reproduce the measured indices of the same page (ref. 3.550, 0.365–1.05 µm) within 0.0006. Orthorhombic mm2, X, Y, Z = b, c, a, nX < nY < nZ (the frame here); transparency 0.335–1.1 µm. Its d coefficients are not entered: the book's d_eff expressions do not fix which axis is polar"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.20094, 0.0142619, 0, 0.031342, 1, 0, 0, 0, 1, -0.00617543, 2], range_um: [0.35, 1.1]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.31901, 0.0200108, 0, 0.0247406, 1, 0, 0, 0, 1, -0.0058646, 2], range_um: [0.35, 1.1]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.38504, 0.0208525, 0, 0.0269388, 1, 0, 0, 0, 1, -0.00873084, 2], range_um: [0.35, 1.1]}
+  checks:
+    - {direction: x, tol: 5.0e-4, points: [[0.3650, 1.5297], [0.5461, 1.5008], [0.7500, 1.4915], [1.0500, 1.4857]]}
+    - {direction: y, tol: 6.0e-4, points: [[0.3650, 1.5820], [0.5461, 1.5456], [0.7500, 1.5341], [1.0500, 1.5269]]}
+    - {direction: z, tol: 5.0e-4, points: [[0.3650, 1.6063], [0.5461, 1.5682], [0.7500, 1.5556], [1.0500, 1.5475]]}

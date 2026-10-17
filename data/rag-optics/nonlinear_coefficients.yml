@@ -612,3 +612,31 @@
   sources:
     - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 161, what: "d31(0.5321 µm) = 0.04, d32 = 0.003, d33 = 0.05 pm/V (book p. 146, ref. 3.37)"}
   notes: "mm2 with the polar axis Z of the book (Z = c); in the frame of the dispersion formulas (nx < ny < nz) the book's X, Y, Z are z, y, x, so d33 is d11, d31 is d13 and d32 is d12; d35 = d13 and d26 = d12 by Kleinman symmetry. Relative signs not given (taken equal)"
+
+- material: LiCOOH
+  point_group: "mm2"
+  d: {33: 0.94, 31: 0.13, 32: -0.60, 15: 0.13, 24: -0.60}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 221, what: "d31(1.0642 µm) = 0.13, d32 = −0.60, d33 = 0.94 pm/V (book p. 206, ref. 3.37)"}
+  notes: "mm2 with the polar axis c; the book's X, Y, Z = a, b, c with nX < nY < nZ are the x, y, z of Naito's formulas here; d15 = d31 and d24 = d32 by Kleinman symmetry"
+
+- material: NaCOOH
+  point_group: "mm2"
+  d: {33: 0.70, 31: 0.047, 32: -0.47, 15: 0.047, 24: -0.47}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 223, what: "d31(1.0642 µm) ≈ 0.047, d32 = −0.47 ± 0.09, d33 ≈ 0.70 pm/V (book p. 208, refs. 3.533, 537, 515, 198, 37)"}
+  notes: "mm2 with the polar axis c; the book's X, Y, Z = a, b, c (nX < nY < nZ) are x, y, z here; d15 = d31 and d24 = d32 by Kleinman symmetry"
+
+- material: Ba(COOH)2
+  point_group: "222"
+  d: {14: 0.105, 25: 0.105, 36: 0.105}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 225, what: "d14(1.064 µm) = 0.27 × d36(KDP) ± 15 % = 0.105 ± 0.016 pm/V (book p. 210, refs. 3.512, 37)"}
+  notes: "222, Kleinman: d14 = d25 = d36, so the order of the axes does not matter"
+
+- material: HIO3
+  point_group: "222"
+  d: {14: 6.0, 25: 6.0, 36: 6.0}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 232, what: "d14(1.064 µm) = 20 × d11(SiO2) ± 25 % = 6.0 ± 1.5 pm/V (book p. 217, refs. 3.540, 3.37); d14(1.1523 µm) = 5.1 ± 0.7 pm/V (refs. 3.546, 37)"}
+  notes: "222, Kleinman: d14 = d25 = d36, so the order of the axes does not matter"
