@@ -2,9 +2,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { entryIndex } from "../src/dispersion.client.js";
+import { entryIndex, refractiveIndex } from "../src/dispersion.client.js";
 import { solveAll } from "../src/phasematch.client.js";
-import { apodized, bestPumpBandwidth, benninkF, emissionAngles, fiberCoupling, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
+import { apodized, bestPumpBandwidth, benninkF, emissionAngles, pairRate, fiberCoupling, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const source = (mat, label) => A.find((c) => c.material === mat).sources.find((s) => !label || s.label === label);
@@ -160,4 +160,75 @@ test("non-collinear emission angles", () => {
   const q = at(0.4, 0.78), l2 = 1 / (1 / lp - 1 / 0.78);
   assert.ok(q && q.theta1 < q.theta2, "the shorter wavelength leaves closer to the pump");
   void l2;
+});
+
+// KTP (Kato) without the range check: the 405 nm pumps of Fedrizzi and Steinlechner lie 25 nm below the formula's
+// range (0.43–3.54 µm); the extrapolation is what the papers' own phase matching implies (periods 10 and 3.425 µm)
+const ktpWide = (() => {
+  const s = source("KTiOPO4", "Kato");
+  return (lam) => ["x", "y", "z"].map((a) => refractiveIndex(s.axes[a].type, s.axes[a].coefficients, lam));
+})();
+const ktp = (o) => pairRate({ nAt: ktpWide, plane: "xy", angle: 0, ...o }); // along x: slow z, fast y
+const D24 = 2 / Math.PI * 3.75, D33 = 2 / Math.PI * 15.4; // first-order QPM, d24 and d33 of nonlinear_coefficients.yml
+
+test("absolute pair rate against measured sources", () => {
+  // Evans et al. 2010: 20 mm type-II PPKTP, 776 → 1552 nm, pump and photon divergences 13.1 and 18.4 mrad;
+  // inferred 123000 pairs/s/mW into the collection modes
+  const ev = ktp({ pols: ["f", "f", "s"], lp: 0.776, l1: 1.552, L_mm: 20, dEff: D24,
+    wp: 0.776 / (Math.PI * 0.0131), w1: 1.552 / (Math.PI * 0.0184), w2: 1.552 / (Math.PI * 0.0184) });
+  assert.ok(Math.abs(ev.perMw / 123000 - 1) < 0.1, `Evans: ${ev.perMw}`);
+  // Fedrizzi et al. 2007: 25 mm type-II PPKTP, 405 → 810 nm, 27 µm waists; 82000 detected pairs/s/mW with
+  // 40 % detectors (so at least 5.1e5 in the fibre modes); the bandwidth measured with a single-photon Michelson
+  // interferometer is 0.3 nm (given to one digit: 0.25–0.35)
+  const fe = ktp({ pols: ["f", "f", "s"], lp: 0.405, l1: 0.81, L_mm: 25, dEff: D24, wp: 27, w1: 27, w2: 27 });
+  assert.ok(fe.perMw > 82000 / 0.16 && fe.perMw < 1.3 * 82000 / 0.16, `Fedrizzi: ${fe.perMw}`);
+  assert.ok(fe.fwhmNm > 0.25 && fe.fwhmNm < 0.35, `Fedrizzi bandwidth ${fe.fwhmNm} nm`);
+  // Steinlechner et al. 2012: 20 mm type-0 PPKTP, 405.4 → 783 + 837 nm, measured bandwidth 2.3 nm; the rate is
+  // an ideal upper bound there (their pump focus sits on the face between two crossed crystals)
+  const st = ktp({ pols: ["s", "s", "s"], lp: 0.4054, l1: 0.783, L_mm: 20, dEff: D33, wp: 18, w1: 24, w2: 24 });
+  assert.ok(Math.abs(st.fwhmNm - 2.3) < 0.15, `Steinlechner bandwidth ${st.fwhmNm} nm`);
+  assert.ok(st.perMw > 20e6, "above the pairs they estimate at the crystal output (about 2e7 per mW)");
+});
+
+test("pair rate: limits and invariances", () => {
+  // linear in pump power and in d_eff²
+  const base = { pols: ["f", "f", "s"], lp: 0.776, l1: 1.552, L_mm: 20, dEff: D24, wp: 40, w1: 55, w2: 55 };
+  const r1 = ktp(base), r2 = ktp({ ...base, powerMw: 10, dEff: 2 * D24 });
+  assert.ok(Math.abs(r2.rate / r1.rate - 40) < 1e-6);
+  // the same pair whichever photon is called photon 1 (type 0: counted once on either side of νp/2)
+  const t0 = { pols: ["s", "s", "s"], lp: 0.4054, L_mm: 20, dEff: D33, wp: 18, w1: 24, w2: 24 };
+  const a = ktp({ ...t0, l1: 0.783 }), b = ktp({ ...t0, l1: 1 / (1 / 0.4054 - 1 / 0.783) });
+  assert.ok(Math.abs(a.rate / b.rate - 1) < 1e-3, `${a.rate} vs ${b.rate}`);
+  // weak focusing (L ≪ the Rayleigh ranges), type II: R = Γ0|O|² L c/|n_g1 − n_g2| with the Gaussian overlap
+  // |O|² = 8/(π wp² w1² w2² S²), S = Σ 1/w², and ∫ sinc² over frequency = c/(|Δn_g| L)
+  const w = { wp: 400, w1: 500, w2: 520 }, L_mm = 2, lp = 0.776, l1 = 1.552, l2 = 1 / (1 / lp - 1 / l1);
+  const r = ktp({ pols: ["f", "f", "s"], lp, l1, L_mm, dEff: D24, ...w });
+  const n = (lam, ax) => ktpWide(lam)[ax], ng = (lam, ax) => n(lam, ax) - lam * (n(lam + 1e-4, ax) - n(lam - 1e-4, ax)) / 2e-4;
+  const S = 1 / w.wp ** 2 + 1 / w.w1 ** 2 + 1 / w.w2 ** 2, O2 = 8 / (Math.PI * w.wp ** 2 * w.w1 ** 2 * w.w2 ** 2 * S * S) * 1e12; // m⁻²
+  const G = 8 * Math.PI ** 2 * (D24 * 1e-12) ** 2 * 1e-3 / (n(lp, 1) * n(l1, 1) * n(l2, 2) * 8.8541878128e-12 * 299792458 * l1 * l2 * 1e-12);
+  const analytic = G * O2 * (L_mm * 1e-3) * 299792458 / Math.abs(ng(l1, 1) - ng(l2, 2));
+  assert.ok(Math.abs(r.rate / analytic - 1) < 0.02, `${r.rate} vs ${analytic}`);
+  // Bennink's Eq. 40 (equal focal parameters ξ = L/(k w²), A+B+ = 4, C ≈ 0) is this rate times n_p n_1 n_2
+  const k = (lam, ax) => 2 * Math.PI * n(lam, ax) / lam, xi = 2, Lm = 10;
+  const wf = (lam, ax) => Math.sqrt(Lm * 1000 / (k(lam, ax) * xi));
+  const rb = ktp({ pols: ["f", "f", "s"], lp, l1, L_mm: Lm, dEff: D24, wp: wf(lp, 1), w1: wf(l1, 1), w2: wf(l2, 2) });
+  const ben = 64 * Math.PI ** 3 * 299792458 * n(l1, 1) * n(l2, 2) / (8.8541878128e-12 * n(lp, 1) * Math.abs(ng(l1, 1) - ng(l2, 2)))
+    * (2 * D24 * 1e-12 / (l1 * l2 * 1e-12)) ** 2 * Math.atan(xi) / 4 * 1e-3 / (2 * Math.PI * 299792458 / (lp * 1e-6));
+  const ratio = ben / rb.rate / (n(lp, 1) * n(l1, 1) * n(l2, 2));
+  assert.ok(Math.abs(ratio - 1) < 0.05, `Bennink / (this · n_p n_1 n_2) = ${ratio}`);
+});
+
+test("pair rate: bandwidth of a degenerate type-I pair (group-velocity dispersion)", () => {
+  // 10 mm type-I BBO, 405 → 810 + 810 nm, weak focusing: Δk = −k''δ² for a detuning δ of photon 1, so the
+  // spectrum sinc²(ΔkL/2) falls to half at k''δ²L/2 = 1.3916 on either side of 810 nm (the spectrum is
+  // symmetric: it is computed on one side of the degenerate frequency and mirrored)
+  const s = source("BaB2O4"), nAt = nAtOf(s), sol = solveAll(nAt, s.kind, "opo", 0.405, 0.81).find((r) => r.type === "I");
+  const r = pairRate({ nAt, plane: sol.plane, angle: sol.angle * Math.PI / 180, pols: ["f", "s", "s"], lp: 0.405, l1: 0.81,
+    L_mm: 10, dEff: 2, wp: 400, w1: 500, w2: 500 });
+  const c = 299.792458, k = (om) => om * nAt(2 * Math.PI * c / om)[0] / c; // rad/µm at angular frequency om (rad/ps)
+  const om0 = 2 * Math.PI * c / 0.81, h = 0.01, k2 = (k(om0 + h) - 2 * k(om0) + k(om0 - h)) / (h * h); // ps²/µm
+  const delta = Math.sqrt(2 * 1.3916 / (k2 * 10000)); // rad/ps
+  const expected = Math.abs(2 * Math.PI * c / (om0 - delta) - 2 * Math.PI * c / (om0 + delta)) * 1000; // nm
+  assert.ok(Math.abs(r.fwhmNm / expected - 1) < 0.05, `${r.fwhmNm} nm vs ${expected} nm`);
+  assert.ok(Number.isFinite(r.rate) && r.rate > 0);
 });

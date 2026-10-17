@@ -137,6 +137,95 @@ export function emissionAngles({ nAt, plane, angle, pols, lp, l1, kg = 0, maxRad
   }
 }
 
+// Absolute rate of photon pairs emitted into the collinear Gaussian collection modes (cw pump of power P), both
+// photons in their modes (the rate before any loss; detected coincidences are this times the two arms'
+// efficiencies). Low-gain parametric amplification of the vacuum, one photon per mode per second per hertz:
+//   R = Γ0 ∫ dν |∫_{−L/2}^{L/2} O(z) e^{iΔk(ν)z} dz|²,  Γ0 = 8π² d_eff² P / (n_p n_1 n_2 ε0 c λ1 λ2),
+// with O(z) = ∫ u_p u_1* u_2* dA the overlap of the three power-normalized Gaussian modes (waists wp, w1, w2 at the
+// crystal centre, Gouy phase and wavefront curvature included; with plane waves of area A it is 1/√A and
+// Γ0|O|² is Boyd's parametric gain Γ²), Δk(ν) = kp − k1(ν) − k2(νp − ν) − kg on the axis, ν the frequency of
+// photon 1. Pairs of two photons with the same polarization (type 0 and I) are counted once (ν above νp/2).
+// Walk-off of extraordinary beams is not included. Against the measured rates: Evans et al. 2010 (20 mm type-II
+// PPKTP, 776 → 1552 nm) infer 123000 pairs/s/mW, this gives 129000; Fedrizzi et al. 2007 (25 mm, 405 → 810 nm,
+// 27 µm waists) detect 82000/s/mW with 40 % detectors (≥ 5.1·10⁵ in the modes), this gives 5.8·10⁵. Bennink's
+// closed formula (2010, Eq. 40) is higher by n_p n_1 n_2 (≈ 6 in KTP): its fields lack the 1/√n of the flux
+// normalization in a medium.
+// opts: nAt, plane, angle, pols (["s"|"f"] × 3), lp, l1 (µm), L_mm, dEff (pm/V, the QPM factor 2/π included),
+// wp, w1, w2 (µm, 1/e² intensity radii = 1/e field radii), powerMw, kg (µm⁻¹; "auto" phase-matches the centre
+// wavelengths on axis), nz, nnu. Returns { rate (pairs/s), perMw, fwhmNm (spectrum of photon 1), peakPerNm (pairs/s
+// per nm of photon 1 at the peak), lam (nm), spectrum }.
+export function pairRate(opts) {
+  const { nAt, plane, angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw = 1, nz = 481, nnu = 2001 } = opts;
+  const l2 = 1 / (1 / lp - 1 / l1), L = L_mm * 1000, dir = direction(plane, angle);
+  const n = (lam, pol) => { const [s, f] = eigenIndices(nAt(lam), dir); return pol === "s" ? s : f; };
+  const k = (lam, pol) => 2 * Math.PI * n(lam, pol) / lam;
+  const kp = k(lp, pols[0]);
+  const kg = opts.kg === "auto" || opts.kg === undefined ? kp - k(l1, pols[1]) - k(l2, pols[2]) : opts.kg;
+  const nup = C_UM_PS / lp, nu1c = C_UM_PS / l1; // THz
+  const dk = (nu) => kp - k(C_UM_PS / nu, pols[1]) - k(C_UM_PS / (nup - nu), pols[2]) - kg; // µm⁻¹
+  // the overlap O(z) on Simpson nodes (µm⁻¹)
+  const zr = [kp * wp * wp / 2, k(l1, pols[1]) * w1 * w1 / 2, k(l2, pols[2]) * w2 * w2 / 2];
+  const zs = [], Ore = [], Oim = [], wz = [], norm = (2 / Math.PI) ** 1.5 / (wp * w1 * w2) * Math.PI;
+  const m = nz % 2 ? nz - 1 : nz;
+  for (let q = 0; q <= m; q++) {
+    const z = -L / 2 + L * q / m;
+    // 1/((1 + iζp)(1 − iζ1)(1 − iζ2)) · 1/a, a = 1/(wp²(1+iζp)) + 1/(w1²(1−iζ1)) + 1/(w2²(1−iζ2))
+    const cp = [1, z / zr[0]], c1 = [1, -z / zr[1]], c2 = [1, -z / zr[2]];
+    const mul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]], inv = (a) => { const d = a[0] * a[0] + a[1] * a[1]; return [a[0] / d, -a[1] / d]; };
+    const ip = inv(cp), i1 = inv(c1), i2 = inv(c2);
+    const a = [ip[0] / (wp * wp) + i1[0] / (w1 * w1) + i2[0] / (w2 * w2), ip[1] / (wp * wp) + i1[1] / (w1 * w1) + i2[1] / (w2 * w2)];
+    const o = mul(mul(mul(ip, i1), i2), inv(a));
+    zs.push(z); Ore.push(norm * o[0]); Oim.push(norm * o[1]); wz.push((q === 0 || q === m ? 1 : q % 2 ? 4 : 2) * L / m / 3);
+  }
+  const amp2 = (nu) => { // |∫ O e^{iΔk z} dz|², dimensionless
+    const d = dk(nu); let re = 0, im = 0;
+    for (let q = 0; q < zs.length; q++) {
+      const c = Math.cos(d * zs[q]), s = Math.sin(d * zs[q]);
+      re += wz[q] * (Ore[q] * c - Oim[q] * s); im += wz[q] * (Ore[q] * s + Oim[q] * c);
+    }
+    return re * re + im * im;
+  };
+  // the frequency range: out from the centre until |Δk|·L passes 2π·60 (60 lobes of the sinc each side; their
+  // tails hold under 1 % of the rate) or the photon reaches 1.6·λ1 on the long side and 0.6·λ1 on the short side
+  const reach = (sgn) => {
+    let step = 1e-4, off = 0;
+    while (off < 0.4 * nu1c) { off = Math.min(0.4 * nu1c, off + step); if (Math.abs(dk(nu1c + sgn * off)) * L > 2 * Math.PI * 60) break; step *= 1.3; }
+    return off;
+  };
+  let lo = nu1c - reach(-1), hi = nu1c + reach(1);
+  const same = pols[1] === pols[2];
+  // each pair once: photon 1 stays on its own side of the degenerate frequency νp/2
+  if (same) { if (nu1c >= nup / 2) lo = Math.max(lo, nup / 2); else hi = Math.min(hi, nup / 2); }
+  if (!(hi > lo)) return null;
+  const nn = nnu % 2 ? nnu : nnu + 1, h = (hi - lo) / (nn - 1), spec = new Float64Array(nn);
+  let integ = 0;
+  for (let q = 0; q < nn; q++) { spec[q] = amp2(lo + q * h); integ += (q === 0 || q === nn - 1 ? 1 : q % 2 ? 4 : 2) * spec[q]; }
+  integ *= h / 3 * 1e12; // THz → Hz
+  const eps0 = 8.8541878128e-12, c = 299792458;
+  const G0 = 8 * Math.PI ** 2 * (dEff * 1e-12) ** 2 * (powerMw * 1e-3)
+    / (n(lp, pols[0]) * n(l1, pols[1]) * n(l2, pols[2]) * eps0 * c * l1 * 1e-6 * l2 * 1e-6);
+  const rate = G0 * integ;
+  // spectrum of photon 1 against wavelength: pairs/s per nm
+  const lam = Array.from(spec, (_, q) => C_UM_PS / (lo + q * h) * 1000);
+  let pk = 0; for (let q = 1; q < nn; q++) if (spec[q] > spec[pk]) pk = q;
+  const perNm = (q) => G0 * spec[q] * 1e12 * (lo + q * h) ** 2 / (C_UM_PS * 1000); // dν/dλ = ν²/c, c in nm·THz
+  // FWHM of the photon's spectrum, between the outermost half-maximum crossings (a spectrum with two humps
+  // counts as one band). Same-polarization pairs whose range stops at νp/2 hold only half of a spectrum that is
+  // symmetric about νp/2 (either photon can be the one above it): the band is mirrored there. NaN when the band
+  // reaches the edge of the computed range.
+  const half = spec[pk] / 2;
+  let ia = 0, ib = nn - 1;
+  while (ia < nn - 1 && spec[ia] < half) ia++;
+  while (ib > 0 && spec[ib] < half) ib--;
+  const cross = (i, j) => lo + h * (i + (half - spec[i]) / (spec[j] - spec[i]) * (j - i)); // THz, between nodes i and j
+  const cutLo = same && Math.abs(lo - nup / 2) < 1e-9 * nup, cutHi = same && Math.abs(hi - nup / 2) < 1e-9 * nup;
+  let nuA = ia > 0 ? cross(ia - 1, ia) : cutLo ? null : NaN, nuB = ib < nn - 1 ? cross(ib + 1, ib) : cutHi ? null : NaN;
+  if (nuA === null) nuA = nup - nuB; // mirror of the far edge
+  if (nuB === null) nuB = nup - nuA;
+  const fwhmNm = Math.abs(C_UM_PS / nuA - C_UM_PS / nuB) * 1000;
+  return { rate, perMw: rate / powerMw, fwhmNm, peakPerNm: perNm(pk), lam, spectrum: spec, l2 };
+}
+
 // Purity of the heralded photon, P = Tr(ρ1²) with ρ1 = F F† / Tr(F F†) (no diagonalization needed), and the
 // Schmidt number K = 1/P.
 export function purity({ n, re, im }) {
