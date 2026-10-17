@@ -853,3 +853,28 @@
   axes:
     o: [{range_um: [0.43, 0.65], terms: [[-3.365, 0]]}]
     e: [{range_um: [0.43, 0.65], terms: [[-2.208, 0]]}]
+
+- material: SiO2
+  source: Ghosh
+  doc_id: "10.1007_978_3_540_46793_9"
+  cite: "Dmitriev et al. (1999)"
+  pdf_page: 300
+  where: "Book p. 285, section 3.5 (crystalline quartz), table of dno/dT and dne/dT (× 10⁻⁵ K⁻¹) at 0.441–0.643 µm, the book's ref. 3.643 (read from the extracted text): o −0.475, −0.485, −0.499, −0.514, −0.529, −0.549; e −0.593, −0.681, −0.600, −0.616, −0.642, −0.653. Fitted here by a straight line in λ (o within 0.01, e within 0.06 × 10⁻⁵ of every value, the largest residual at the e value of 0.467 µm); constant in T, t0 = 20 °C. Outside 0.44–0.65 µm it is an extrapolation"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.44, 0.65], terms: [[-0.3283, 0], [-0.3456, 1]]}]
+    e: [{range_um: [0.44, 0.65], terms: [[-0.5418, 0], [-0.1708, 1]]}]
+
+- material: DLAP
+  source: Dmitriev-1999
+  doc_id: "10.1007_b138685"
+  cite: "Nikogosyan (2005)"
+  pdf_page: 334
+  where: "Book section 8.3 (DLAP), table of dnX/dT, dnY/dT, dnZ/dT (× 10⁻⁵ K⁻¹, ± 0.17) at 0.5321 and 1.0642 µm, the book's ref. [8] (read from the extracted text): X −3.64, −3.73; Y −5.34, −5.30; Z −6.69, −6.30; the same values in Dmitriev et al. (1999), p. 248. Written here as c0 + c1/λ² through both points; constant in T, t0 = 25 °C (the temperature of the Sellmeier equations). The book's X, Y, Z are x, y, z of the dispersion formulas"
+  t0_c: 25
+  form: kato
+  axes:
+    x: [{range_um: [0.53, 1.07], terms: [[-3.76, 0], [0.034, -2]]}]
+    y: [{range_um: [0.53, 1.07], terms: [[-5.2867, 0], [-0.0151, -2]]}]
+    z: [{range_um: [0.53, 1.07], terms: [[-6.17, 0], [-0.1472, -2]]}]
