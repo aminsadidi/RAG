@@ -1059,3 +1059,229 @@
     - {direction: x, tol: 5.0e-4, points: [[0.3650, 1.5297], [0.5461, 1.5008], [0.7500, 1.4915], [1.0500, 1.4857]]}
     - {direction: y, tol: 6.0e-4, points: [[0.3650, 1.5820], [0.5461, 1.5456], [0.7500, 1.5341], [1.0500, 1.5269]]}
     - {direction: z, tol: 5.0e-4, points: [[0.3650, 1.6063], [0.5461, 1.5682], [0.7500, 1.5556], [1.0500, 1.5475]]}
+
+- material: K2Ce(NO3)5·2H2O
+  name: K2Ce(NO3)5·2H2O (Potassium cerium nitrate dihydrate, KCN)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 243
+  where: "Book p. 228, section 3.3.25 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.550): n² = A + B/(λ² − C) − Dλ²; X: 2.21109, 0.0140950, 0.0345830, 0.0063894; Y: 2.33882, 0.0193380, 0.0333504, 0.0079345; Z: 2.40514, 0.0194084, 0.0371520, 0.0135716. They reproduce the measured indices of pp. 227–228 (0.365–1.05 µm) within 0.0003. Orthorhombic mm2, X, Y, Z = b, c, a; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.39–1.1 µm. Its d coefficients are not entered: the book's d_eff expressions do not fix which axis is polar"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.21109, 0.014095, 0, 0.034583, 1, 0, 0, 0, 1, -0.0063894, 2], range_um: [0.39, 1.1]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.33882, 0.019338, 0, 0.0333504, 1, 0, 0, 0, 1, -0.0079345, 2], range_um: [0.39, 1.1]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.40514, 0.0194084, 0, 0.037152, 1, 0, 0, 0, 1, -0.0135716, 2], range_um: [0.39, 1.1]}
+  checks:
+    - {direction: x, tol: 4.0e-4, points: [[0.365, 1.534], [0.5461, 1.5041], [0.75, 1.4947], [1.05, 1.489]]}
+    - {direction: y, tol: 4.0e-4, points: [[0.365, 1.5912], [0.5461, 1.5524], [0.75, 1.5398], [1.05, 1.5324]]}
+    - {direction: z, tol: 4.0e-4, points: [[0.365, 1.6142], [0.5461, 1.5732], [0.75, 1.5603], [1.05, 1.5519]]}
+
+- material: C12H22O11
+  name: C12H22O11 (Sucrose)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 258
+  where: "Book pp. 243–244, section 3.4.1 (read from the page images): Sellmeier equations at 20 °C (the book's ref. 3.600): n² = A + Bλ²/(λ² − C) − Dλ²; X: 1.8719, 0.4660, 0.0214, 0.0113; Y: 1.9703, 0.4502, 0.0238, 0.0101; Z: 2.0526, 0.3909, 0.0252, 0.0187. They reproduce the measured indices of p. 243 to the last digit and the book's θtheor = 14.88° and φtheor = 61.38° within 0.15°. Monoclinic 2, Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here (the dielectric frame; X and Z turn with λ in this monoclinic crystal); transparency 0.19–1.42 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [1.8719, 0.466, 2, 0.0214, 1, 0, 0, 0, 1, -0.0113, 2], range_um: [0.2, 1.4]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [1.9703, 0.4502, 2, 0.0238, 1, 0, 0, 0, 1, -0.0101, 2], range_um: [0.2, 1.4]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.0526, 0.3909, 2, 0.0252, 1, 0, 0, 0, 1, -0.0187, 2], range_um: [0.2, 1.4]}
+  checks:
+    - {direction: x, tol: 1.0e-4, points: [[0.5321, 1.5404], [1.0642, 1.5278]]}
+    - {direction: y, tol: 1.0e-4, points: [[0.5321, 1.5681], [1.0642, 1.5552]]}
+    - {direction: z, tol: 1.0e-4, points: [[0.5321, 1.5737], [1.0642, 1.5592]]}
+
+- material: LAP
+  name: LAP (L-arginine phosphate monohydrate)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 261
+  where: "Book pp. 245–246, section 3.4.2 (read from the page images): Sellmeier equations at 25 °C (the book's ref. 3.112): n² = A + B/(λ² − C) − Dλ²; X: 2.2439, 0.0117, 0.0179, 0.0111; Y: 2.4400, 0.0158, 0.0191, 0.0212; Z: 2.4590, 0.0177, 0.0226, 0.0162. They reproduce the book's calculated type-I angles in the XY plane exactly (φ = 61.65°, 24.02°, 35.73°); its type-II angles within 0.4°. Monoclinic 2, Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.23–1.25 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.2439, 0.0117, 0, 0.0179, 1, 0, 0, 0, 1, -0.0111, 2], range_um: [0.25, 1.25]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.44, 0.0158, 0, 0.0191, 1, 0, 0, 0, 1, -0.0212, 2], range_um: [0.25, 1.25]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.459, 0.0177, 0, 0.0226, 1, 0, 0, 0, 1, -0.0162, 2], range_um: [0.25, 1.25]}
+  checks: []  # checked in the test: the book's calculated phase-matching angles
+
+- material: DLAP
+  name: DLAP (Deuterated L-arginine phosphate monohydrate)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 263
+  where: "Book p. 248, section 3.4.3 (read from the page image): Sellmeier equations at 25 °C (the book's ref. 3.112), the form of LAP; X: 2.2352, 0.0118, 0.0146, 0.00683; Y: 2.4313, 0.0151, 0.0214, 0.0143; Z: 2.4484, 0.0172, 0.0229, 0.0115. They reproduce the book's calculated type-I angle (φ = 22.98° for SHG of 1.0642 µm in the XY plane); its type-II angles within 0.4°. Monoclinic 2, Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.22–1.30 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.2352, 0.0118, 0, 0.0146, 1, 0, 0, 0, 1, -0.00683, 2], range_um: [0.25, 1.3]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.4313, 0.0151, 0, 0.0214, 1, 0, 0, 0, 1, -0.0143, 2], range_um: [0.25, 1.3]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.4484, 0.0172, 0, 0.0229, 1, 0, 0, 0, 1, -0.0115, 2], range_um: [0.25, 1.3]}
+  checks: []  # checked in the test: the book's calculated phase-matching angles
+
+- material: L-PCA
+  name: L-PCA (L-pyrrolidone-2-carboxylic acid)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 265
+  where: "Book p. 250, section 3.4.4 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.606): n² = A + B/(λ² − C); X: 2.1907, 0.0142, 0.0124; Y: 2.2629, 0.0139, 0.0148; Z: 2.5858, 0.0242, 0.0217. They reproduce the book's calculated type-I angles (36.92°, 54.14°, 33.85°). Orthorhombic 222, X, Y, Z = b, a, c; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.26–1.064 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.1907, 0.0142, 0, 0.0124, 1, 0, 0, 0, 1], range_um: [0.3, 1.1]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.2629, 0.0139, 0, 0.0148, 1, 0, 0, 0, 1], range_um: [0.3, 1.1]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.5858, 0.0242, 0, 0.0217, 1, 0, 0, 0, 1], range_um: [0.3, 1.1]}
+  checks: []  # checked in the test: the book's calculated phase-matching angles
+
+- material: CaC4H4O6·4H2O
+  name: CaC4H4O6·4H2O (L-Calcium tartrate tetrahydrate, L-CTT)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 267
+  where: "Book p. 252, section 3.4.5 (read from the page image): Sellmeier equations at 293 K (the book's ref. 3.607): n² = 1 + Bλ²/(λ² − C); X: 1.26, 0.0127273; Y: 1.30, 0.0121495; Z: 1.38, 0.0094521. They reproduce the book's calculated θpm (58.43°, 50.07°) and the measured indices of p. 251 within 0.0045 (the coefficients are given to two digits only). X, Y, Z = a, c, b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.28–1.4 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [1, 1.26, 2, 0.0127273, 1, 0, 0, 0, 1], range_um: [0.3, 1.4]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [1, 1.3, 2, 0.0121495, 1, 0, 0, 0, 1], range_um: [0.3, 1.4]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [1, 1.38, 2, 0.0094521, 1, 0, 0, 0, 1], range_um: [0.3, 1.4]}
+  checks:
+    - {direction: x, tol: 5.0e-3, points: [[0.488, 1.5306], [0.5321, 1.5264], [1.0642, 1.5125]]}
+    - {direction: y, tol: 5.0e-3, points: [[0.488, 1.5428], [0.5321, 1.5364], [1.0642, 1.522]]}
+    - {direction: z, tol: 5.0e-3, points: [[0.488, 1.5649], [0.5321, 1.5611], [1.0642, 1.5477]]}
+
+- material: FMA
+  name: FMA (2-Furyl methacrylic anhydride)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 273
+  where: "Book p. 258, section 3.4.9 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.614): no² = 1.804 + 0.6884λ²/(λ² − 0.08301) + 0.0527λ², ne² = 2.097 + 1.1090λ²/(λ² − 0.10172) − 0.008748λ². They reproduce the book's θtheor = 50.80° of e + o ⇒ o SHG of 1.0642 µm and the measured indices of the same page within 0.005. Tetragonal 4mm, positive uniaxial; transparency 0.38–1.1 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: o, type: 4, coefficients: [1.804, 0.6884, 2, 0.08301, 1, 0, 0, 0, 1, 0.0527, 2], range_um: [0.43, 1.15]}
+    - {page: Dmitriev-1999, direction: e, type: 4, coefficients: [2.097, 1.109, 2, 0.10172, 1, 0, 0, 0, 1, -0.008748, 2], range_um: [0.43, 1.15]}
+  checks:
+    - {direction: o, tol: 3.0e-3, points: [[0.4305, 1.751], [0.5321, 1.671], [0.6328, 1.641], [1.0642, 1.612]]}
+    - {direction: e, tol: 6.0e-3, points: [[0.4305, 2.137], [0.5321, 1.958], [0.6328, 1.887], [1.0642, 1.821]]}
+
+- material: T-17
+  name: T-17 (Thienylchalcone)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 277
+  where: "Book p. 262, section 3.4.11 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.230): n² = A + B/(λ² − C) − Dλ²; X: 2.6311, 0.059014, 0.121160, −0.25553 × 10⁻⁵; Y: 2.8265, 0.037232, 0.098256, 3.02020 × 10⁻⁵; Z: 3.0468, 0.078174, 0.098845, 0.61590 × 10⁻⁵. They reproduce the book's θtheor = 63.87° of e + e ⇒ o SHG of 1.0642 µm in the XZ plane (the table prints 1.6042 µm). Monoclinic 2, Y ∥ b, Z ∥ a; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.4–1.06 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.6311, 0.059014, 0, 0.12116, 1, 0, 0, 0, 1, 2.5553e-06, 2], range_um: [0.45, 1.1]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.8265, 0.037232, 0, 0.098256, 1, 0, 0, 0, 1, -3.0202e-05, 2], range_um: [0.45, 1.1]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [3.0468, 0.078174, 0, 0.098845, 1, 0, 0, 0, 1, -6.159e-06, 2], range_um: [0.45, 1.1]}
+  checks: []  # checked in the test: the book's calculated phase-matching angles
+
+- material: 5NU
+  name: 5NU (5-Nitrouracil)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 279
+  where: "Book p. 264, section 3.4.12 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.620): n² = A + Bλ²/(λ² − C) − Dλ²; X: 2.390, 1.033, 0.0700, 0.0549; Y: 1.892, 0.870, 0.0599, 0; Z: 2.098, 0.290, 0.0947, 0.0485. They reproduce the book's calculated type-I angles (34.41°, 36.79°) and the measured indices of p. 263 within 0.004. Orthorhombic 222, X, Y, Z = b, c, a; the book's X, Y, Z (nX > nY > nZ) are z, y, x here; transparency 0.41–2.4 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.098, 0.29, 2, 0.0947, 1, 0, 0, 0, 1, -0.0485, 2], range_um: [0.43, 2.0]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [1.892, 0.87, 2, 0.0599, 1, 0, 0, 0, 1], range_um: [0.43, 2.0]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.39, 1.033, 2, 0.07, 1, 0, 0, 0, 1, -0.0549, 2], range_um: [0.43, 2.0]}
+  checks:
+    - {direction: x, tol: 4.0e-3, points: [[0.435, 1.6351], [0.546, 1.585], [1.0642, 1.5341], [1.3188, 1.5248]]}
+    - {direction: y, tol: 4.0e-3, points: [[0.435, 1.7797], [0.546, 1.7242], [1.0642, 1.6799], [1.3188, 1.6719]]}
+    - {direction: z, tol: 4.0e-3, points: [[0.435, 2.0051], [0.546, 1.9315], [1.0642, 1.8517], [1.3188, 1.8362]]}
+
+- material: PNP
+  name: PNP (2-(N-Prolinol)-5-nitropyridine)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 281
+  where: "Book pp. 265–266, section 3.4.13 (read from the page images): Sellmeier equations at 20 °C (the book's ref. 3.621): n² = A + Bλ²/(λ² − C²); X: 2.3454, 1.029757, 0.3830; Y: 2.5658, 0.375380, 0.4006; Z: 2.0961, 0.029386, 0.4016. They reproduce the book's θtheor = 11.92° of e + e ⇒ o SHG of 1.0642 µm in the XZ plane (measured 21°) and the measured indices of p. 265 within 0.004. Monoclinic 2; the book's X, Y, Z (nX > nY > nZ) are z, y, x here; transparency 0.49–2.08 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.0961, 0.029386, 2, 0.16128256000000002, 1, 0, 0, 0, 1], range_um: [0.49, 2.0]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.5658, 0.37538, 2, 0.16048036000000002, 1, 0, 0, 0, 1], range_um: [0.49, 2.0]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.3454, 1.029757, 2, 0.146689, 1, 0, 0, 0, 1], range_um: [0.49, 2.0]}
+  checks:
+    - {direction: x, tol: 4.0e-3, points: [[0.488, 1.477], [0.58, 1.468], [1.0642, 1.456]]}
+    - {direction: y, tol: 4.0e-3, points: [[0.488, 1.929], [0.58, 1.813], [1.0642, 1.732]]}
+    - {direction: z, tol: 4.0e-3, points: [[0.488, 2.239], [0.58, 2.04], [1.0642, 1.88]]}
+
+- material: NPLO
+  name: NPLO (L-N-(5-Nitro-2-pyridyl)leucinol)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 283
+  where: "Book pp. 268–269, section 3.4.15 (read from the page images): Sellmeier equations at 20 °C (the book's ref. 3.625): n² = A + B/(λ² − C) − Dλ²; X: 2.1240, 0.0011, 0.2108, 0.0174; Y: 2.5607, 0.0257, 0.1700, 0.0299; Z: 3.2123, 0.1302, 0.1625, 0.0559. They reproduce the measured indices of p. 268 within 0.0015 and the book's θtheor = 55.30° of e + e ⇒ o SHG of 1.0642 µm (θ > Vz). Monoclinic 2, Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.47–1.06 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.124, 0.0011, 0, 0.2108, 1, 0, 0, 0, 1, -0.0174, 2], range_um: [0.48, 1.1]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.5607, 0.0257, 0, 0.17, 1, 0, 0, 0, 1, -0.0299, 2], range_um: [0.48, 1.1]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [3.2123, 0.1302, 0, 0.1625, 1, 0, 0, 0, 1, -0.0559, 2], range_um: [0.48, 1.1]}
+  checks:
+    - {direction: x, tol: 1.5e-3, points: [[0.488, 1.47], [0.5145, 1.463], [0.6328, 1.457], [1.0642, 1.451]]}
+    - {direction: y, tol: 1.5e-3, points: [[0.488, 1.712], [0.5145, 1.681], [0.6328, 1.631], [1.0642, 1.598]]}
+    - {direction: z, tol: 1.5e-3, points: [[0.488, 2.218], [0.5145, 2.116], [0.6328, 1.933], [1.0642, 1.812]]}
+
+- material: DAN
+  name: DAN (4-(N,N-Dimethylamino)-3-acetamidonitrobenzene)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 287
+  where: "Book pp. 272–273, section 3.4.17 (read from the page images): Sellmeier equations at 20 °C (the book's ref. 3.629): n² = A + Bλ²/(λ² − C²); X: 2.1390, 0.147408, 0.3681; Y: 2.3290, 0.307173, 0.3933; Z: 2.5379, 0.719557, 0.4194. They reproduce the book's θtheor = 58.58° and 49.62° of e + e ⇒ o SHG (θ > Vz) and the measured indices of p. 272 within 0.006. Monoclinic 2, Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.485–2.27 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.139, 0.147408, 2, 0.13549761, 1, 0, 0, 0, 1], range_um: [0.49, 2.2]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.329, 0.307173, 2, 0.15468489, 1, 0, 0, 0, 1], range_um: [0.49, 2.2]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.5379, 0.719557, 2, 0.17589636, 1, 0, 0, 0, 1], range_um: [0.49, 2.2]}
+  checks:
+    - {direction: x, tol: 6.0e-3, points: [[0.4965, 1.574], [0.5321, 1.554], [0.6328, 1.539], [1.0642, 1.517]]}
+    - {direction: y, tol: 6.0e-3, points: [[0.4965, 1.779], [0.5321, 1.732], [0.6328, 1.682], [1.0642, 1.636]]}
+    - {direction: z, tol: 6.0e-3, points: [[0.4965, 2.243], [0.5321, 2.107], [0.6328, 1.949], [1.0642, 1.843]]}
+
+- material: MAP
+  name: MAP (Methyl-(2,4-dinitrophenyl)-aminopropanoate)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 290
+  where: "Book p. 275, section 3.4.18 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.630): n² = A + Bλ²/(λ² − C) − Dλ²; X: 2.1713, 0.10305, 0.16951, 0.01667; Y: 2.3100, 0.22580, 0.17988, 0.01886; Z: 2.7523, 0.60790, 0.16060, 0.05361. They reproduce the measured indices of the same page within 0.0002 and the book's θtheor (10.40°, 55.03°). Monoclinic 2, Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.5–2.2 µm. The book's d coefficients are in the crystallographic frame and are not entered"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.1713, 0.10305, 2, 0.16951, 1, 0, 0, 0, 1, -0.01667, 2], range_um: [0.5, 2.2]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.31, 0.2258, 2, 0.17988, 1, 0, 0, 0, 1, -0.01886, 2], range_um: [0.5, 2.2]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.7523, 0.6079, 2, 0.1606, 1, 0, 0, 0, 1, -0.05361, 2], range_um: [0.5, 2.2]}
+  checks:
+    - {direction: x, tol: 3.0e-4, points: [[0.5321, 1.5568], [1.0642, 1.5078]]}
+    - {direction: y, tol: 3.0e-4, points: [[0.5321, 1.71], [1.0642, 1.5991]]}
+    - {direction: z, tol: 3.0e-4, points: [[0.5321, 2.0353], [1.0642, 1.8439]]}
+
+- material: NPP
+  name: NPP (N-(4-Nitrophenyl)-L-prolinol)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 295
+  where: "Book pp. 280–281, section 3.4.21 (read from the page images): Sellmeier equations at 20 °C (the book's ref. 3.636): n² = A + Bλ²/(λ² − C) − Dλ²; X: 2.3532, 1.1299, 0.1678, −0.0392; Y: 2.8137, 0.3655, 0.2030, 0.0816; Z: 2.1268, 0.0527, 0.1550, 0.0608. They reproduce the book's θtheor (6.95°, 12.41°) and the measured indices of p. 280 within 0.011. Monoclinic 2; the book's X, Y, Z (nX > nY > nZ) are z, y, x here; transparency 0.51–2.0 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [2.1268, 0.0527, 2, 0.155, 1, 0, 0, 0, 1, -0.0608, 2], range_um: [0.51, 2.0]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.8137, 0.3655, 2, 0.203, 1, 0, 0, 0, 1, -0.0816, 2], range_um: [0.51, 2.0]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.3532, 1.1299, 2, 0.1678, 1, 0, 0, 0, 1, 0.0392, 2], range_um: [0.51, 2.0]}
+  checks:
+    - {direction: x, tol: 1.2e-2, points: [[0.509, 1.497], [0.6328, 1.478], [1.0642, 1.457], [1.338, 1.44]]}
+    - {direction: y, tol: 1.2e-2, points: [[0.509, 2.116], [0.6328, 1.876], [1.0642, 1.774], [1.338, 1.757]]}
+    - {direction: z, tol: 1.2e-2, points: [[0.509, 2.355], [0.6328, 2.066], [1.0642, 1.926], [1.338, 1.917]]}
+
+- material: MMONS
+  name: MMONS (3-Methyl-4-methoxy-4'-nitrostilbene)
+  doc_id: "10.1007_978_3_540_46793_9"
+  reference: "Dmitriev, Gurzadyan, Nikogosyan (1999). Handbook of Nonlinear Optical Crystals, 3rd ed. Springer. doi:10.1007/978-3-540-46793-9"
+  doi: 10.1007/978-3-540-46793-9
+  pdf_page: 297
+  where: "Book p. 282, section 3.4.22 (read from the page image): Sellmeier equations at 20 °C (the book's ref. 3.639): n² = A + Bλ²/(λ² − C²); X: 1.987, 0.314, 0.363; Y: 2.184, 0.405, 0.403; Z: 2.507, 1.130, 0.421. They reproduce the book's θtheor = 77.57° and 73.18° of e + o ⇒ o SHG in the XZ plane and the measured indices of the same page within 0.0025. Orthorhombic mm2, X, Y, Z = a, b, c; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; transparency 0.51–2.1 µm"
+  entries:
+    - {page: Dmitriev-1999, direction: x, type: 4, coefficients: [1.987, 0.314, 2, 0.131769, 1, 0, 0, 0, 1], range_um: [0.51, 2.1]}
+    - {page: Dmitriev-1999, direction: y, type: 4, coefficients: [2.184, 0.405, 2, 0.16240900000000003, 1, 0, 0, 0, 1], range_um: [0.51, 2.1]}
+    - {page: Dmitriev-1999, direction: z, type: 4, coefficients: [2.507, 1.13, 2, 0.17724099999999998, 1, 0, 0, 0, 1], range_um: [0.51, 2.1]}
+  checks:
+    - {direction: x, tol: 2.5e-3, points: [[0.543, 1.597], [0.6328, 1.569], [1.0642, 1.53], [1.3188, 1.525]]}
+    - {direction: y, tol: 2.5e-3, points: [[0.543, 1.756], [0.6328, 1.693], [1.0642, 1.63], [1.3188, 1.622]]}
+    - {direction: z, tol: 2.5e-3, points: [[0.543, 2.312], [0.6328, 2.129], [1.0642, 1.961], [1.3188, 1.94]]}
