@@ -452,6 +452,15 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <button class="alt" id="spfibopt">بهینه‌سازی کانونی</button>
     </div>
     <div id="spfibres" style="direction:ltr" class="hint"></div>
+    <h3 style="margin-top:16px">آهنگ مطلق تولید جفت</h3>
+    <p class="hint">تعداد جفت‌هایی که هر دو فوتونشان در مُدهای گاوسی بالا (با همان ξها) گسیل می‌شوند، با پمپ پیوسته: R = Γ₀ ∫dν |∫O(z) e<sup>iΔk z</sup> dz|²، با Γ₀ = 8π² d<sub>eff</sub>² P/(n<sub>p</sub>n₁n₂ ε₀ c λ₁λ₂) و O(z) هم‌پوشانی سه مُد گاوسی (با فاز گوی و انحنا). این آهنگ پیش از هر اتلافی است؛ هم‌فرودی آشکارشده = R × بازده کل بازوی ۱ × بازده کل بازوی ۲. با اندازه‌گیری‌ها آزموده شده: Evans و همکاران (2010) ۱۲۳٬۰۰۰ جفت/ثانیه/میلی‌وات گزارش کرده‌اند و این حساب ۱۲۹٬۰۰۰ می‌دهد؛ برای Fedrizzi و همکاران (2007) هم در محدوده‌ی اندازه‌گیری است. فرمول بسته‌ی Bennink (2010، معادله‌ی ۴۰) حدود n<sub>p</sub>n₁n₂ (≈ ۶ در KTP) برابر بیشتر می‌دهد. واگردی (walk-off) پرتو غیرعادی در تطبیق فاز زاویه‌ای حساب نشده و آهنگ را آن‌جا بیش از واقع نشان می‌دهد.</p>
+    <div class="row">
+      <label>d<sub>eff</sub> <input id="spdeff" type="number" step="any" style="width:76px"> pm/V</label>
+      <label>توان پمپ <input id="sppow" type="number" step="any" value="1" style="width:70px"> mW</label>
+      <button id="sprate">محاسبه‌ی آهنگ</button>
+      <span class="hint" id="spdeffinfo"></span>
+    </div>
+    <div id="spratres" style="direction:ltr" class="hint"></div>
   </div>
 </section>
 
@@ -1863,8 +1872,8 @@ new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).o
 <script type="module">
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
 import { entryIndex, thermoShift } from "/dispersion.js";
-import { eigenIndices, direction, solveAll } from "/phasematch.js";
-import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, C_UM_PS } from "/spdc.js";
+import { eigenIndices, direction, solveAll, effectiveD, fieldVectors, dTensor, contract } from "/phasematch.js";
+import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, pairRate, C_UM_PS } from "/spdc.js";
 
 const SP = { list: null };
 const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
@@ -1883,6 +1892,7 @@ const POLS = [["s", "s", "s", "نوع ۰"], ["f", "f", "f", "نوع ۰"], ["f", 
 window.loadSPDC = async () => {
   if (SP.list) return;
   SP.list = (await fetch("/ri/aniso.json").then((r) => r.json())).filter((c) => !c.sources[0].isotropic);
+  SP.dij = await fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({}));
   $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
   $("spmat").value = [SP.want, "KTiOPO4"].find((m) => SP.list.some((c) => c.material === m)) || SP.list[0].material;
   $("spmat").onchange = () => { SP.cfgKey = null; fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || ""; };
@@ -1895,6 +1905,8 @@ window.loadSPDC = async () => {
   $("sppm").onchange = () => { $("spapodl").hidden = $("sppm").value !== "apod"; };
   $("spT").onchange = fillCfg;
   $("spfib").onclick = () => fiber(false);
+  $("sprate").onclick = pairs;
+  $("spcfg").addEventListener("change", fillDeff);
   $("spfibopt").onclick = () => fiber(true);
   fillSrc(); fitWl(); fillCfg();
 };
@@ -1935,7 +1947,7 @@ function fillCfg() {
   $("spl2").textContent = Number.isFinite(l2) && l2 > 0 ? `λ₂ = ${l2.toFixed(4)} µm` : "";
   const opts = [];
   try {
-    for (const r of solveAll(nAt, s.kind, "opo", lp, l1)) opts.push({ label: `تطبیق فاز زاویه‌ای: صفحه‌ی ${r.plane}، ${r.type}، زاویه ${r.angle.toFixed(2)}°`, plane: r.plane, angle: r.angle * Math.PI / 180, type: r.type });
+    for (const r of solveAll(nAt, s.kind, "opo", lp, l1)) opts.push({ label: `تطبیق فاز زاویه‌ای: صفحه‌ی ${r.plane}، ${r.type}، زاویه ${r.angle.toFixed(2)}°`, plane: r.plane, angle: r.angle * Math.PI / 180, type: r.type, sol: r });
   } catch { /* outside the formula's range */ }
   const axes = s.kind === "uniaxial" ? ["x", "z"] : ["x", "y", "z"];
   for (const ax of axes) {
@@ -1959,6 +1971,7 @@ function fillCfg() {
   const pick = kept >= 0 ? kept : opts.findIndex((o) => o.qpm && o.plane === "xy" && o.angle === 0 && o.pols[1] !== o.pols[2]);
   if (pick >= 0) $("spcfg").value = String(pick);
   $("spcfg").onchange = () => { const o = SP.cfg[+$("spcfg").value]; SP.cfgKey = o ? key(o) : null; };
+  fillDeff();
 }
 function run() {
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
@@ -2062,6 +2075,44 @@ function drawAngles(pts) {
     + `<text x="${(W + 32) / 2}" y="${H - 8}" font-size="11" text-anchor="middle" fill="currentColor">λ₁</text>`
     + `<text x="4" y="${py(ymax / 1.1) + 4}" font-size="11" fill="currentColor">${(ymax / 1.1).toFixed(2)}°</text><text x="4" y="${py(0) + 4}" font-size="11" fill="currentColor">0°</text>`
     + `<text x="${W - 14}" y="22" font-size="11" text-anchor="end" fill="#1f6feb">θ₁ (photon 1)</text><text x="${W - 14}" y="38" font-size="11" text-anchor="end" fill="#d1242f">θ₂ (photon 2)</text>`;
+}
+// d_eff of the selected configuration from the crystal's d_il (nonlinear_coefficients.yml): the field vectors of the
+// three waves along the propagation direction; first-order QPM takes 2/π of it; angle phase matching takes the
+// best azimuth (effectiveD, as in the phase-matching tab). Left empty (to be typed) when the crystal has no d_il.
+function fillDeff() {
+  const o = SP.cfg?.[+$("spcfg").value], c = $("spmat").value, d = SP.dij?.[c]?.d;
+  if (!o || !d) { $("spdeff").value = ""; $("spdeffinfo").textContent = d ? "" : `ضرایب d برای ${c} در سایت نیست؛ d_eff را وارد کنید.`; return; }
+  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  try {
+    let v;
+    if (o.qpm) {
+      const dir = direction(o.plane, o.angle), e = (lam, pol) => fieldVectors(nAt(lam), dir)[pol === "s" ? 0 : 1];
+      v = 2 / Math.PI * Math.abs(contract(dTensor(d), e(lp, o.pols[0]), e(l1, o.pols[1]), e(l2, o.pols[2])));
+    } else v = effectiveD(nAt, s.kind, o.sol, d).deff;
+    $("spdeff").value = v.toPrecision(3);
+    $("spdeffinfo").textContent = o.qpm ? "از ضرایب d سایت، با ضریب 2/π قطبش‌دهی دوره‌ای مرتبه‌ی اول" : "از ضرایب d سایت (بهترین سمت φ)";
+  } catch { $("spdeff").value = ""; $("spdeffinfo").textContent = ""; }
+}
+// Absolute pair rate into the Gaussian modes of the fibre card's focal parameters (ξ = L/zR as there)
+function pairs() {
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
+  const dEff = +$("spdeff").value, P = +$("sppow").value;
+  if (!(dEff > 0) || !(P > 0)) { $("spratres").textContent = "d_eff و توان پمپ را وارد کنید."; return; }
+  const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
+  const dir = direction(o.plane, o.angle), k = (lam, pol) => { const [sl, fa] = eigenIndices(nAt(lam), dir); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
+  const w = (lam, pol, xi) => Math.sqrt(2 * L_mm * 1000 / (k(lam, pol) * xi));
+  const wp = w(lp, pols[0], +$("spxp").value), w1 = w(l1, pols[1], +$("spxs").value), w2 = w(l2, pols[2], +$("spxf2").value);
+  $("spratres").textContent = "در حال محاسبه…";
+  setTimeout(() => {
+    const r = pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw: P });
+    if (!r || !Number.isFinite(r.rate)) { $("spratres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند.</span>`; return; }
+    const f = (v) => v >= 1e6 ? (v / 1e6).toPrecision(3) + "·10⁶" : v >= 1e3 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3);
+    $("spratres").innerHTML = `w<sub>p</sub> = ${wp.toFixed(1)} µm, w₁ = ${w1.toFixed(1)} µm, w₂ = ${w2.toFixed(1)} µm, d<sub>eff</sub> = ${dEff} pm/V<br>`
+      + `<b>R = ${f(r.rate)} pairs/s</b> at ${P} mW (${f(r.perMw)} pairs/s/mW) into the two modes, before any loss<br>`
+      + `bandwidth of photon 1 (FWHM) ${r.fwhmNm.toPrecision(3)} nm; peak spectral brightness ${f(r.peakPerNm / P)} pairs/s/mW/nm`
+      + (o.qpm ? "" : `<br><span style="color:#c33">angle phase matching: the walk-off of the extraordinary beam is not included, so this overestimates the rate</span>`);
+  }, 20);
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
 function fiber(optimize) {
