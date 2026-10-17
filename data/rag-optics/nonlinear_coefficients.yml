@@ -104,6 +104,7 @@
   d: {11: 0.47, 12: -0.47, 26: -0.47}
   sources:
     - {doc_id: 10.1007_s00340_009_3554_4, cite: "Chen et al. (2009)", pdf_page: 9, what: "d11 = 0.47 ± 0.01 pm/V, Maker fringes relative to d36(KDP) = 0.39 pm/V"}
+    - {doc_id: 10.1016_0925_3467_95_00050_x, cite: "Wu et al. (1996)", pdf_page: 4, what: "a preliminary Maker-fringe value, d11 ≈ 2·d36(KDP), and d14 small by calculation; superseded by the 2009 measurement used here"}
   notes: "32: d12 = d26 = −d11; d14 ≈ 0 (Kleinman)"
 
 - material: SiO2

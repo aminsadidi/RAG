@@ -1285,3 +1285,63 @@
     - {direction: x, tol: 2.5e-3, points: [[0.543, 1.597], [0.6328, 1.569], [1.0642, 1.53], [1.3188, 1.525]]}
     - {direction: y, tol: 2.5e-3, points: [[0.543, 1.756], [0.6328, 1.693], [1.0642, 1.63], [1.3188, 1.622]]}
     - {direction: z, tol: 2.5e-3, points: [[0.543, 2.312], [0.6328, 2.129], [1.0642, 1.961], [1.3188, 1.94]]}
+
+# Papers downloaded by hand into proDownloads (October 2026).
+
+- material: La2CaB10O19
+  name: La2CaB10O19 (Lanthanum calcium borate, LCB)
+  doc_id: 10.1364_oe.21.020641
+  reference: "Zhai, Li, Zhang, Wu, Chen (2013). Temperature-dependent Sellmeier equations of nonlinear optical crystal La2CaB10O19. Opt. Express 21, 20641. doi:10.1364/OE.21.020641"
+  doi: 10.1364/OE.21.020641
+  pdf_page: 6
+  where: "Eq. (3) and Table 3: n²(λ, T) = A + ET + (B + FT)/(λ² − (C + GT)) + (D + HT)λ², T in °C, fitted to the prism indices of Table 1 (0.254–2.325 µm, 25–170 °C); taken here at 25 °C, the temperature dependence in thermo_optic.yml. The form and signs were checked against Table 1 (within 5×10⁻⁴). Same frame as Wang et al. (2002): nx and ny nearly equal (they cross near 0.3 µm), nz the largest"
+  entries:
+    - {page: Zhai-2013, direction: x, type: 4, coefficients: [2.7811473, 0.0162174, 0, 0.0146669, 1, 0, 0, 0, 1, -0.0151351, 2], range_um: [0.254, 2.325]}
+    - {page: Zhai-2013, direction: y, type: 4, coefficients: [2.7847003, 0.0158736, 0, 0.0145226, 1, 0, 0, 0, 1, -0.014722, 2], range_um: [0.254, 2.325]}
+    - {page: Zhai-2013, direction: z, type: 4, coefficients: [2.9668062, 0.0197668, 0, 0.0171526, 1, 0, 0, 0, 1, -0.0203901, 2], range_um: [0.254, 2.325]}
+  checks:  # Table 1, measured at 25 °C
+    - {direction: x, tol: 5.0e-4, points: [[0.254, 1.76264], [0.365, 1.70779], [0.546, 1.68345], [1.014, 1.66766], [2.325, 1.64383]]}
+    - {direction: y, tol: 5.0e-4, points: [[0.254, 1.76115], [0.365, 1.70805], [0.546, 1.68431], [1.014, 1.66878], [2.325, 1.64568]]}
+    - {direction: z, tol: 5.0e-4, points: [[0.254, 1.83971], [0.365, 1.77066], [0.546, 1.74105], [1.014, 1.72195], [2.325, 1.69120]]}
+
+- material: Na3La9O3(BO3)8
+  name: Na3La9O3(BO3)8 (Sodium lanthanum oxyborate, NLBO)
+  doc_id: 10.1016_j.optmat.2014.07.026
+  reference: "Shan, Zhang, Zhai, Xu, Zhang, Wu, Wu (2014). Temperature-dependent Sellmeier equations of nonlinear optical crystal Na3La9O3(BO3)8. Opt. Mater. 37, 589. doi:10.1016/j.optmat.2014.07.026"
+  doi: 10.1016/j.optmat.2014.07.026
+  pdf_page: 4
+  where: "Eq. (3) (p. 4) and Table 4 (p. 3, signs read from the page image): n² = (a + eT) + (b + fT)/(λ² − (c + gT)) − (d + hT)λ², T in °C, fitted to the minimum-deviation indices of Table 1 (0.363–2.325 µm, 23.5–160 °C); taken here at 23.5 °C, the temperature dependence in thermo_optic.yml. Negative uniaxial (no > ne); the four-digit coefficients reproduce Table 1 within 5×10⁻⁴. The range starts at 0.35 µm rather than the measured 0.363 µm because the paper itself uses the equations for THG to 0.355 µm (Table 5)"
+  entries:
+    - {page: Shan-2014, direction: o, type: 4, coefficients: [3.4328683, 0.0351492, 0, 0.0178471, 1, 0, 0, 0, 1, -0.0138844, 2], range_um: [0.35, 2.325]}
+    - {page: Shan-2014, direction: e, type: 4, coefficients: [3.1201109, 0.0281562, 0, 0.0152276, 1, 0, 0, 0, 1, -0.0047981, 2], range_um: [0.35, 2.325]}
+  checks:  # Table 1, measured at 23.5 °C
+    - {direction: o, tol: 5.0e-4, points: [[0.363, 1.93351], [0.5461, 1.88513], [1.014, 1.85828], [2.325, 1.83415]]}
+    - {direction: e, tol: 5.0e-4, points: [[0.363, 1.83312], [0.5461, 1.79385], [1.014, 1.77273], [2.325, 1.76038]]}
+
+- material: KBe2BO3F2
+  name: KBe2BO3F2 (Potassium fluoroboratoberyllate, KBBF)
+  doc_id: 10.1016_0925_3467_95_00050_x
+  reference: "Wu, Tang, Ye, Chen (1996). Linear and nonlinear optical properties of the KBe2BO3F2 (KBBF) crystal. Opt. Mater. 5, 105. doi:10.1016/0925-3467(95)00050-X"
+  doi: 10.1016/0925-3467(95)00050-X
+  pdf_page: 2
+  where: "Sellmeier equations of p. 106: n² = 1 + Bλ²/(λ² − C) − Dλ², fitted to the visible indices of Table 1 together with the type-I SHG phase-matching angles of Table 2 (369.5–1342 nm); the paper gives them as accurate from 1.4 µm to about 180 nm. Superseded by Chen et al. (2009)"
+  entries:
+    - {page: Wu-1996, direction: o, type: 4, coefficients: [1, 1.169725, 2, 0.00624, 1, 0, 0, 0, 1, -0.009904, 2], range_um: [0.18, 1.4]}
+    - {page: Wu-1996, direction: e, type: 4, coefficients: [1, 0.956611, 2, 0.0061926, 1, 0, 0, 0, 1, -0.027849, 2], range_um: [0.18, 1.4]}
+  checks:  # Table 1, "Cal." columns
+    - {direction: o, tol: 6.0e-5, points: [[0.6563, 1.4774], [0.6328, 1.4779], [0.5893, 1.4791], [0.4861, 1.4829], [0.4358, 1.4858], [0.4047, 1.4881]]}
+    - {direction: e, tol: 6.0e-5, points: [[0.6563, 1.3995], [0.6328, 1.4002], [0.5893, 1.4015], [0.4861, 1.4056], [0.4358, 1.4084], [0.4047, 1.4105]]}
+
+- material: BaTiO3
+  name: BaTiO3 (Barium titanate)
+  doc_id: 10.1002_pssa.2211350242
+  reference: "Buse, Riehemann, Loheide, Hesse, Mersch, Krätzig (1993). Refractive indices of single domain BaTiO3 for different wavelengths and temperatures. Phys. Status Solidi A 135, K87. doi:10.1002/pssa.2211350242"
+  doi: 10.1002/pssa.2211350242
+  pdf_page: 3
+  where: "Eq. (1) (p. 2) and Table 2 (p. 3), the 20 °C row: n² − 1 = A + Bλ²/(λ² − C); C is printed in 10⁻¹⁴ m² (0.07095 µm² for ne), which reproduces Table 1. Minimum-deviation indices of a single-domain prism, 440–700 nm, absolute accuracy ±0.002; negative uniaxial. The temperature dependence (Table 3) is in thermo_optic.yml"
+  entries:
+    - {page: Buse-1993, direction: o, type: 4, coefficients: [3.154, 2.141, 2, 0.0789, 1, 0, 0, 0, 1], range_um: [0.44, 0.7]}
+    - {page: Buse-1993, direction: e, type: 4, coefficients: [3.109, 2.022, 2, 0.07095, 1, 0, 0, 0, 1], range_um: [0.44, 0.7]}
+  checks:  # Table 1, 20 °C (three decimals)
+    - {direction: o, tol: 1.5e-3, points: [[0.488, 2.520], [0.514, 2.491], [0.532, 2.474], [0.633, 2.412]]}
+    - {direction: e, tol: 1.5e-3, points: [[0.488, 2.447], [0.514, 2.424], [0.532, 2.410], [0.633, 2.360]]}

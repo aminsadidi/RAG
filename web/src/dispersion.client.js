@@ -72,17 +72,34 @@ export function entryIndex(entry, lam) {
 // "gayer": the Sellmeier equation of Gayer et al. (2008) and Dolev et al. (2009), whose coefficients
 // carry f = (T − t0)(T + t0 + 546.32) (Hobden & Warner's form; Edwards & Lawrence (1984) and Abedin & Ito
 // (1996) write 546, given as spec.f_c); "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient
-// linear in T − t0, spec {c: [A, B, C, D], dc: [dA, dB, dC, dD]} (Zhang et al. 2013, CBO).
+// linear in T − t0, spec {c: [A, B, C, D], dc: [dA, dB, dC, dD]} (Zhang et al. 2013, CBO); "oscillator":
+// the classical-oscillator model of Thomas et al. (1998), spec {t0_k, eps_inf, modes: [[ν, a1, a2, Δε, b1, b2, Γ/ν, c1, c2]]}.
 export function thermoShift(form, spec, t0, n0, lam, T) {
   if (T === t0 || !Number.isFinite(T)) return 0;
   if (form === "kato") {
     const dist = (p) => Math.max(p.range_um[0] - lam, lam - p.range_um[1], 0);
     const piece = spec.reduce((best, p) => (dist(p) < dist(best) ? p : best));
-    const dT = T - t0; // dn/dT may carry a factor (1 + t_coef·ΔT), as for BiBO (Umemura et al. 2007)
+    // dn/dT may carry a factor (1 + t_coef·ΔT + t_coef2·ΔT²), as for BiBO (Umemura et al. 2007) and BaTiO3 (Buse et al. 1993)
+    const dT = T - t0;
     const sum = (terms) => terms.reduce((s, [c, p]) => s + c * lam ** p, 0);
     // t_terms: dn/dT also has T·Σ c'·λ^p with T in kelvin, integrated from t0 (Xu et al. 2014, SiC, Eq. 4)
     const K = 273.15, linear = piece.t_terms ? sum(piece.t_terms) * ((T + K) ** 2 - (t0 + K) ** 2) / 2 : 0;
-    return ((dT + (piece.t_coef || 0) * dT * dT / 2) * sum(piece.terms) + linear) * 1e-5;
+    const f = dT + (piece.t_coef || 0) * dT * dT / 2 + (piece.t_coef2 || 0) * dT ** 3 / 3;
+    return (f * sum(piece.terms) + linear) * 1e-5;
+  }
+  if (form === "oscillator") { // ε = ε∞ + Σ Δεi·νi²/(νi² − ν² + iΓi·ν), νi, Δεi, Γi/νi quadratic in T − T0 (K),
+    // ν in cm⁻¹ (Thomas et al. 1998, sapphire, Eqs. 2, 4–6); Δn = Re n(T) − Re n(t0) of that model
+    const nu = 1e4 / lam, re = (t) => {
+      const d = t - spec.t0_k;
+      let er = spec.eps_inf, ei = 0;
+      for (const [v0, a1, a2, de0, b1, b2, g0, c1, c2] of spec.modes) {
+        const v = v0 + a1 * d + a2 * d * d, de = de0 + b1 * d + b2 * d * d, G = (g0 + c1 * d + c2 * d * d) * v;
+        const x = v * v - nu * nu, y = G * nu, s = de * v * v / (x * x + y * y);
+        er += s * x; ei -= s * y;
+      }
+      return Math.sqrt((Math.hypot(er, ei) + er) / 2); // real part of √ε
+    };
+    return re(T + 273.15) - re(t0 + 273.15);
   }
   if (form === "ghosh") {
     const integral = (poly) => poly.reduce((s, c, k) => s + c * (T ** (k + 1) - t0 ** (k + 1)) / (k + 1), 0);

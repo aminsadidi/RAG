@@ -642,3 +642,47 @@ test("Ba2NaNb5O15, Pomeroy (1971): noncritical SHG of 1.064 µm at 372.2 K (nb, 
   assert.ok(Math.abs(root((T) => n("z", 1.064, T) - n("x", 0.532, T)) + 273.15 - 372.2) < 1);
   assert.ok(Math.abs(root((T) => n("y", 1.064, T) - n("x", 0.532, T)) + 273.15 - 345.2) < 1);
 });
+
+test("papers from proDownloads: LCB and NLBO temperature-dependent THG angles, KBBF SHG angles", () => {
+  const thg = (mat, label, T, plane, type) => {
+    const s = source(mat, label);
+    return solveAll(nAtTemp(s, T), s.kind, "sfg", 1.064, 0.532).find((r) => r.plane === plane && r.type === type)?.angle;
+  };
+  // LCB, Zhai et al. 2013, Table 4 "Calculated": type-I THG in the yz plane at 25, 40, 80, 110, 155, 170 °C
+  for (const [T, a] of [[25, 48.8], [40, 48.9], [80, 49.1], [110, 49.3], [155, 49.6], [170, 49.7]]) {
+    assert.ok(Math.abs(thg("La2CaB10O19", "Zhai-2013", T, "yz", "I") - a) < 0.06, `LCB ${T} °C`);
+  }
+  // NLBO, Shan et al. 2014, p. 4: THG at room temperature, 49.8° (ooe) and 65.3° (eoe)
+  assert.ok(Math.abs(thg("Na3La9O3(BO3)8", "Shan-2014", 23.5, "xz", "I") - 49.8) < 0.05);
+  assert.ok(Math.abs(thg("Na3La9O3(BO3)8", "Shan-2014", 23.5, "xz", "IIb") - 65.3) < 0.05);
+  assert.ok(thg("Na3La9O3(BO3)8", "Shan-2014", 160, "xz", "I") > 50); // the angles grow with temperature (Fig. 4)
+  // KBBF, Wu et al. 1996, Table 2 "Cal.": type-I SHG angles
+  for (const [l, a] of [[1.342, 18.84], [1.064, 19.86], [0.532, 36.37], [0.41, 51.22], [0.3695, 61.02]]) {
+    assert.ok(Math.abs(angle("KBe2BO3F2", "Wu-1996", "shg", l, 0, "xz", "I") - a) < 0.06, `KBBF ${l} µm`);
+  }
+});
+
+test("thermo-optic: BaTiO3 (Buse et al. 1993) and sapphire (Thomas et al. 1998)", () => {
+  // BaTiO3 Table 3: dne/dT (10⁻⁵ /K) at 488, 514, 532, 633 nm and 20–80 °C; no constant
+  const b = source("BaTiO3", "Buse-1993");
+  const dndt = (s, ax, lam, T) => thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], lam), lam, T + 0.5)
+    - thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], lam), lam, T - 0.5);
+  const table = { 20: [26, 25, 23, 18], 40: [28, 25, 23, 19], 60: [37, 34, 33, 30], 80: [56, 51, 49, 41] };
+  for (const [T, row] of Object.entries(table)) {
+    [0.488, 0.514, 0.532, 0.633].forEach((lam, i) => {
+      const tol = lam === 0.633 && T >= 60 ? 4.5 : 1.5;
+      assert.ok(Math.abs(dndt(b, "e", lam, +T) * 1e5 - row[i]) < tol, `BaTiO3 ${lam} µm ${T} °C`);
+    });
+  }
+  assert.equal(dndt(b, "o", 0.6, 50), 0);
+  // Sapphire: the model's electronic oscillators are close to Malitson's UV Sellmeier terms (0.0727 and
+  // 0.117 µm against 0.0727 and 0.119 µm); it gives dn/dT ≈ 1.3–1.8×10⁻⁵ /K from 0.4 to 1 µm, the e ray larger than the o ray
+  const sa = source("Al2O3", "Malitson");
+  for (const ax of ["o", "e"]) for (const lam of [0.4, 0.6, 1]) {
+    const d = dndt(sa, ax, lam, 21.85) * 1e6;
+    assert.ok(d > 12 && d < 19, `sapphire ${ax} ${lam} µm: ${d}`);
+  }
+  assert.ok(dndt(sa, "e", 0.633, 21.85) > dndt(sa, "o", 0.633, 21.85));
+  // the o-ray dn/dT falls toward the infrared edge (Fig. 9), the e ray stays near its near-infrared value (Fig. 10)
+  assert.ok(dndt(sa, "o", 4, 21.85) < 0.5 * dndt(sa, "o", 1, 21.85) && dndt(sa, "e", 4, 21.85) > 0.8 * dndt(sa, "e", 1, 21.85));
+});

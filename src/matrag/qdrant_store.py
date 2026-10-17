@@ -43,6 +43,7 @@ SYNONYMS = {
     "DADA": "NH4D2AsO4", "RDA": "RbH2AsO4", "DRDA": "RbD2AsO4", "KB5": "KB5O8·4H2O", "BeSO4": "BeSO4·4H2O",
     "Iodic acid": "HIO3", "Sodium formate": "NaCOOH", "Barium formate": "Ba(COOH)2",
     "BNN": "Ba2NaNb5O15", "BSN": "Ba2NaNb5O15", "LFM": "LiCOOH", "LRB4": "LiRbB4O7",
+    "LCB": "La2CaB10O19", "NLBO": "Na3La9O3(BO3)8", "Sapphire": "Al2O3", "BTO": "BaTiO3",
 }
 
 
