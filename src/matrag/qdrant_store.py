@@ -41,6 +41,7 @@ SYNONYMS = {
     "LGT": "La3Ga5.5Ta0.5O14", "Langatate": "La3Ga5.5Ta0.5O14",
     "DADP": "NH4D2PO4", "RDP": "RbH2PO4", "DRDP": "RbD2PO4", "KDA": "KH2AsO4", "DKDA": "KD2AsO4", "ADA": "NH4H2AsO4",
     "DADA": "NH4D2AsO4", "RDA": "RbH2AsO4", "DRDA": "RbD2AsO4", "KB5": "KB5O8·4H2O", "BeSO4": "BeSO4·4H2O",
+    "Iodic acid": "HIO3", "Sodium formate": "NaCOOH", "Barium formate": "Ba(COOH)2",
     "BNN": "Ba2NaNb5O15", "BSN": "Ba2NaNb5O15", "LFM": "LiCOOH", "LRB4": "LiRbB4O7",
 }
 

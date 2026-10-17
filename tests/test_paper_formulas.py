@@ -220,3 +220,34 @@ def test_kb5_xy_plane_shg():
             return (math.cos(p) ** 2 / ny(lam) ** 2 + math.sin(p) ** 2 / nz(lam) ** 2) ** -0.5
         p = brentq(lambda p: n_phi(p) - nx(lam / 2), 0.01, 1.5707)
         assert math.degrees(p) == pytest.approx(phi, abs=0.2), lam
+
+
+def test_dmitriev_biaxial_formates_and_iodic_acid():
+    """Dmitriev et al. (1999): NaCOOH 2Vz = 92.5° at 0.54 µm and φtheor = 4.61° (o + e ⇒ e SFG 1.0642 + 0.5321 µm,
+    XY plane, p. 207); Ba(COOH)2 θtheor = 35.26° (e + e ⇒ o SHG of 1.0642 µm, XZ plane, p. 209); α-HIO3
+    e + o ⇒ e SHG of 1.0642 µm, measured 50.4–52° (YZ) and 64.9–66° (XZ), pp. 215–216."""
+    nx, ny, nz = (curve("NaCOOH", "Dmitriev-1999", d) for d in "xyz")
+    lam = 0.54
+    vz = math.acos(math.sqrt((ny(lam) ** -2 - nz(lam) ** -2) / (nx(lam) ** -2 - nz(lam) ** -2)))
+    assert 2 * math.degrees(vz) == pytest.approx(92.5, abs=0.3)
+    l1, l2 = 1.0642, 0.5321
+    l3 = 1 / (1 / l1 + 1 / l2)
+
+    def n_xy(lam, p):  # in the XY plane at φ from x, polarized in the plane
+        return (math.cos(p) ** 2 / ny(lam) ** 2 + math.sin(p) ** 2 / nx(lam) ** 2) ** -0.5
+    p = brentq(lambda p: nz(l1) / l1 + n_xy(l2, p) / l2 - n_xy(l3, p) / l3, 0.001, 1.5)
+    assert math.degrees(p) == pytest.approx(4.61, abs=0.15)
+
+    # Ba(COOH)2: the book's X, Z are z, x here; XZ plane at θ from the book's Z, fundamental polarized in the plane
+    bx, by, bz = (curve("Ba(COOH)2", "Dmitriev-1999", d) for d in "xyz")
+    t = brentq(lambda t: (math.cos(t) ** 2 / bz(1.0642) ** 2 + math.sin(t) ** 2 / bx(1.0642) ** 2) ** -0.5 - by(0.5321), 0.01, 1.5)
+    assert math.degrees(t) == pytest.approx(35.26, abs=0.05)
+
+    hx, hy, hz = (curve("HIO3", "Dmitriev-1999", d) for d in "xyz")  # book X, Y, Z = z, y, x
+
+    def eoe(a, b, o):  # plane with the axes a (θ = 0) and b; o polarized along the third axis
+        def ne(lam, t):
+            return (math.cos(t) ** 2 / a(lam) ** 2 + math.sin(t) ** 2 / b(lam) ** 2) ** -0.5
+        return math.degrees(brentq(lambda t: (ne(1.0642, t) + o(1.0642)) / 2 - ne(0.5321, t), 0.01, 1.5707))
+    assert eoe(hy, hx, hz) == pytest.approx(50.46, abs=0.05)  # book YZ plane; book θtheor 49.92°, measured 50.4°
+    assert eoe(hz, hx, hy) == pytest.approx(63.73, abs=0.05)  # book XZ plane; book 63.21°, measured 64.9–66°
