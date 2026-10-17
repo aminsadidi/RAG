@@ -98,7 +98,11 @@
   "BNN": "Ba2NaNb5O15",
   "BSN": "Ba2NaNb5O15",
   "LFM": "LiCOOH",
-  "LRB4": "LiRbB4O7"
+  "LRB4": "LiRbB4O7",
+  "LCB": "La2CaB10O19",
+  "NLBO": "Na3La9O3(BO3)8",
+  "Sapphire": "Al2O3",
+  "BTO": "BaTiO3"
  },
  "SPACED_FORMULA": "\\b(?:[A-Z][a-z]?)+(?:\\s+\\d{1,3}(?:\\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![\\w.])",
  "PAYLOAD_KEYS": [

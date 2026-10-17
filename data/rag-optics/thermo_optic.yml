@@ -5,7 +5,8 @@
 # equations, the same paper's) and gives n(λ, T) = n(λ, t0) + Δn(λ, T):
 #   form "kato":  dn/dT = Σ c·λ^p × 10⁻⁵ /°C, constant in T, so Δn = (T − t0)·dn/dT; `pieces` cover
 #                 wavelength ranges (outside them the nearest piece is used).
-#                 A piece may carry t_coef: dn/dT = (Σ c·λ^p)(1 + t_coef·ΔT) × 10⁻⁵, integrated from t0.
+#                 A piece may carry t_coef (and t_coef2): dn/dT = (Σ c·λ^p)(1 + t_coef·ΔT + t_coef2·ΔT²) × 10⁻⁵,
+#                 integrated from t0.
 #                 A piece may carry t_terms: dn/dT = (Σ c·λ^p + T·Σ c'·λ^p) × 10⁻⁵ with T in kelvin, integrated
 #                 from t0 (Xu et al. 2014).
 #   form "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient linear in T − t0 (c and dc).
@@ -26,6 +27,8 @@
 #                 B(λ − λ0)/(1 + exp(−γ(λ − λ0))) to n1 (B1, 10⁻⁶) and n2 (B2, 10⁻⁹) (Emanueli & Arie 2003, Eqs. 2–4).
 #   form "pomeroy": n² = a0 + a1T² + (b0 + b1T²)/(λ² − (c0 + c1T² + c2T⁴)) − dλ², T in K, c = [a0, a1, b0, b1, c0, c1, c2, d]
 #                 (Pomeroy 1971); Δn = n(T) − n(t0) of that equation.
+#   form "oscillator": ε = ε∞ + Σ Δεi·νi²/(νi² − ν² + iΓi·ν), ν in cm⁻¹, with νi, Δεi and Γi/νi quadratic in
+#                 T − T0 (K); modes [ν, a1, a2, Δε, b1, b2, Γ/ν, c1, c2] (Thomas et al. 1998); Δn = Re n(T) − Re n(t0).
 # partial: true marks a paper that measured only some of the axes; the others keep their t0 index.
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
 # phase-matching temperatures the papers report.
@@ -878,3 +881,64 @@
     x: [{range_um: [0.53, 1.07], terms: [[-3.76, 0], [0.034, -2]]}]
     y: [{range_um: [0.53, 1.07], terms: [[-5.2867, 0], [-0.0151, -2]]}]
     z: [{range_um: [0.53, 1.07], terms: [[-6.17, 0], [-0.1472, -2]]}]
+
+# Papers downloaded by hand into proDownloads (October 2026).
+
+- material: La2CaB10O19
+  source: Zhai-2013
+  doc_id: 10.1364_oe.21.020641
+  cite: "Zhai, Li, Zhang, Wu, Chen (2013)"
+  pdf_page: 6
+  where: "Eq. (3) and Table 3: n² = A + ET + (B + FT)/(λ² − (C + GT)) + (D + HT)λ² (T in °C, 25–170 °C, 0.254–2.325 µm), written here about 25 °C; it reproduces the index changes of Table 1 between 25 and 170 °C within 3×10⁻⁴ and the type-I THG angles of Table 4"
+  t0_c: 25
+  form: sellmeier
+  axes:
+    x: {c: [2.7811473, 0.0162174, 0.0146669, 0.0151351], dc: [2.385e-5, 1.176e-6, 7.978e-7, -1.237e-6]}
+    y: {c: [2.7847003, 0.0158736, 0.0145226, 0.014722], dc: [1.677e-5, 1.386e-6, 3.049e-7, -5.197e-7]}
+    z: {c: [2.9668062, 0.0197668, 0.0171526, 0.0203901], dc: [7.807e-6, 1.351e-6, -4.95e-7, -2.397e-6]}
+
+- material: Na3La9O3(BO3)8
+  source: Shan-2014
+  doc_id: 10.1016_j.optmat.2014.07.026
+  cite: "Shan et al. (2014)"
+  pdf_page: 3
+  where: "Eq. (3) (p. 4) and Table 4 (p. 3, signs read from the page image): n² = (a + eT) + (b + fT)/(λ² − (c + gT)) − (d + hT)λ² (T in °C, 23.5–160 °C, 0.363–2.325 µm), written here about 23.5 °C; it reproduces the index changes of Table 1 within 7×10⁻⁵. dno/dT changes sign near 0.40 µm and dne/dT near 0.47 µm"
+  t0_c: 23.5
+  form: sellmeier
+  axes:
+    o: {c: [3.4328683, 0.0351492, 0.0178471, 0.0138844], dc: [-1.837e-5, 2.095e-6, 2.006e-6, -6.641e-7]}
+    e: {c: [3.1201109, 0.0281562, 0.0152276, 0.0047981], dc: [-1.23e-5, 2.392e-6, 1.174e-6, -8.122e-8]}
+
+- material: BaTiO3
+  source: Buse-1993
+  doc_id: 10.1002_pssa.2211350242
+  cite: "Buse et al. (1993)"
+  pdf_page: 3
+  where: "Table 3: dne/dT = 26, 25, 23, 18 × 10⁻⁵ /K at 488, 514, 532, 633 nm at 20 °C, rising to 56, 51, 49, 41 at 80 °C; no does not change within 3×10⁻⁵ /K (p. 2). Fitted here as (5.948 + 4.867/λ²)(1 + t_coef·ΔT + t_coef2·ΔT²), which gives the 16 values of Table 3 within 1.3×10⁻⁵ /K except 633 nm at 60 and 80 °C (26 for 30, 39 for 41); measured 20–80 °C"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.44, 0.7], terms: [[0, 0]]}]
+    e: [{range_um: [0.44, 0.7], terms: [[5.9485, 0], [4.8673, -2]], t_coef: -0.0058283, t_coef2: 0.00041379}]
+
+- material: Al2O3
+  source: Malitson
+  doc_id: 10.1016_s1350_4495_98_00010_3
+  cite: "Thomas, Andersson, Sova, Joseph (1998)"
+  pdf_page: 3
+  where: "Tables 1 and 2 (read from the page image) with Eqs. (2) and (4)–(6): one-phonon and electronic oscillators whose frequencies, strengths and widths are quadratic in T − 295 K, fitted to reflectance spectra (77–1775 K) and to visible indices up to 1273 K. The multiphonon terms of Eq. (13) are left out, so beyond about 3 µm the o-ray change is less reliable (the paper measures dno/dT ≈ 6×10⁻⁶ /K near 4 µm, this model gives 3×10⁻⁶); from 0.4 to 1 µm it gives dn/dT ≈ 1.3–1.8×10⁻⁵ /K"
+  t0_c: 21.85
+  form: oscillator
+  axes:
+    o: {t0_k: 295, eps_inf: 1, modes: [[384.3, -0.0088, -4.56e-6, 0.33, 7.16e-5, 0, 0.011, 3.02e-5, 4.65e-9],
+          [438.9, -0.0063, -8.49e-6, 2.788, 3.36e-4, 0, 0.006, 1.66e-5, 2.03e-8],
+          [568.2, -0.0069, -1.34e-5, 2.98, 2.0e-4, 0, 0.012, 2.67e-5, 1.24e-8],
+          [633.6, -0.0121, -1.19e-5, 0.145, 2.5e-4, 0, 0.010, 2.06e-5, 1.69e-8],
+          [809.6, -0.019, 0, 0.0185, 1.65e-5, 0, 0.157, 3.82e-4, 0],
+          [85723.7, -8.8, 0, 0.65068713, 4.4e-5, 5.65e-9, 0.00001, 0, 0],
+          [137621.4, 0, 0, 1.4313993, 0, 0, 0.00001, 0, 0]]}
+    e: {t0_k: 295, eps_inf: 1, modes: [[399.5, -0.024, 0, 6.785, 1.37e-3, 0, 0.02, 3.92e-5, 1.07e-8],
+          [584.0, -0.025, 0, 1.56, -8.9e-5, 0, 0.035, 5.75e-5, 4.4e-8],
+          [654.0, -0.059, 0, 0.016, 8.9e-5, 0, 0.06, 1.48e-4, 0],
+          [82201.08, -8.8, 0, 0.5506914, 4.70e-5, 5.606e-9, 0.00001, 0, 0],
+          [135082.6, 0, 0, 1.5042059, 0, 0, 0.00001, 0, 0]]}
