@@ -251,3 +251,44 @@ def test_dmitriev_biaxial_formates_and_iodic_acid():
         return math.degrees(brentq(lambda t: (ne(1.0642, t) + o(1.0642)) / 2 - ne(0.5321, t), 0.01, 1.5707))
     assert eoe(hy, hx, hz) == pytest.approx(50.46, abs=0.05)  # book YZ plane; book θtheor 49.92°, measured 50.4°
     assert eoe(hz, hx, hy) == pytest.approx(63.73, abs=0.05)  # book XZ plane; book 63.21°, measured 64.9–66°
+
+
+def _plane_angle(na, nb, nc, pols, l1, l2=None):
+    """Phase-matching angle (degrees, from axis a) in the principal plane of axes a and b, c normal to it.
+    pols: polarization of waves 1, 2, 3, 'p' in the plane or 'c' along c. All roots in (0°, 90°)."""
+    l2 = l2 or l1
+    l3 = 1 / (1 / l1 + 1 / l2)
+
+    def n(p, lam, t):
+        return nc(lam) if p == "c" else (math.cos(t) ** 2 / nb(lam) ** 2 + math.sin(t) ** 2 / na(lam) ** 2) ** -0.5
+    f = lambda t: n(pols[0], l1, t) / l1 + n(pols[1], l2, t) / l2 - n(pols[2], l3, t) / l3  # noqa: E731
+    ts = np.linspace(1e-4, math.pi / 2 - 1e-4, 400)
+    return [math.degrees(brentq(f, a, b)) for a, b in zip(ts, ts[1:]) if f(a) * f(b) < 0]
+
+
+@pytest.mark.parametrize("material, rev, plane, pols, l1, theta", [
+    # Dmitriev et al. (1999), section 3.4: the book's calculated type-I angles (plane in the book's X, Y, Z)
+    ("LAP", False, "XY", "ccp", 0.5321, 61.65), ("LAP", False, "XY", "ccp", 1.0642, 24.02),
+    ("DLAP", False, "XY", "ccp", 1.0642, 22.98),
+    ("L-PCA", False, "YZ", "ppc", 0.5321, 36.92), ("L-PCA", False, "XZ", "ppc", 1.0642, 33.85),
+    ("CaC4H4O6·4H2O", False, "XZ", "ppc", 1.0642, 58.43), ("CaC4H4O6·4H2O", False, "XZ", "ppc", 1.3188, 50.07),
+    ("T-17", False, "XZ", "ppc", 1.0642, 63.87),
+    ("5NU", True, "XZ", "ppc", 1.0642, 34.41), ("5NU", True, "XZ", "ppc", 1.338, 36.79),
+    ("PNP", True, "XZ", "ppc", 1.0642, 11.92),
+    ("NPLO", False, "XZ", "ppc", 1.0642, 55.30),
+    ("DAN", False, "XZ", "ppc", 1.0642, 58.58), ("DAN", False, "XZ", "ppc", 1.3188, 49.62),
+    ("MAP", False, "XZ", "ppc", 1.0642, 55.03), ("MAP", False, "YZ", "cpc", 1.0642, 10.40),
+    ("NPP", True, "XZ", "ppc", 1.1854, 6.95), ("NPP", True, "XZ", "ppc", 1.24, 12.41),
+    ("MMONS", False, "XZ", "cpc", 1.047, 77.57), ("MMONS", False, "XZ", "cpc", 1.0642, 73.18),
+])
+def test_dmitriev_organic_biaxial(material, rev, plane, pols, l1, theta):
+    x, y, z = (curve(material, "Dmitriev-1999", d) for d in "xyz")
+    X, Y, Z = (z, y, x) if rev else (x, y, z)  # the book's axes
+    na, nb, nc = {"XY": (X, Y, Z), "YZ": (Z, Y, X), "XZ": (Z, X, Y)}[plane]
+    assert min(abs(t - theta) for t in _plane_angle(na, nb, nc, pols, l1)) < 0.03
+
+
+def test_fma_type_ii():
+    """Dmitriev et al. (1999), p. 258: FMA θtheor = 50.80° for e + o ⇒ o SHG of 1.0642 µm (positive uniaxial)."""
+    no, ne = curve("FMA", "Dmitriev-1999", "o"), curve("FMA", "Dmitriev-1999", "e")
+    assert min(abs(t - 50.80) for t in _plane_angle(ne, no, no, "cpc", 1.0642)) < 0.03

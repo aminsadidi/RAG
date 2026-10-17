@@ -640,3 +640,70 @@
   sources:
     - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 232, what: "d14(1.064 µm) = 20 × d11(SiO2) ± 25 % = 6.0 ± 1.5 pm/V (book p. 217, refs. 3.540, 3.37); d14(1.1523 µm) = 5.1 ± 0.7 pm/V (refs. 3.546, 37)"}
   notes: "222, Kleinman: d14 = d25 = d36, so the order of the axes does not matter"
+
+# Organic crystals of Dmitriev et al. (1999), section 3.4. Monoclinic (point group 2, twofold axis Y ∥ b):
+# the book's d21, d22, d23, d25 are taken in its dielectric frame X, Y, Z; Kleinman gives d16 = d21,
+# d34 = d23, d14 = d36 = d25.
+
+- material: LAP
+  point_group: "2"
+  d: {21: 0.40, 22: 0.37, 23: -0.84, 25: -0.58, 16: 0.40, 34: -0.84, 14: -0.58, 36: -0.58}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 262, what: "d21(1.0642 µm) = 0.40, d22 = 0.37, d23 = −0.84, d25 = −0.58 pm/V (book p. 247, refs. 3.112, 37)"}
+  notes: "2 with Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; Kleinman: d16 = d21, d34 = d23, d14 = d36 = d25"
+
+- material: DLAP
+  point_group: "2"
+  d: {21: 0.40, 22: 0.37, 23: -0.84, 25: -0.58, 16: 0.40, 34: -0.84, 14: -0.58, 36: -0.58}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 264, what: "d21(1.0642 µm) = 0.40, d22 = 0.37, d23 = −0.84, d25 = −0.58 pm/V (book p. 249, refs. 3.112, 37), the values of LAP"}
+  notes: "As LAP"
+
+- material: L-PCA
+  point_group: "222"
+  d: {14: 0.32, 25: 0.32, 36: 0.32}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 266, what: "d14(0.5321 µm) = 0.32 pm/V (book p. 251, ref. 3.606)"}
+  notes: "222, Kleinman: d14 = d25 = d36"
+
+- material: FMA
+  point_group: "4mm"
+  d: {31: 12, 32: 12, 15: 12, 24: 12, 33: 18}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 274, what: "d31(1.0642 µm) = 12, d33 = 18 pm/V (book p. 259, refs. 3.614, 37)"}
+  notes: "4mm, Kleinman: d15 = d24 = d31 = d32"
+
+- material: 5NU
+  point_group: "222"
+  d: {14: 8.4, 25: 8.4, 36: 8.4}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 280, what: "d14(1.064 µm) = 8.4 ± 1.3 pm/V (book p. 265, ref. 3.620)"}
+  notes: "222, Kleinman: d14 = d25 = d36, so the order of the axes does not matter"
+
+- material: PNP
+  point_group: "2"
+  d: {23: 48, 34: 48, 22: 17}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 281, what: "d21(1.064 µm) = 48 ± 11, d22 = 17 ± 4 pm/V (book p. 266, ref. 3.622)"}
+  notes: "2, twofold axis Y; the book's X, Y, Z (nX > nY > nZ) are z, y, x here, so d21 is d23 and d16 (= d21, Kleinman) is d34. Taken in the dielectric frame (the book refers to ref. 3.622 for the axes); the other elements are not given and are left out"
+
+- material: DAN
+  point_group: "2"
+  d: {21: 1.1, 22: 3.9, 23: 37.5, 25: 1.1, 16: 1.1, 34: 37.5, 14: 1.1, 36: 1.1}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 289, what: "d21(1.0642 µm) = 1.1 ± 1.5, d22 = 3.9 ± 0.8, d23 = 37.5 ± 11.3, d25 = 1.1 ± 1.5 pm/V (book p. 274, refs. 3.629, 323, 37)"}
+  notes: "2 with Y ∥ b; the book's X, Y, Z (nX < nY < nZ) are x, y, z here; Kleinman: d16 = d21, d34 = d23, d14 = d36 = d25"
+
+- material: NPP
+  point_group: "2"
+  d: {23: 56.5, 34: 56.5, 22: 18.7}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 296, what: "d21(1.34 µm) = 56.5 ± 5, d22 = 18.7 ± 2 pm/V (book p. 281, ref. 3.636)"}
+  notes: "As PNP: the book's X, Y, Z (nX > nY > nZ) are z, y, x here, so d21 is d23 and d16 is d34; measured at 1.34 µm"
+
+- material: MMONS
+  point_group: "mm2"
+  d: {32: 25, 24: 25, 33: 111}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 298, what: "d32(1.0642 µm) = 25 ± 5, d33 = 111 ± 22 pm/V (book p. 283, refs. 3.639, 37)"}
+  notes: "mm2 with the polar axis c; the book's X, Y, Z = a, b, c (nX < nY < nZ) are x, y, z here; d24 = d32 by Kleinman symmetry; d31 not given"
