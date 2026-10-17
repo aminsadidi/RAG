@@ -524,3 +524,91 @@
   sources:
     - {doc_id: 10.1016_s0022_0248_03_01458_1, cite: "Komatsu et al. (2003)", pdf_page: 1, what: "d14 ≈ 0.45 pm/V, from phase-matched SHG compared with KDP (abstract, p. 167)"}
   notes: "222 with Kleinman symmetry: d14 = d25 = d36, the same in any labelling of the axes"
+
+- material: Ba2NaNb5O15
+  point_group: "mm2"
+  d: {11: 16.5, 12: 12, 13: 12, 26: 12, 35: 12}
+  sources:
+    - {doc_id: 10.1007_b138685, cite: "Nikogosyan (2005)", pdf_page: 362, what: "d31 = 40 × d11(SiO2) = 12 ± 0.6, d32 = 12 ± 1.2, d33 = 55 × d11(SiO2) = 16.5 ± 1.2 pm/V at 1.064 µm (book p. 356, its refs. [1], [10])"}
+  notes: "mm2 with the polar axis c; in the frame of Pomeroy's dispersion formulas here x = c, y = a, z = b, so the book's d33 is d11 and d31, d32 are d12, d13 (equal, so the labelling of a and b does not matter); d26 = d12 and d35 = d13 by Kleinman symmetry"
+
+- material: K3Li2Nb5O15
+  point_group: "4mm"
+  d: {31: -5.8, 32: -5.8, 15: -5.8, 24: -5.8, 33: 10.5}
+  sources:
+    - {doc_id: 10.1007_b138685, cite: "Nikogosyan (2005)", pdf_page: 365, what: "d31(1.0642 µm) = 19.3 × d11(SiO2) = 5.8 ± 1.2 pm/V, d33 = 35 × d11(SiO2) = 10.5 ± 1.5 pm/V (book p. 359, its refs. [10], [17]); other values: d31 = 7.8 ± 1.4 pm/V relative to LiNbO3"}
+  notes: "4mm, Kleinman: d15 = d24 = d31 = d32. The relative sign of d31 and d33 is not given; the sign of LiNbO3 (d31, d33 opposite) is assumed, which affects only d_eff mixing d31 and d33"
+
+# KDP isomorphs and other crystals of Dmitriev, Gurzadyan, Nikogosyan (1999), Handbook of Nonlinear Optical
+# Crystals, 3rd ed., section 3.3; their dispersion formulas (paper_formulas.yml) come from the same book.
+# 42m: d14 = d25 = d36 (Kleinman); the book gives d36 only, as for KDP.
+
+- material: NH4D2PO4
+  point_group: "-42m"
+  d: {14: 0.43, 25: 0.43, 36: 0.43}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 202, what: "d36(0.6943 µm) = 1.10 × d36(KDP) ± 15 % = 0.43 ± 0.06 pm/V (book p. 187, its refs. 3.514, 37)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: RbH2PO4
+  point_group: "-42m"
+  d: {14: 0.41, 25: 0.41, 36: 0.41}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 206, what: "d36(0.6943 µm) = 1.04 × d36(KDP) ± 15 % = 0.41 ± 0.06 pm/V (book p. 191, refs. 3.514, 37); also 0.92 × d36(KDP) = 0.36 ± 0.04 pm/V (refs. 3.198, 37)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: RbD2PO4
+  point_group: "-42m"
+  d: {14: 0.38, 25: 0.38, 36: 0.38}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 207, what: "d36 ≈ 0.38 pm/V (book p. 192, ref. 3.78)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: KH2AsO4
+  point_group: "-42m"
+  d: {14: 0.41, 25: 0.41, 36: 0.41}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 210, what: "d36(1.064 µm) = 1.06 × d36(KDP) ± 5 % = 0.41 ± 0.02 pm/V (book p. 195, refs. 3.525, 37); at 0.6943 µm 0.27 ± 0.04 pm/V (refs. 3.514, 37)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: KD2AsO4
+  point_group: "-42m"
+  d: {14: 0.39, 25: 0.39, 36: 0.39}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 210, what: "d36 ≈ d36(KDP) = 0.39 pm/V (book p. 195, refs. 3.78, 37)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36. The book gives no dispersion formula for DKDA, so the site has no phase matching for it yet"
+
+- material: NH4H2AsO4
+  point_group: "-42m"
+  d: {14: 0.45, 25: 0.45, 36: 0.45}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 212, what: "d36(ADA) = d36(ADP) = 0.45 pm/V (book p. 197, refs. 3.414, 419, 37)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: RbH2AsO4
+  point_group: "-42m"
+  d: {14: 0.41, 25: 0.41, 36: 0.41}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 217, what: "d36(0.6943 µm) = 1.04 × d36(KDP) ± 10 % = 0.41 ± 0.04 pm/V (book p. 202, refs. 3.198, 37); 0.39 ± 0.04 pm/V (ref. 3.530)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: RbD2AsO4
+  point_group: "-42m"
+  d: {14: 0.31, 25: 0.31, 36: 0.31}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 218, what: "d36 ≈ 0.31 pm/V (book p. 203, ref. 3.78)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: BeSO4·4H2O
+  point_group: "-42m"
+  d: {14: 0.23, 25: 0.23, 36: 0.23}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 199, what: "d36(0.5321 µm) = 0.62 × d36(DKDP) ± 10 % = 0.23 ± 0.02 pm/V (book p. 184, refs. 3.510, 37)"}
+  notes: "-42m, Kleinman: d14 = d25 = d36"
+
+- material: KB5O8·4H2O
+  point_group: "mm2"
+  d: {11: 0.05, 13: 0.04, 12: 0.003, 35: 0.04, 26: 0.003}
+  sources:
+    - {doc_id: "10.1007_978_3_540_46793_9", cite: "Dmitriev et al. (1999)", pdf_page: 161, what: "d31(0.5321 µm) = 0.04, d32 = 0.003, d33 = 0.05 pm/V (book p. 146, ref. 3.37)"}
+  notes: "mm2 with the polar axis Z of the book (Z = c); in the frame of the dispersion formulas (nx < ny < nz) the book's X, Y, Z are z, y, x, so d33 is d11, d31 is d13 and d32 is d12; d35 = d13 and d26 = d12 by Kleinman symmetry. Relative signs not given (taken equal)"

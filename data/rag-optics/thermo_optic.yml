@@ -793,3 +793,63 @@
     x: {c: [4.6576, 1.195e-7, 0.08903, 5.48e-8, 0.050, 9.05e-8, -3.34e-13, 0.032]}
     y: {c: [5.012, -1.05e-7, 0.137, -2.19e-8, 0.0583, -1.41e-8, 4.8e-14, 0.036]}
     z: {c: [5.0524, -2.83e-7, 0.1208, 5.25e-8, 0.070, -4.029e-8, -2.56e-15, 0.0374]}
+
+- material: Tl3AsSe3
+  source: Ewbank
+  doc_id: 10.1007_b138685
+  cite: "Nikogosyan (2005)"
+  pdf_page: 395
+  where: "Book p. 389, section 8.17 (read from the page image): dno/dT = −4.52 × 10⁻⁵ K⁻¹, dne/dT = +3.55 × 10⁻⁵ K⁻¹ for 2–10.6 µm, measured from 80 to 300 K (the book's ref. [3], the source of the Sellmeier equations at 300 K given on the same page); constant in λ and T"
+  t0_c: 27
+  form: kato
+  axes:
+    o: [{range_um: [2.0, 10.6], terms: [[-4.52, 0]]}]
+    e: [{range_um: [2.0, 10.6], terms: [[3.55, 0]]}]
+
+- material: RbH2PO4
+  source: Dmitriev-1999
+  doc_id: "10.1007_978_3_540_46793_9"
+  cite: "Dmitriev et al. (1999)"
+  pdf_page: 204
+  where: "Book p. 189 (read from the page image): table of dno/dT and dne/dT (× 10⁻⁵ K⁻¹) at 0.405–0.633 µm, the book's ref. 3.74: no -3.69, -3.86, -3.72, -3.72, -3.72; e -2.67, -2.76, -2.54, -2.8, -2.89. No trend in λ beyond the scatter, so their mean is used, constant in λ and T (within 0.35 × 10⁻⁵ of every value); t0 = 20 °C, the temperature of the dispersion formulas"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.4, 0.65], terms: [[-3.742, 0]]}]
+    e: [{range_um: [0.4, 0.65], terms: [[-2.732, 0]]}]
+
+- material: KH2AsO4
+  source: Dmitriev-1999
+  doc_id: "10.1007_978_3_540_46793_9"
+  cite: "Dmitriev et al. (1999)"
+  pdf_page: 208
+  where: "Book p. 193 (read from the page image): table of dno/dT and dne/dT (× 10⁻⁵ K⁻¹) at 0.436–0.633 µm, the book's ref. 3.74: no -3.64, -4.07, -3.98, -4.09; e -2.31, -2.13, -2.51, -2.12. No trend in λ beyond the scatter, so their mean is used, constant in λ and T (within 0.35 × 10⁻⁵ of every value); t0 = 20 °C, the temperature of the dispersion formulas"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.43, 0.65], terms: [[-3.945, 0]]}]
+    e: [{range_um: [0.43, 0.65], terms: [[-2.268, 0]]}]
+
+- material: NH4H2AsO4
+  source: Dmitriev-1999
+  doc_id: "10.1007_978_3_540_46793_9"
+  cite: "Dmitriev et al. (1999)"
+  pdf_page: 211
+  where: "Book p. 196 (read from the page image): table of dno/dT and dne/dT (× 10⁻⁵ K⁻¹) at 0.436–0.633 µm, the book's ref. 3.74: no -4.85, -4.39, -4.53, -4.45; e 1.27, 1.31, 1.24, 1.19. No trend in λ beyond the scatter, so their mean is used, constant in λ and T (within 0.35 × 10⁻⁵ of every value); t0 = 20 °C, the temperature of the dispersion formulas"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.43, 0.65], terms: [[-4.555, 0]]}]
+    e: [{range_um: [0.43, 0.65], terms: [[1.252, 0]]}]
+
+- material: RbH2AsO4
+  source: Dmitriev-1999
+  doc_id: "10.1007_978_3_540_46793_9"
+  cite: "Dmitriev et al. (1999)"
+  pdf_page: 215
+  where: "Book p. 200 (read from the page image): table of dno/dT and dne/dT (× 10⁻⁵ K⁻¹) at 0.436–0.633 µm, the book's ref. 3.74: no -3.09, -3.62, -3.38, -3.37; e -1.97, -2.34, -2.17, -2.35. No trend in λ beyond the scatter, so their mean is used, constant in λ and T (within 0.35 × 10⁻⁵ of every value); t0 = 20 °C, the temperature of the dispersion formulas"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.43, 0.65], terms: [[-3.365, 0]]}]
+    e: [{range_um: [0.43, 0.65], terms: [[-2.208, 0]]}]
