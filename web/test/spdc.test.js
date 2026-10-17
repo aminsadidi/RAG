@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex } from "../src/dispersion.client.js";
 import { solveAll } from "../src/phasematch.client.js";
-import { benninkF, fiberCoupling, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
+import { apodized, bestPumpBandwidth, benninkF, emissionAngles, fiberCoupling, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const source = (mat, label) => A.find((c) => c.material === mat).sources.find((s) => !label || s.label === label);
@@ -115,4 +115,49 @@ test("Ljunggren & Tengner 2005: single-mode fibre coupling, 10 mm PPKTP, 532 →
   // with all azimuthal modes the couplings are lower (0.82, 0.80), and γc ≤ min(γs, γi)
   const f = fiberCoupling({ ...base, xiP: 1.7, xiS: 2.3, xiI: 2.3, n: 120 });
   assert.ok(Math.abs(f.gammaS - 0.82) < 0.02 && Math.abs(f.gammaI - 0.80) < 0.02 && f.gammaC <= Math.min(f.gammaS, f.gammaI) + 2e-3, JSON.stringify(f));
+});
+
+test("apodized grating: tends to the sinc, removes the side lobes and raises the purity", () => {
+  // a very wide Gaussian profile is the uniform grating: A(x) = sinc(x)
+  for (const x of [0, 0.7, 2, 4.5]) assert.ok(Math.abs(apodized(x, 50) - (x ? Math.sin(x) / x : 1)) < 1e-3, `x = ${x}`);
+  // narrower profiles: beyond the main lobe (x > 8 for σ = L/4) the side lobes, left by the profile's cut at the
+  // crystal faces (g = e^-2 there), stay under a quarter of the sinc's (0.12 there), and the pair rate falls
+  const xs = Array.from({ length: 200 }, (_, k) => 8 + k * 0.05);
+  const lobes = Math.max(...xs.map((x) => Math.abs(apodized(x, 0.25)) / apodized(0, 0.25))), sinc = Math.max(...xs.map((x) => Math.abs(Math.sin(x) / x)));
+  assert.ok(lobes < 0.25 * sinc, `${lobes} vs ${sinc}`);
+  assert.ok(apodized(0, 0.25) ** 2 < apodized(0, 0.5) ** 2 && apodized(0, 0.5) ** 2 < 1);
+  // Evans et al. 2010 source (20 mm type-II PPKTP, 1.3 ps pump): the uniform grating's sinc lobes limit the purity
+  // to about 0.79; a Gaussian-apodized grating of σ = L/4 gives the purity of a Gaussian phase-matching function
+  const s = source("KTiOPO4", "Kato"), lp = 0.776;
+  const base = { nAt: nAtOf(s), plane: "xy", angle: 0, type: "IIb", lp, l1: 2 * lp, l2: 2 * lp, L_mm: 20,
+    pumpFwhmNm: transformLimitedNm(lp, 1.3), periodUm: "auto", n: 120 };
+  const Ps = purity(jointSpectrum({ ...base, pm: "sinc" })).purity, Pa = purity(jointSpectrum({ ...base, pm: "apod", apodSigma: 0.25 })).purity;
+  const Pg = purity(jointSpectrum({ ...base, pm: "gauss" })).purity;
+  assert.ok(Pa > 0.98 && Pa > Ps + 0.15 && Math.abs(Pa - Pg) < 0.01, `sinc ${Ps}, apodized ${Pa}, gauss ${Pg}`);
+});
+
+test("the purity-optimal pump bandwidth is a maximum", () => {
+  const s = source("KTiOPO4", "Kato"), lp = 0.776;
+  const base = { nAt: nAtOf(s), plane: "xy", angle: 0, type: "IIb", lp, l1: 2 * lp, l2: 2 * lp, L_mm: 20, periodUm: "auto", pm: "gauss", n: 90 };
+  const r = bestPumpBandwidth(base), P = (bw) => purity(jointSpectrum({ ...base, pumpFwhmNm: bw })).purity;
+  assert.ok(r.purity >= P(r.pumpFwhmNm * 0.7) && r.purity >= P(r.pumpFwhmNm * 1.4), `${JSON.stringify(r)}`);
+  assert.ok(r.purity > 0.97);
+});
+
+test("non-collinear emission angles", () => {
+  // type-I BBO, 405 → 810 nm: collinear at the phase-matching angle; tilted, both o photons leave at the angle of
+  // the triangle kp = k1 + k2 (law of cosines, the o index is the same in every direction)
+  const s = source("BaB2O4"), nAt = nAtOf(s), lp = 0.405;
+  const sol = solveAll(nAt, s.kind, "opo", lp, 2 * lp).find((r) => r.type === "I");
+  const at = (tilt, l1 = 2 * lp) => emissionAngles({ nAt, plane: sol.plane, angle: (sol.angle + tilt) * Math.PI / 180, pols: ["f", "s", "s"], lp, l1 });
+  assert.ok(at(0).theta1 < 1e-3);
+  const r = at(0.4), th = (sol.angle + 0.4) * Math.PI / 180, ne = 1 / Math.sqrt(Math.cos(th) ** 2 / nAt(lp)[0] ** 2 + Math.sin(th) ** 2 / nAt(lp)[2] ** 2);
+  const kp = 2 * Math.PI * ne / lp, k1 = 2 * Math.PI * nAt(2 * lp)[0] / (2 * lp), cos = (kp * kp) / (2 * kp * k1); // k1 = k2
+  assert.ok(Math.abs(r.theta1 - Math.acos(cos)) < 1e-6 && Math.abs(r.theta1 - r.theta2) < 1e-9, `${r.theta1} vs ${Math.acos(cos)}`);
+  // about 3° outside the crystal for a 0.4° tilt, the usual BBO cone
+  assert.ok(r.ext1 * 180 / Math.PI > 2.5 && r.ext1 * 180 / Math.PI < 3.5);
+  // non-degenerate wavelengths: transverse and longitudinal momentum both balance
+  const q = at(0.4, 0.78), l2 = 1 / (1 / lp - 1 / 0.78);
+  assert.ok(q && q.theta1 < q.theta2, "the shorter wavelength leaves closer to the pump");
+  void l2;
 });

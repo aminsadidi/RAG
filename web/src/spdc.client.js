@@ -18,7 +18,8 @@ const grid = (c, step, n) => Array.from({ length: n }, (_, i) => c + (i - (n - 1
 // in the phase-matching tab; wave 1 takes the first polarization of the type) or pols ([pump, wave 1, wave 2],
 // each "s" or "f", e.g. ["s", "s", "s"] for type 0 along a principal axis), lp, l1, l2 (centre wavelengths, µm; 1/lp = 1/l1 + 1/l2), L_mm, pumpFwhmNm
 // (FWHM of the pump intensity spectrum), periodUm (QPM grating period; "auto" phase-matches the centre),
-// pm ("sinc", or "gauss": exp(−γ(ΔkL/2)²) with γ = 0.193, the sinc's Gaussian of equal FWHM), xi (focal parameter
+// pm ("sinc", "gauss": exp(−γ(ΔkL/2)²) with γ = 0.193, the sinc's Gaussian of equal FWHM, or "apod": a Gaussian-
+// apodized grating of width apodSigma·L, see apodized), xi (focal parameter
 // of Gaussian pump and collection modes, Bennink's F(ξ, Φ) instead of the sinc; Φ = ΔkL includes the Gouy shift,
 // so "auto" QPM then sets Φ = −1.04π at the centre, the peak of |F| at ξ = 2.84), filterNm
 // ([FWHM1, FWHM2] of Gaussian intensity filters, or null), n (grid points per axis), spanNm ([span1, span2]
@@ -61,11 +62,79 @@ export function jointSpectrum(opts) {
       re[i * n + j] = amp * (fr * c - fi * sn); im[i * n + j] = amp * (fr * sn + fi * c);
       continue;
     }
-    const phi = pm === "gauss" ? Math.exp(-0.193 * x * x) : Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x;
+    const phi = pm === "gauss" ? Math.exp(-0.193 * x * x) : pm === "apod" ? apodized(x, opts.apodSigma || 0.25)
+      : Math.abs(x) < 1e-9 ? 1 : Math.sin(x) / x;
     re[i * n + j] = amp * phi * Math.cos(x);
     im[i * n + j] = amp * phi * Math.sin(x);
   }
   return { n, nu1, nu2, re, im, dk0, kg, periodUm: kg ? 2 * Math.PI / Math.abs(kg) : null };
+}
+
+// Phase matching of an apodized grating (domain engineering: Brańczyk et al. 2011, Dixon et al. 2013): the
+// nonlinearity follows g(z) = exp(−(z − L/2)²/(2σ²)) inside the crystal, so the phase-matching function is
+// (1/L)∫₀ᴸ g(z) e^{iΔk z} dz = e^{iΔkL/2}·A(x), x = ΔkL/2, A(x) = ∫₋½^½ exp(−u²/(2s²)) cos(2xu) du with s = σ/L. A is
+// real and tends to sinc(x) as s → ∞; its side lobes fall as s shrinks (purity rises), and so does A(0)² (the pair
+// rate relative to the uniform grating of the same length). Simpson's rule on 48 intervals.
+export function apodized(x, s, m = 48) {
+  let a = 0;
+  for (let k = 0; k <= m; k++) {
+    const u = k / m - 0.5, w = k === 0 || k === m ? 1 : k % 2 ? 4 : 2;
+    a += w * Math.exp(-u * u / (2 * s * s)) * Math.cos(2 * x * u);
+  }
+  return a / (3 * m);
+}
+
+// The pump bandwidth (intensity FWHM, nm) that maximizes the heralded purity of a configuration (opts as for
+// jointSpectrum), by golden-section search on its logarithm between lo and hi; purity against the pump bandwidth
+// has a single maximum where the pump and phase-matching ellipses meet at right angles (Mosley et al. 2008).
+// Searched on a coarse grid (n = 70), the best point is evaluated again at opts.n.
+export function bestPumpBandwidth(opts, [lo, hi] = [0.01, 60]) {
+  const P = (bw, n = 70) => purity(jointSpectrum({ ...opts, pumpFwhmNm: bw, n })).purity;
+  let a = Math.log(lo), b = Math.log(hi);
+  const g = (Math.sqrt(5) - 1) / 2;
+  let c = b - g * (b - a), d = a + g * (b - a), fc = P(Math.exp(c)), fd = P(Math.exp(d));
+  for (let it = 0; it < 26; it++) {
+    if (fc > fd) { b = d; d = c; fd = fc; c = b - g * (b - a); fc = P(Math.exp(c)); }
+    else { a = c; c = d; fc = fd; d = a + g * (b - a); fd = P(Math.exp(d)); }
+  }
+  const bw = Math.exp((a + b) / 2);
+  return { pumpFwhmNm: bw, purity: P(bw, opts.n || 120) };
+}
+
+// Non-collinear emission in the plane of the pump direction (plane, angle) for a fixed pump wavelength: for photon 1
+// at wavelength l1 the internal angles θ1, θ2 (rad, on either side of the pump) with k1 sin θ1 = k2 sin θ2 and
+// k1 cos θ1 + k2 cos θ2 = kp − kg (kg the grating vector along the pump), the indices taken along each photon's own
+// direction (so the e photons of type I or II are exact in this plane). Returns null when no angle up to maxRad
+// phase-matches (the pair is then not emitted at l1), else { theta1, theta2, ext1, ext2 } with the external angles
+// for a crystal face normal to the pump (sin θext = n sin θ).
+export function emissionAngles({ nAt, plane, angle, pols, lp, l1, kg = 0, maxRad = 0.35 }) {
+  const l2 = 1 / (1 / lp - 1 / l1);
+  if (!(l2 > 0)) return null;
+  const n = (lam, pol, a) => { const [s, f] = eigenIndices(nAt(lam), direction(plane, a)); return pol === "s" ? s : f; };
+  const kp = 2 * Math.PI * n(lp, pols[0], angle) / lp - kg;
+  const solve = (t1) => { // photon 1 at angle + t1, photon 2 on the other side at angle − t2
+    const k1 = 2 * Math.PI * n(l1, pols[1], angle + t1) / l1;
+    let t2 = 0, k2 = 0;
+    for (let it = 0; it < 4; it++) { k2 = 2 * Math.PI * n(l2, pols[2], angle - t2) / l2; t2 = Math.asin(Math.min(1, k1 * Math.sin(t1) / k2)); }
+    return { f: k1 * Math.cos(t1) + k2 * Math.cos(t2) - kp, t2, k1, k2 };
+  };
+  const steps = 700;
+  let prev = solve(0);
+  if (Math.abs(prev.f) < 1e-12) return out(0, prev);
+  for (let s = 1; s <= steps; s++) {
+    const t = maxRad * s / steps, cur = solve(t);
+    if (prev.f * cur.f <= 0) { // bisection between the two samples
+      let a = maxRad * (s - 1) / steps, b = t, fa = prev.f;
+      for (let it = 0; it < 50; it++) { const m = (a + b) / 2, fm = solve(m).f; if (fa * fm <= 0) b = m; else { a = m; fa = fm; } }
+      return out((a + b) / 2, solve((a + b) / 2));
+    }
+    prev = cur;
+  }
+  return null;
+  function out(t1, r) {
+    const n1 = r.k1 * l1 / (2 * Math.PI), n2 = r.k2 * l2 / (2 * Math.PI), ext = (nn, t) => Math.asin(Math.min(1, nn * Math.sin(t)));
+    return { theta1: t1, theta2: r.t2, ext1: ext(n1, t1), ext2: ext(n2, r.t2) };
+  }
 }
 
 // Purity of the heralded photon, P = Tr(ρ1²) with ρ1 = F F† / Tr(F F†) (no diagonalization needed), and the

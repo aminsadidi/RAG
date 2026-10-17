@@ -388,7 +388,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
 <section id="tab-spdc" hidden class="viz-root">
   <div class="card">
     <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
-    <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است.</p>
+    <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است. قطبش‌دهی آپودایز گاوسی (Brańczyk و همکاران 2011) لوب‌های کناری sinc را حذف می‌کند؛ «بهینه‌سازی خلوص» پهنای پمپی را می‌یابد که خلوص را بیشینه می‌کند؛ با دمای بلور ضریب‌های شکست از فرمول وابستگی دمایی همان منبع حساب می‌شوند (اگر داشته باشد).</p>
     <div class="row">
       <label>بلور <select id="spmat" style="max-width:300px"></select></label>
       <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
@@ -403,15 +403,20 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>پهنای طیف پمپ (FWHM) <input id="spdp" type="number" step="any" value="1" style="width:96px"> nm</label>
       <label>یا پالس محدود به تبدیل <input id="sptau" type="number" step="any" placeholder="—" style="width:70px"> ps</label>
       <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="number" step="any" placeholder="بدون" style="width:70px"> nm</label>
-      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option></select></label>
+      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی</option></select></label>
+      <label id="spapodl" hidden>σ/L <input id="spapod" type="number" step="any" value="0.25" style="width:76px"></label>
     </div>
     <div class="row">
       <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
       <input id="spxi" type="number" step="any" value="2.84" style="width:64px">
+      <label>دمای بلور <input id="spT" type="number" step="any" style="width:76px" placeholder="—"> °C</label>
+      <span class="hint" id="spTinfo"></span>
     </div>
     <div class="row">
       <label>پیکربندی <select id="spcfg" style="max-width:420px"></select></label>
       <button id="spgo">محاسبه</button>
+      <button class="alt" id="spopt" title="پهنای طیف پمپی که خلوص را بیشینه می‌کند">بهینه‌سازی خلوص</button>
+      <a id="spcsv" class="hint" hidden download="jsi.csv">دریافت داده‌ی طیف (CSV)</a>
     </div>
     <p class="hint" id="spinfo"></p>
   </div>
@@ -424,6 +429,17 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <figure style="margin:0;flex:1;min-width:260px"><svg id="sphom" role="img" style="display:block;width:100%;height:220px;direction:ltr"></svg>
         <figcaption class="hint" id="sphomcap">احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر (فقط حالت تبهگن).</figcaption></figure>
     </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>زاویه‌ی گسیل (غیرهم‌خط)</h2>
+    <p class="hint">زاویه‌ی خروج هر فوتون نسبت به پمپ بر حسب طول موج فوتون ۱، در صفحه‌ی پیکربندی (همان صفحه‌ای که زاویه‌ی تطبیق فاز در آن است): k₁ sin θ₁ = k₂ sin θ₂ و k₁ cos θ₁ + k₂ cos θ₂ = k<sub>p</sub> − k<sub>g</sub>، با ضریب شکست هر فوتون در امتداد خودش. زاویه‌ی بیرونی برای وجه عمود بر پمپ است (sin θ<sub>ext</sub> = n sin θ). با چرخاندن بلور از زاویه‌ی هم‌خط (یا تغییر دما در QPM) مخروط گسیل باز می‌شود. پهنای پمپ و طول بلور در این حساب نیست (پمپ تک‌فام، تطبیق فاز دقیق).</p>
+    <div class="row">
+      <label>چرخش بلور از زاویه‌ی هم‌خط <input id="sptilt" type="number" step="any" value="0.4" style="width:64px"> درجه (درون بلور)</label>
+      <label>گستره‌ی λ₁ ± <input id="spaspan" type="number" step="any" value="40" style="width:64px"> nm</label>
+      <button id="spang">محاسبه</button>
+    </div>
+    <svg id="spangsvg" role="img" style="display:block;width:100%;height:240px;direction:ltr"></svg>
+    <div id="spangres" class="hint" style="direction:ltr"></div>
   </div>
   <div class="card" style="margin-top:14px">
     <h2>جفت‌شدن به فیبر تک‌مُد</h2>
@@ -557,7 +573,7 @@ const TAB_TITLE = {
   paper: ["مقاله", "همه‌ی بخش‌های یک مقاله"],
   index: ["ضریب شکست", "فرمول‌های پاشندگی، مقایسه‌ی منابع و جدول مقادیر"],
   pm: ["تطبیق فاز", "زاویه، walk-off، پهنای پذیرش، QPM و d_eff برای SHG، SFG و OPO"],
-  spdc: ["جفت فوتون (SPDC)", "طیف مشترک، خلوص، عدد اشمیت، HOM، کانونی‌کردن و جفت‌شدن به فیبر"],
+  spdc: ["جفت فوتون (SPDC)", "طیف مشترک، خلوص، عدد اشمیت، HOM، قطبش‌دهی آپودایز، بهینه‌سازی خلوص، زاویه‌ی گسیل، دما، کانونی‌کردن و جفت‌شدن به فیبر"],
   library: ["مجموعه و ارزیابی", "مقاله‌های مجموعه و کیفیت بازیابی"],
   about: ["راهنما", ""],
 };
@@ -1846,13 +1862,21 @@ new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).o
 </script>
 <script type="module">
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
-import { entryIndex } from "/dispersion.js";
+import { entryIndex, thermoShift } from "/dispersion.js";
 import { eigenIndices, direction, solveAll } from "/phasematch.js";
-import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, C_UM_PS } from "/spdc.js";
+import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, C_UM_PS } from "/spdc.js";
 
 const SP = { list: null };
 const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
-const spNAt = (s) => (lam) => (s.kind === "uniaxial" ? ["o", "o", "e"] : ["x", "y", "z"]).map((a) => entryIndex(s.axes[a], lam));
+// Principal indices of a source, at the crystal temperature of the tab when one is set and the source has
+// thermo-optic data (else at the temperature of its formula)
+const spTemp = () => { const v = $("spT").value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
+const spNAt = (s, T = spTemp()) => {
+  const th = s.thermo;
+  const one = (e) => (lam) => { const n0 = entryIndex(e, lam); return th && e.thermo && T !== null ? n0 + thermoShift(th.form, e.thermo, th.t0_c, n0, lam, T) : n0; };
+  const ax = (s.kind === "uniaxial" ? ["o", "o", "e"] : ["x", "y", "z"]).map((a) => one(s.axes[a]));
+  return (lam) => ax.map((f) => f(lam));
+};
 const AXIS = { x: ["xy", 0], y: ["xy", Math.PI / 2], z: ["xz", 0] };
 const POLS = [["s", "s", "s", "نوع ۰"], ["f", "f", "f", "نوع ۰"], ["f", "s", "s", "نوع I"], ["f", "s", "f", "نوع II"], ["f", "f", "s", "نوع II"]];
 
@@ -1861,11 +1885,15 @@ window.loadSPDC = async () => {
   SP.list = (await fetch("/ri/aniso.json").then((r) => r.json())).filter((c) => !c.sources[0].isotropic);
   $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
   $("spmat").value = [SP.want, "KTiOPO4"].find((m) => SP.list.some((c) => c.material === m)) || SP.list[0].material;
-  $("spmat").onchange = () => { fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || ""; };
+  $("spmat").onchange = () => { SP.cfgKey = null; fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || ""; };
   $("spsrc").onchange = fillCfg;
   for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
   $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(+$("splp").value, t).toFixed(4); };
   $("spgo").onclick = run;
+  $("spopt").onclick = optimize;
+  $("spang").onclick = angles;
+  $("sppm").onchange = () => { $("spapodl").hidden = $("sppm").value !== "apod"; };
+  $("spT").onchange = fillCfg;
   $("spfib").onclick = () => fiber(false);
   $("spfibopt").onclick = () => fiber(true);
   fillSrc(); fitWl(); fillCfg();
@@ -1902,6 +1930,8 @@ function fillSrc() {
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  $("spT").placeholder = s.thermo ? String(s.thermo.t0_c) : "—";
+  $("spTinfo").textContent = s.thermo ? `وابستگی دمایی: ${s.thermo.cite || s.thermo.source || "دارد"}` : "این منبع وابستگی دمایی ندارد؛ دما اثری ندارد.";
   $("spl2").textContent = Number.isFinite(l2) && l2 > 0 ? `λ₂ = ${l2.toFixed(4)} µm` : "";
   const opts = [];
   try {
@@ -1922,9 +1952,13 @@ function fillCfg() {
   }
   SP.cfg = opts;
   $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("") || `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول این منبع است (${s.range_um[0]}–${s.range_um[1]} µm)</option>`;
-  // default: type-II QPM along x (the usual PPKTP-type source), else the first option
-  const pick = opts.findIndex((o) => o.qpm && o.plane === "xy" && o.angle === 0 && o.pols[1] !== o.pols[2]);
+  // keep the configuration chosen before (its angle may have moved with the wavelengths or the temperature),
+  // else type-II QPM along x (the usual PPKTP-type source), else the first option
+  const key = (o) => o.qpm ? `q|${o.plane}|${o.angle}|${o.pols}` : `a|${o.plane}|${o.type}`;
+  const kept = SP.cfgKey ? opts.findIndex((o) => key(o) === SP.cfgKey) : -1;
+  const pick = kept >= 0 ? kept : opts.findIndex((o) => o.qpm && o.plane === "xy" && o.angle === 0 && o.pols[1] !== o.pols[2]);
   if (pick >= 0) $("spcfg").value = String(pick);
+  $("spcfg").onchange = () => { const o = SP.cfg[+$("spcfg").value]; SP.cfgKey = o ? key(o) : null; };
 }
 function run() {
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
@@ -1933,7 +1967,7 @@ function run() {
   setTimeout(() => { try { compute(); } catch (err) { $("spres").textContent = ""; $("spinfo").textContent = "خطا در محاسبه: " + err.message; } }, 20);
   function compute() {
     const j = jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
-      L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value,
+      L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value, apodSigma: +$("spapod").value,
       filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 90 : 120 });
     const { purity: P, schmidt: K } = purity(j), I = intensity(j);
     if (!Number.isFinite(P) || !I.jsi.every(Number.isFinite)) {
@@ -1958,13 +1992,76 @@ function run() {
       const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
       const k = (lam, pol) => 2 * Math.PI * idx(lam, pol) / lam;
       const f = focusing({ xi, L_mm: +$("spL").value, kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]) });
-      $("spres").innerHTML += `<br>ξ = ${xi}: کمر باریکه (شعاع 1/e² میدان) پمپ ${f.wp.toFixed(1)} µm، فوتون ۱ ${f.ws.toFixed(1)} µm، فوتون ۲ ${f.wi.toFixed(1)} µm؛ `
-        + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}`;
+      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">ξ = ${xi}: کمر باریکه (شعاع 1/e² میدان) پمپ ${f.wp.toFixed(1)} µm، فوتون ۱ ${f.ws.toFixed(1)} µm، فوتون ۲ ${f.wi.toFixed(1)} µm؛ `
+        + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}</div>`;
     }
+    if ($("sppm").value === "apod" && !$("spfoc").checked)
+      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">آپودایز گاوسی با σ = ${$("spapod").value}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</div>`;
     drawJSI(I.jsi, j.n, lam1, lam2);
     drawHOM(j, l1, l2);
+    // the joint spectral intensity as CSV: λ1 (nm), λ2 (nm), |f|² normalized to its peak
+    let mx = 0; for (const v of I.jsi) mx = Math.max(mx, v);
+    const rows = ["lambda1_nm,lambda2_nm,jsi"];
+    for (let a = 0; a < j.n; a++) for (let b = 0; b < j.n; b++) rows.push(`${lam1[a].toFixed(5)},${lam2[b].toFixed(5)},${(I.jsi[a * j.n + b] / mx).toExponential(4)}`);
+    const link = $("spcsv"); if (link.href.startsWith("blob:")) URL.revokeObjectURL(link.href);
+    link.href = URL.createObjectURL(new Blob([rows.join("\n")], { type: "text/csv" })); link.hidden = false;
     $("spinfo").textContent = `شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`;
   }
+}
+// The pump bandwidth of the highest purity for the configuration, written into the pump field, then the spectrum
+function optimize() {
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
+  $("spinfo").textContent = "در حال جست‌وجوی پهنای پمپ بهینه…";
+  setTimeout(() => {
+    const r = bestPumpBandwidth({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
+      L_mm: +$("spL").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value, apodSigma: +$("spapod").value,
+      filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 80 : 110 });
+    if (!Number.isFinite(r.purity)) { $("spinfo").textContent = "بهینه‌سازی ممکن نشد (طیف بیرون از گستره‌ی فرمول)."; return; }
+    $("spdp").value = r.pumpFwhmNm.toPrecision(3); $("sptau").value = "";
+    run();
+    setTimeout(() => { $("spres").innerHTML += `<div dir="rtl" style="text-align:right">پهنای پمپ بهینه ${r.pumpFwhmNm.toPrecision(3)} nm (پالس محدود به تبدیل ${(2 * Math.LN2 / Math.PI / (r.pumpFwhmNm * 1e-3 / (lp * lp) * C_UM_PS)).toPrecision(3)} ps): بیشترین خلوص این طول و پیکربندی ${r.purity.toFixed(4)}.</div>`; }, 60);
+  }, 20);
+}
+// Emission angles of the two photons against λ1, for the configuration tilted from collinear phase matching
+function angles() {
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
+  const tilt = o.qpm ? 0 : +$("sptilt").value * Math.PI / 180, span = +$("spaspan").value / 1000;
+  const k = (lam, pol, a) => { const [sl, fa] = eigenIndices(nAt(lam), direction(o.plane, a)); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
+  // QPM: the grating that phase-matches the entered wavelengths collinearly (temperature then tilts the cone)
+  const kg = o.qpm ? k(lp, pols[0], o.angle) - k(l1, pols[1], o.angle) - k(l2, pols[2], o.angle) : 0;
+  if (o.qpm && spTemp() !== null) {
+    // the grating is fixed at the formula's temperature, the crystal is at T
+    const nA0 = spNAt(s, null);
+    const k0 = (lam, pol) => { const [sl, fa] = eigenIndices(nA0(lam), direction(o.plane, o.angle)); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
+    SP.kg = k0(lp, pols[0]) - k0(l1, pols[1]) - k0(l2, pols[2]);
+  } else SP.kg = kg;
+  const pts = [];
+  for (let i = 0; i <= 80; i++) {
+    const lam = l1 - span + 2 * span * i / 80, r = emissionAngles({ nAt, plane: o.plane, angle: o.angle + tilt, pols, lp, l1: lam, kg: SP.kg });
+    if (r) pts.push([lam * 1000, r.ext1 * 180 / Math.PI, r.ext2 * 180 / Math.PI]);
+  }
+  const c = emissionAngles({ nAt, plane: o.plane, angle: o.angle + tilt, pols, lp, l1, kg: SP.kg });
+  $("spangres").innerHTML = c ? `at λ₁ = ${(l1 * 1000).toFixed(1)} nm: θ₁ = ${(c.ext1 * 180 / Math.PI).toFixed(3)}° (internal ${(c.theta1 * 180 / Math.PI).toFixed(3)}°), θ₂ = ${(c.ext2 * 180 / Math.PI).toFixed(3)}° (internal ${(c.theta2 * 180 / Math.PI).toFixed(3)}°) outside the crystal`
+    : `no emission at λ₁ = ${(l1 * 1000).toFixed(1)} nm for this tilt (the photons phase-match only at other wavelengths or tilts).`;
+  drawAngles(pts);
+}
+function drawAngles(pts) {
+  const svg = $("spangsvg");
+  if (pts.length < 2) { svg.innerHTML = ""; return; }
+  const W = svg.clientWidth || 600, H = 240, x0 = pts[0][0], x1 = pts[pts.length - 1][0];
+  const ymax = Math.max(0.5, ...pts.map((p) => Math.max(p[1], p[2]))) * 1.1;
+  const px = (x) => 46 + (x - x0) / (x1 - x0 || 1) * (W - 60), py = (y) => 12 + (1 - y / ymax) * (H - 44);
+  const line = (k) => pts.map((p, i) => `${i ? "L" : "M"}${px(p[0]).toFixed(1)},${py(p[k]).toFixed(1)}`).join("");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = `<line x1="46" x2="${W - 14}" y1="${py(0)}" y2="${py(0)}" stroke="currentColor" opacity="0.3"/>`
+    + `<path d="${line(1)}" fill="none" stroke="#1f6feb" stroke-width="1.8"/><path d="${line(2)}" fill="none" stroke="#d1242f" stroke-width="1.8" stroke-dasharray="5,3"/>`
+    + `<text x="46" y="${H - 8}" font-size="11" fill="currentColor">${x0.toFixed(1)} nm</text><text x="${W - 14}" y="${H - 8}" font-size="11" text-anchor="end" fill="currentColor">${x1.toFixed(1)} nm</text>`
+    + `<text x="${(W + 32) / 2}" y="${H - 8}" font-size="11" text-anchor="middle" fill="currentColor">λ₁</text>`
+    + `<text x="4" y="${py(ymax / 1.1) + 4}" font-size="11" fill="currentColor">${(ymax / 1.1).toFixed(2)}°</text><text x="4" y="${py(0) + 4}" font-size="11" fill="currentColor">0°</text>`
+    + `<text x="${W - 14}" y="22" font-size="11" text-anchor="end" fill="#1f6feb">θ₁ (photon 1)</text><text x="${W - 14}" y="38" font-size="11" text-anchor="end" fill="#d1242f">θ₂ (photon 2)</text>`;
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
 function fiber(optimize) {
