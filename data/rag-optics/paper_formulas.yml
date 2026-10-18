@@ -1345,3 +1345,16 @@
   checks:  # Table 1, 20 °C (three decimals)
     - {direction: o, tol: 1.5e-3, points: [[0.488, 2.520], [0.514, 2.491], [0.532, 2.474], [0.633, 2.412]]}
     - {direction: e, tol: 1.5e-3, points: [[0.488, 2.447], [0.514, 2.424], [0.532, 2.410], [0.633, 2.360]]}
+
+- material: NH4B4O6F
+  name: NH4B4O6F (Ammonium fluorooxoborate, ABF)
+  doc_id: 10.1021_jacs.7b05943
+  reference: "Shi, Wang, Zhang, Zhang, Yang, Hou, Pan, Poeppelmeier (2017). Finding the Next Deep-Ultraviolet Nonlinear Optical Material: NH4B4O6F. J. Am. Chem. Soc. 139, 10645. doi:10.1021/jacs.7b05943"
+  doi: 10.1021/jacs.7b05943
+  pdf_page: 2
+  where: "Sellmeier equations of p. 2, n² = A + B/(λ² − C) − Dλ², fitted to prism-coupling indices (the text says they reproduce the measurements to the fourth decimal; the measured range is not given). They give the birefringence 0.1171 at 1.064 µm quoted on the same page, and the paper uses them for SHG down to 158 nm (shortest type-I SH wavelength, xy plane; 157.5 nm from these equations). The range starts at the 156 nm absorption edge of the same paper. Orthorhombic mm2 (Pna21), nx < ny < nz. A later refinement against DUV phase-matching angles is in Nature 650, 97 (2026)"
+  entries:
+    - {page: Shi-2017, direction: x, type: 4, coefficients: [2.10333, 0.0071, 0, 0.01094, 1, 0, 0, 0, 1, -0.00909, 2], range_um: [0.156, 1.1]}
+    - {page: Shi-2017, direction: y, type: 4, coefficients: [2.45077, 0.01058, 0, 0.02, 1, 0, 0, 0, 1, -0.02517, 2], range_um: [0.156, 1.1]}
+    - {page: Shi-2017, direction: z, type: 4, coefficients: [2.4721, 0.01139, 0, 0.0213, 1, 0, 0, 0, 1, -0.02631, 2], range_um: [0.156, 1.1]}
+  checks: []  # the birefringence 0.1171 at 1.064 µm and the 158 nm SHG limit are checked in web/test/phasematch.test.js
