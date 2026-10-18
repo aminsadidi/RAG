@@ -719,3 +719,11 @@ test("thermo-optic: rutile (Rams et al. 1997), MgF2 (Tropf 1995), TeO2 (Uchida 1
     assert.ok(Math.abs(dndt / n * n * n / (n * n - 1) - y) < 0.1e-6, `TeO2 ${ax}`);
   }
 });
+
+test("ABF (NH4B4O6F), Shi et al. 2017: birefringence at 1.064 µm and the shortest type-I SHG wavelength", () => {
+  const s = source("NH4B4O6F", "Shi-2017"), n = nAt(s);
+  assert.ok(Math.abs(n(1.064)[2] - n(1.064)[0] - 0.1171) < 1e-4); // "Δn = 0.1171@1064 nm"
+  // "the shortest phase-matching second harmonic wavelength is down to 158 nm in XY plane", shorter than KBBF's 162 nm
+  const shortest = (plane) => { let lo = null; for (let l = 0.4; l >= 0.312; l -= 0.0002) if (solveAll(n, s.kind, "shg", l, 0).some((r) => r.plane === plane && r.type === "I")) lo = l; return lo / 2; };
+  assert.ok(Math.abs(shortest("xy") - 0.158) < 0.001);
+});
