@@ -67,6 +67,7 @@ data-dij-MMONS,data-dij,What are the measured second-order nonlinear coefficient
 data-dij-MNA,data-dij,What are the measured second-order nonlinear coefficients d_ij of MNA?,ضرایب غیرخطی مرتبه‌ی دوم (d_ij) اندازه‌گیری‌شده‌ی MNA چقدر است؟,10.1063_1.326248,,
 data-dij-Mg_LiTaO3,data-dij,What are the measured second-order nonlinear coefficients d_ij of Mg-LiTaO3?,ضرایب غیرخطی مرتبه‌ی دوم (d_ij) اندازه‌گیری‌شده‌ی Mg-LiTaO3 چقدر است؟,10.1007_s00340_009_3502_3,,
 data-dij-MgO_LiNbO3,data-dij,What are the measured second-order nonlinear coefficients d_ij of MgO-LiNbO3?,ضرایب غیرخطی مرتبه‌ی دوم (d_ij) اندازه‌گیری‌شده‌ی MgO-LiNbO3 چقدر است؟,10.1109_3.159516;10.1364_josab.14.002268,,
+data-dij-NH4B4O6F,data-dij,What are the measured second-order nonlinear coefficients d_ij of NH4B4O6F (ABF)?,ضرایب غیرخطی مرتبه‌ی دوم (d_ij) اندازه‌گیری‌شده‌ی NH4B4O6F (ABF) چقدر است؟,10.1021_jacs.7b05943;10.1038-s41586-025-10007-z,,
 data-dij-NH4D2PO4,data-dij,What are the measured second-order nonlinear coefficients d_ij of NH4D2PO4 (DADP)?,ضرایب غیرخطی مرتبه‌ی دوم (d_ij) اندازه‌گیری‌شده‌ی NH4D2PO4 (DADP) چقدر است؟,10.1007_978_3_540_46793_9,,
 data-dij-NH4H2AsO4,data-dij,What are the measured second-order nonlinear coefficients d_ij of NH4H2AsO4 (ADA)?,ضرایب غیرخطی مرتبه‌ی دوم (d_ij) اندازه‌گیری‌شده‌ی NH4H2AsO4 (ADA) چقدر است؟,10.1007_978_3_540_46793_9,,
 data-dij-NH4H2PO4,data-dij,What are the measured second-order nonlinear coefficients d_ij of NH4H2PO4 (ADP)?,ضرایب غیرخطی مرتبه‌ی دوم (d_ij) اندازه‌گیری‌شده‌ی NH4H2PO4 (ADP) چقدر است؟,10.1103_physrevb.1.1739,,
