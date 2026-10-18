@@ -686,3 +686,36 @@ test("thermo-optic: BaTiO3 (Buse et al. 1993) and sapphire (Thomas et al. 1998)"
   // the o-ray dn/dT falls toward the infrared edge (Fig. 9), the e ray stays near its near-infrared value (Fig. 10)
   assert.ok(dndt(sa, "o", 4, 21.85) < 0.5 * dndt(sa, "o", 1, 21.85) && dndt(sa, "e", 4, 21.85) > 0.8 * dndt(sa, "e", 1, 21.85));
 });
+
+test("thermo-optic: rutile (Rams et al. 1997), MgF2 (Tropf 1995), TeO2 (Uchida 1971)", () => {
+  const shift = (s, ax, lam, T) => thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], lam), lam, T);
+  // rutile, Table I: index changes from 30 °C (about −0.01 over 110 °C), within the 1.3×10⁻³ the fit reaches
+  // (the paper gives ±0.003 for its high-temperature indices)
+  for (const label of ["Devore", "Bond"]) {
+    const s = source("TiO2", label);
+    for (const [lam, T, dno, dne] of [[0.457, 100, 2.77780 - 2.78380, 3.10696 - 3.11497], [0.457, 140, 2.77547 - 2.78380, 3.10390 - 3.11497],
+      [0.6328, 120, 2.57573 - 2.58047, 2.85234 - 2.86105], [1.047, 140, 2.47170 - 2.47808, 2.72616 - 2.73476]]) {
+      assert.ok(Math.abs(shift(s, "o", lam, T) - shift(s, "o", lam, 30) - dno) < 1.3e-3, `TiO2 ${label} no ${lam} ${T}`);
+      assert.ok(Math.abs(shift(s, "e", lam, T) - shift(s, "e", lam, 30) - dne) < 1.3e-3, `TiO2 ${label} ne ${lam} ${T}`);
+      assert.ok(shift(s, "o", lam, T) < shift(s, "o", lam, 30) && shift(s, "e", lam, T) < shift(s, "e", lam, 30)); // dn/dT < 0
+    }
+  }
+  // MgF2: at 292.2 K the temperature-dependent strengths are Dodge's, so the model is the Dodge equation there
+  // (Tropf prints λ2 = 0.09078162 µm for the e ray where Dodge's equation has 0.09076162: 2.5×10⁻⁵ at 0.2 µm)
+  const m = source("MgF2", "Dodge");
+  for (const ax of ["o", "e"]) for (const lam of [0.2, 0.6328, 3.39, 7]) {
+    const t = m.axes[ax].thermo, n2 = [1, 2, 3].reduce((acc, i) => acc + t.g[i][0] / (t.lam[i - 1][0] ** -2 - lam ** -2), t.g[0][0]);
+    assert.ok(Math.abs(Math.sqrt(n2) - entryIndex(m.axes[ax], lam)) < (ax === "o" ? 1e-8 : 3e-5), `MgF2 ${ax} ${lam}`);
+  }
+  for (const ax of ["o", "e"]) for (const lam of [0.4579, 0.6328, 1.15, 3.39]) { // the wavelengths of the dn/dT data
+    const d = (shift(m, ax, lam, 30) - shift(m, ax, lam, 10)) / 20; // MgF2 has a small dn/dT, about 10⁻⁶ /K
+    assert.ok(Math.abs(d) < 3e-6, `MgF2 ${ax} ${lam}: ${d}`);
+  }
+  // TeO2, Fig. 8: (1/n)(dn/dT)·n²/(n² − 1) on the lines −Δ·x + Ω/2, e.g. 23.8 (no) and 16.7 (ne) ×10⁻⁶ /°C at x = 1.2
+  const te = source("TeO2", "Uchida");
+  for (const [ax, lam1, y] of [["o", 0.196, 23.8e-6], ["e", 0.2039, 16.7e-6]]) {
+    const lam = lam1 * Math.sqrt(1.2 / 0.2), n = entryIndex(te.axes[ax], lam);
+    const dndt = shift(te, ax, lam, 26) - shift(te, ax, lam, 25);
+    assert.ok(Math.abs(dndt / n * n * n / (n * n - 1) - y) < 0.1e-6, `TeO2 ${ax}`);
+  }
+});

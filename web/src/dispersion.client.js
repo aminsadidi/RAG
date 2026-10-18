@@ -135,6 +135,16 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const n2 = (t) => q(spec.A, t) + q(spec.B, t) / (l2 - spec.C) + q(spec.D, t) / (l2 - spec.E);
     return Math.sqrt(n2(T + 273.15)) - Math.sqrt(n2(t0 + 273.15));
   }
+  if (form === "rams") { // n² = A + B/(λ0(T)⁻² − λ⁻²) + (c0 + c1·T)λ², λ0 = p0 + p1·T + p2·T², λ and λ0 in nm, T in °C
+    // (Rams, Tejeda, Cabrera 1997, rutile, Eqs. 1–2)
+    const l = lam * 1000, n2 = (t) => { const l0 = spec.lam0[0] + spec.lam0[1] * t + spec.lam0[2] * t * t;
+      return spec.A + spec.B / (l0 ** -2 - l ** -2) + (spec.c[0] + spec.c[1] * t) * l * l; };
+    return Math.sqrt(n2(T)) - Math.sqrt(n2(t0));
+  }
+  if (form === "uchida") { // single-oscillator model: (1/n)(dn/dT)·n²/(n² − 1) = −Δ·λ²/(λ² − λ1²) + Ω/2, constant in T
+    // (Uchida 1971, TeO2, Eq. 13 and Table V)
+    return (n0 * n0 - 1) / n0 * (-spec.delta * lam * lam / (lam * lam - spec.lam1 ** 2) + spec.omega / 2) * (T - t0);
+  }
   if (form === "phillips") { // dn/dT = −c·(n² + a·n + b), constant in T (Phillips 1966, Eqs. 7–9, KDP)
     return -spec.c * (n0 * n0 + spec.a * n0 + spec.b) * (T - t0);
   }
