@@ -1,5 +1,6 @@
-"""SubQ (subq-snap-preview): the probability that a text answers a yes/no question. Keys come from
-SUBQ_KEYS (comma-separated); when one is out of credit or refused, the next is used."""
+"""SubQ (subq-snap): the probability that a text answers a yes/no question. Keys come from SUBQ_KEYS
+(comma-separated); requests take the live keys in turn (several at once spread the load), and a key that is out of
+credit or refused is dropped."""
 import json
 import os
 import threading
@@ -11,7 +12,7 @@ URL = "https://api.subq.ai/v1/systemone"
 MODEL = os.environ.get("SUBQ_MODEL", "subq-snap-1.1")  # gives the preview's answers digit for digit (2026-10); some keys allow only it
 _keys = [k.strip() for k in os.environ.get("SUBQ_KEYS", "").split(",") if k.strip()]
 _lock = threading.Lock()
-_at = [0]
+_turn = [0]
 tokens = [0]
 
 
@@ -25,19 +26,20 @@ def ask(body: dict) -> dict | None:
     """{question: probability} for a full systemone request body, or None if no key works."""
     for attempt in range(6):
         with _lock:
-            if _at[0] >= len(_keys):
+            if not _keys:
                 return None
-            key = _keys[_at[0]]
+            key = _keys[_turn[0] % len(_keys)]
+            _turn[0] += 1
         try:
             out = _post(body, key)
             with _lock:
                 tokens[0] += out.get("usage", {}).get("input_tokens", 0)
             return {k: v["noul"] for k, v in out["answers"].items()}
         except urllib.error.HTTPError as e:
-            if e.code in (401, 402, 403):  # this key is spent or refused: the next one
+            if e.code in (401, 402, 403):  # this key is spent or refused: drop it, try another
                 with _lock:
-                    if _at[0] < len(_keys) and _keys[_at[0]] == key:
-                        _at[0] += 1
+                    if key in _keys:
+                        _keys.remove(key)
                 continue
             if e.code == 422:
                 return None
