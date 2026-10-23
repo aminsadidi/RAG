@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 17
+VERSION = 18
 WORKERS = 4
 
 
@@ -482,6 +482,21 @@ PAPERS = {
     'badikov2011.pdf': ('10.1364/ome.1.000316', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', {'title': 'BaGa4S7: wide-bandgap phase-matchable nonlinear crystal for the mid-infrared', 'authors': 'Valeriy Badikov; Dmitrii Badikov; Galina Shevyrdyaeva; Aleksey Tyazhev; Georgi Marchev; Vladimir Panyutin; Frank Noack; Valentin Petrov; Albert Kwasniewski', 'year': 2011, 'journal': 'Optical Materials Express'}),
     'johnston1977.pdf': ('10.1364/ao.16.001796', '08_Theory_Dispersion_Models', 'Thermo-optic_coefficients', {'title': 'Wavelength dependence of dn/dT in infrared-transmitting semiconductor materials', 'authors': 'George T. Johnston', 'year': 1977, 'journal': 'Applied Optics'}),
     'condensedmatter-05-00047.pdf': ('10.3390/condmat5030047', '06_Organic_NLO_THz', 'DAST_DSTMS_OH1', {'title': 'Broadband anisotropic optical properties of the terahertz generator HMQ-TMS organic crystal', 'authors': "Annalisa D'Arco; Luca Tomarchio; Valerio Dolci; Paola Di Pietro; Andrea Perucchi; Sen Mou; Massimo Petrarca; Stefano Lupi", 'year': 2020, 'journal': 'Condensed Matter'}),
+    # 2026-10-23: from the university library and open access (sources of nonlinear_coefficients.yml and
+    # thermo_optic.yml that were cited by DOI only); the first five are in the master index as abstracts
+    'zhang2009.pdf': ('10.1364/oe.18.000237', '01_Borates', 'LBO_LiB3O5', None),
+    'Advanced Optical Materials - 2023 - He - MgSiP2  An Infrared Nonlinear Optical Crystal with a Large Non‐Resonant.pdf': ('10.1002/adom.202301060', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'AgGaSe2', None),
+    'Advanced Science - 2019 - Wang - Nontoxic KBBF Family Member Zn2BO3 OH   Balance between Beneficial Layered Structure and.pdf': ('10.1002/advs.201901679', '01_Borates', 'CLBO_CsLiB6O10', None),
+    'nwac110.pdf': ('10.1093/nsr/nwac110', '01_Borates', 'KBBF_KBe2BO3F2', None),
+    'oc2c00832.pdf': ('10.1021/acscentsci.2c00832', '01_Borates', 'BBO_beta-BaB2O4', None),
+    'levine1974.pdf': ('10.1109/jqe.1974.1068125', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'AgGaGeS4_HgGa2S4_others', {'title': 'Nonlinear optical susceptibility of the thiogallate CdGa2S4', 'authors': 'B. F. Levine; C. G. Bethea; H. M. Kasper', 'year': 1974, 'journal': 'IEEE Journal of Quantum Electronics'}),
+    'umemura2015.pdf': ('10.1117/12.2077463', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', {'title': 'Temperature-tuned 90° phase-matched SHG and DFG in BaGa4S7', 'authors': 'Nobuhiro Umemura; Valentin Petrov; Valeriy V. Badikov; Kiyoshi Kato', 'year': 2015, 'journal': 'Proc. SPIE'}),
+    'loiko2014.pdf': ('10.1007/s00340-014-5870-6', '07_Linear_Optical_Crystals_Hosts', 'YAG_YVO4_GdVO4_hosts', {'title': 'Thermo-optic characterization of Yb:YAl3(BO3)4 laser crystal', 'authors': 'P. A. Loiko; V. V. Filippov; N. V. Kuleshov; N. I. Leonyuk; V. V. Maltsev; K. V. Yumashev', 'year': 2014, 'journal': 'Applied Physics B'}),
+    'bodnar2008.pdf': ('10.1134/s0020168508080141', '07_Linear_Optical_Crystals_Hosts', 'YAG_YVO4_GdVO4_hosts', {'title': 'Optical properties of undoped and Yb3+-doped YAl3(BO3)4 crystals', 'authors': 'I. T. Bodnar; V. V. Filippov; N. V. Kuleshov; N. I. Leonyuk; V. V. Maltsev; O. V. Pilipenko', 'year': 2008, 'journal': 'Inorganic Materials'}),
+    'ome-8-10-3000.pdf': ('10.1364/ome.8.003000', '07_Linear_Optical_Crystals_Hosts', 'YAG_YVO4_GdVO4_hosts', {'title': 'Dispersion and anisotropy of thermo-optical properties of Alexandrite laser crystal', 'authors': 'Pavel Loiko; Shirin Ghanbari; Viktor Matrosov; Konstantin Yumashev; Arkady Major', 'year': 2018, 'journal': 'Optical Materials Express'}),
+    'defregger1990.pdf': ('10.1002/pssb.2221620129', '07_Linear_Optical_Crystals_Hosts', 'Quartz_SiO2', {'title': 'The temperature dependence of the optical second harmonic generation coefficient d11 of quartz homeotypic AlPO4 (berlinite)', 'authors': 'S. Defregger; G. F. Engel; P. W. Krempl', 'year': 1990, 'journal': 'physica status solidi (b)'}),
+    'jerphagnon1971.pdf': ('10.1063/1.1653649', '07_Linear_Optical_Crystals_Hosts', 'Sapphire_Al2O3', {'title': 'Optical nonlinear susceptibilities of beryllium oxide', 'authors': 'J. Jerphagnon; H. W. Newkirk', 'year': 1971, 'journal': 'Applied Physics Letters'}),
+    'miller1974.pdf': ('10.1080/00150197408237965', '03_Niobates_Tantalates_Iodates', 'SBN_BaTiO3_ferroelectrics', {'title': 'Nonlinear optical properties of Pb5Ge3O11', 'authors': 'R. C. Miller; W. A. Nordland; A. A. Ballman', 'year': 1974, 'journal': 'Ferroelectrics'}),
 
 }
 import csv, json, pathlib, shutil
