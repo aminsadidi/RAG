@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex, thermoShift } from "../src/dispersion.client.js";
-import { deltaK, eigenIndices, effectiveD, fieldVectors, ncpmTemperatures, solveAll, waves } from "../src/phasematch.client.js";
+import { advise, cutTemperatures, deltaK, eigenIndices, effectiveD, fieldVectors, ncpmAcceptance, ncpmTemperatures, solveAll, temperatureAcceptance, waves } from "../src/phasematch.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const D = JSON.parse(readFileSync(new URL("../public/ri/dij.json", import.meta.url)));
@@ -803,4 +803,35 @@ test("alexandrite BeAl2O4 dn/dT (Loiko et al. 2018): 5.9, 6.9, 15.2 ×10⁻⁶ /
   const dndt = (ax) => thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], 0.75), 0.75, 26)
     - thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], 0.75), 0.75, 25);
   for (const [ax, v] of [["x", 5.9e-6], ["y", 6.9e-6], ["z", 15.2e-6]]) assert.ok(Math.abs(dndt(ax) - v) < 0.06e-6, `${ax} ${dndt(ax)}`);
+});
+
+test("crystal advisor: temperature acceptance, the temperature of a cut crystal, and an oven too cold", () => {
+  const rad = Math.PI / 180;
+  // CLBO, Umemura et al. 1999 Table 2 (the same values as the test above): ΔT·l of type-1 SHG of 1.0642 µm 50.6 °C·cm,
+  // of 0.5321 µm 6.0 °C·cm
+  const clbo = source("CsLiB6O10", "Umemura-1999"), nT = (T) => nAtTemp(clbo, T);
+  for (const [lam, ref] of [[1.0642, 50.6], [0.5321, 6.0]]) {
+    const th = solveAll(nT(20), clbo.kind, "shg", lam, 0).find((r) => r.type === "I").angle;
+    const v = temperatureAcceptance(nT, "xz", th * rad, "shg", lam, 0, "I", 20);
+    assert.ok(Math.abs(v - ref) < 0.03 * ref, `CLBO ${lam}: ${v} vs ${ref}`);
+  }
+  // a crystal cut at its 20 °C angle phase-matches at 20 °C; cut 0.1° off, at another temperature
+  const th = solveAll(nT(20), clbo.kind, "shg", 0.5321, 0).find((r) => r.type === "I").angle;
+  assert.ok(Math.abs(cutTemperatures(nT, "xz", th * rad, "shg", 0.5321, 0, "I")[0] - 20) < 0.05);
+  const off = cutTemperatures(nT, "xz", (th + 0.1) * rad, "shg", 0.5321, 0, "I");
+  assert.ok(off.length && Math.abs(off[0] - 20) > 3);
+  // LBO, Kato 1994: 90° SHG of 1.0642 µm at 149 °C (test above); its temperature bandwidth, of a few °C·cm
+  const lbo = source("LiB3O5", "Kato-1994"), nL = (T) => nAtTemp(lbo, T);
+  const acc = ncpmAcceptance(nL, "shg", 1.0642, 0, ["z", "z", "y"], 149);
+  assert.ok(acc > 2 && acc < 8, `LBO ΔT·L ${acc}`);
+  // the advisor: an oven that reaches 60 °C cannot hold the 90° LBO crystal, which it says (needs 149 °C)
+  const crystal = (s, mat) => ({ material: mat, kind: s.kind, range_um: s.range_um, thermo: Boolean(s.thermo), nAtT: (T) => nAtTemp(s, T), d: D[mat]?.d });
+  const r = advise([crystal(lbo, "LiB3O5"), crystal(clbo, "CsLiB6O10")], { process: "shg", a: 1.0642, b: 0, T: [20, 60], ncpm: true });
+  const l = r.no.find((x) => x.material === "LiB3O5");
+  assert.equal(l.reason, "temp");
+  assert.ok(Math.abs(l.near.T - 149) < 1);
+  // without the 90° condition both do it by angle, LBO first (larger d_eff²/n³)
+  const r2 = advise([crystal(lbo, "LiB3O5"), crystal(clbo, "CsLiB6O10")], { process: "shg", a: 1.0642, b: 0, T: [20, 60] });
+  assert.deepEqual(r2.ok.map((x) => x.material), ["LiB3O5", "CsLiB6O10"]);
+  assert.ok(r2.ok[1].best.drift_deg > 0 && r2.ok[1].best.temp_C > 30);
 });

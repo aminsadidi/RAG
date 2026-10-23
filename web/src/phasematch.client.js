@@ -94,8 +94,10 @@ export function walkOff(nAt, plane, a, lam, pol) {
 
 // Group index n_g = n − λ·dn/dλ of the wave λ with polarization pol along the fixed direction.
 export function groupIndex(nAt, plane, a, lam, pol) {
-  const h = 1e-4;
-  return indexOf(nAt, plane, a, lam, pol) - lam * (indexOf(nAt, plane, a, lam + h, pol) - indexOf(nAt, plane, a, lam - h, pol)) / (2 * h);
+  const h = 1e-4, n = (l) => indexOf(nAt, plane, a, l, pol), n0 = n(lam), up = n(lam + h), down = n(lam - h);
+  // at the end of a formula's range (tabulated data stops there) a one-sided difference
+  const slope = Number.isFinite(up) && Number.isFinite(down) ? (up - down) / (2 * h) : Number.isFinite(up) ? (up - n0) / h : (n0 - down) / h;
+  return n0 - lam * slope;
 }
 
 // Everything about one phase-matching solution.
@@ -228,3 +230,103 @@ export function ncpmTemperatures(nAtT, kind, process, a, b, d, [lo, hi] = [-50, 
   }
   return found.sort((p, q) => p.T - q.T);
 }
+
+// ---------- temperature: a crystal already cut, and the oven it needs
+
+// Temperatures in [lo, hi] at which a crystal cut along (plane, angle a, radians) phase-matches the process:
+// the question to ask before buying a crystal for an oven of limited range. nAtT(T) gives λ → [nx, ny, nz].
+export function cutTemperatures(nAtT, plane, a, process, p, q, type, [lo, hi] = [-50, 300]) {
+  const w = waves(process, p, q), f = (T) => deltaK(nAtT(T), plane, a, w, type), out = [];
+  let t0 = lo, f0 = f(lo);
+  for (let T = lo + 1; T <= hi; T += 1) {
+    const f1 = f(T);
+    if (Number.isFinite(f0) && Number.isFinite(f1) && Math.sign(f0) !== Math.sign(f1)) out.push(bisect(f, t0, T, f0));
+    t0 = T; f0 = f1;
+  }
+  return out;
+}
+
+// Temperature acceptance (FWHM, °C) of a 1 cm crystal phase-matched at T along (plane, a): divide by L in cm.
+// Infinity when Δk does not change with T within 500 °C (no thermo-optic data).
+export function temperatureAcceptance(nAtT, plane, a, process, p, q, type, T) {
+  const w = waves(process, p, q), k0 = deltaK(nAtT(T), plane, a, w, type);
+  const g = (x) => deltaK(nAtT(T + x), plane, a, w, type) - k0;
+  return width(g, HALF / L_UM, 1e-3, 500);
+}
+
+// The same for 90° (noncritical) phase matching along a principal axis, with the axes of the three
+// polarizations (indices 0..2, as the rows of ncpmTemperatures give them).
+export function ncpmAcceptance(nAtT, process, a, b, pol, T) {
+  const w = waves(process, a, b), [p1, p2, p3] = pol.map((x) => (typeof x === "number" ? x : AXES.indexOf(x)));
+  const dk = (t) => { const n = nAtT(t); return TWO_PI * (n(w.l3)[p3] / w.l3 - n(w.l1)[p1] / w.l1 - n(w.l2)[p2] / w.l2); };
+  const k0 = dk(T);
+  return width((x) => dk(T + x) - k0, HALF / L_UM, 1e-3, 500);
+}
+
+// ---------- crystal advisor
+
+// Every crystal that can do the process under the fixed conditions, best first, and the ones that cannot
+// with the reason. crystals: [{material, kind, range_um, thermo (true if dn/dT is known), nAtT(T), d}].
+// want: {process, a, b, T: [lo, hi] (the oven or the room; one value for a fixed temperature), type
+// ("any", "I", "II"), ncpm (90° only), maxWalkoff (mrad), minSpectral (nm·cm), minAngular (mrad·cm),
+// minTemp (°C·cm), needThermo, length (cm, for the bandwidths)}.
+export function advise(crystals, want) {
+  const { process, a, b } = want, w = waves(process, a, b);
+  const [lo, hi] = Array.isArray(want.T) ? want.T : [want.T ?? 25, want.T ?? 25];
+  const mid = (lo + hi) / 2, L = want.length || 1, ok = [], no = [];
+  const typeOk = (t) => !want.type || want.type === "any" || (want.type === "I" ? t === "I" : t !== "I");
+  for (const c of crystals) {
+    const why = (reason) => no.push({ material: c.material, reason });
+    if (![w.l1, w.l2, w.l3].every((l) => l >= c.range_um[0] - 1e-9 && l <= c.range_um[1] + 1e-9)) { why("range"); continue; }
+    if (want.needThermo && !c.thermo) { why("no-thermo"); continue; }
+    // a cubic crystal (CdTe, GaAs) has no birefringence: phase matching by quasi-phase matching only
+    const n0 = c.nAtT(lo)(w.l1);
+    if (Math.max(...n0) - Math.min(...n0) < 1e-6) { why("isotropic"); continue; }
+    const D = c.d ? dTensor(c.d) : null, found = [];
+    // critical phase matching at the middle of the temperature range; its angle at both ends
+    if (!want.ncpm) {
+      for (const s of solveAll(c.nAtT(mid), c.kind, process, a, b)) {
+        if (!typeOk(s.type)) continue;
+        const e = c.d ? effectiveD(c.nAtT(mid), c.kind, s, c.d) : null;
+        // the angle of the same solution at T: the root of its plane and type nearest the one at the middle
+        const ang = (T) => roots((x) => deltaK(c.nAtT(T), s.plane, x, w, s.type)).map((x) => x * 180 / Math.PI)
+          .reduce((x, y) => (Math.abs(y - s.angle) < Math.abs(x - s.angle) ? y : x), Infinity);
+        found.push({ ...s, how: s.noncritical ? "ncpm-angle" : "angle", deff: e ? e.deff : null,
+          drift_deg: c.thermo && hi > lo ? Math.abs(ang(hi) - ang(lo)) : null,
+          temp_C: c.thermo ? temperatureAcceptance(c.nAtT, s.plane, s.angle * Math.PI / 180, process, a, b, s.type, mid) : null });
+      }
+    }
+    // 90° phase matching tuned by temperature, anywhere from −50 to 300 °C; outside the range it is a near miss
+    if (c.thermo) {
+      for (const r of ncpmTemperatures(c.nAtT, c.kind, process, a, b, c.d, [-50, 300])) {
+        const type = r.pol[0] === r.pol[1] ? "I" : "II";
+        if (!typeOk(type)) continue;
+        const n = c.nAtT(r.T), idx = r.pol.map((x) => AXES.indexOf(x)), nn = [n(w.l1)[idx[0]], n(w.l2)[idx[1]], n(w.l3)[idx[2]]];
+        found.push({ how: "ncpm-temp", axis: r.axis, pol: r.pol, T: r.T, type, n: nn, deff: r.deff, walkoff_mrad: [0, 0, 0],
+          noncritical: true, inRange: r.T >= lo - 1e-9 && r.T <= hi + 1e-9, temp_C: ncpmAcceptance(c.nAtT, process, a, b, idx, r.T) });
+      }
+    }
+    if (!found.length) { why("no-pm"); continue; }
+    const rated = found.map((s) => {
+      const fails = [];
+      if (s.how === "ncpm-temp" && !s.inRange) fails.push("temp");
+      if (want.ncpm && !s.noncritical) fails.push("ncpm");
+      if (D && s.deff !== null && s.deff < 0.005) fails.push("deff0");
+      if (want.maxWalkoff != null && Math.max(...s.walkoff_mrad) > want.maxWalkoff) fails.push("walkoff");
+      if (want.minSpectral != null && s.spectral_nm != null && s.spectral_nm / L < want.minSpectral) fails.push("spectral");
+      if (want.minAngular != null && s.angular_mrad != null && s.angular_mrad / L < want.minAngular) fails.push("angular");
+      if (want.minTemp != null && (s.temp_C == null || s.temp_C / L < want.minTemp)) fails.push("tempacc");
+      return { ...s, fails, fom: s.deff == null ? null : s.deff ** 2 / (s.n[0] * s.n[1] * s.n[2]) };
+    });
+    const good = rated.filter((s) => !s.fails.length);
+    const byFom = (p, q) => (q.fom ?? -1) - (p.fom ?? -1) || Math.max(...p.walkoff_mrad) - Math.max(...q.walkoff_mrad);
+    if (good.length) ok.push({ material: c.material, thermo: c.thermo, best: good.sort(byFom)[0], all: good.sort(byFom) });
+    else {
+      const near = rated.sort((p, q) => p.fails.length - q.fails.length || byFom(p, q))[0];
+      no.push({ material: c.material, reason: near.fails[0], near });
+    }
+  }
+  ok.sort((p, q) => byFomTop(p, q));
+  return { ok, no, waves: w, range: [lo, hi] };
+}
+const byFomTop = (p, q) => (q.best.fom ?? -1) - (p.best.fom ?? -1) || Math.max(...p.best.walkoff_mrad) - Math.max(...q.best.walkoff_mrad);
