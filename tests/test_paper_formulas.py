@@ -301,3 +301,11 @@ def test_basis_is_measured_or_calculated():
     rows = yaml.safe_load((data / "paper_formulas.yml").read_text()) + yaml.safe_load((data / "thermo_optic.yml").read_text())
     rows += [s for r in yaml.safe_load((data / "nonlinear_coefficients.yml").read_text()) for s in r["sources"]]
     assert {r.get("basis", "measured") for r in rows} <= {"measured", "calculated"}
+
+
+def test_calculated_sources_come_after_measured(tmp_path):
+    """A DFT Sellmeier (ABF, Table S7 of Shi et al. 2017) is never the phase-matching tab's default source."""
+    import json
+    web = Path(__file__).resolve().parents[1] / "web" / "public" / "ri" / "aniso.json"
+    abf = next(c for c in json.loads(web.read_text()) if c["material"] == "NH4B4O6F")
+    assert abf["sources"][0]["label"] == "Shi-2017" and abf["sources"][-1]["axes"]["x"]["basis"] == "calculated"

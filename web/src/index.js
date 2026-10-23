@@ -9,7 +9,11 @@ import PHASEMATCH_JS from "./phasematch.client.js";
 import SPDC_JS from "./spdc.client.js";
 // the module imports the phase-matching module by its file name; the browser loads it as /phasematch.js
 const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "/phasematch.js"');
-import PAPERS from "./papers.json";
+import PAPERS0 from "./papers.json";
+import BASIS from "../../data/rag-optics/paper_basis.json";
+// experimental / theoretical / both / review label of each paper (scripts/quality/basis.py)
+const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.label : undefined);
+const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
 import { verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
 import { OWNER, checkLogin, getSettings, makeSession, sessionUser, takeQuota } from "./accounts.js";
@@ -284,7 +288,7 @@ async function search(env, opts) {
   let reranked = rerank, ranked = points.slice(0, topK);
   if (rerank) ranked = await within(12000, subq ? subqRerank(env, query, points, topK) : rerankPoints(env, query, points, topK))
     .catch((e) => { console.log("rerank", String(e)); degraded.push("rerank"); reranked = false; return ranked; });
-  const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload }));
+  const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload, basis: basisOf(p.payload.doc_id) }));
   if (opts.stitch !== false) await stitchTables(env, hits).catch((e) => { console.log("stitch", String(e)); degraded.push("stitch"); });
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
   return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started };

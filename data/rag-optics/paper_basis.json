@@ -1,0 +1,242 @@
+{
+"10.1002_1521_4079_200011_35_11_12_1361_aid_crat1361_3.0.co_2_4": {
+"label": "both",
+"measured": 0.997,
+"calculated": 0.931,
+"review": 0.251
+},
+"10.1002_1521_4079_200111_36_11_1175_aid_crat1175_3.0.co_2_t": {
+"label": "both",
+"measured": 0.997,
+"calculated": 0.839,
+"review": 0.074
+},
+"10.1002_1521_4079_200111_36_11_1215_aid_crat1215_3.0.co_2_z": {
+"label": "experimental",
+"measured": 0.997,
+"calculated": 0.045,
+"review": 0.12
+},
+"10.1002_1521_4079_200205_37_5_446_aid_crat446_3.0.co_2_q": {
+"label": "experimental",
+"measured": 0.989,
+"calculated": 0.169,
+"review": 0.033
+},
+"10.1002_1521_4095_20021002_14_19_1339_aid_adma1339_3.0.co_2_o": {
+"label": "review",
+"measured": 0.19,
+"calculated": 0.071,
+"review": 0.921
+},
+"10.1002_adfm.200300026": {
+"label": "experimental",
+"measured": 0.956,
+"calculated": 0.313,
+"review": 0.55
+},
+"10.1002_adfm.200500036": {
+"label": "experimental",
+"measured": 0.993,
+"calculated": 0.018,
+"review": 0.026
+},
+"10.1002_adfm.200500096": {
+"label": "both",
+"measured": 0.992,
+"calculated": 0.842,
+"review": 0.09
+},
+"10.1002_adfm.200601117": {
+"label": "experimental",
+"measured": 0.996,
+"calculated": 0.203,
+"review": 0.457
+},
+"10.1002_adfm.200701077": {
+"label": "experimental",
+"measured": 0.995,
+"calculated": 0.117,
+"review": 0.115
+},
+"10.1002_adfm.200800633": {
+"label": "both",
+"measured": 0.969,
+"calculated": 0.985,
+"review": 0.542
+},
+"10.1002_adfm.200800954": {
+"label": "experimental",
+"measured": 0.988,
+"calculated": 0.494,
+"review": 0.126
+},
+"10.1002_adfm.201500969": {
+"label": "experimental",
+"measured": 0.996,
+"calculated": 0.545,
+"review": 0.117
+},
+"10.1002_adfm.201502340": {
+"label": "experimental",
+"measured": 0.999,
+"calculated": 0.039,
+"review": 0.004
+},
+"10.1002_adfm.201902217": {
+"label": "experimental",
+"measured": 0.992,
+"calculated": 0.234,
+"review": 0.027
+},
+"10.1002_adfm.201909572": {
+"label": "both",
+"measured": 0.961,
+"calculated": 0.995,
+"review": 0.763
+},
+"10.1002_adfm.202002447": {
+"label": "experimental",
+"measured": 0.994,
+"calculated": 0.042,
+"review": 0.003
+},
+"10.1002_adfm.202101656": {
+"label": "both",
+"measured": 0.987,
+"calculated": 0.915,
+"review": 0.177
+},
+"10.1002_adfm.202200231": {
+"label": "both",
+"measured": 0.988,
+"calculated": 0.994,
+"review": 0.07
+},
+"10.1002_adfm.202211969": {
+"label": "experimental",
+"measured": 0.997,
+"calculated": 0.035,
+"review": 0.005
+},
+"10.1002_adfm.202309663": {
+"label": "review",
+"measured": 0.032,
+"calculated": 0.012,
+"review": 0.974
+},
+"10.1002_adfm.202401728": {
+"label": "experimental",
+"measured": 0.996,
+"calculated": 0.025,
+"review": 0.003
+},
+"10.1002_adma.19960080714": {
+"label": "experimental",
+"measured": 0.984,
+"calculated": 0.373,
+"review": 0.257
+},
+"10.1002_adma.200400275": {
+"label": "experimental",
+"measured": 0.996,
+"calculated": 0.02,
+"review": 0.015
+},
+"10.1002_adma.200901174": {
+"label": "experimental",
+"measured": 0.998,
+"calculated": 0.022,
+"review": 0.08
+},
+"10.1002_adma.201606829": {
+"label": "both",
+"measured": 0.992,
+"calculated": 0.988,
+"review": 0.053
+},
+"10.1002_adma.201700767": {
+"label": "experimental",
+"measured": 0.982,
+"calculated": 0.129,
+"review": 0.416
+},
+"10.1002_adma.202311347": {
+"label": "review",
+"measured": 0.015,
+"calculated": 0.018,
+"review": 0.991
+},
+"10.1002_admt.201900108": {
+"label": "review",
+"measured": 0.015,
+"calculated": 0.051,
+"review": 0.988
+},
+"10.1002_adom.201500038": {
+"label": "both",
+"measured": 0.997,
+"calculated": 0.988,
+"review": 0.177
+},
+"10.1002_adom.201600250": {
+"label": "both",
+"measured": 0.969,
+"calculated": 0.971,
+"review": 0.26
+},
+"10.1002_adom.201600879": {
+"label": "both",
+"measured": 0.966,
+"calculated": 0.858,
+"review": 0.03
+},
+"10.1002_adom.201700182": {
+"label": "review",
+"measured": 0.227,
+"calculated": 0.258,
+"review": 0.972
+},
+"10.1002_adom.201900239": {
+"label": "experimental",
+"measured": 0.994,
+"calculated": 0.779,
+"review": 0.047
+},
+"10.1002_adom.201900681": {
+"label": "review",
+"measured": 0.015,
+"calculated": 0.013,
+"review": 0.996
+},
+"10.1002_adom.201900936": {
+"label": "experimental",
+"measured": 0.989,
+"calculated": 0.186,
+"review": 0.007
+},
+"10.1002_adom.202000319": {
+"label": "experimental",
+"measured": 0.967,
+"calculated": 0.609,
+"review": 0.114
+},
+"10.1002_adom.202000427": {
+"label": "experimental",
+"measured": 0.97,
+"calculated": 0.084,
+"review": 0.013
+},
+"10.1002_adom.202001249": {
+"label": "review",
+"measured": 0.027,
+"calculated": 0.019,
+"review": 0.983
+},
+"10.1002_adom.202001734": {
+"label": "both",
+"measured": 0.995,
+"calculated": 0.996,
+"review": 0.105
+}
+}

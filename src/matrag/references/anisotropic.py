@@ -48,8 +48,9 @@ def sources(entries: list[dict]) -> list[dict]:
             continue
         out.append({"label": label, "kind": kind, "range_um": [lo, hi],
                     "axes": {a: {k: e[k] for k in KEEP if k in e} for a, e in used.items()}})
-    # formulas before measured tables, then the widest range
-    out.sort(key=lambda s: (any(e["type"] == "tab" for e in s["axes"].values()), -(s["range_um"][1] - s["range_um"][0])))
+    # measured before calculated, formulas before measured tables, then the widest range
+    out.sort(key=lambda s: (any(e.get("basis") == "calculated" for e in s["axes"].values()),
+                            any(e["type"] == "tab" for e in s["axes"].values()), -(s["range_um"][1] - s["range_um"][0])))
     return out
 
 
