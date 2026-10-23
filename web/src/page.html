@@ -1590,7 +1590,8 @@ function showTemp(src) {
   $("pmT").placeholder = th ? String(th.t0_c) : "—";
   $("pmncpmgo").disabled = !th && other < 0;
   $("pmTinfo").innerHTML = th
-    ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)}</button>` : esc(th.cite)}`
+    ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)}</button>`
+      : th.doi ? `<a class="chip" title="${esc(th.where || "")}" href="https://doi.org/${esc(th.doi)}" target="_blank" rel="noopener">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)} (خارج از مجموعه)</a>` : esc(th.cite)}`
       + (T === null ? ` — خالی = ${fa(th.t0_c)} °C (دمای فرمول)` : "") + tempNote("pmT", th)
     : "برای این منبع فرمول وابستگی دمایی در مجموعه نیست" + (other >= 0
       ? `؛ <button class="chip coll" style="border:0;cursor:pointer" id="pmTalt">رفتن به منبع ${esc(PM.crystal.sources[other].label)} که دارد</button>`
