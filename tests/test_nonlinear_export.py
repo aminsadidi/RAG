@@ -12,7 +12,7 @@ def test_partial_tensors_are_flagged(tmp_path):
     data = json.loads((tmp_path / "dij.json").read_text(encoding="utf-8"))
     assert n == len(data)
     partial = {m for m, v in data.items() if v.get("partial")}
-    assert partial == {"BaGa4S7", "NH4B4O6F", "BaGa2GeSe6"}  # BaGa4Se7: full tensor in the dielectric frame (Guo et al. 2022); ABF: only d32 measured; BaGa2GeSe6: only d11
+    assert partial == {"BaGa4S7", "NH4B4O6F", "BaGa2GeSe6", "CdGa2S4"}  # BaGa4Se7: full tensor in the dielectric frame (Guo et al. 2022); ABF: only d32 measured; BaGa2GeSe6: only d11; CdGa2S4: only d36
     assert data["BaGa4Se7"]["d"]["23"] == -14.2 and data["BaGa4Se7"]["d"]["31"] == 1.5
     assert all("partial" not in v for m, v in data.items() if m not in partial)
     assert data["BaGa4S7"]["d"]["31"] == 5.1 and data["BaGa4S7"]["d"]["32"] == 5.7 and data["BaGa4S7"]["frame"]

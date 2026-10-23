@@ -767,3 +767,24 @@ test("CuGaS2 (Boyd et al. 1971, Table V): d36 = 0.108 × d36(GaAs) with d36(GaAs
   assert.ok(Math.abs(D.CuGaS2.d["36"] - 0.108 * gaas) < 0.2, `${0.108 * gaas}`);
   assert.equal(D.CuGaS2.d["14"], D.CuGaS2.d["36"]);
 });
+
+test("library papers: NLBO d22 (Zhang 2010), CdGa2S4 d36 (Levine 1974), Yb:YAB dn/dT (Loiko 2014)", () => {
+  // NLBO, p. 5: type-I SHG at (θ, φ) = (34.0°, 30°) for 1064 nm and (45.9°, 30°) for 800 nm, type II at 50.6° and 80.0°; the
+  // paper's d_eff (1.90, 0.93 pm/V at 1064 nm) is d22·cos θ and d22·cos²θ without walk-off, the site's has it (lower)
+  const s = source("Na3La9O3(BO3)8"), d = D["Na3La9O3(BO3)8"].d;
+  for (const [lam, type, angle, deff] of [[1.064, "I", 34.0, 1.90], [1.064, "IIa", 50.6, 0.93], [0.8, "I", 45.9, 1.60]]) {
+    const r = solveAll(nAt(s), s.kind, "shg", lam, 0).find((x) => x.type === type);
+    assert.ok(Math.abs(r.angle - angle) < 0.2, `NLBO ${lam} ${type} ${r.angle}`);
+    assert.ok(Math.abs(effectiveD(nAt(s), s.kind, r, d).deff / deff - 1) < 0.12, `NLBO d_eff ${lam} ${type}`);
+  }
+  assert.ok(Math.abs(d["22"] * Math.cos(34.0 * Math.PI / 180) - 1.90) < 0.02); // the paper's own expression
+  // CdGa2S4: d36 = 80 × d11(quartz) = 64e-9 ESU, × 4π/(3×10⁴) × 10¹² to pm/V
+  assert.ok(Math.abs(D.CdGa2S4.d["36"] - 64e-9 * 4 * Math.PI / 3e4 * 1e12) < 0.05);
+  // Yb:YAB, p. 4: dno/dT = 3.5, dne/dT = 6.0 at 1030 nm and 3.1, 5.5 at 1540 nm (×10⁻⁶ /K)
+  const y = source("YAl3(BO3)4");
+  const dndt = (ax, l) => thermoShift(y.thermo.form, y.axes[ax].thermo, y.thermo.t0_c, entryIndex(y.axes[ax], l), l, 21)
+    - thermoShift(y.thermo.form, y.axes[ax].thermo, y.thermo.t0_c, entryIndex(y.axes[ax], l), l, 20);
+  for (const [l, o, e] of [[1.03, 3.5e-6, 6.0e-6], [1.54, 3.1e-6, 5.5e-6]]) {
+    assert.ok(Math.abs(dndt("o", l) - o) < 0.06e-6 && Math.abs(dndt("e", l) - e) < 0.06e-6, `YAB ${l}`);
+  }
+});

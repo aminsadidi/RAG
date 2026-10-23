@@ -751,3 +751,25 @@
     - {doc_id: 10.1109_jqe.1971.1076588, cite: "Boyd et al. (1971)", pdf_page: 7, what: "d36 = 14.5 pm/V ± 30 % (0.108 × d36 of GaAs, taken as 3.2 × 10⁻⁷ CGS) for SHG of 10.6 µm, thin-wedge samples (Table V); the geometry measures (2d14 + d36)/3, equal to d36 with Kleinman symmetry (p. 6)"}
   notes: "−42m, Kleinman (d14 = d25 = d36 assumed by the authors). Value at 10.6 µm; absolute sign not determined"
 
+- material: Na3La9O3(BO3)8
+  point_group: -62m
+  d: {22: 2.31, 21: -2.31, 16: -2.31}
+  sources:
+    - {doi: 10.1364/oe.18.000237, cite: "Zhang et al. (2010)", pdf_page: 4, what: "d22 = (5.925 ± 0.171) d36(KDP) = 2.31 ± 0.07 pm/V, type-I Maker fringes of a c-cut plate at 1064.2 nm (p. 4); the paper's own d_eff at 1064 nm: 1.90 pm/V for type I at (θ, φ) = (34.0°, 30°), 0.93 pm/V for type II at (50.6°, 0°) (p. 5)"}
+  notes: "−6m2, Kleinman: d21 = d16 = −d22, the only independent element. The principal axis x is 30° from the crystallographic a axis (p. 6)"
+
+- material: CdGa2S4
+  point_group: "-4"
+  partial: true
+  d: {36: 26.8, 14: 26.8, 25: 26.8}
+  sources:
+    - {doi: 10.1109/jqe.1974.1068125, cite: "Levine, Bethea, Kasper (1974)", pdf_page: 1, what: "d36/d11(quartz) = 80 ± 15 % by Maker fringes at 1.064 µm on a [1,1,2] plate, with d11(quartz) = 0.80 × 10⁻⁹ ESU: d36 = 64 × 10⁻⁹ ESU = 26.8 pm/V (Eqs. 5, 6, pp. 904–905)"}
+  notes: "−4 (thiogallate): only d36 was measured; d14 = d25 = d36 by Kleinman symmetry; d15 and d31 are not known. Today's quartz d11 = 0.30 pm/V would make it about 10 % lower"
+
+- material: LuAl3(BO3)4
+  point_group: "32"
+  d: {11: 1.10, 12: -1.10, 26: -1.10}
+  sources:
+    - {doc_id: 10.1364_oe.21.016415, cite: "Fang et al. (2013)", pdf_page: 1, what: "d11 = 1.10 pm/V, determined by a phase-matching method (abstract; the paper of the site's Fang Sellmeier equations)"}
+  notes: "32 with Kleinman: d12 = d26 = −d11 and d14 = 0. From the abstract only; the measurement wavelength (SHG of 1064 nm, presumably) is not stated there"
+
