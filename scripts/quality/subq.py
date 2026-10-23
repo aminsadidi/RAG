@@ -8,6 +8,7 @@ import urllib.error
 import urllib.request
 
 URL = "https://api.subq.ai/v1/systemone"
+MODEL = os.environ.get("SUBQ_MODEL", "subq-snap-preview")  # subq-snap-1.1 is the newer model
 _keys = [k.strip() for k in os.environ.get("SUBQ_KEYS", "").split(",") if k.strip()]
 _lock = threading.Lock()
 _at = [0]
@@ -48,6 +49,6 @@ def ask(body: dict) -> dict | None:
 
 def score(state: str, instructions: str, true: str, false: str) -> float | None:
     """The probability of 'true', or None if no key works."""
-    out = ask({"model": "subq-snap-preview", "state": state,
+    out = ask({"model": MODEL, "state": state,
                "questions": {"q": {"type": "noul", "instructions": instructions, "criteria": {"true": true, "false": false}}}})
     return out and out["q"]
