@@ -19,6 +19,8 @@ import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
 import { OWNER, checkLogin, getSettings, makeSession, sessionUser, takeQuota } from "./accounts.js";
 import { telegramWebhook } from "./admin.js";
 
+const FEEDBACK_PER_DAY = 30; // each one is a Telegram message and a KV write
+const LOGIN_TRIES = 10; // failed logins per address and name per 15 minutes
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
 const MODES = ["hybrid", "vector", "bm25"];
 
@@ -385,6 +387,11 @@ async function handle(request, env, ctx) {
     given = form.get("password"); name = String(form.get("username") || "").trim().toLowerCase();
   }
   if (given !== null) {
+    // shortcut: KV counts are eventually consistent, so a burst can pass a few more tries; fine for guessing a password
+    // per address and name: one person mistyping behind a shared (university) address does not lock out the others
+    const ip = request.headers.get("cf-connecting-ip") || "?", triesKey = `loginfail:${ip}:${name.slice(0, 32) || "owner"}`;
+    const tries = env.AICACHE ? Number(await env.AICACHE.get(triesKey).catch(() => 0)) || 0 : 0;
+    if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
     const owner = env.SITE_PASSWORD && (!name || name === "owner") && given === env.SITE_PASSWORD;
     const user = owner ? "owner" : name && (await checkLogin(env, name, String(given))) ? name : null;
     ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
@@ -393,6 +400,7 @@ async function handle(request, env, ctx) {
       return new Response(null, { status: 303, headers: {
         location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
     }
+    await env.AICACHE?.put(triesKey, String(tries + 1), { expirationTtl: 900 }).catch(() => {});
     await new Promise((r) => setTimeout(r, 800));
     return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
   }
@@ -457,7 +465,10 @@ async function handle(request, env, ctx) {
       ctx?.waitUntil(none ? Promise.all([log, unanswered(env, found, user)]) : log);
       return json({ ...found, hits: noPdf(found.hits) });
     }
-    if (url.pathname === "/api/feedback" && request.method === "POST") return json(await feedback(env, await request.json().catch(() => ({})), user));
+    if (url.pathname === "/api/feedback" && request.method === "POST") {
+      if (!(await takeQuota(env, { ...acc, quota: FEEDBACK_PER_DAY }, "feedback"))) return json({ error: "too much feedback today / بازخورد امروز به سقف رسید" }, 429);
+      return json(await feedback(env, await request.json().catch(() => ({})), user));
+    }
     if (url.pathname === "/api/pack" && request.method === "POST") {
       const found = await search(env, await request.json().catch(() => ({})));
       return new Response(packFile(found), { headers: {
@@ -471,11 +482,14 @@ async function handle(request, env, ctx) {
       return json(await inCollection(env, (await request.json()).ids));
     }
     if (url.pathname === "/api/paper") {
+      if (!acc.search) return denied("search is not available on this account"); // the papers' full text
       const data = await paper(env, url.searchParams.get("doc_id") || "");
       return json({ ...data, chunks: noPdf(data.chunks || []) });
     }
   } catch (error) {
-    return json({ error: String(error.message || error) }, error.status || 500);
+    if (error.status) return json({ error: String(error.message) }, error.status);
+    console.log("api", url.pathname, String(error.message || error));
+    return json({ error: "server error, please try again" }, 500);
   }
   return json({ error: "not found" }, 404);
 }
