@@ -3,6 +3,10 @@ crystal, SubQ reads each abstract and says how likely the authors measured that 
 scores only (doi, crystal, kind, p, pdf, title) for the reader (Gemini) that extracts the numbers from the PDFs.
 
     python scripts/quality/find_open.py OUT.csv "KBe2BO3F2:dndt" "CuGaS2:dij" ...   (SUBQ_KEYS, OPENALEX_API_KEY)
+
+With --all, paywalled papers are listed too (pdf left empty): the list to fetch from the university library. The words of
+the kind (WHAT) are searched in the title and abstract, not the full text: for most of these crystals the paper that
+holds the data says so in its title ("Thermo-optic dispersion formula for LiGaS2").
 """
 import csv
 import json
@@ -19,9 +23,9 @@ import subq  # noqa: E402
 WHAT = {
     "dndt": ("thermo-optic", "the temperature dependence of its refractive indices (dn/dT, thermo-optic coefficients or a "
                              "temperature-dependent Sellmeier equation)"),
-    "dij": ("nonlinear coefficient", "absolute values of its second-order nonlinear coefficients d_ij in pm/V (not only a "
+    "dij": ("nonlinear", "absolute values of its second-order nonlinear coefficients d_ij in pm/V (not only a "
                                      "powder SHG intensity relative to KDP)"),
-    "sellmeier": ("Sellmeier", "its refractive indices at several wavelengths or Sellmeier (dispersion) equations"),
+    "sellmeier": ("refractive", "its refractive indices at several wavelengths or Sellmeier (dispersion) equations"),
 }
 
 
@@ -39,17 +43,17 @@ def abstract(inv):
     return " ".join(w for _, w in words)
 
 
-def candidates(crystal, kind, n=25):
+def candidates(crystal, kind, n=25, oa=True):
     term, _ = WHAT[kind]
-    q = urllib.parse.urlencode({"filter": f"is_oa:true,title_and_abstract.search:{crystal}", "search": term, "per-page": n,
+    q = urllib.parse.urlencode({"filter": ("is_oa:true," if oa else "") + f"title_and_abstract.search:{crystal} {term}", "per-page": n,
                                 "select": "doi,display_name,abstract_inverted_index,best_oa_location,locations",
                                 **({"api_key": os.environ["OPENALEX_API_KEY"]} if os.environ.get("OPENALEX_API_KEY") else {})})
     out = []
     for w in get(f"https://api.openalex.org/works?{q}").get("results", []):
         pdfs = [loc["pdf_url"] for loc in w.get("locations") or [] if loc.get("is_oa") and loc.get("pdf_url")]
-        if w.get("doi") and pdfs:
+        if w.get("doi") and (pdfs or not oa):
             out.append({"doi": w["doi"].replace("https://doi.org/", ""), "title": w.get("display_name") or "",
-                        "abstract": abstract(w.get("abstract_inverted_index")), "pdf": pdfs[0]})
+                        "abstract": abstract(w.get("abstract_inverted_index")), "pdf": (pdfs or [""])[0]})
     return out
 
 
@@ -60,8 +64,8 @@ def judge(crystal, kind, c):
     return {"doi": c["doi"], "crystal": crystal, "kind": kind, "p": round(p or 0, 3), "pdf": c["pdf"], "title": c["title"]}
 
 
-def main(out, wants):
-    jobs = [(cr, kind, c) for cr, kind in (w.split(":") for w in wants) for c in candidates(cr, kind)]
+def main(out, wants, oa=True):
+    jobs = [(cr, kind, c) for cr, kind in (w.split(":") for w in wants) for c in candidates(cr, kind, oa=oa)]
     with ThreadPoolExecutor(8) as ex:
         rows = sorted(ex.map(lambda j: judge(*j), jobs), key=lambda r: (r["crystal"], -r["p"]))
     with open(out, "w", newline="", encoding="utf-8") as f:
@@ -72,4 +76,5 @@ def main(out, wants):
 
 if __name__ == "__main__":
     assert abstract({"b": [1], "a": [0]}) == "a b"
-    main(sys.argv[1], sys.argv[2:])
+    args = [a for a in sys.argv[2:] if a != "--all"]
+    main(sys.argv[1], args, oa="--all" not in sys.argv)
