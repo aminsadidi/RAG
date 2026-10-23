@@ -168,7 +168,7 @@ def build_nonlinear(out: Path, path: Path) -> int:
 
 
 def build_properties(out: Path, path: Path) -> int:
-    """Write ``props.json`` (transparency range and hygroscopy of data/<corpus>/crystal_properties.yml, for the
+    """Write ``props.json`` (transparency range, hygroscopy and damage threshold of data/<corpus>/crystal_properties.yml, for the
     crystal advisor) next to ``aniso.json``; returns the number of crystals."""
     import yaml
 
@@ -182,6 +182,12 @@ def build_properties(out: Path, path: Path) -> int:
                 raise ValueError(f"{r['material']}: transparency_um must be [low, high] in µm")
             e.update(transparency_um=[lo, hi], transparency_level=r.get("transparency_level", ""), sources=r.get("sources", []))
         if "hygroscopic" in r:
-            e.update(hygroscopic=bool(r["hygroscopic"]), hygroscopic_source=r.get("hygroscopic_source"))
+            if r["hygroscopic"] not in ("none", "slight", "yes", "strong"):
+                raise ValueError(f"{r['material']}: hygroscopic is none, slight, yes or strong")
+            e.update(hygroscopic=r["hygroscopic"], hygroscopic_source=r.get("hygroscopic_source"))
+        if "damage" in r:
+            if not {"threshold", "doc_id", "pdf_page"} <= set(r["damage"]):
+                raise ValueError(f"{r['material']}: damage needs threshold, doc_id and pdf_page")
+            e["damage"] = r["damage"]
     (out / "props.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return len(data)

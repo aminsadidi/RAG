@@ -364,7 +364,7 @@ def export_formulas(
                f"{len(cubic)} cubic, for QPM only)")
     typer.echo(f"{anisotropic.build_nonlinear(out, dij)} crystals with nonlinear coefficients written to dij.json")
     props = Settings().data_dir / Settings().corpus / "crystal_properties.yml"
-    typer.echo(f"{anisotropic.build_properties(out, props)} crystals with transparency or hygroscopy written to props.json")
+    typer.echo(f"{anisotropic.build_properties(out, props)} crystals with transparency, hygroscopy or damage threshold written to props.json")
 
 
 @app.command("export-papers")

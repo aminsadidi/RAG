@@ -839,4 +839,11 @@ test("crystal advisor: temperature acceptance, the temperature of a cut crystal,
   const lboT = { ...crystal(lbo, "LiB3O5"), transparency: P.LiB3O5.transparency_um };
   assert.equal(advise([lboT], { process: "shg", a: 0.3, b: 0, T: 25 }).no[0].reason, "absorbed");
   assert.ok(advise([lboT], { process: "shg", a: 1.0642, b: 0, T: [20, 60] }).ok[0].edge === false);
+  // MgO:LiNbO3 (Gayer 2008), type I SHG of 1.064 µm near 90° at 20 °C: by 60 °C the angle has passed 90°
+  const mln = source("MgO-LiNbO3", "Gayer-5"), mlnC = { ...crystal(mln, "MgO-LiNbO3"), d: D["MgO-LiNbO3"].d };
+  const lost = advise([mlnC], { process: "shg", a: 1.064, b: 0, T: [20, 60] }).ok[0]?.all.find((x) => x.how === "angle");
+  assert.ok(lost && lost.lostInRange && lost.drift_deg === null);
+  // CLBO, strongly hygroscopic (props.json), is left out when a dry crystal is asked for
+  const clboH = { ...crystal(clbo, "CsLiB6O10"), hygroscopic: P.CsLiB6O10.hygroscopic };
+  assert.equal(advise([clboH], { process: "shg", a: 1.0642, b: 0, T: 25, dry: true }).no[0].reason, "hygroscopic");
 });
