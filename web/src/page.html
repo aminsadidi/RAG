@@ -573,6 +573,8 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 const fa = (n) => Number(n).toLocaleString(LANG === "en" ? "en-US" : "fa-IR");
+// Data read from papers (paper_formulas.yml, thermo_optic.yml, nonlinear_coefficients.yml) is measured unless marked basis: calculated
+const basisName = (x) => (x?.basis === "calculated" ? "محاسباتی (نظری)" : "تجربی");
 const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده", metadata_only: "فقط عنوان" };
 
 // ---------- tabs
@@ -1165,7 +1167,7 @@ function renderEntries(probe) {
     return entryRow({ key: `db:${i}`, e }, probe, `
       <span class="hint"> ${esc(dirName(e.direction))} · ${e.type === "tab" ? "measured data" : "formula " + e.type} · <bdi dir="ltr">${fmtL(e.range_um[0])}–${fmtL(e.range_um[1])} ${unitName()}</bdi></span><br>
       ${esc(e.reference)}
-      ${e.source === "paper" ? `<div class="hint" style="margin-top:4px"><b>از مقاله‌ی همین مجموعه، صفحه‌ی ${fa(e.pdf_page)} PDF:</b> <bdi dir="ltr">${esc(e.where)}</bdi></div>` : ""}
+      ${e.source === "paper" ? `<div class="hint" style="margin-top:4px"><b>${basisName(e)} · از مقاله‌ی همین مجموعه، صفحه‌ی ${fa(e.pdf_page)} PDF:</b> <bdi dir="ltr">${esc(e.where)}</bdi></div>` : ""}
       <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
       ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}
       <span class="tools"><button data-act="copy">کپی و ویرایش</button></span></div>`);
@@ -1548,8 +1550,8 @@ function run() {
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
         + PM.dij[c.material].sources.map((s) => (s.doc_id
-          ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what)}" onclick="openPaper('${esc(s.doc_id)}')">${esc(s.cite)}، ص ${fa(s.pdf_page)}</button>`
-          : `<a class="chip" title="${esc(s.what)}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${esc(s.cite)}، ص ${fa(s.pdf_page)} (خارج از مجموعه)</a>`)).join(" ")
+          ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what)}" onclick="openPaper('${esc(s.doc_id)}')">${esc(s.cite)}، ص ${fa(s.pdf_page)} · ${basisName(s)}</button>`
+          : `<a class="chip" title="${esc(s.what)}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${esc(s.cite)}، ص ${fa(s.pdf_page)} · ${basisName(s)} (خارج از مجموعه)</a>`)).join(" ")
       : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
     const other = c.sources.findIndex((s) => covers(s, w));
@@ -1576,7 +1578,7 @@ function showTemp(src) {
   $("pmT").placeholder = th ? String(th.t0_c) : "—";
   $("pmncpmgo").disabled = !th && other < 0;
   $("pmTinfo").innerHTML = th
-    ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)}</button>` : esc(th.cite)}`
+    ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)}</button>` : esc(th.cite)}`
       + (T === null ? ` — خالی = ${fa(th.t0_c)} °C (دمای فرمول)` : "")
     : "برای این منبع فرمول وابستگی دمایی در مجموعه نیست" + (other >= 0
       ? `؛ <button class="chip coll" style="border:0;cursor:pointer" id="pmTalt">رفتن به منبع ${esc(PM.crystal.sources[other].label)} که دارد</button>`
@@ -2241,7 +2243,7 @@ function card(mat, D, synced) {
   const rows = [
     src ? ["ضریب شکست", `${indices(src)}<span class="hint"> · ${esc(src.label)} · بازه‌ی فرمول <bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi>${c.sources.length > 1 ? ` · ${fa(c.sources.length)} منبع` : ""}</span>`]
       : ri ? ["ضریب شکست", `${fa(ri.n)} منبع در پایگاه (${fa(ri.formulas)} فرمول) · بازه‌ی <bdi dir="ltr">${+ri.range_um[0].toPrecision(3)}–${+ri.range_um[1].toPrecision(3)} µm</bdi>`] : null,
-    ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)}</span>` : ""}`
+    ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)} · ${basisName(d.sources[0])}</span>` : ""}`
       + (d.partial ? `<div class="hint">ناقص: فقط بعضی عنصرها اندازه‌گیری شده‌اند${d.frame ? ` و در دستگاه <bdi dir="ltr">${esc(d.frame)}</bdi>` : ""}؛ در محاسبه‌ی d<sub>eff</sub> تطبیق فاز به کار نمی‌روند.</div>` : "")
       : '<span class="hint">ثبت نشده</span>'],
     ["گرمانوری (dn/dT)", thermo.length ? `فرمول وابسته به دما: ${thermo.map(esc).join("، ")}` : '<span class="hint">ثبت نشده</span>'],

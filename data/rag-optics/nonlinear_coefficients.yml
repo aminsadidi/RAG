@@ -719,5 +719,5 @@
   d: {32: 1.09, 24: 1.09}
   sources:
     - {doc_id: "10.1038-s41586-025-10007-z", cite: "Zhang et al. (preprint 2025; published in Nature 650, 97 (2026))", pdf_page: 14, what: "PREPRINT (Research Square, doi:10.21203/rs.3.rs-6284969/v1), not the published version: d32 = 2.8·d36(KDP) = 1.09 pm/V from Maker fringes at 1.064 µm (d36 = 0.39 pm/V); the phase-matched SHG method against LBO gives 0.93 pm/V (Methods, p. 14). Type-I SHG in the xy plane: d_eff = d32·cos φ"}
-    - {doc_id: 10.1021_jacs.7b05943, cite: "Shi et al. (2017)", pdf_page: 4, what: "DFT-calculated d31 = 0.02, d32 = 1.07, d33 = −1.19 pm/V (Table 1); not used here"}
+    - {doc_id: 10.1021_jacs.7b05943, cite: "Shi et al. (2017)", pdf_page: 4, basis: calculated, what: "DFT-calculated d31 = 0.02, d32 = 1.07, d33 = −1.19 pm/V (Table 1); not used here"}
   notes: "mm2: d24 = d32 by Kleinman symmetry; d31 and d33 not measured. From a preprint: the published Nature version may give different values"

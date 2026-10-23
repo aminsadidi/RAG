@@ -292,3 +292,12 @@ def test_fma_type_ii():
     """Dmitriev et al. (1999), p. 258: FMA θtheor = 50.80° for e + o ⇒ o SHG of 1.0642 µm (positive uniaxial)."""
     no, ne = curve("FMA", "Dmitriev-1999", "o"), curve("FMA", "Dmitriev-1999", "e")
     assert min(abs(t - 50.80) for t in _plane_angle(ne, no, no, "cpc", 1.0642)) < 0.03
+
+
+def test_basis_is_measured_or_calculated():
+    """Every block (and d_ij source) read from a paper says whether its numbers are measured or calculated."""
+    import yaml
+    data = Path(__file__).resolve().parents[1] / "data" / "rag-optics"
+    rows = yaml.safe_load((data / "paper_formulas.yml").read_text()) + yaml.safe_load((data / "thermo_optic.yml").read_text())
+    rows += [s for r in yaml.safe_load((data / "nonlinear_coefficients.yml").read_text()) for s in r["sources"]]
+    assert {r.get("basis", "measured") for r in rows} <= {"measured", "calculated"}
