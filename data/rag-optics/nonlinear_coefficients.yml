@@ -744,3 +744,10 @@
     - {doc_id: 10.1002_adom.202301060, cite: "He et al. (2023)", pdf_page: 4, what: "d14 ≈ d36 = 89 ± 5 pm/V at 1550 nm (SHG polarimetry against LiNbO3, d14/d36 = 1.05 ± 0.05); by Miller's rule d36 = 81.6 pm/V at 3.5 µm, where type-I and type-II SHG give |d_eff| = 80.2 and 73.4 pm/V (p. 6)"}
   notes: "−42m, Kleinman (d14 = d25 = d36, confirmed by the measured ratio). Value at 1550 nm"
 
+- material: CuGaS2
+  point_group: -42m
+  d: {36: 14.5, 14: 14.5, 25: 14.5}
+  sources:
+    - {doc_id: 10.1109_jqe.1971.1076588, cite: "Boyd et al. (1971)", pdf_page: 7, what: "d36 = 14.5 pm/V ± 30 % (0.108 × d36 of GaAs, taken as 3.2 × 10⁻⁷ CGS) for SHG of 10.6 µm, thin-wedge samples (Table V); the geometry measures (2d14 + d36)/3, equal to d36 with Kleinman symmetry (p. 6)"}
+  notes: "−42m, Kleinman (d14 = d25 = d36 assumed by the authors). Value at 10.6 µm; absolute sign not determined"
+

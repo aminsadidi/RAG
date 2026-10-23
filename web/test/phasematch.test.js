@@ -761,3 +761,9 @@ test("MgSiP2 (He et al. 2023): d_eff of SHG of 3.5 µm with d36 = 81.6 pm/V (Mil
     assert.ok(Math.abs(effectiveD(nAt(s), s.kind, r, d).deff / want - 1) < 0.08, `${type}`);
   }
 });
+
+test("CuGaS2 (Boyd et al. 1971, Table V): d36 = 0.108 × d36(GaAs) with d36(GaAs) = 3.2e-7 CGS", () => {
+  const gaas = 3.2e-7 * 4 * Math.PI / 3e4 * 1e12; // CGS (cm/statvolt) to pm/V: × 4π/(3×10⁴)
+  assert.ok(Math.abs(D.CuGaS2.d["36"] - 0.108 * gaas) < 0.2, `${0.108 * gaas}`);
+  assert.equal(D.CuGaS2.d["14"], D.CuGaS2.d["36"]);
+});
