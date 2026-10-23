@@ -413,6 +413,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="row">
       <label class="hint"><input type="checkbox" id="advncpm"> فقط تطبیق فاز غیربحرانی (۹۰ درجه)</label>
       <label class="hint"><input type="checkbox" id="advthermo"> فقط بلورهایی که وابستگی دمایی‌شان معلوم است</label>
+      <label class="hint"><input type="checkbox" id="advdry"> بدون بلورهای جاذب رطوبت</label>
       <label>مرتب‌سازی <select id="advsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³</option><option value="walk">کمترین walk-off</option><option value="spec">بیشترین پهنای طیفی</option><option value="temp">بیشترین پهنای دمایی</option></select></label>
       <button id="advgo">پیشنهاد بلور</button>
     </div>
@@ -1800,7 +1801,10 @@ $("pmmore").onchange = () => {
 };
 // ---------- crystal advisor: the fixed conditions in, every crystal that meets them out (phasematch.js advise)
 const numOr = (id) => { const v = $(id).value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
-const REASON = { absorbed: "طول موجی بیرون از بازه‌ی شفافیت بلور (جذب)", range: "طول موج‌ها بیرون از بازه‌ی فرمول ضریب شکست", isotropic: "همسانگرد (مکعبی): فقط با QPM", "no-pm": "تطبیق فاز ندارد", "no-thermo": "وابستگی دمایی معلوم نیست",
+// one damage threshold a paper of the collection reports (crystal_properties.yml), with its paper a click away
+const damageNote = (d) => (d ? `<span title="${esc(d.what)}">آستانه‌ی آسیب: <bdi dir="ltr">${esc(d.threshold)}${d.pulse || d.lambda_um ? ` (${[d.pulse, d.lambda_um ? d.lambda_um + " µm" : ""].filter(Boolean).map(esc).join(", ")})` : ""}</bdi></span>` : "");
+const HYGRO = { none: "غیرجاذب رطوبت", slight: "کمی جاذب رطوبت", yes: "جاذب رطوبت", strong: "به‌شدت جاذب رطوبت: گرم یا دربسته نگه دارید" };
+const REASON = { hygroscopic: "جاذب رطوبت", absorbed: "طول موجی بیرون از بازه‌ی شفافیت بلور (جذب)", range: "طول موج‌ها بیرون از بازه‌ی فرمول ضریب شکست", isotropic: "همسانگرد (مکعبی): فقط با QPM", "no-pm": "تطبیق فاز ندارد", "no-thermo": "وابستگی دمایی معلوم نیست",
   temp: "دمای تطبیق فاز ۹۰ درجه بیرون از بازه‌ی دمای شما", ncpm: "فقط تطبیق فاز بحرانی (زاویه‌ای) دارد", deff0: "d_eff صفر است", walkoff: "walk-off بیشتر از حد",
   spectral: "پهنای طیفی کمتر از حد", angular: "پهنای زاویه‌ای کمتر از حد", tempacc: "پهنای دمایی کمتر از حد (یا نامعلوم)" };
 // one source per crystal: the first that covers the three waves, a source with thermo-optic data first
@@ -1808,7 +1812,7 @@ function advCrystals(w) {
   return PM.list.filter((c) => PM.dij[c.material]).map((c) => {
     const fits = c.sources.filter((s) => covers(s, w)), src = fits.find((s) => s.thermo) || fits[0] || c.sources[0];
     return { material: c.material, src, kind: src.kind, range_um: src.range_um, thermo: Boolean(src.thermo), nAtT: (T) => nAtT(src, T), d: PM.dij[c.material].d,
-      transparency: PM.props[c.material]?.transparency_um };
+      transparency: PM.props[c.material]?.transparency_um, hygroscopic: PM.props[c.material]?.hygroscopic };
   });
 }
 function advInputs() {
@@ -1829,7 +1833,7 @@ function adviseRun() {
   setTimeout(() => {
     const list = advCrystals(w), srcOf = Object.fromEntries(list.map((c) => [c.material, c.src.label]));
     const r = advise(list, { process: proc, a, b, T: [lo, hi], type: $("advtype").value, ncpm: $("advncpm").checked,
-      needThermo: $("advthermo").checked, maxWalkoff: numOr("advwo"), minSpectral: numOr("advspec"), minTemp: numOr("advtemp"), length: L });
+      needThermo: $("advthermo").checked, dry: $("advdry").checked, maxWalkoff: numOr("advwo"), minSpectral: numOr("advspec"), minTemp: numOr("advtemp"), length: L });
     const key = { walk: (x) => Math.max(...x.best.walkoff_mrad), spec: (x) => -(x.best.spectral_nm ?? 0), temp: (x) => -(x.best.temp_C ?? 0) }[$("advsort").value];
     if (key) r.ok.sort((p, q) => key(p) - key(q));
     const lam = [w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ") + " → " + w.l3.toFixed(4) + " µm";
@@ -1839,9 +1843,9 @@ function adviseRun() {
     $("advtable").innerHTML = r.ok.length ? `<tr><th>#</th><th>crystal</th><th>how</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>walk-off (mrad)</th><th>Δλ (nm)</th><th>ΔT (°C)</th><th>angle drift over the range</th><th>note</th></tr>`
       + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b></td><td>${how(s)}</td>
         <td><b>${f1(s.deff, 2)}</b></td><td>${f1(s.fom, 2)}</td><td>${f1(Math.max(...s.walkoff_mrad))}</td><td>${f1(s.spectral_nm != null ? s.spectral_nm / L : null, 2)}</td>
-        <td>${f1(s.temp_C != null ? s.temp_C / L : null)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : "—"}</td>
+        <td>${f1(s.temp_C != null ? s.temp_C / L : null)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : s.lostInRange ? '<span class="err">در بخشی از بازه تطبیق فاز ندارد</span>' : "—"}</td>
         <td>${[x.thermo ? "" : '<span class="err">رفتار دمایی نامعلوم</span>', x.edge ? '<span class="err">نزدیک لبه‌ی جذب</span>' : "",
-          PM.props[x.material]?.hygroscopic === false ? "غیرجاذب رطوبت" : ""].filter(Boolean).join("<br>")}</td></tr>`; }).join("") : "";
+          HYGRO[PM.props[x.material]?.hygroscopic] || "", damageNote(PM.props[x.material]?.damage)].filter(Boolean).join("<br>")}</td></tr>`; }).join("") : "";
     const near = r.no.filter((n) => n.reason === "temp").map((n) => `<b>${esc(n.material)}</b> (<bdi dir="ltr">${n.near.T.toFixed(0)} °C</bdi>)`);
     const count = {}; for (const n of r.no) count[n.reason] = (count[n.reason] || 0) + 1;
     $("advno").innerHTML = (near.length ? `<p><b>تطبیق فاز ۹۰ درجه در دمای دیگر:</b> ${near.join("، ")}. اگر آونی دارید که به این دما می‌رسد، این بلورها هم شدنی‌اند.</p>` : "")

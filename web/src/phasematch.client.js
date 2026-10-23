@@ -267,10 +267,10 @@ export function ncpmAcceptance(nAtT, process, a, b, pol, T) {
 
 // Every crystal that can do the process under the fixed conditions, best first, and the ones that cannot
 // with the reason. crystals: [{material, kind, range_um, thermo (true if dn/dT is known), nAtT(T), d,
-// transparency ([lo, hi] µm, if known)}].
+// transparency ([lo, hi] µm, if known), hygroscopic ("none", "slight", "yes", "strong", if known)}].
 // want: {process, a, b, T: [lo, hi] (the oven or the room; one value for a fixed temperature), type
 // ("any", "I", "II"), ncpm (90° only), maxWalkoff (mrad), minSpectral (nm·cm), minAngular (mrad·cm),
-// minTemp (°C·cm), needThermo, length (cm, for the bandwidths)}.
+// minTemp (°C·cm), needThermo, dry (no crystal a source calls hygroscopic), length (cm, for the bandwidths)}.
 export function advise(crystals, want) {
   const { process, a, b } = want, w = waves(process, a, b);
   const [lo, hi] = Array.isArray(want.T) ? want.T : [want.T ?? 25, want.T ?? 25];
@@ -285,6 +285,7 @@ export function advise(crystals, want) {
     const edge = Boolean(t) && [w.l1, w.l2, w.l3].some((l) => l < t[0] * 1.1 || l > t[1] / 1.1);
     if (![w.l1, w.l2, w.l3].every((l) => l >= c.range_um[0] - 1e-9 && l <= c.range_um[1] + 1e-9)) { why("range"); continue; }
     if (want.needThermo && !c.thermo) { why("no-thermo"); continue; }
+    if (want.dry && (c.hygroscopic === "yes" || c.hygroscopic === "strong")) { why("hygroscopic"); continue; }
     // a cubic crystal (CdTe, GaAs) has no birefringence: phase matching by quasi-phase matching only
     const n0 = c.nAtT(lo)(w.l1);
     if (Math.max(...n0) - Math.min(...n0) < 1e-6) { why("isotropic"); continue; }
@@ -298,7 +299,11 @@ export function advise(crystals, want) {
         const ang = (T) => roots((x) => deltaK(c.nAtT(T), s.plane, x, w, s.type)).map((x) => x * 180 / Math.PI)
           .reduce((x, y) => (Math.abs(y - s.angle) < Math.abs(x - s.angle) ? y : x), Infinity);
         found.push({ ...s, how: s.noncritical ? "ncpm-angle" : "angle", deff: e ? e.deff : null,
-          drift_deg: c.thermo && hi > lo ? Math.abs(ang(hi) - ang(lo)) : null,
+          ...(() => { // the angle at both ends: Infinity when phase matching is lost there (the angle passes 90°)
+            if (!c.thermo || !(hi > lo)) return { drift_deg: null };
+            const d = Math.abs(ang(hi) - ang(lo));
+            return Number.isFinite(d) ? { drift_deg: d } : { drift_deg: null, lostInRange: true };
+          })(),
           temp_C: c.thermo ? temperatureAcceptance(c.nAtT, s.plane, s.angle * Math.PI / 180, process, a, b, s.type, mid) : null });
       }
     }
