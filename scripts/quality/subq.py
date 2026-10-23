@@ -1,6 +1,7 @@
 """SubQ (subq-snap): the probability that a text answers a yes/no question. Keys come from SUBQ_KEYS
 (comma-separated); requests take the live keys in turn (several at once spread the load), and a key that is out of
 credit or refused is dropped."""
+import collections
 import json
 import os
 import threading
@@ -14,6 +15,7 @@ _keys = [k.strip() for k in os.environ.get("SUBQ_KEYS", "").split(",") if k.stri
 _lock = threading.Lock()
 _turn = [0]
 tokens = [0]
+errors = collections.Counter()  # what failed, for the caller's report
 
 
 def _post(body: dict, key: str) -> dict:
@@ -36,7 +38,11 @@ def ask(body: dict) -> dict | None:
                 tokens[0] += out.get("usage", {}).get("input_tokens", 0)
             return {k: v["noul"] for k, v in out["answers"].items()}
         except urllib.error.HTTPError as e:
-            if e.code in (401, 402, 403):  # this key is spent or refused: drop it, try another
+            msg = e.read()[:120].decode("utf-8", "replace")
+            errors[f"{e.code} {msg[:60]}"] += 1
+            # dropped only when the key itself is spent, invalid or not allowed this model; a refusal under load
+            # (other 403s, 429) is waited out, so a busy moment cannot empty the key list
+            if e.code in (401, 402) or (e.code == 403 and "not permitted" in msg):
                 with _lock:
                     if key in _keys:
                         _keys.remove(key)
@@ -44,7 +50,8 @@ def ask(body: dict) -> dict | None:
             if e.code == 422:
                 return None
             time.sleep(2 * (attempt + 1))
-        except Exception:
+        except Exception as e:  # noqa: BLE001 - a network error: wait and try again
+            errors[type(e).__name__] += 1
             time.sleep(2 * (attempt + 1))
     return None
 

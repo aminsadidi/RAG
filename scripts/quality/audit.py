@@ -3,8 +3,8 @@ Qdrant), so the four can run at once, each on its own keys.
 
     python scripts/quality/audit.py verify  OUT.json   # is each value of the site's YAML files in the passage it cites?
     python scripts/quality/audit.py archive OUT.json   # per paper: about optics? the paper its title says? Supporting Information?
-    python scripts/quality/audit.py garbled OUT.json   # per passage holding numbers: are they readable (not reversed, scrambled)?
-    python scripts/quality/audit.py basis   OUT.json   # per passage holding data: measured, calculated, or from a review?
+    python scripts/quality/audit.py data    OUT.json   # per passage holding data: measured, calculated or reviewed, and are its
+                                                       # numbers readable (not reversed, scrambled)? One request per passage
 (QDRANT_URL, QDRANT_API_KEY, SUBQ_KEYS; THREADS, default 24)
 """
 import gzip
@@ -24,8 +24,7 @@ from datamap import ROOT, points  # noqa: E402
 from hidden_gaps import texts  # noqa: E402
 
 DATA = ROOT / "data/rag-optics"
-NUM = ("sellmeier", "ri_table", "dij", "dndt", "pm")
-ANY = NUM + ("damage", "thermal", "transparency", "bandgap")
+ANY = ("sellmeier", "ri_table", "dij", "dndt", "pm", "damage", "thermal", "transparency", "bandgap")
 
 
 def ask(state, questions):
@@ -38,7 +37,7 @@ def run(jobs, fn, out):
     with ThreadPoolExecutor(int(os.environ.get("THREADS", 24))) as ex:
         res = [r for r in ex.map(fn, jobs) if r]
     json.dump(res, open(out, "w"), indent=0)
-    print(f"{len(res)} results -> {out}; SubQ tokens {subq.tokens[0]:,}", flush=True)
+    print(f"{len(res)} results -> {out}; SubQ tokens {subq.tokens[0]:,}; errors {dict(subq.errors)}; keys left {len(subq._keys)}", flush=True)
 
 
 def pages(p):
@@ -96,14 +95,11 @@ def passages(kinds):
     return [got[n] for n in nodes if n in got]
 
 
-def garbled(p):
-    q = {"ok": "Are the numbers in this passage readable and in a sensible order: digits not reversed or scrambled, table "
-               "values under the right column headings, signs and powers of ten not lost?"}
-    return {"node": p["node_id"], "doc": p["doc_id"], **{k: round(v, 3) for k, v in ask(str(p["text"]), q).items()}}
-
-
-def basis(p):
-    out = ask(f"Passage from a scientific paper on optical crystals:\n\n{p['text']}", BASIS)
+def data(p):
+    """Both questions about a passage that holds data in one request: the passage text, most of the tokens, is sent once."""
+    q = {**BASIS, "ok": "Are the numbers in this passage readable and in a sensible order: digits not reversed or scrambled, "
+                        "table values under the right column headings, signs and powers of ten not lost?"}
+    out = ask(f"Passage from a scientific paper on optical crystals:\n\n{p['text']}", q)
     return {"node": p["node_id"], "doc": p["doc_id"], **{k: round(v, 3) for k, v in out.items()}} if out else None
 
 
@@ -113,7 +109,5 @@ if __name__ == "__main__":
         run(claims(), verify, out)
     elif what == "archive":
         run(json.loads((ROOT / "web/src/papers.json").read_text(encoding="utf-8")), archive, out)
-    elif what == "garbled":
-        run(passages(NUM), garbled, out)
-    elif what == "basis":
-        run(passages(ANY), basis, out)
+    elif what == "data":
+        run(passages(ANY), data, out)
