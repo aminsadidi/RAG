@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex, thermoShift } from "../src/dispersion.client.js";
-import { advise, cutTemperatures, deltaK, eigenIndices, effectiveD, fieldVectors, ncpmAcceptance, ncpmTemperatures, solveAll, temperatureAcceptance, waves } from "../src/phasematch.client.js";
+import { advise, cutTemperatures, qpmSolutions, deltaK, eigenIndices, effectiveD, fieldVectors, ncpmAcceptance, ncpmTemperatures, solveAll, temperatureAcceptance, waves } from "../src/phasematch.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const D = JSON.parse(readFileSync(new URL("../public/ri/dij.json", import.meta.url)));
@@ -846,4 +846,53 @@ test("crystal advisor: temperature acceptance, the temperature of a cut crystal,
   // CLBO, strongly hygroscopic (props.json), is left out when a dry crystal is asked for
   const clboH = { ...crystal(clbo, "CsLiB6O10"), hygroscopic: P.CsLiB6O10.hygroscopic };
   assert.equal(advise([clboH], { process: "shg", a: 1.0642, b: 0, T: 25, dry: true }).no[0].reason, "hygroscopic");
+});
+
+test("crystal advisor: quasi-phase matching in poled and orientation-patterned crystals", () => {
+  const mln = source("MgO-LiNbO3", "Gayer-5"), nT = (T) => nAtTemp(mln, T);
+  // PPLN (5% MgO, Gayer et al. 2008): type-0 SHG of 1.064 µm near 6.9 µm, d_eff = (2/π)·|d33|
+  const zzz = (r) => r.find((x) => x.pol.join("") === "zzz");
+  const s1064 = zzz(qpmSolutions(nT, mln.kind, "poled", D["MgO-LiNbO3"].d, "shg", 1.064, 0, 25));
+  assert.ok(Math.abs(s1064.period_um - 6.9) < 0.15, `PPLN 1064: ${s1064.period_um}`);
+  assert.ok(Math.abs(s1064.deff - 2 / Math.PI * 25.0) < 1e-9);
+  // Gayer Fig. 4: the 19.48 µm grating doubles 1530-1570 nm light at room temperature
+  const s1550 = zzz(qpmSolutions(nT, mln.kind, "poled", D["MgO-LiNbO3"].d, "shg", 1.55, 0, 25));
+  assert.ok(Math.abs(s1550.period_um - 19.48) < 0.4, `PPLN 1550: ${s1550.period_um}`);
+  // PPKTP SHG of 1.064 µm at 9.0 µm, as the test of the PM tab's periods above
+  const ktp = source("KTiOPO4", "Kato"), kT = (T) => nAtTemp(ktp, T);
+  const k1064 = zzz(qpmSolutions(kT, ktp.kind, "poled", D.KTiOPO4.d, "shg", 1.064, 0, 25));
+  assert.ok(Math.abs(k1064.period_um - 9.0) < 0.15);
+  // the advisor: QPM only lists the poled crystals; a grating shorter than asked is rejected with its reason
+  const crystal = (s, mat, qpm) => ({ material: mat, kind: s.kind, range_um: s.range_um, thermo: Boolean(s.thermo), nAtT: (T) => nAtTemp(s, T), d: D[mat]?.d, qpm });
+  const lbo = source("LiB3O5", "Kato-1994");
+  const r = advise([crystal(mln, "MgO-LiNbO3", "poled"), crystal(lbo, "LiB3O5")], { process: "shg", a: 1.064, b: 0, T: 25, qpmOnly: true });
+  assert.deepEqual(r.ok.map((x) => x.material), ["MgO-LiNbO3"]);
+  assert.equal(r.ok[0].best.how, "qpm");
+  assert.equal(r.ok[0].best.pol.join(""), "zzz"); // the largest d_eff²/n³
+  assert.equal(advise([crystal(ktp, "KTiOPO4", "poled")], { process: "shg", a: 1.064, b: 0, T: 25, qpmOnly: true, type: "0", minPeriod: 10 }).no[0].reason, "period");
+  // GaAs is isotropic: rejected without QPM, accepted as OP-GaAs with it (2.09 µm pump, the region of OP-GaAs OPOs)
+  const gaas = source("GaAs", "Skauli");
+  const opo = { process: "opo", a: 2.09, b: 3.5, T: 25 };
+  assert.equal(advise([crystal(gaas, "GaAs", "op")], { ...opo, qpm: false }).no[0].reason, "isotropic");
+  const g = advise([crystal(gaas, "GaAs", "op")], opo).ok[0];
+  assert.ok(g && g.best.how === "qpm" && g.best.period_um > 20 && g.best.period_um < 120);
+  // pumped below 1.73 µm, two-photon absorption (Petrov 2015, props.json) rules OP-GaAs out
+  const P = JSON.parse(readFileSync(new URL("../public/ri/props.json", import.meta.url)));
+  const gaasP = { ...crystal(gaas, "GaAs", "op"), minPump: P.GaAs.min_pump_um.value };
+  assert.equal(advise([gaasP], { process: "opo", a: 1.064, b: 2.5, T: 25 }).no[0].reason, "pump");
+  assert.equal(advise([gaasP], opo).ok.length, 1);
+  // how established: OP-GaAs (poled/wafer chapter of Nikogosyan 2005) stays with the established ones; an unlisted crystal
+  // is "research" and is left out unless asked for
+  const est = ["basic", "main-ir", "often", "poled", "new", "sfd", "newer"];
+  assert.equal(advise([{ ...gaasP, cls: P.GaAs.class.value }], { ...opo, classes: est }).ok.length, 1);
+  assert.equal(advise([crystal(gaas, "GaAs", "op")], { ...opo, classes: est }).no[0].reason, "class");
+});
+
+test("crystal advisor: a formula extrapolated 6 % below its range gives the PPKTP grating of Fedrizzi et al. (2007)", () => {
+  // Fedrizzi et al. 2007 (10.1364/oe.15.015377, p. 4): x-cut flux-grown PPKTP, 10 µm grating, collinear degenerate
+  // type-II SPDC of 405 nm at 49.2 °C, computed with Katō & Takaoka's formula (stated from 0.43 µm), as here
+  const k = source("KTiOPO4", "Kato"), wide = (e) => ({ ...e, range_um: [e.range_um[0] / 1.1, e.range_um[1] * 1.1] });
+  const s = { ...k, axes: Object.fromEntries(Object.entries(k.axes).map(([a, e]) => [a, wide(e)])) };
+  const r = qpmSolutions((T) => nAtTemp(s, T), s.kind, "poled", D.KTiOPO4.d, "opo", 0.405, 0.81, 49.2).find((x) => x.axis === "x" && x.type === "II");
+  assert.ok(Math.abs(r.period_um - 10.0) < 0.05, `PPKTP 405 nm: ${r.period_um}`);
 });

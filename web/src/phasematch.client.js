@@ -263,19 +263,67 @@ export function ncpmAcceptance(nAtT, process, a, b, pol, T) {
   return width((x) => dk(T + x) - k0, HALF / L_UM, 1e-3, 500);
 }
 
+// ---------- quasi-phase matching (a grating of period Λ supplies 2π/Λ): periodically poled ferroelectrics
+// (PPLN, PPKTP, ...) along a principal axis with the fields along the other two, and orientation-patterned cubic
+// semiconductors (OP-GaAs, OP-GaP). First order: d_eff = (2/π)·|d_ijk e3 e1 e2|; for the cubic ones (2/π)·d14, the
+// figure of merit of Petrov (2015), Table 3, as in the phase-matching tab.
+// Returns the period at T, d_eff, and the spectral and temperature widths of a 1 cm grating (the grating's own
+// thermal expansion is left out). kind: "poled" or "op".
+export function qpmSolutions(nAtT, cryst, kind, d, process, a, b, T) {
+  const w = waves(process, a, b), D = dTensor(d), out = [], unit = (i) => [0, 1, 2].map((j) => (j === i ? 1 : 0));
+  const width0 = (g) => width(g, HALF / L_UM, 1e-6, 0.5);
+  if (kind === "op") {
+    const n = (T2, l) => nAtT(T2)(l)[0];
+    const dk = (T2, ww) => TWO_PI * (n(T2, ww.l3) / ww.l3 - n(T2, ww.l1) / ww.l1 - n(T2, ww.l2) / ww.l2);
+    const kg = dk(T, w);
+    if (!kg) return out;
+    out.push({ how: "qpm", qpm: "op", axis: "", pol: [], type: "0", period_um: TWO_PI / Math.abs(kg),
+      n: [n(T, w.l1), n(T, w.l2), n(T, w.l3)], deff: (2 / Math.PI) * Math.abs(d["14"] ?? 0), walkoff_mrad: [0, 0, 0], noncritical: true,
+      spectral_nm: width0((x) => dk(T, shifted(process, a, b, x)) - kg) * 1e3,
+      temp_C: width((x) => dk(T + x, w) - kg, HALF / L_UM, 1e-3, 500) });
+    return out;
+  }
+  for (const k of cryst === "uniaxial" ? [0] : [0, 1]) { // along x (and y for biaxial crystals); z is the polar axis
+    const across = [0, 1, 2].filter((i) => i !== k);
+    for (const p3 of across) for (const p1 of across) for (const p2 of across) {
+      if (process === "shg" && p1 > p2) continue; // the same pair of fundamental waves
+      const deff = (2 / Math.PI) * Math.abs(contract(D, unit(p3), unit(p1), unit(p2)));
+      if (deff < 0.005) continue;
+      const dk = (T2, ww) => { const n = nAtT(T2); return TWO_PI * (n(ww.l3)[p3] / ww.l3 - n(ww.l1)[p1] / ww.l1 - n(ww.l2)[p2] / ww.l2); };
+      const kg = dk(T, w);
+      if (!kg || !Number.isFinite(kg)) continue; // the grating vector may point either way: Λ = 2π/|Δk|
+      const n = nAtT(T);
+      out.push({ how: "qpm", qpm: "poled", axis: AXES[k], pol: [p1, p2, p3].map((i) => AXES[i]),
+        type: p1 === p2 ? (p1 === p3 ? "0" : "I") : "II", period_um: TWO_PI / Math.abs(kg),
+        n: [n(w.l1)[p1], n(w.l2)[p2], n(w.l3)[p3]], deff, walkoff_mrad: [0, 0, 0], noncritical: true,
+        spectral_nm: width0((x) => dk(T, shifted(process, a, b, x)) - kg) * 1e3,
+        temp_C: width((x) => dk(T + x, w) - kg, HALF / L_UM, 1e-3, 500) });
+    }
+  }
+  return out;
+}
+
 // ---------- crystal advisor
+
+// The shortest first-order poling period reported: 1.4 µm in PPMgLN (Nikogosyan 2005, p. 175 of the PDF)
+export const MIN_PERIOD = 1.4;
 
 // Every crystal that can do the process under the fixed conditions, best first, and the ones that cannot
 // with the reason. crystals: [{material, kind, range_um, thermo (true if dn/dT is known), nAtT(T), d,
-// transparency ([lo, hi] µm, if known), hygroscopic ("none", "slight", "yes", "strong", if known)}].
+// transparency ([lo, hi] µm, if known), hygroscopic ("none", "slight", "yes", "strong", if known), qpm ("poled",
+// "op" or absent: whether a periodically poled or orientation-patterned form exists), minPump (µm, the shortest
+// wavelength it tolerates), cls (how established: basic, main-ir, often, poled, new, sfd, rare, newer)}].
 // want: {process, a, b, T: [lo, hi] (the oven or the room; one value for a fixed temperature), type
 // ("any", "I", "II"), ncpm (90° only), maxWalkoff (mrad), minSpectral (nm·cm), minAngular (mrad·cm),
-// minTemp (°C·cm), needThermo, dry (no crystal a source calls hygroscopic), length (cm, for the bandwidths)}.
+// minTemp (°C·cm), needThermo, dry (no crystal a source calls hygroscopic), qpm (false: birefringent only),
+// qpmOnly, minPeriod (µm: shorter gratings are hard to pole), classes (the cls values to keep; "research" for none),
+// length (cm, for the bandwidths)}.
 export function advise(crystals, want) {
   const { process, a, b } = want, w = waves(process, a, b);
   const [lo, hi] = Array.isArray(want.T) ? want.T : [want.T ?? 25, want.T ?? 25];
   const mid = (lo + hi) / 2, L = want.length || 1, ok = [], no = [];
-  const typeOk = (t) => !want.type || want.type === "any" || (want.type === "I" ? t === "I" : t !== "I");
+  // type "0": QPM with all three waves along one axis (d33 of PPLN, PPKTP)
+  const typeOk = (t) => !want.type || want.type === "any" || want.type === t || (want.type === "II" && (t === "IIa" || t === "IIb"));
   for (const c of crystals) {
     const why = (reason) => no.push({ material: c.material, reason });
     // the transmission range a source states, when known (crystal_properties.yml): a wave outside it is absorbed,
@@ -284,14 +332,23 @@ export function advise(crystals, want) {
     if (t && ![w.l1, w.l2, w.l3].every((l) => l >= t[0] && l <= t[1])) { why("absorbed"); continue; }
     const edge = Boolean(t) && [w.l1, w.l2, w.l3].some((l) => l < t[0] * 1.1 || l > t[1] / 1.1);
     if (![w.l1, w.l2, w.l3].every((l) => l >= c.range_um[0] - 1e-9 && l <= c.range_um[1] + 1e-9)) { why("range"); continue; }
+    // how established the crystal is (a chapter of Nikogosyan 2005, or "newer"); a crystal no handbook treats is "research"
+    if (want.classes && !want.classes.includes(c.cls || "research")) { why("class"); continue; }
+    // the shortest wavelength the crystal tolerates (two-photon or residual absorption, crystal_properties.yml)
+    if (c.minPump && w.l3 < c.minPump) { why("pump"); continue; }
     if (want.needThermo && !c.thermo) { why("no-thermo"); continue; }
     if (want.dry && (c.hygroscopic === "yes" || c.hygroscopic === "strong")) { why("hygroscopic"); continue; }
     // a cubic crystal (CdTe, GaAs) has no birefringence: phase matching by quasi-phase matching only
-    const n0 = c.nAtT(lo)(w.l1);
-    if (Math.max(...n0) - Math.min(...n0) < 1e-6) { why("isotropic"); continue; }
+    const n0 = c.nAtT(lo)(w.l1), isotropic = Math.max(...n0) - Math.min(...n0) < 1e-6;
+    if (isotropic && !(c.qpm && want.qpm !== false)) { why("isotropic"); continue; }
     const D = c.d ? dTensor(c.d) : null, found = [];
+    if (c.qpm && c.d && want.qpm !== false) {
+      for (const q of qpmSolutions(c.nAtT, c.kind, c.qpm, c.d, process, a, b, mid)) {
+        if (typeOk(q.type)) found.push(c.thermo ? q : { ...q, temp_C: null }); // no dn/dT: no temperature width
+      }
+    }
     // critical phase matching at the middle of the temperature range; its angle at both ends
-    if (!want.ncpm) {
+    if (!want.ncpm && !isotropic && !want.qpmOnly) {
       for (const s of solveAll(c.nAtT(mid), c.kind, process, a, b)) {
         if (!typeOk(s.type)) continue;
         const e = c.d ? effectiveD(c.nAtT(mid), c.kind, s, c.d) : null;
@@ -308,7 +365,7 @@ export function advise(crystals, want) {
       }
     }
     // 90° phase matching tuned by temperature, anywhere from −50 to 300 °C; outside the range it is a near miss
-    if (c.thermo) {
+    if (c.thermo && !isotropic && !want.qpmOnly) {
       for (const r of ncpmTemperatures(c.nAtT, c.kind, process, a, b, c.d, [-50, 300])) {
         const type = r.pol[0] === r.pol[1] ? "I" : "II";
         if (!typeOk(type)) continue;
@@ -322,6 +379,7 @@ export function advise(crystals, want) {
       const fails = [];
       if (s.how === "ncpm-temp" && !s.inRange) fails.push("temp");
       if (want.ncpm && !s.noncritical) fails.push("ncpm");
+      if (s.how === "qpm" && s.period_um < (want.minPeriod ?? MIN_PERIOD)) fails.push("period");
       if (D && s.deff !== null && s.deff < 0.005) fails.push("deff0");
       if (want.maxWalkoff != null && Math.max(...s.walkoff_mrad) > want.maxWalkoff) fails.push("walkoff");
       if (want.minSpectral != null && s.spectral_nm != null && s.spectral_nm / L < want.minSpectral) fails.push("spectral");
