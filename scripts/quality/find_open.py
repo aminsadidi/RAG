@@ -46,11 +46,13 @@ def abstract(inv):
 def candidates(crystal, kind, n=25, oa=True):
     term, _ = WHAT[kind]
     q = urllib.parse.urlencode({"filter": ("is_oa:true," if oa else "") + f"title_and_abstract.search:{crystal} {term}", "per-page": n,
-                                "select": "doi,display_name,abstract_inverted_index,best_oa_location,locations",
+                                "select": "doi,display_name,abstract_inverted_index,open_access,locations",
                                 **({"api_key": os.environ["OPENALEX_API_KEY"]} if os.environ.get("OPENALEX_API_KEY") else {})})
     out = []
     for w in get(f"https://api.openalex.org/works?{q}").get("results", []):
         pdfs = [loc["pdf_url"] for loc in w.get("locations") or [] if loc.get("is_oa") and loc.get("pdf_url")]
+        # a gold open-access paper may have no direct PDF link (Optica's OME); its landing page is free to read
+        pdfs = pdfs or [u for u in [(w.get("open_access") or {}).get("oa_url")] if u]
         if w.get("doi") and (pdfs or not oa):
             out.append({"doi": w["doi"].replace("https://doi.org/", ""), "title": w.get("display_name") or "",
                         "abstract": abstract(w.get("abstract_inverted_index")), "pdf": (pdfs or [""])[0]})
