@@ -26,6 +26,8 @@ test("source labels and context pack", () => {
   assert.match(pack, /Papers the sources come from:\n- Ref A\n$/);
   const labelled = mod.contextPack("q?", [{ citation: "A", pages: "2", text: "T", basis: "theoretical" }], {}, null, null);
   assert.match(labelled, /\[1\] \(A, p\. 2; theoretical\/computational work\)\nT/);
+  const cited = mod.contextPack("q?", [{ citation: "A", pages: "2", text: "T", basis: "experimental", basis_p: "review" }], {}, null, null);
+  assert.match(cited, /\[1\] \(A, p\. 2; experimental work; this passage: cites other work\)\nT/);
   assert.equal(mod.cleanTranslation('"Sellmeier of LBO"\nextra', "x"), "Sellmeier of LBO");
 });
 
