@@ -10,10 +10,15 @@ import urllib.error
 import urllib.request
 
 URL = "https://api.subq.ai/v1/systemone"
-MODEL = os.environ.get("SUBQ_MODEL", "subq-snap-1.1")  # gives the preview's answers digit for digit (2026-10); some keys allow only it
+MODEL = os.environ.get("SUBQ_MODEL", "subq-snap-1.1")
+# the two models give the same answers digit for digit (2026-10), but some keys are allowed only one of them, and a key is
+# sometimes refused a model it was allowed a moment before: a refused key tries the other model before it is dropped
+OTHER = {"subq-snap-1.1": "subq-snap-preview", "subq-snap-preview": "subq-snap-1.1"}
 _keys = [k.strip() for k in os.environ.get("SUBQ_KEYS", "").split(",") if k.strip()]
 _lock = threading.Lock()
 _turn = [0]
+_model = {}  # key -> the model it is switched to after a refusal
+_refused = collections.Counter()
 tokens = [0]
 errors = collections.Counter()  # what failed, for the caller's report
 
@@ -32,8 +37,9 @@ def ask(body: dict) -> dict | None:
                 return None
             key = _keys[_turn[0] % len(_keys)]
             _turn[0] += 1
+        model = _model.get(key, body.get("model"))
         try:
-            out = _post(body, key)
+            out = _post({**body, "model": model}, key)
             with _lock:
                 tokens[0] += out.get("usage", {}).get("input_tokens", 0)
             return {k: v["noul"] for k, v in out["answers"].items()}
@@ -42,6 +48,13 @@ def ask(body: dict) -> dict | None:
             errors[f"{e.code} {msg[:60]}"] += 1
             # dropped only when the key itself is spent, invalid or not allowed this model; a refusal under load
             # (other 403s, 429) is waited out, so a busy moment cannot empty the key list
+            if e.code == 403 and "not permitted" in msg and model in OTHER:
+                with _lock:  # the other model; the key is dropped only after repeated refusals
+                    _model[key] = OTHER[model]
+                    _refused[key] += 1
+                    spent = _refused[key] >= 6
+                if not spent:
+                    continue
             if e.code in (401, 402) or (e.code == 403 and "not permitted" in msg):
                 with _lock:
                     if key in _keys:
