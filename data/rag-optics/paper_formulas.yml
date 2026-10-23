@@ -1378,3 +1378,16 @@
     - {page: Shi-2017 DFT, direction: y, type: 4, coefficients: [2.43452, 0.01065, 0, 0.01707, 1, 0, 0, 0, 1, -0.00399, 2], range_um: [0.156, 1.6]}
     - {page: Shi-2017 DFT, direction: z, type: 4, coefficients: [2.45575, 0.01113, 0, 0.01679, 1, 0, 0, 0, 1, -0.00363, 2], range_um: [0.156, 1.6]}
   checks: []
+
+- material: MgSiP2
+  name: MgSiP2 (Magnesium silicon phosphide)
+  doc_id: 10.1002_adom.202301060
+  reference: "He et al. (2023). MgSiP2: An Infrared Nonlinear Optical Crystal with a Large Non-Resonant Phase-Matchable Second Harmonic Coefficient and High Laser Damage Threshold. Advanced Optical Materials 11, 2301060. doi:10.1002/adom.202301060"
+  doi: 10.1002/adom.202301060
+  pdf_page: 4
+  where: "Table 1: n² = A + B/(λ² − C) (λ in µm), no: A = 7.423, B = 0.3, C = 0.06685; ne: A = 7.622, B = 0.4774, C = 0.08485. Fitted to ellipsometry at 0.45–1.0 µm and extrapolated by the authors to 4 µm for their phase-matching calculations (Fig. 2c, 5); transparent 0.53–10.35 µm, positive uniaxial"
+  entries:
+    - {page: He-2023, direction: o, type: 4, coefficients: [7.423, 0.3, 0, 0.06685, 1], range_um: [0.45, 4.0]}
+    - {page: He-2023, direction: e, type: 4, coefficients: [7.622, 0.4774, 0, 0.08485, 1], range_um: [0.45, 4.0]}
+  checks: []  # no tabulated index; the test compares the paper's d_eff of SHG of 3.5 µm (3–7 % apart: the angles of Fig. 5a are not checked)
+

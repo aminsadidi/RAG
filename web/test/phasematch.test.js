@@ -751,3 +751,13 @@ test("temporal walk-off: group-velocity mismatch of type-I SHG of 800 nm in BBO"
   assert.ok(r.gvm_fs_mm[0] < 0 && Math.abs(-r.gvm_fs_mm[0] - 190) < 10, `${r.gvm_fs_mm}`);
   assert.equal(r.gvm_fs_mm[2], 0); // the two fundamental photons are the same wave
 });
+
+test("MgSiP2 (He et al. 2023): d_eff of SHG of 3.5 µm with d36 = 81.6 pm/V (Miller's rule)", () => {
+  // the paper gives |d_eff| = 80.2 (type I) and 73.4 pm/V (type II); with Table 1's Sellmeier the site finds 77.7 and 68.4,
+  // i.e. a type-I angle of 36.9° where 80.2 implies about 39.6°. The angles of Fig. 5a were not read, so 8 % is allowed.
+  const s = source("MgSiP2"), d = Object.fromEntries(Object.entries(D.MgSiP2.d).map(([k, v]) => [k, v * 81.6 / 89]));
+  for (const [type, want] of [["I", 80.2], ["IIa", 73.4]]) {
+    const r = solveAll(nAt(s), s.kind, "shg", 3.5, 0).find((x) => x.type === type);
+    assert.ok(Math.abs(effectiveD(nAt(s), s.kind, r, d).deff / want - 1) < 0.08, `${type}`);
+  }
+});

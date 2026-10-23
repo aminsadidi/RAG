@@ -736,3 +736,11 @@
   sources:
     - {doc_id: 10.1364_ao.57.007440, cite: "Katō et al. (2018)", pdf_page: 1, what: "d11 ≅ 66 pm/V for SHG at 5.2955 µm, quoted from the crystal-growth papers (refs. 3, 4)"}
   notes: "3: d12 = d26 = −d11; d22, d31, d33, d14, d15 not known. Value at 5.3 µm"
+
+- material: MgSiP2
+  point_group: -42m
+  d: {36: 89, 14: 89, 25: 89}
+  sources:
+    - {doc_id: 10.1002_adom.202301060, cite: "He et al. (2023)", pdf_page: 4, what: "d14 ≈ d36 = 89 ± 5 pm/V at 1550 nm (SHG polarimetry against LiNbO3, d14/d36 = 1.05 ± 0.05); by Miller's rule d36 = 81.6 pm/V at 3.5 µm, where type-I and type-II SHG give |d_eff| = 80.2 and 73.4 pm/V (p. 6)"}
+  notes: "−42m, Kleinman (d14 = d25 = d36, confirmed by the measured ratio). Value at 1550 nm"
+
