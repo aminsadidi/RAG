@@ -115,9 +115,9 @@
 },
 "10.1002_adfm.202211969": {
 "label": "experimental",
-"measured": 0.997,
-"calculated": 0.035,
-"review": 0.005
+"measured": 0.971,
+"calculated": 0.121,
+"review": 0.026
 },
 "10.1002_adfm.202309663": {
 "label": "review",
@@ -516,10 +516,10 @@
 "review": 0.154
 },
 "10.1002_anie.201612236": {
-"label": "experimental",
-"measured": 0.982,
-"calculated": 0.088,
-"review": 0.008
+"label": "both",
+"measured": 0.897,
+"calculated": 0.994,
+"review": 0.1
 },
 "10.1002_anie.201700540": {
 "label": "theoretical",
@@ -624,10 +624,10 @@
 "review": 0.012
 },
 "10.1002_anie.202001203": {
-"label": "experimental",
-"measured": 0.967,
-"calculated": 0.045,
-"review": 0.009
+"label": "both",
+"measured": 0.995,
+"calculated": 0.843,
+"review": 0.036
 },
 "10.1002_anie.202002291": {
 "label": "experimental",
@@ -1054,6 +1054,12 @@
 "measured": 0.774,
 "calculated": 0.935,
 "review": 0.528
+},
+"10.1002_pssa.2211350242": {
+"label": "experimental",
+"measured": 0.993,
+"calculated": 0.168,
+"review": 0.045
 },
 "10.1002_pssb.19660140127": {
 "label": "experimental",
@@ -2483,6 +2489,12 @@
 "calculated": 0.997,
 "review": 0.596
 },
+"10.1016_j.optmat.2014.07.026": {
+"label": "both",
+"measured": 0.991,
+"calculated": 0.915,
+"review": 0.251
+},
 "10.1016_j.optmat.2014.12.046": {
 "label": "experimental",
 "measured": 0.995,
@@ -2524,6 +2536,12 @@
 "measured": 0.985,
 "calculated": 0.458,
 "review": 0.333
+},
+"10.1016_j.optmat.2020.110121": {
+"label": "both",
+"measured": 0.954,
+"calculated": 0.924,
+"review": 0.087
 },
 "10.1016_j.optmat.2020.110380": {
 "label": "experimental",
@@ -3253,9 +3271,9 @@
 },
 "10.1021_acs.est.5b01841": {
 "label": "experimental",
-"measured": 0.986,
-"calculated": 0.019,
-"review": 0.008
+"measured": 0.987,
+"calculated": 0.226,
+"review": 0.177
 },
 "10.1021_acs.inorgchem.0c00196": {
 "label": "both",
@@ -3912,10 +3930,10 @@
 "review": 0.018
 },
 "10.1021_jacs.2c05447": {
-"label": "experimental",
-"measured": 0.996,
-"calculated": 0.025,
-"review": 0.005
+"label": "both",
+"measured": 0.993,
+"calculated": 0.979,
+"review": 0.28
 },
 "10.1021_jacs.2c10674": {
 "label": "experimental",
@@ -4039,9 +4057,9 @@
 },
 "10.1021_jacs.9b04653": {
 "label": "both",
-"measured": 0.999,
-"calculated": 0.961,
-"review": 0.002
+"measured": 0.998,
+"calculated": 0.969,
+"review": 0.044
 },
 "10.1021_jacs.9b08851": {
 "label": "both",
@@ -4195,9 +4213,9 @@
 },
 "10.1021_nl071027k": {
 "label": "theoretical",
-"measured": 0.018,
-"calculated": 0.997,
-"review": 0.005
+"measured": 0.034,
+"calculated": 0.992,
+"review": 0.036
 },
 "10.1021_nl802886y": {
 "label": "both",
@@ -4453,9 +4471,9 @@
 },
 "10.1038_s41377_023_01293_1": {
 "label": "review",
-"measured": 0.345,
-"calculated": 0.319,
-"review": 0.97
+"measured": 0.275,
+"calculated": 0.774,
+"review": 0.698
 },
 "10.1038_s41377_024_01662_4": {
 "label": "review",
@@ -4681,9 +4699,9 @@
 },
 "10.1038_s41566_021_00925_5": {
 "label": "experimental",
-"measured": 0.995,
-"calculated": 0.117,
-"review": 0.009
+"measured": 0.994,
+"calculated": 0.066,
+"review": 0.103
 },
 "10.1038_s41566_023_01187_z": {
 "label": "experimental",
@@ -5046,10 +5064,10 @@
 "review": 0.995
 },
 "10.1039_d2cc03495f": {
-"label": "experimental",
-"measured": 0.961,
-"calculated": 0.192,
-"review": 0.006
+"label": "both",
+"measured": 0.963,
+"calculated": 0.967,
+"review": 0.116
 },
 "10.1039_d3cp03158f": {
 "label": "experimental",
@@ -5275,9 +5293,9 @@
 },
 "10.1063_1.107914": {
 "label": "experimental",
-"measured": 0.993,
-"calculated": 0.007,
-"review": 0.003
+"measured": 0.997,
+"calculated": 0.09,
+"review": 0.127
 },
 "10.1063_1.108584": {
 "label": "experimental",
@@ -5491,9 +5509,9 @@
 },
 "10.1063_1.119157": {
 "label": "experimental",
-"measured": 0.994,
-"calculated": 0.029,
-"review": 0.003
+"measured": 0.972,
+"calculated": 0.053,
+"review": 0.092
 },
 "10.1063_1.119210": {
 "label": "experimental",
@@ -5827,9 +5845,9 @@
 },
 "10.1063_1.1482786": {
 "label": "experimental",
-"measured": 0.991,
-"calculated": 0.013,
-"review": 0.002
+"measured": 0.989,
+"calculated": 0.159,
+"review": 0.019
 },
 "10.1063_1.1484543": {
 "label": "both",
@@ -5838,10 +5856,10 @@
 "review": 0.013
 },
 "10.1063_1.1489481": {
-"label": "experimental",
-"measured": 0.988,
-"calculated": 0.078,
-"review": 0.007
+"label": "both",
+"measured": 0.976,
+"calculated": 0.928,
+"review": 0.181
 },
 "10.1063_1.1497384": {
 "label": "experimental",
@@ -6444,10 +6462,10 @@
 "review": 0.403
 },
 "10.1063_1.1713045": {
-"label": "both",
+"label": "experimental",
 "measured": 0.996,
-"calculated": 0.819,
-"review": 0.011
+"calculated": 0.037,
+"review": 0.042
 },
 "10.1063_1.1713411": {
 "label": "experimental",
@@ -6484,6 +6502,12 @@
 "measured": 0.946,
 "calculated": 0.386,
 "review": 0.097
+},
+"10.1063_1.1754106": {
+"label": "experimental",
+"measured": 0.987,
+"calculated": 0.497,
+"review": 0.083
 },
 "10.1063_1.1754607": {
 "label": "experimental",
@@ -7477,9 +7501,9 @@
 },
 "10.1063_1.3655331": {
 "label": "experimental",
-"measured": 0.991,
-"calculated": 0.045,
-"review": 0.008
+"measured": 0.99,
+"calculated": 0.598,
+"review": 0.066
 },
 "10.1063_1.365575": {
 "label": "experimental",
@@ -7645,9 +7669,9 @@
 },
 "10.1063_1.373462": {
 "label": "experimental",
-"measured": 0.997,
-"calculated": 0.769,
-"review": 0.009
+"measured": 0.963,
+"calculated": 0.755,
+"review": 0.12
 },
 "10.1063_1.373647": {
 "label": "both",
@@ -7699,9 +7723,9 @@
 },
 "10.1063_1.4729468": {
 "label": "theoretical",
-"measured": 0.043,
-"calculated": 0.956,
-"review": 0.029
+"measured": 0.201,
+"calculated": 0.928,
+"review": 0.217
 },
 "10.1063_1.4740071": {
 "label": "theoretical",
@@ -8467,9 +8491,9 @@
 },
 "10.1088_0022_3727_47_37_374001": {
 "label": "review",
-"measured": 0.02,
-"calculated": 0.042,
-"review": 0.983
+"measured": 0.015,
+"calculated": 0.008,
+"review": 0.955
 },
 "10.1088_0022_3735_16_12_023": {
 "label": "theoretical",
@@ -8580,16 +8604,16 @@
 "review": 0.532
 },
 "10.1088_0953_4075_45_18_183001": {
-"label": "review",
-"measured": 0.066,
-"calculated": 0.395,
-"review": 0.882
+"label": "both",
+"measured": 0.813,
+"calculated": 0.941,
+"review": 0.828
 },
 "10.1088_0953_4075_47_20_204030": {
-"label": "experimental",
-"measured": 0.925,
-"calculated": 0.104,
-"review": 0.896
+"label": "review",
+"measured": 0.618,
+"calculated": 0.269,
+"review": 0.789
 },
 "10.1088_0953_4075_49_12_123501": {
 "label": "both",
@@ -9085,9 +9109,9 @@
 },
 "10.1103_physrevapplied.15.064070": {
 "label": "theoretical",
-"measured": 0.027,
-"calculated": 0.988,
-"review": 0.015
+"measured": 0.271,
+"calculated": 0.975,
+"review": 0.041
 },
 "10.1103_physrevapplied.19.034018": {
 "label": "experimental",
@@ -9792,10 +9816,10 @@
 "review": 0.087
 },
 "10.1103_physrevb.98.115405": {
-"label": "both",
-"measured": 0.992,
-"calculated": 0.997,
-"review": 0.006
+"label": "experimental",
+"measured": 0.916,
+"calculated": 0.529,
+"review": 0.075
 },
 "10.1103_physrevb.98.214108": {
 "label": "theoretical",
@@ -9804,10 +9828,10 @@
 "review": 0.022
 },
 "10.1103_physreve.106.021001": {
-"label": "review",
-"measured": 0.044,
-"calculated": 0.032,
-"review": 0.963
+"label": "theoretical",
+"measured": 0.274,
+"calculated": 0.833,
+"review": 0.95
 },
 "10.1103_physreve.60.4891": {
 "label": "theoretical",
@@ -9841,9 +9865,9 @@
 },
 "10.1103_physrevlett.104.153901": {
 "label": "both",
-"measured": 0.996,
-"calculated": 0.918,
-"review": 0.013
+"measured": 0.989,
+"calculated": 0.953,
+"review": 0.053
 },
 "10.1103_physrevlett.105.253601": {
 "label": "both",
@@ -10937,6 +10961,12 @@
 "calculated": 0.327,
 "review": 0.284
 },
+"10.1117_12.187374": {
+"label": "both",
+"measured": 0.662,
+"calculated": 0.946,
+"review": 0.063
+},
 "10.1117_12.200607": {
 "label": "experimental",
 "measured": 0.977,
@@ -11644,6 +11674,12 @@
 "measured": 0.959,
 "calculated": 0.765,
 "review": 0.054
+},
+"10.1364_ao.16.001796": {
+"label": "both",
+"measured": 0.725,
+"calculated": 0.903,
+"review": 0.185
 },
 "10.1364_ao.17.000353": {
 "label": "both",
@@ -13291,9 +13327,9 @@
 },
 "10.1364_oe.15.000629": {
 "label": "experimental",
-"measured": 0.999,
-"calculated": 0.043,
-"review": 0.003
+"measured": 0.794,
+"calculated": 0.169,
+"review": 0.101
 },
 "10.1364_oe.15.000660": {
 "label": "experimental",
@@ -13471,9 +13507,9 @@
 },
 "10.1364_oe.18.020251": {
 "label": "experimental",
-"measured": 0.996,
-"calculated": 0.109,
-"review": 0.007
+"measured": 0.994,
+"calculated": 0.28,
+"review": 0.114
 },
 "10.1364_oe.18.023620": {
 "label": "experimental",
@@ -13489,9 +13525,9 @@
 },
 "10.1364_oe.19.004815": {
 "label": "theoretical",
-"measured": 0.298,
-"calculated": 0.832,
-"review": 0.067
+"measured": 0.179,
+"calculated": 0.887,
+"review": 0.071
 },
 "10.1364_oe.19.006333": {
 "label": "experimental",
@@ -13513,9 +13549,9 @@
 },
 "10.1364_oe.19.019901": {
 "label": "experimental",
-"measured": 0.996,
-"calculated": 0.038,
-"review": 0.006
+"measured": 0.844,
+"calculated": 0.129,
+"review": 0.21
 },
 "10.1364_oe.20.000807": {
 "label": "both",
@@ -13848,10 +13884,10 @@
 "review": 0.006
 },
 "10.1364_oe.27.027229": {
-"label": "both",
-"measured": 0.987,
-"calculated": 0.935,
-"review": 0.019
+"label": "experimental",
+"measured": 0.994,
+"calculated": 0.207,
+"review": 0.074
 },
 "10.1364_oe.27.034803": {
 "label": "both",
@@ -14929,9 +14965,9 @@
 },
 "10.1364_ol.41.004971": {
 "label": "experimental",
-"measured": 0.994,
-"calculated": 0.176,
-"review": 0.011
+"measured": 0.992,
+"calculated": 0.586,
+"review": 0.04
 },
 "10.1364_ol.41.005210": {
 "label": "experimental",
@@ -14971,9 +15007,9 @@
 },
 "10.1364_ol.42.000811": {
 "label": "experimental",
-"measured": 0.982,
-"calculated": 0.119,
-"review": 0.008
+"measured": 0.946,
+"calculated": 0.698,
+"review": 0.048
 },
 "10.1364_ol.42.002098": {
 "label": "experimental",
@@ -15257,6 +15293,12 @@
 "calculated": 0.42,
 "review": 0.047
 },
+"10.1364_ome.1.000316": {
+"label": "both",
+"measured": 0.998,
+"calculated": 0.801,
+"review": 0.07
+},
 "10.1364_ome.1.000434": {
 "label": "experimental",
 "measured": 0.96,
@@ -15365,6 +15407,12 @@
 "calculated": 0.022,
 "review": 0.001
 },
+"10.1364_ome.491299": {
+"label": "experimental",
+"measured": 0.978,
+"calculated": 0.569,
+"review": 0.066
+},
 "10.1364_ome.496246": {
 "label": "experimental",
 "measured": 0.997,
@@ -15397,9 +15445,9 @@
 },
 "10.1364_ome.528491": {
 "label": "experimental",
-"measured": 0.998,
-"calculated": 0.074,
-"review": 0.009
+"measured": 0.999,
+"calculated": 0.516,
+"review": 0.08
 },
 "10.1364_ome.562660": {
 "label": "experimental",
@@ -15410,8 +15458,8 @@
 "10.1364_ome.585330": {
 "label": "experimental",
 "measured": 0.999,
-"calculated": 0.317,
-"review": 0.008
+"calculated": 0.264,
+"review": 0.091
 },
 "10.1364_ome.592118": {
 "label": "experimental",
@@ -15613,9 +15661,9 @@
 },
 "10.1364_optica.4.000976": {
 "label": "both",
-"measured": 0.997,
-"calculated": 0.981,
-"review": 0.007
+"measured": 0.998,
+"calculated": 0.983,
+"review": 0.02
 },
 "10.1364_optica.442332": {
 "label": "both",
@@ -15667,9 +15715,9 @@
 },
 "10.1364_osac.439298": {
 "label": "experimental",
-"measured": 0.99,
-"calculated": 0.024,
-"review": 0.005
+"measured": 0.779,
+"calculated": 0.647,
+"review": 0.107
 },
 "10.1364_prj.485813": {
 "label": "experimental",
@@ -15680,8 +15728,8 @@
 "10.1366_000370208785793227": {
 "label": "experimental",
 "measured": 0.989,
-"calculated": 0.005,
-"review": 0.008
+"calculated": 0.018,
+"review": 0.099
 },
 "10.1366_0003702963905385": {
 "label": "review",
@@ -15793,9 +15841,9 @@
 },
 "10.17586_2226_1494_2022_22_4_635_642": {
 "label": "both",
-"measured": 0.988,
-"calculated": 0.927,
-"review": 0.029
+"measured": 0.83,
+"calculated": 0.991,
+"review": 0.191
 },
 "10.18452_20888": {
 "label": "experimental",
@@ -15940,6 +15988,12 @@
 "measured": 0.012,
 "calculated": 0.998,
 "review": 0.006
+},
+"10.3390_condmat5030047": {
+"label": "experimental",
+"measured": 0.997,
+"calculated": 0.093,
+"review": 0.133
 },
 "10.3390_cryst10090730": {
 "label": "experimental",
@@ -16355,11 +16409,167 @@
 "calculated": 0.838,
 "review": 0.733
 },
+"2930466": {
+"label": "experimental",
+"measured": 0.982,
+"calculated": 0.744,
+"review": 0.122
+},
+"4081086": {
+"label": "both",
+"measured": 0.966,
+"calculated": 0.876,
+"review": 0.133
+},
+"APL_SupplementaryMaterial_v4_unmarked": {
+"label": "both",
+"measured": 0.993,
+"calculated": 0.991,
+"review": 0.025
+},
+"LWIR_materials_2023-11-22_-_no_linenumbers": {
+"label": "experimental",
+"measured": 0.991,
+"calculated": 0.476,
+"review": 0.466
+},
+"Milot_et_al-2015-Advanced_Functional_Materials": {
+"label": "experimental",
+"measured": 0.98,
+"calculated": 0.195,
+"review": 0.05
+},
+"am5b04075_si_001": {
+"label": "theoretical",
+"measured": 0.107,
+"calculated": 0.785,
+"review": 0.063
+},
+"am8b20535_si_002": {
+"label": "both",
+"measured": 0.889,
+"calculated": 0.841,
+"review": 0.811
+},
+"bm5b01598_si_001": {
+"label": "experimental",
+"measured": 0.976,
+"calculated": 0.278,
+"review": 0.172
+},
+"cg2c01079_si_001": {
+"label": "experimental",
+"measured": 0.819,
+"calculated": 0.038,
+"review": 0.011
+},
+"cg5c00388_si_001": {
+"label": "experimental",
+"measured": 0.948,
+"calculated": 0.309,
+"review": 0.519
+},
+"cm4c02779_si_001": {
+"label": "experimental",
+"measured": 0.949,
+"calculated": 0.264,
+"review": 0.098
+},
+"cm6b00847_si_001": {
+"label": "experimental",
+"measured": 0.969,
+"calculated": 0.49,
+"review": 0.135
+},
+"es5b01841_si_001": {
+"label": "experimental",
+"measured": 0.619,
+"calculated": 0.056,
+"review": 0.043
+},
 "fatahi2018": {
 "label": "theoretical",
 "measured": 0.07,
 "calculated": 0.933,
 "review": 0.084
+},
+"ic2c04536_si_001": {
+"label": "experimental",
+"measured": 0.959,
+"calculated": 0.227,
+"review": 0.058
+},
+"ic3c02845_si_001": {
+"label": "experimental",
+"measured": 0.606,
+"calculated": 0.646,
+"review": 0.074
+},
+"ja2c05447_si_001": {
+"label": "experimental",
+"measured": 0.893,
+"calculated": 0.391,
+"review": 0.047
+},
+"ja2c10674_si_001": {
+"label": "experimental",
+"measured": 0.988,
+"calculated": 0.052,
+"review": 0.27
+},
+"ja309812z_si_001": {
+"label": "experimental",
+"measured": 0.967,
+"calculated": 0.053,
+"review": 0.04
+},
+"ja6b06443_si_001": {
+"label": "experimental",
+"measured": 0.994,
+"calculated": 0.015,
+"review": 0.075
+},
+"ja9b04653_si_001": {
+"label": "both",
+"measured": 0.974,
+"calculated": 0.973,
+"review": 0.04
+},
+"jz502471h_si_001": {
+"label": "experimental",
+"measured": 0.945,
+"calculated": 0.209,
+"review": 0.407
+},
+"la8b01259_si_001": {
+"label": "both",
+"measured": 0.907,
+"calculated": 0.835,
+"review": 0.071
+},
+"nl071027k_si_001": {
+"label": "theoretical",
+"measured": 0.11,
+"calculated": 0.881,
+"review": 0.18
+},
+"nl6b01255_si_001": {
+"label": "both",
+"measured": 0.946,
+"calculated": 0.981,
+"review": 0.108
+},
+"nn0c09500_si_001": {
+"label": "experimental",
+"measured": 0.996,
+"calculated": 0.076,
+"review": 0.022
+},
+"oc2c00832_si_001": {
+"label": "experimental",
+"measured": 0.987,
+"calculated": 0.15,
+"review": 0.037
 },
 "openalex_W1513893858": {
 "label": "experimental",
@@ -16522,5 +16732,47 @@
 "measured": 0.997,
 "calculated": 0.922,
 "review": 0.012
+},
+"optica-1-1-45-s001": {
+"label": "theoretical",
+"measured": 0.354,
+"calculated": 0.958,
+"review": 0.368
+},
+"optica-3-10-1126-s001": {
+"label": "both",
+"measured": 0.883,
+"calculated": 0.87,
+"review": 0.056
+},
+"optica-3-12-1308-s001": {
+"label": "both",
+"measured": 0.771,
+"calculated": 0.856,
+"review": 0.116
+},
+"optica-3-5-531-s001": {
+"label": "theoretical",
+"measured": 0.439,
+"calculated": 0.966,
+"review": 0.079
+},
+"optica-4-5-516-s001": {
+"label": "both",
+"measured": 0.873,
+"calculated": 0.869,
+"review": 0.066
+},
+"tlct_a_2517869_sm8388": {
+"label": "experimental",
+"measured": 0.98,
+"calculated": 0.741,
+"review": 0.08
+},
+"tz2c00929_si_001": {
+"label": "unknown",
+"measured": 0.366,
+"calculated": 0.583,
+"review": 0.077
 }
 }
