@@ -721,3 +721,18 @@
     - {doc_id: "10.1038-s41586-025-10007-z", cite: "Zhang et al. (preprint 2025; published in Nature 650, 97 (2026))", pdf_page: 14, what: "PREPRINT (Research Square, doi:10.21203/rs.3.rs-6284969/v1), not the published version: d32 = 2.8·d36(KDP) = 1.09 pm/V from Maker fringes at 1.064 µm (d36 = 0.39 pm/V); the phase-matched SHG method against LBO gives 0.93 pm/V (Methods, p. 14). Type-I SHG in the xy plane: d_eff = d32·cos φ"}
     - {doc_id: 10.1021_jacs.7b05943, cite: "Shi et al. (2017)", pdf_page: 4, basis: calculated, what: "DFT-calculated d31 = 0.02, d32 = 1.07, d33 = −1.19 pm/V (Table 1); not used here"}
   notes: "mm2: d24 = d32 by Kleinman symmetry; d31 and d33 not measured. From a preprint: the published Nature version may give different values"
+
+- material: ZnO
+  point_group: 6mm
+  d: {33: -7.16, 31: 0.68, 32: 0.68, 15: 0.68, 24: 0.68}
+  sources:
+    - {doc_id: 10.1364_ao.40.005436, cite: "Wang et al. (2001)", pdf_page: 2, what: "χ33 = −14.31 ± 0.4 pm/V and χ31/χ33 = −0.095 (χ31 = 1.36 pm/V) from Maker-type angular SHG at 1.064 µm on a [0001] platelet (the [10-10] platelet gives χ33 = −14.77); calibrated to quartz χxxx = 0.8 pm/V, i.e. χ = 2d with the then-standard quartz d11 = 0.4 pm/V, so d33 = −7.16 and d31 = 0.68 pm/V. The overall sign is the one reported earlier; only the relative sign was measured"}
+  notes: "6mm: d31 = d32, Kleinman d15 = d24 = d31. Rescaled to today's quartz d11 = 0.3 pm/V the values would be 25 % lower"
+
+- material: BaGa2GeSe6
+  point_group: "3"
+  partial: true
+  d: {11: 66, 12: -66, 26: -66}
+  sources:
+    - {doc_id: 10.1364_ao.57.007440, cite: "Katō et al. (2018)", pdf_page: 1, what: "d11 ≅ 66 pm/V for SHG at 5.2955 µm, quoted from the crystal-growth papers (refs. 3, 4)"}
+  notes: "3: d12 = d26 = −d11; d22, d31, d33, d14, d15 not known. Value at 5.3 µm"

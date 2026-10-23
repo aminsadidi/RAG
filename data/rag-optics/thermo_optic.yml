@@ -2,7 +2,7 @@
 # phase-matching tab (temperature input and noncritical phase-matching temperatures).
 #
 # Each block applies to one source of the crystal (`source`: the page label of its Sellmeier
-# equations, the same paper's) and gives n(λ, T) = n(λ, t0) + Δn(λ, T):
+# equations, the same paper's unless `where` says otherwise) and gives n(λ, T) = n(λ, t0) + Δn(λ, T):
 #   form "kato":  dn/dT = Σ c·λ^p × 10⁻⁵ /°C, constant in T, so Δn = (T − t0)·dn/dT; `pieces` cover
 #                 wavelength ranges (outside them the nearest piece is used).
 #                 A piece may carry t_coef (and t_coef2): dn/dT = (Σ c·λ^p)(1 + t_coef·ΔT + t_coef2·ΔT²) × 10⁻⁵,
@@ -995,3 +995,27 @@
   axes:
     o: {delta: -124.0e-6, omega: -250.0e-6, lam1: 0.1960}
     e: {delta: -91.0e-6, omega: -185.0e-6, lam1: 0.2039}
+
+- material: CaYAlO4
+  source: Loiko
+  doc_id: 10.1364_ol.42.002275
+  cite: "Loiko et al. (2017)"
+  pdf_page: 3
+  where: "Eq. (3) and Table 2: dn/dT = [A0 + A1/λ² + A2/λ⁴ + A3/λ⁶] × 10⁻⁶ K⁻¹, no: −8.00, 0.213, −0.0472, 0.01405; ne: −8.77, 0.174, −0.0638, 0.01586; measured to ~1.5 µm and extrapolated to 2.1 µm (Fig. 5a); dno/dT = −7.8, dne/dT = −8.7 × 10⁻⁶ K⁻¹ at 1.03 µm (Table 3). The Sellmeier equations of Table 1 are at 293 K"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.35, 2.1], terms: [[-0.800, 0], [0.0213, -2], [-0.00472, -4], [0.001405, -6]]}]
+    e: [{range_um: [0.35, 2.1], terms: [[-0.877, 0], [0.0174, -2], [-0.00638, -4], [0.001586, -6]]}]
+
+- material: GaS
+  source: Kato
+  doc_id: 10.1103_physrevb.60.15866
+  cite: "Errandonea et al. (1999)"
+  pdf_page: 4
+  where: "Table III: ∂ln n⊥/∂T = 3.5 ± 0.3 and ∂ln n∥/∂T = 10.1 ± 0.5 × 10⁻⁵ K⁻¹ at 1400 nm (E ⊥ c is o, E ∥ c is e); dn/dT = n·∂ln n/∂T with n(1.4 µm) = 2.602 and 2.254 of the Kato Sellmeier equations. A single wavelength from a different paper than the Sellmeier equations: the value is held constant over all wavelengths and is reliable only near 1.4 µm"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [1.4, 1.4], terms: [[9.11, 0]]}]
+    e: [{range_um: [1.4, 1.4], terms: [[22.76, 0]]}]
