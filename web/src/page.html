@@ -339,7 +339,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
 <section id="tab-pm" hidden class="viz-root">
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
-    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای ۶۰ بلور که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
+    <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای بلورهایی که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
@@ -1011,7 +1011,7 @@ function suggestMaterials(query) {
   box.innerHTML = found.length
     ? "پیشنهاد: " + found.map((m) => `<button class="alt" data-mat="${esc(matName(m))}" style="margin:2px;direction:ltr">${esc(m.name || matName(m))}</button>`).join("")
     : `<span class="err">این ماده در پایگاه refractiveindex.info نیست (برای نمونه KTiOAsO4، CsB3O5، KBBF، CdSiP2 و YCOB آن‌جا داده ندارند، هرچند مقاله‌هایشان در مجموعه هست).</span>
-       نام انگلیسی یا فرمول شیمیایی را امتحان کنید، یا <button class="alt" id="rinomat">«${esc(query)}» را در مقاله‌ها جست‌وجو کنید</button>
+       نام انگلیسی یا فرمول شیمیایی را امتحان کنید، یا <button class="alt" id="rinomat">جست‌وجوی «${esc(query)}» در مقاله‌ها</button>
        و فرمول سلمایر مقاله را در «داده‌ی خودتان» (پایین صفحه) وارد کنید تا نمودارش رسم شود.`;
   return found;
 }
@@ -1313,7 +1313,7 @@ $("ufsave").onclick = () => {
     const raw = $("ufcoef").value.trim().split(/[\s,;]+/).filter(Boolean).map(Number);
     if (!raw.length || raw.some((x) => !Number.isFinite(x))) return msg("ضرایب باید عدد باشند، جداشده با فاصله یا ویرگول.", true);
     const lo = +$("uflo").value, hi = +$("ufhi").value;
-    if (!(lo > 0 && hi > lo)) return msg("بازه‌ی طول موج درست نیست (از < تا، بر حسب µm).", true);
+    if (!(lo > 0 && hi > lo)) return msg("بازه‌ی طول موج درست نیست («از» باید کمتر از «تا» باشد، بر حسب µm).", true);
     const form = $("uftype").value;
     u = { kind: "formula", form, raw, ...toEntry(form, raw), range_um: [lo, hi] };
     const mid = nOf({ ...u, user: true }, (lo + hi) / 2);
@@ -2395,7 +2395,7 @@ document.addEventListener("click", (e) => {
     const digits = (t) => t.replace(/[۰-۹]/g, (d) => "۰۱۲۳۴۵۶۷۸۹".indexOf(d)).replace(/٬/g, ",").replace(/٫/g, ".")
       .replace(/،/g, ",").replace(/؛/g, ";").replace(/؟/g, "?").replace(/٪/g, "%");
     // "4 منبع" comes out "4 Source": English counts take the plural
-    const plural = (t) => t.replace(/\b(\d[\d,]*) (Source|source|formula|passage|point)\b/g, (m, n, w) => `${n} ${n === "1" ? w.toLowerCase() : w.toLowerCase() + "s"}`);
+    const plural = (t) => t.replace(/\b(\d[\d,]*) (Source|source|formula|passage|point|Paper|paper)\b/g, (m, n, w) => `${n} ${n === "1" ? w.toLowerCase() : w.toLowerCase() + "s"}`);
     const tr = (t) => { if (!t || !PERSIAN.test(t)) return t; for (let i = 0; i < 2; i++) t = t.replace(re, (m) => dict[m]); return plural(digits(t)); };
     const ATTRS = ["placeholder", "title", "aria-label", "alt"];
     const walk = (root) => {
