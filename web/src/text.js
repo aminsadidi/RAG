@@ -147,7 +147,8 @@ export function contextPack(question, payloads, about, language, searchQuery) {
     "Say whether each value you give was measured or calculated, as the source shows (each source is labelled with the kind of work it is).",
     ...languageRules(language)];
   const kind = { experimental: "experimental work", theoretical: "theoretical/computational work", both: "experimental and theoretical work", review: "review or compilation" };
-  const context = payloads.map((p, i) => `[${i + 1}] (${sourceLabel(p)}${kind[p.basis] ? `; ${kind[p.basis]}` : ""})\n${p.text}`).join("\n\n");
+  const passage = { experimental: "this passage: measured", theoretical: "this passage: calculated", both: "this passage: measured and calculated", review: "this passage: cites other work" };
+  const context = payloads.map((p, i) => `[${i + 1}] (${sourceLabel(p)}${kind[p.basis] ? `; ${kind[p.basis]}` : ""}${passage[p.basis_p] ? `; ${passage[p.basis_p]}` : ""})\n${p.text}`).join("\n\n");
   const prompt = S.RAG_PROMPT.replace("{not_found}", S.NOT_FOUND)
     .replace("{extra_rules}", rules.map((r) => `- ${r}\n`).join(""))
     .replace("{context}", context)

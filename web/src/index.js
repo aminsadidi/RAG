@@ -21,7 +21,7 @@ import { telegramWebhook } from "./admin.js";
 
 const FEEDBACK_PER_DAY = 30; // each one is a Telegram message and a KV write
 const LOGIN_TRIES = 10; // failed logins per address and name per 15 minutes
-const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch"];
+const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch", "basis_p"];  // basis_p: scripts/quality/passage_basis.py
 const MODES = ["hybrid", "vector", "bm25"];
 
 const json = (data, status = 200) =>

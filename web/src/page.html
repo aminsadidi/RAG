@@ -582,7 +582,11 @@ const tempNote = (id, th) => { const v = +$(id).value;
 const basisName = (x) => (x?.basis === "calculated" ? "محاسباتی (نظری)" : "تجربی");
 // a paper's kind of work (scripts/quality/basis.py, read by SubQ)
 const PAPER_BASIS = { experimental: "تجربی", theoretical: "نظری / محاسباتی", both: "تجربی و نظری", review: "مروری" };
-const basisChip = (p) => (PAPER_BASIS[p.basis] ? `<span class="chip" title="نوع کار این مقاله، تشخیص خودکار">${PAPER_BASIS[p.basis]}</span>` : "");
+// a passage's own kind (scripts/quality/passage_basis.py) is shown in place of its paper's: an experimental paper's
+// introduction cites the values of others
+const PASSAGE_BASIS = { experimental: "اندازه‌گیری", theoretical: "محاسبه", both: "اندازه‌گیری و محاسبه", review: "نقل از کارهای دیگر" };
+const basisChip = (p) => (PASSAGE_BASIS[p.basis_p] ? `<span class="chip" title="نوع این بخش از متن، تشخیص خودکار">${PASSAGE_BASIS[p.basis_p]}</span>`
+  : PAPER_BASIS[p.basis] ? `<span class="chip" title="نوع کار این مقاله، تشخیص خودکار">${PAPER_BASIS[p.basis]}</span>` : "");
 const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده", metadata_only: "فقط عنوان" };
 
 // ---------- tabs
