@@ -363,6 +363,8 @@ def export_formulas(
     typer.echo(f"{anisotropic.build(out, thermo, cubic, prefer)} crystals written to aniso.json (phase-matching tab; "
                f"{len(cubic)} cubic, for QPM only)")
     typer.echo(f"{anisotropic.build_nonlinear(out, dij)} crystals with nonlinear coefficients written to dij.json")
+    props = Settings().data_dir / Settings().corpus / "crystal_properties.yml"
+    typer.echo(f"{anisotropic.build_properties(out, props)} crystals with transparency or hygroscopy written to props.json")
 
 
 @app.command("export-papers")

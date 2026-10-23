@@ -834,4 +834,9 @@ test("crystal advisor: temperature acceptance, the temperature of a cut crystal,
   const r2 = advise([crystal(lbo, "LiB3O5"), crystal(clbo, "CsLiB6O10")], { process: "shg", a: 1.0642, b: 0, T: [20, 60] });
   assert.deepEqual(r2.ok.map((x) => x.material), ["LiB3O5", "CsLiB6O10"]);
   assert.ok(r2.ok[1].best.drift_deg > 0 && r2.ok[1].best.temp_C > 30);
+  // with its transparency (LBO from 0.155 µm, Nikogosyan 2005), SHG to 0.2 µm is absorbed; to 0.16 µm, too
+  const P = JSON.parse(readFileSync(new URL("../public/ri/props.json", import.meta.url)));
+  const lboT = { ...crystal(lbo, "LiB3O5"), transparency: P.LiB3O5.transparency_um };
+  assert.equal(advise([lboT], { process: "shg", a: 0.3, b: 0, T: 25 }).no[0].reason, "absorbed");
+  assert.ok(advise([lboT], { process: "shg", a: 1.0642, b: 0, T: [20, 60] }).ok[0].edge === false);
 });

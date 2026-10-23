@@ -165,3 +165,23 @@ def build_nonlinear(out: Path, path: Path) -> int:
             for r in rows or []}
     (out / "dij.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return len(data)
+
+
+def build_properties(out: Path, path: Path) -> int:
+    """Write ``props.json`` (transparency range and hygroscopy of data/<corpus>/crystal_properties.yml, for the
+    crystal advisor) next to ``aniso.json``; returns the number of crystals."""
+    import yaml
+
+    rows = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else []
+    data = {}
+    for r in rows or []:
+        e = data.setdefault(r["material"], {})
+        if "transparency_um" in r:
+            lo, hi = (float(x) for x in r["transparency_um"])
+            if not 0 < lo < hi:
+                raise ValueError(f"{r['material']}: transparency_um must be [low, high] in µm")
+            e.update(transparency_um=[lo, hi], transparency_level=r.get("transparency_level", ""), sources=r.get("sources", []))
+        if "hygroscopic" in r:
+            e.update(hygroscopic=bool(r["hygroscopic"]), hygroscopic_source=r.get("hygroscopic_source"))
+    (out / "props.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    return len(data)
