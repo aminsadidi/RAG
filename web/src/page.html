@@ -369,7 +369,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div style="overflow-x:auto"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
     <div id="pmqpm" class="hint" style="margin-top:10px"></div>
     <div id="pmncpm" style="margin-top:10px"></div>
-    <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
+    <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
   </div>
   <div class="card" style="margin-top:14px">
     <h2 id="pmcharttitle">منحنی تنظیم</h2>
@@ -453,7 +453,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
     <div id="spfibres" style="direction:ltr" class="hint"></div>
     <h3 style="margin-top:16px">آهنگ مطلق تولید جفت</h3>
-    <p class="hint">تعداد جفت‌هایی که هر دو فوتونشان در مُدهای گاوسی بالا (با همان ξها) گسیل می‌شوند، با پمپ پیوسته: R = Γ₀ ∫dν |∫O(z) e<sup>iΔk z</sup> dz|²، با Γ₀ = 8π² d<sub>eff</sub>² P/(n<sub>p</sub>n₁n₂ ε₀ c λ₁λ₂) و O(z) هم‌پوشانی سه مُد گاوسی (با فاز گوی و انحنا). این آهنگ پیش از هر اتلافی است؛ هم‌فرودی آشکارشده = R × بازده کل بازوی ۱ × بازده کل بازوی ۲. با اندازه‌گیری‌ها آزموده شده: Evans و همکاران (2010) ۱۲۳٬۰۰۰ جفت/ثانیه/میلی‌وات گزارش کرده‌اند و این حساب ۱۲۹٬۰۰۰ می‌دهد؛ برای Fedrizzi و همکاران (2007) هم در محدوده‌ی اندازه‌گیری است. فرمول بسته‌ی Bennink (2010، معادله‌ی ۴۰) حدود n<sub>p</sub>n₁n₂ (≈ ۶ در KTP) برابر بیشتر می‌دهد. واگردی (walk-off) پرتو غیرعادی در تطبیق فاز زاویه‌ای حساب نشده و آهنگ را آن‌جا بیش از واقع نشان می‌دهد.</p>
+    <p class="hint">تعداد جفت‌هایی که هر دو فوتونشان در مُدهای گاوسی بالا (با همان ξها) گسیل می‌شوند، با پمپ پیوسته: R = Γ₀ ∫dν |∫O(z) e<sup>iΔk z</sup> dz|²، با Γ₀ = 8π² d<sub>eff</sub>² P/(n<sub>p</sub>n₁n₂ ε₀ c λ₁λ₂) و O(z) هم‌پوشانی سه مُد گاوسی (با فاز گوی و انحنا). این آهنگ پیش از هر اتلافی است؛ هم‌فرودی آشکارشده = R × بازده کل بازوی ۱ × بازده کل بازوی ۲. با اندازه‌گیری‌ها آزموده شده: Evans و همکاران (2010) ۱۲۳٬۰۰۰ جفت/ثانیه/میلی‌وات گزارش کرده‌اند و این حساب ۱۲۹٬۰۰۰ می‌دهد؛ برای Fedrizzi و همکاران (2007) هم در محدوده‌ی اندازه‌گیری است. فرمول بسته‌ی Bennink (2010، معادله‌ی ۴۰) حدود n<sub>p</sub>n₁n₂ (≈ ۶ در KTP) برابر بیشتر می‌دهد. واگردی فضایی (walk-off) پرتوهای غیرعادی حساب شده است: پوش هر مُد در بلور به اندازه‌ی ρ·z کنار می‌رود (Boyd و Kleinman 1968) و هم‌پوشانی O(z) کم می‌شود؛ آهنگ بدون آن هم کنارش نشان داده می‌شود. واگردی زمانی (اختلاف سرعت گروه) در خود Δk(ν) هست و تأخیر دو فوتون در طول بلور هم گزارش می‌شود.</p>
     <div class="row">
       <label>d<sub>eff</sub> <input id="spdeff" type="number" step="any" style="width:76px"> pm/V</label>
       <label>توان پمپ <input id="sppow" type="number" step="any" value="1" style="width:70px"> mW</label>
@@ -1565,12 +1565,12 @@ function run() {
     else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
   } else {
     const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
-    $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
+    $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th>GVM (fs/mm)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
       (rows.map((r) => `<tr><td>${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]}</td><td>${r.type === "I" ? "I" : "II"}</td>
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
         <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td><b>${fmtD(r)}</b>${r.phi !== undefined && r.deff > 0.005 ? ` <span class="hint">(φ = ${r.phi}°)</span>` : ""}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
-        <td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
-       '<tr><td colspan="9" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
+        <td title="1/v_g: wave 1 − 3, 2 − 3, 1 − 2">${Math.max(...r.gvm_fs_mm.map(Math.abs)).toFixed(0)}</td><td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
+       '<tr><td colspan="10" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
@@ -1711,7 +1711,7 @@ function compareAll() {
     : (q.best.noncritical - p.best.noncritical) || Math.max(...p.best.walkoff_mrad) - Math.max(...q.best.walkoff_mrad));
   $("pmallcard").hidden = false;
   $("pmallinfo").innerHTML = `${fa(rows.length)} بلور برای ${[w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ")} → ${w.l3.toFixed(4)} µm تطبیق فاز دارند (برای هر بلور بهترین جواب به معیار انتخاب‌شده؛ جواب‌هایی که d<sub>eff</sub>شان صفر است کنار گذاشته شده‌اند). روی هر ردیف کلیک کنید تا همه‌ی جواب‌هایش را ببینید.`;
-  $("pmalltable").innerHTML = `<tr><th>crystal</th><th>source</th><th>plane · type</th><th>angle</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³ (pm²/V²)</th><th>walk-off (mrad)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th><th>solutions</th></tr>` +
+  $("pmalltable").innerHTML = `<tr><th>crystal</th><th>source</th><th>plane · type</th><th>angle</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³ (pm²/V²)</th><th>walk-off (mrad)</th><th>GVM (fs/mm)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th><th>solutions</th></tr>` +
     rows.map((r) => `<tr data-mat="${esc(r.c.material)}" data-src="${esc(r.src.label)}" style="cursor:pointer"><td><b>${esc(r.c.material)}</b> <span class="hint">${esc(short(r.c))}</span></td><td>${esc(r.src.label)}</td>
       <td>${r.src.kind === "uniaxial" ? "θ" : r.best.plane} · ${r.best.type === "I" ? "I" : "II"}</td><td>${r.best.angle.toFixed(2)}°${r.best.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td>
       <td><b>${fmtD(r.best)}</b></td><td>${r.best.fom == null ? "—" : r.best.fom.toFixed(2)}</td><td>${Math.max(...r.best.walkoff_mrad).toFixed(1)}</td><td>${r.best.angular_mrad.toFixed(2)}</td><td>${r.best.spectral_nm.toFixed(2)}</td><td>${fa(r.count)}</td></tr>`).join("");
@@ -1878,7 +1878,7 @@ new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).o
 <script type="module">
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
 import { entryIndex, thermoShift } from "/dispersion.js";
-import { eigenIndices, direction, solveAll, effectiveD, fieldVectors, dTensor, contract } from "/phasematch.js";
+import { eigenIndices, direction, solveAll, effectiveD, fieldVectors, dTensor, contract, groupIndex } from "/phasematch.js";
 import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, pairRate, C_UM_PS } from "/spdc.js";
 
 const SP = { list: null };
@@ -2117,7 +2117,10 @@ function pairs() {
     $("spratres").innerHTML = `w<sub>p</sub> = ${wp.toFixed(1)} µm, w₁ = ${w1.toFixed(1)} µm, w₂ = ${w2.toFixed(1)} µm, d<sub>eff</sub> = ${dEff} pm/V<br>`
       + `<b>R = ${f(r.rate)} pairs/s</b> at ${P} mW (${f(r.perMw)} pairs/s/mW) into the two modes, before any loss<br>`
       + `bandwidth of photon 1 (FWHM) ${r.fwhmNm.toPrecision(3)} nm; peak spectral brightness ${f(r.peakPerNm / P)} pairs/s/mW/nm`
-      + (o.qpm ? "" : `<br><span style="color:#c33">angle phase matching: the walk-off of the extraordinary beam is not included, so this overestimates the rate</span>`);
+      + `<br>temporal walk-off of the two photons: |1/v<sub>g1</sub> − 1/v<sub>g2</sub>|·L = ${(Math.abs(groupIndex(nAt, o.plane, o.angle, l1, pols[1]) - groupIndex(nAt, o.plane, o.angle, l2, pols[2])) / 2.99792458e-4 * L_mm).toFixed(0)} fs`
+      + (r.walkoffMrad.some((x) => Math.abs(x) > 1e-3)
+        ? `<br>spatial walk-off ρ (pump, 1, 2) = ${r.walkoffMrad.map((x) => Math.abs(x).toFixed(1)).join(", ")} mrad, included; without it the rate would be ${f(pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw: P, walkoff: false }).rate)} pairs/s`
+        : "");
   }, 20);
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration

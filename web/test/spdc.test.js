@@ -232,3 +232,20 @@ test("pair rate: bandwidth of a degenerate type-I pair (group-velocity dispersio
   assert.ok(Math.abs(r.fwhmNm / expected - 1) < 0.05, `${r.fwhmNm} nm vs ${expected} nm`);
   assert.ok(Number.isFinite(r.rate) && r.rate > 0);
 });
+
+test("pair rate: spatial walk-off of the e beams in type-II BBO (collimated limit)", () => {
+  // 2 mm type-II BBO, 405 → 810 + 810 nm, waists 60 µm (Rayleigh lengths ≫ L): with Δk linear in ν the spectral
+  // integral of |∫O e^{iΔkz}dz|² is ∝ ∫|O(z)|²dz (Parseval), and walk-off scales |O|² by exp(−2S),
+  // S = (Σc² − (Σc)²/3)/w² with c_j = ρ_j z; so the rate ratio is (1/L)∫exp(−2S)dz
+  const s = source("BaB2O4"), nAt = nAtOf(s), sol = solveAll(nAt, s.kind, "opo", 0.405, 0.81).find((r) => r.type === "IIa");
+  const o = { nAt, plane: sol.plane, angle: sol.angle * Math.PI / 180, pols: ["f", "s", "f"], lp: 0.405, l1: 0.81,
+    L_mm: 2, dEff: 2, wp: 60, w1: 60, w2: 60 };
+  const r = pairRate(o), r0 = pairRate({ ...o, walkoff: false }), rho = r.walkoffMrad.map((x) => x * 1e-3);
+  assert.ok(Math.abs(rho[1]) < 1e-9 && Math.abs(rho[0]) > 0.05 && Math.abs(rho[2]) > 0.05, `ρ = ${rho}`); // the o photon does not walk off
+  let ex = 0;
+  for (let q = 0; q <= 2000; q++) {
+    const z = -1000 + q, c = rho.map((x) => x * z), S = (c.reduce((a, x) => a + x * x, 0) - c.reduce((a, x) => a + x, 0) ** 2 / 3) / 3600;
+    ex += (q === 0 || q === 2000 ? 0.5 : 1) * Math.exp(-2 * S) / 2000;
+  }
+  assert.ok(ex < 0.9 && Math.abs(r.rate / r0.rate / ex - 1) < 0.02, `${r.rate / r0.rate} vs ${ex}`);
+});

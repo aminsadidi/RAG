@@ -6,7 +6,7 @@
 // The pump is a plane wave (sinc phase matching), or the pump and the two collection modes are collinear Gaussian
 // beams focused at the crystal centre with equal focal parameters ξ = L/(k w²) (Bennink 2010, Eqs. 11, 25, 27).
 // Frequencies ν in THz (1/ps), wavelengths in µm, Δk in µm⁻¹.
-import { TYPES, direction, eigenIndices } from "./phasematch.client.js";
+import { TYPES, direction, eigenIndices, walkOff } from "./phasematch.client.js";
 
 export const C_UM_PS = 299.792458; // c in µm/ps, so ν = c/λ is in THz
 const LN2 = Math.log(2);
@@ -145,7 +145,10 @@ export function emissionAngles({ nAt, plane, angle, pols, lp, l1, kg = 0, maxRad
 // crystal centre, Gouy phase and wavefront curvature included; with plane waves of area A it is 1/√A and
 // Γ0|O|² is Boyd's parametric gain Γ²), Δk(ν) = kp − k1(ν) − k2(νp − ν) − kg on the axis, ν the frequency of
 // photon 1. Pairs of two photons with the same polarization (type 0 and I) are counted once (ν above νp/2).
-// Walk-off of extraordinary beams is not included. Against the measured rates: Evans et al. 2010 (20 mm type-II
+// Spatial walk-off: each mode's envelope drifts sideways by ρ·z in the plane of the angle (ρ = walkOff, the centres
+// meet at the crystal centre), which multiplies O(z) by exp(−S), S = Σ a_j c_j² − (Σ a_j c_j)²/Σ a_j, c_j = ρ_j z
+// (Boyd & Kleinman 1968). walkoff: false leaves it out. Temporal walk-off (group-velocity mismatch) is already in
+// Δk(ν). Against the measured rates: Evans et al. 2010 (20 mm type-II
 // PPKTP, 776 → 1552 nm) infer 123000 pairs/s/mW, this gives 129000; Fedrizzi et al. 2007 (25 mm, 405 → 810 nm,
 // 27 µm waists) detect 82000/s/mW with 40 % detectors (≥ 5.1·10⁵ in the modes), this gives 5.8·10⁵. Bennink's
 // closed formula (2010, Eq. 40) is higher by n_p n_1 n_2 (≈ 6 in KTP): its fields lack the 1/√n of the flux
@@ -155,11 +158,12 @@ export function emissionAngles({ nAt, plane, angle, pols, lp, l1, kg = 0, maxRad
 // wavelengths on axis), nz, nnu. Returns { rate (pairs/s), perMw, fwhmNm (spectrum of photon 1), peakPerNm (pairs/s
 // per nm of photon 1 at the peak), lam (nm), spectrum }.
 export function pairRate(opts) {
-  const { nAt, plane, angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw = 1, nz = 481, nnu = 2001 } = opts;
+  const { nAt, plane, angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw = 1, nz = 481, nnu = 2001, walkoff = true } = opts;
   const l2 = 1 / (1 / lp - 1 / l1), L = L_mm * 1000, dir = direction(plane, angle);
   const n = (lam, pol) => { const [s, f] = eigenIndices(nAt(lam), dir); return pol === "s" ? s : f; };
   const k = (lam, pol) => 2 * Math.PI * n(lam, pol) / lam;
   const kp = k(lp, pols[0]);
+  const rho = walkoff ? [[lp, pols[0]], [l1, pols[1]], [l2, pols[2]]].map(([lam, pol]) => walkOff(nAt, plane, angle, lam, pol)) : [0, 0, 0];
   const kg = opts.kg === "auto" || opts.kg === undefined ? kp - k(l1, pols[1]) - k(l2, pols[2]) : opts.kg;
   const nup = C_UM_PS / lp, nu1c = C_UM_PS / l1; // THz
   const dk = (nu) => kp - k(C_UM_PS / nu, pols[1]) - k(C_UM_PS / (nup - nu), pols[2]) - kg; // µm⁻¹
@@ -174,7 +178,14 @@ export function pairRate(opts) {
     const mul = (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]], inv = (a) => { const d = a[0] * a[0] + a[1] * a[1]; return [a[0] / d, -a[1] / d]; };
     const ip = inv(cp), i1 = inv(c1), i2 = inv(c2);
     const a = [ip[0] / (wp * wp) + i1[0] / (w1 * w1) + i2[0] / (w2 * w2), ip[1] / (wp * wp) + i1[1] / (w1 * w1) + i2[1] / (w2 * w2)];
-    const o = mul(mul(mul(ip, i1), i2), inv(a));
+    let o = mul(mul(mul(ip, i1), i2), inv(a));
+    if (rho.some((r) => r)) {
+      const aj = [[ip[0] / (wp * wp), ip[1] / (wp * wp)], [i1[0] / (w1 * w1), i1[1] / (w1 * w1)], [i2[0] / (w2 * w2), i2[1] / (w2 * w2)]];
+      let s2 = [0, 0], s1 = [0, 0];
+      aj.forEach((x, j) => { const c = rho[j] * z; s2 = [s2[0] + x[0] * c * c, s2[1] + x[1] * c * c]; s1 = [s1[0] + x[0] * c, s1[1] + x[1] * c]; });
+      const t = mul(mul(s1, s1), inv(a)), S = [s2[0] - t[0], s2[1] - t[1]], e = Math.exp(-S[0]);
+      o = mul(o, [e * Math.cos(S[1]), -e * Math.sin(S[1])]);
+    }
     zs.push(z); Ore.push(norm * o[0]); Oim.push(norm * o[1]); wz.push((q === 0 || q === m ? 1 : q % 2 ? 4 : 2) * L / m / 3);
   }
   const amp2 = (nu) => { // |∫ O e^{iΔk z} dz|², dimensionless
@@ -223,7 +234,7 @@ export function pairRate(opts) {
   if (nuA === null) nuA = nup - nuB; // mirror of the far edge
   if (nuB === null) nuB = nup - nuA;
   const fwhmNm = Math.abs(C_UM_PS / nuA - C_UM_PS / nuB) * 1000;
-  return { rate, perMw: rate / powerMw, fwhmNm, peakPerNm: perNm(pk), lam, spectrum: spec, l2 };
+  return { rate, perMw: rate / powerMw, fwhmNm, peakPerNm: perNm(pk), lam, spectrum: spec, l2, walkoffMrad: rho.map((r) => r * 1e3) };
 }
 
 // Purity of the heralded photon, P = Tr(ρ1²) with ρ1 = F F† / Tr(F F†) (no diagonalization needed), and the
