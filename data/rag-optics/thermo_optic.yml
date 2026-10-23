@@ -359,7 +359,7 @@
 - material: HgGa2S4
   source: Kato
   prefer: true
-  doc_id: 10.1016_j.optcom.2016.10.054
+  doi: 10.1016/j.optcom.2016.10.054
   cite: "Kato, Umemura, Petrov (2017)"
   pdf_page: 3
   where: "Eq. (5), 0.6328–10.591 µm (the formula of their earlier HgGa2S4 papers, refs. 1, 2), with the Sellmeier equations of Eq. (2) at 20 °C, identical to this source"
@@ -371,7 +371,7 @@
 
 - material: CdGa2S4
   source: Kato-2017
-  doc_id: 10.1016_j.optcom.2016.10.054
+  doi: 10.1016/j.optcom.2016.10.054
   cite: "Kato, Umemura, Petrov (2017)"
   pdf_page: 2
   where: "Eq. (4), measured on a CdGa2S4 prism at 0.6328–3.3913 µm, 20–120 °C, with the Sellmeier equations of Eq. (3) at 20 °C"
@@ -383,7 +383,7 @@
 
 - material: Hg0.35Cd0.65Ga2S4
   source: Kato-2017
-  doc_id: 10.1016_j.optcom.2016.10.054
+  doi: 10.1016/j.optcom.2016.10.054
   cite: "Kato, Umemura, Petrov (2017)"
   pdf_page: 3
   where: "dn/dT = x·Eq. (4) + (1 − x)·Eq. (5), which the paper says is nearly identical to the temperature derivative of Eq. (1); reproduces the calculated ΔT·ℓ of Table 1 (Eq. (4) extrapolated beyond 3.3913 µm, as in the paper)"
@@ -395,7 +395,7 @@
 
 - material: Hg0.51Cd0.49Ga2S4
   source: Kato-2017
-  doc_id: 10.1016_j.optcom.2016.10.054
+  doi: 10.1016/j.optcom.2016.10.054
   cite: "Kato, Umemura, Petrov (2017)"
   pdf_page: 3
   where: "dn/dT = x·Eq. (4) + (1 − x)·Eq. (5), which the paper says is nearly identical to the temperature derivative of Eq. (1); reproduces the calculated ΔT·ℓ of Table 1 (Eq. (4) extrapolated beyond 3.3913 µm, as in the paper)"

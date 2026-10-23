@@ -39,7 +39,7 @@ def catalog(path: Path) -> list[dict]:
             item = {
                 "shelf": SHELF, "group": SHELF, "material": paper["material"], "page": e["page"],
                 "direction": str(e.get("direction") or ""), "reference": paper["reference"],
-                "doi": paper.get("doi"), "doc_id": paper["doc_id"], "path": None,
+                "doi": paper.get("doi"), "doc_id": paper.get("doc_id"), "path": None,  # no doc_id: the paper is not in the collection
                 "source": "paper", "pdf_page": paper.get("pdf_page"), "where": paper.get("where", ""),
                 "basis": paper.get("basis", "measured"),
             }
