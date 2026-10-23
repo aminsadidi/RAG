@@ -402,7 +402,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
     <div class="row">
       <label>بازه‌ی دما <input id="advlo" type="number" step="any" value="20" style="width:64px"> تا <input id="advhi" type="number" step="any" value="60" style="width:64px"> °C</label>
-      <label>نوع <select id="advtype"><option value="any">هر نوع</option><option value="I">نوع I</option><option value="II">نوع II</option></select></label>
+      <label>نوع <select id="advtype"><option value="any">هر نوع</option><option value="I">نوع I</option><option value="II">نوع II</option><option value="0">نوع 0 (فقط QPM، هر سه موج هم‌قطبش)</option></select></label>
       <label>طول بلور <input id="advlen" type="number" step="any" value="1" style="width:56px"> cm</label>
     </div>
     <div class="row">
@@ -414,6 +414,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label class="hint"><input type="checkbox" id="advncpm"> فقط تطبیق فاز غیربحرانی (۹۰ درجه)</label>
       <label class="hint"><input type="checkbox" id="advthermo"> فقط بلورهایی که وابستگی دمایی‌شان معلوم است</label>
       <label class="hint"><input type="checkbox" id="advdry"> بدون بلورهای جاذب رطوبت</label>
+      <label>بلورها <select id="advclass"><option value="est">رایج و جدید (بدون کمیاب و پژوهشی)</option><option value="core">فقط پایه و رایج</option><option value="all">همه، با کمیاب و پژوهشی</option></select></label>
+      <label>QPM <select id="advqpm"><option value="with">با بلورهای قطبیده (PPLN، PPKTP، OP-GaAs…)</option><option value="no">بدون QPM</option><option value="only">فقط QPM</option></select></label>
       <label>مرتب‌سازی <select id="advsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³</option><option value="walk">کمترین walk-off</option><option value="spec">بیشترین پهنای طیفی</option><option value="temp">بیشترین پهنای دمایی</option></select></label>
       <button id="advgo">پیشنهاد بلور</button>
     </div>
@@ -1673,7 +1675,9 @@ function ncpmRun() {
 
 // Quasi-phase matching in the periodically poled ferroelectrics: all three waves polarized along z (d33),
 // first order, period Λ = 1 / (n3/λ3 − n1/λ1 − n2/λ2), d_eff = (2/π)·d33.
-const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
+const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "Mg-LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
+// cubic crystals made in orientation-patterned form (OP-GaAs, OP-GaP), the advisor's QPM candidates among them
+const OP = new Set(["GaAs", "GaP"]);
 function qpm(c, src, w) {
   if (src.isotropic) return qpmCubic(c, src, w);
   const d33 = PM.dij[c.material]?.d["33"];
@@ -1804,15 +1808,35 @@ const numOr = (id) => { const v = $(id).value.trim(); return v === "" || !Number
 // one damage threshold a paper of the collection reports (crystal_properties.yml), with its paper a click away
 const damageNote = (d) => (d ? `<span title="${esc(d.what)}">آستانه‌ی آسیب: <bdi dir="ltr">${esc(d.threshold)}${d.pulse || d.lambda_um ? ` (${[d.pulse, d.lambda_um ? d.lambda_um + " µm" : ""].filter(Boolean).map(esc).join(", ")})` : ""}</bdi></span>` : "");
 const HYGRO = { none: "غیرجاذب رطوبت", slight: "کمی جاذب رطوبت", yes: "جاذب رطوبت", strong: "به‌شدت جاذب رطوبت: گرم یا دربسته نگه دارید" };
-const REASON = { hygroscopic: "جاذب رطوبت", absorbed: "طول موجی بیرون از بازه‌ی شفافیت بلور (جذب)", range: "طول موج‌ها بیرون از بازه‌ی فرمول ضریب شکست", isotropic: "همسانگرد (مکعبی): فقط با QPM", "no-pm": "تطبیق فاز ندارد", "no-thermo": "وابستگی دمایی معلوم نیست",
+// how established a crystal is: the chapters of Nikogosyan (2005), "newer" ones from later reviews, "research" for the rest
+const CLASS_FA = { basic: "پایه", "main-ir": "اصلی فروسرخ", often: "رایج", poled: "قطبیده / ویفر", new: "جدید", sfd: "خوددوبرابرساز",
+  rare: "کمیاب / آرشیوی", newer: "جدیدتر (پس از ۲۰۰۵)", research: "پژوهشی (در هندبوک‌ها نیست)" };
+const ADV_CLASSES = { est: ["basic", "main-ir", "often", "poled", "new", "sfd", "newer"], core: ["basic", "main-ir", "often", "poled"], all: null };
+const REASON = { class: "کمیاب یا پژوهشی (برای دیدنشان «همه» را انتخاب کنید)", pump: "کوتاه‌ترین طول موج کمتر از حد بلور (جذب دوفوتونی یا جذب باقی‌مانده)", period: "دوره‌ی QPM کوتاه‌تر از ۱٫۴ µm (کوتاه‌ترین دوره‌ی گزارش‌شده)", hygroscopic: "جاذب رطوبت", absorbed: "طول موجی بیرون از بازه‌ی شفافیت بلور (جذب)", range: "طول موج‌ها بیرون از بازه‌ی فرمول ضریب شکست", isotropic: "همسانگرد (مکعبی): فقط با QPM", "no-pm": "تطبیق فاز ندارد", "no-thermo": "وابستگی دمایی معلوم نیست",
   temp: "دمای تطبیق فاز ۹۰ درجه بیرون از بازه‌ی دمای شما", ncpm: "فقط تطبیق فاز بحرانی (زاویه‌ای) دارد", deff0: "d_eff صفر است", walkoff: "walk-off بیشتر از حد",
   spectral: "پهنای طیفی کمتر از حد", angular: "پهنای زاویه‌ای کمتر از حد", tempacc: "پهنای دمایی کمتر از حد (یا نامعلوم)" };
-// one source per crystal: the first that covers the three waves, a source with thermo-optic data first
+// one source per crystal: the first that covers the three waves, a source with thermo-optic data first. When none
+// covers them, a formula may be extrapolated by up to 10 % of its range edges (Fedrizzi et al. 2007 used Katō's KTP
+// formula, stated from 0.43 µm, at 405 nm; it gives their 10.0 µm grating to 0.4 %, test/phasematch.test.js); the
+// row then says so. The transparency range still applies.
+const EXTRA = 0.1;
+const stretch = (src) => {
+  const wide = (e) => ({ ...e, range_um: [e.range_um[0] / (1 + EXTRA), e.range_um[1] * (1 + EXTRA)] });
+  return { ...src, range_um: [src.range_um[0] / (1 + EXTRA), src.range_um[1] * (1 + EXTRA)], extrapolated: src.range_um,
+    axes: Object.fromEntries(Object.entries(src.axes).map(([k, e]) => [k, wide(e)])) };
+};
 function advCrystals(w) {
   return PM.list.filter((c) => PM.dij[c.material]).map((c) => {
-    const fits = c.sources.filter((s) => covers(s, w)), src = fits.find((s) => s.thermo) || fits[0] || c.sources[0];
+    const fits = c.sources.filter((s) => covers(s, w));
+    let src = fits.find((s) => s.thermo) || fits[0];
+    if (!src) {
+      const near = c.sources.map(stretch).filter((s) => covers(s, w));
+      src = near.find((s) => s.thermo) || near[0] || c.sources[0];
+    }
     return { material: c.material, src, kind: src.kind, range_um: src.range_um, thermo: Boolean(src.thermo), nAtT: (T) => nAtT(src, T), d: PM.dij[c.material].d,
-      transparency: PM.props[c.material]?.transparency_um, hygroscopic: PM.props[c.material]?.hygroscopic };
+      transparency: PM.props[c.material]?.transparency_um, hygroscopic: PM.props[c.material]?.hygroscopic,
+      qpm: POLED.has(c.material) ? "poled" : OP.has(c.material) ? "op" : undefined, minPump: PM.props[c.material]?.min_pump_um?.value,
+      cls: PM.props[c.material]?.class?.value };
   });
 }
 function advInputs() {
@@ -1832,20 +1856,25 @@ function adviseRun() {
   $("advinfo").textContent = "در حال آزمودن همه‌ی بلورها…";
   setTimeout(() => {
     const list = advCrystals(w), srcOf = Object.fromEntries(list.map((c) => [c.material, c.src.label]));
+    const extra = Object.fromEntries(list.filter((c) => c.src.extrapolated).map((c) => [c.material, c.src.extrapolated]));
     const r = advise(list, { process: proc, a, b, T: [lo, hi], type: $("advtype").value, ncpm: $("advncpm").checked,
-      needThermo: $("advthermo").checked, dry: $("advdry").checked, maxWalkoff: numOr("advwo"), minSpectral: numOr("advspec"), minTemp: numOr("advtemp"), length: L });
+      needThermo: $("advthermo").checked, dry: $("advdry").checked, classes: ADV_CLASSES[$("advclass").value], qpm: $("advqpm").value !== "no", qpmOnly: $("advqpm").value === "only", maxWalkoff: numOr("advwo"), minSpectral: numOr("advspec"), minTemp: numOr("advtemp"), length: L });
     const key = { walk: (x) => Math.max(...x.best.walkoff_mrad), spec: (x) => -(x.best.spectral_nm ?? 0), temp: (x) => -(x.best.temp_C ?? 0) }[$("advsort").value];
     if (key) r.ok.sort((p, q) => key(p) - key(q));
     const lam = [w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ") + " → " + w.l3.toFixed(4) + " µm";
     $("advinfo").innerHTML = `${fa(r.ok.length)} بلور شرط‌ها را برمی‌آورد (<bdi dir="ltr">${lam}</bdi>، ${fa(lo)} تا ${fa(hi)} °C)؛ پهنای پذیرش برای بلور ${fa(L)} سانتی‌متری است. روی هر ردیف بزنید تا در زبانه‌ی تطبیق فاز همه‌ی جواب‌هایش را ببینید.`;
-    const how = (s) => (s.how === "ncpm-temp" ? `90° along ${s.axis}, ${s.pol.join("")} at ${s.T.toFixed(1)} °C` : `${s.plane} ${s.type === "I" ? "I" : "II"} · ${s.angle.toFixed(2)}°${s.noncritical ? " (NCPM)" : ""}`);
+    const how = (s) => (s.how === "qpm" ? `QPM${s.qpm === "op" ? " (OP)" : ` along ${s.axis}, ${s.pol.join("")}`} · Λ = ${s.period_um.toFixed(2)} µm` : s.how === "ncpm-temp" ? `90° along ${s.axis}, ${s.pol.join("")} at ${s.T.toFixed(1)} °C` : `${s.plane} ${s.type === "I" ? "I" : "II"} · ${s.angle.toFixed(2)}°${s.noncritical ? " (NCPM)" : ""}`);
     const f1 = (v, k = 1) => (v == null || !Number.isFinite(v) ? "—" : v.toFixed(k));
     $("advtable").innerHTML = r.ok.length ? `<tr><th>#</th><th>crystal</th><th>how</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>walk-off (mrad)</th><th>Δλ (nm)</th><th>ΔT (°C)</th><th>angle drift over the range</th><th>note</th></tr>`
-      + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b></td><td>${how(s)}</td>
+      + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b><br><span class="hint" title="${esc(PM.props[x.material]?.class?.what || "")}">${CLASS_FA[PM.props[x.material]?.class?.value || "research"]}</span></td><td>${how(s)}</td>
         <td><b>${f1(s.deff, 2)}</b></td><td>${f1(s.fom, 2)}</td><td>${f1(Math.max(...s.walkoff_mrad))}</td><td>${f1(s.spectral_nm != null ? s.spectral_nm / L : null, 2)}</td>
-        <td>${f1(s.temp_C != null ? s.temp_C / L : null)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : s.lostInRange ? '<span class="err">در بخشی از بازه تطبیق فاز ندارد</span>' : "—"}</td>
+        <td>${s.temp_C == null ? "—" : s.temp_C >= 999 ? "> 500" : f1(s.temp_C / L)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : s.lostInRange ? '<span class="err">در بخشی از بازه تطبیق فاز ندارد</span>' : "—"}</td>
         <td>${[x.thermo ? "" : '<span class="err">رفتار دمایی نامعلوم</span>', x.edge ? '<span class="err">نزدیک لبه‌ی جذب</span>' : "",
-          HYGRO[PM.props[x.material]?.hygroscopic] || "", damageNote(PM.props[x.material]?.damage)].filter(Boolean).join("<br>")}</td></tr>`; }).join("") : "";
+          HYGRO[PM.props[x.material]?.hygroscopic] || "", damageNote(PM.props[x.material]?.damage),
+          PM.props[x.material]?.thermal_conductivity ? `<span title="${esc(PM.props[x.material].thermal_conductivity.what)}">رسانایی گرمایی: <bdi dir="ltr">${esc(PM.props[x.material].thermal_conductivity.value)} W/(m·K)</bdi></span>` : "",
+          extra[x.material] ? `<span class="err">برون‌یابی؛ بازه‌ی فرمول ${esc(srcOf[x.material])}: <bdi dir="ltr">${extra[x.material][0]}–${extra[x.material][1]} µm</bdi></span>` : "",
+          s.how === "qpm" && s.qpm === "poled" ? '<span title="small aperture (typical crystal thickness of ∼1 mm) (10.1364/ol.44.003358, p. 1)">بلور قطبیده: ضخامت معمولاً حدود ۱ میلی‌متر</span>' : "",
+          ...(PM.props[x.material]?.notes || []).map((n) => `<span class="err" title="${esc(n.what)}">${esc(LANG === "en" && n.en ? n.en : n.fa)}</span>`)].filter(Boolean).join("<br>")}</td></tr>`; }).join("") : "";
     const near = r.no.filter((n) => n.reason === "temp").map((n) => `<b>${esc(n.material)}</b> (<bdi dir="ltr">${n.near.T.toFixed(0)} °C</bdi>)`);
     const count = {}; for (const n of r.no) count[n.reason] = (count[n.reason] || 0) + 1;
     $("advno").innerHTML = (near.length ? `<p><b>تطبیق فاز ۹۰ درجه در دمای دیگر:</b> ${near.join("، ")}. اگر آونی دارید که به این دما می‌رسد، این بلورها هم شدنی‌اند.</p>` : "")

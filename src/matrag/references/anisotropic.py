@@ -167,6 +167,10 @@ def build_nonlinear(out: Path, path: Path) -> int:
     return len(data)
 
 
+# how established a crystal is (crystal_properties.yml): the chapters of Nikogosyan (2005), and "newer"
+CLASSES = ("basic", "main-ir", "often", "poled", "new", "sfd", "rare", "newer")
+
+
 def build_properties(out: Path, path: Path) -> int:
     """Write ``props.json`` (transparency range, hygroscopy and damage threshold of data/<corpus>/crystal_properties.yml, for the
     crystal advisor) next to ``aniso.json``; returns the number of crystals."""
@@ -185,6 +189,16 @@ def build_properties(out: Path, path: Path) -> int:
             if r["hygroscopic"] not in ("none", "slight", "yes", "strong"):
                 raise ValueError(f"{r['material']}: hygroscopic is none, slight, yes or strong")
             e.update(hygroscopic=r["hygroscopic"], hygroscopic_source=r.get("hygroscopic_source"))
+        if "notes" in r:
+            for n in r["notes"]:
+                if not {"fa", "doc_id", "pdf_page", "what"} <= set(n):
+                    raise ValueError(f"{r['material']}: a note needs fa, doc_id, pdf_page and what")
+            e["notes"] = r["notes"]
+        for k in ("min_pump_um", "thermal_conductivity", "class"):
+            if k in r:
+                if not {"value", "doc_id", "pdf_page", "what"} <= set(r[k]) or (k == "class" and r[k]["value"] not in CLASSES):
+                    raise ValueError(f"{r['material']}: {k} needs value, doc_id, pdf_page and what")
+                e[k] = r[k]
         if "damage" in r:
             if not {"threshold", "doc_id", "pdf_page"} <= set(r["damage"]):
                 raise ValueError(f"{r['material']}: damage needs threshold, doc_id and pdf_page")
