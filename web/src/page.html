@@ -32,6 +32,7 @@ textarea,input,select{font:inherit;color:var(--ink);background:var(--card);borde
 textarea{width:100%;min-height:74px;resize:vertical}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .row label{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
+.row label[hidden]{display:none}
 button.main,button.alt{font:inherit;border-radius:9px;padding:8px 16px;cursor:pointer;border:1px solid var(--accent)}
 button.main{background:var(--accent);color:var(--accent-ink);font-weight:600}
 button.alt{background:transparent;color:var(--accent)}
@@ -201,6 +202,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="navsec">ابزارها</div>
     <button data-tab="index"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19h18v1.5H3V19Zm1.2-2.2 4.6-8 3.6 5 3.2-4.6 4.2 7.6-1.3.7-3-5.3-3.1 4.4-3.5-4.9-3.4 5.8-1.3-.7Z"/></svg><span>ضریب شکست</span></button>
     <button data-tab="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 1.5a7.5 7.5 0 0 1 7.42 6.37L4.6 13.45A7.5 7.5 0 0 1 12 4.5Zm-7.03 10.4 14.6-2.55A7.5 7.5 0 0 1 4.97 14.9Z"/></svg><span>تطبیق فاز</span></button>
+    <button data-tab="advisor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 14.6 9H21l-5.2 4 2 6.5L12 15.6 6.2 19.5l2-6.5L3 9h6.4L12 2.5Zm0 4.2-1.5 3.8H6.9l3 2.3-1.1 3.6 3.2-2.2 3.2 2.2-1.1-3.6 3-2.3h-3.6L12 6.7Z"/></svg><span>پیشنهاد بلور</span></button>
     <button data-tab="spdc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a2.5 2.5 0 1 0 0 .01ZM19 6a2 2 0 1 0 0 .01ZM19 18a2 2 0 1 0 0 .01ZM7.3 11.3l9.6-4.6.6 1.3-9.6 4.6-.6-1.3Zm0 1.4.6-1.3 9.6 4.6-.6 1.3-9.6-4.6Z"/></svg><span>جفت فوتون</span></button>
     <div class="navsec">داده</div>
     <button data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4V4Zm5.5 0h4v16h-4V4Zm6.2.6 3.8-1 4 15.5-3.8 1-4-15.5Z"/></svg><span>مجموعه و ارزیابی</span></button>
@@ -364,9 +366,40 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <label class="hint"><input type="checkbox" id="pmmore"> مواد دوشکستیِ دیگر را هم نشان بده (فقط زاویه و walk-off؛ ضرایب غیرخطی‌شان در داده‌ها نیست)</label>
     <p class="hint" id="pminfo"></p>
   </div>
-  <div class="card" style="margin-top:14px" id="advcard">
+  <div class="card" style="margin-top:14px">
+    <h2>جواب‌ها</h2>
+    <div style="overflow-x:auto"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
+    <div id="pmqpm" class="hint" style="margin-top:10px"></div>
+    <div id="pmncpm" style="margin-top:10px"></div>
+    <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2 id="pmcharttitle">منحنی تنظیم</h2>
+    <div id="pmchart" style="position:relative;direction:ltr"><svg id="pmsvg" role="img" style="display:block;width:100%"></svg></div>
+    <div class="chips" id="pmlegend"></div>
+  </div>
+  <div class="card" style="margin-top:14px" id="pmallcard" hidden>
+    <h2>کدام بلورها؟</h2>
+    <p class="hint" id="pmallinfo"></p>
+    <div class="row"><label>مرتب‌سازی <select id="pmsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³ (بازده تبدیل)</option><option value="deff">d_eff</option><option value="walk">کمترین walk-off</option></select></label>
+    <label class="hint"><input type="checkbox" id="pmevery"> مواد دوشکستیِ بدون ضرایب غیرخطی را هم بیاور</label></div>
+    <div style="overflow-x:auto"><table id="pmalltable" style="direction:ltr;min-width:640px"></table></div>
+  </div>
+</section>
+
+<section id="tab-advisor" hidden class="viz-root">
+  <div class="card" id="advcard">
     <h2>پیشنهاد بلور</h2>
-    <p class="hint">فرایند و طول موج‌های بالا را با شرط‌های خودتان ثابت کنید؛ همه‌ی بلورهایی که ضرایب غیرخطی‌شان را داریم آزموده می‌شوند و آن‌ها که شرط‌ها را برمی‌آورند به ترتیب ضریب کیفیت می‌آیند. بازه‌ی دما همان است که آون یا اتاق شما می‌دهد: تطبیق فاز ۹۰ درجه‌ای که دمای بیرون از آن بخواهد رد می‌شود و دمای لازمش گفته می‌شود. برای بلور بدون فرمول وابستگی دمایی، رفتار دمایی پیش‌بینی‌پذیر نیست و این را کنار جواب می‌نویسیم.</p>
+    <p class="hint">فرایند و طول موج‌ها را با شرط‌های خودتان ثابت کنید؛ همه‌ی بلورهایی که ضرایب غیرخطی‌شان را داریم آزموده می‌شوند و آن‌ها که شرط‌ها را برمی‌آورند به ترتیب ضریب کیفیت می‌آیند. بازه‌ی دما همان است که آون یا اتاق شما می‌دهد: تطبیق فاز ۹۰ درجه‌ای که دمای بیرون از آن بخواهد رد می‌شود و دمای لازمش گفته می‌شود. برای بلور بدون فرمول وابستگی دمایی، رفتار دمایی پیش‌بینی‌پذیر نیست و این را کنار جواب می‌نویسیم.</p>
+    <div class="row">
+      <label>فرایند <select id="advproc">
+        <option value="shg">SHG — دوبرابرکردن بسامد</option>
+        <option value="sfg">SFG — جمع بسامد</option>
+        <option value="opo">OPO / DFG — پمپ و سیگنال</option>
+      </select></label>
+      <label><span id="advla">طول موج اصلی</span> <input id="adva" type="number" step="any" value="1.064" style="width:96px"> µm</label>
+      <label id="advbwrap" style="display:none"><span id="advlb">طول موج دوم</span> <input id="advb" type="number" step="any" value="0.532" style="width:96px"> µm</label>
+    </div>
     <div class="row">
       <label>بازه‌ی دما <input id="advlo" type="number" step="any" value="20" style="width:64px"> تا <input id="advhi" type="number" step="any" value="60" style="width:64px"> °C</label>
       <label>نوع <select id="advtype"><option value="any">هر نوع</option><option value="I">نوع I</option><option value="II">نوع II</option></select></label>
@@ -386,34 +419,18 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <p class="hint" id="advinfo"></p>
     <div style="overflow-x:auto"><table id="advtable" style="direction:ltr;min-width:640px"></table></div>
     <div id="advno" class="hint" style="margin-top:10px"></div>
-    <h3 style="margin-top:16px">بلوری که بریده شده: در چه دمایی کار می‌کند؟</h3>
-    <p class="hint">بلور و منبع بالا را انتخاب کنید و زاویه‌ی برش آن را بدهید (همان که سازنده نوشته): دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود. پیش از خرید ببینید آون شما به آن دما می‌رسد یا نه.</p>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>بلوری که بریده شده: در چه دمایی کار می‌کند؟</h2>
+    <p class="hint">بلور و زاویه‌ی برش آن را بدهید (همان که سازنده نوشته)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود. پیش از خرید ببینید آون شما (بازه‌ی دمای بالا) به آن دما می‌رسد یا نه. فقط بلورهایی که فرمول وابستگی دمایی دارند.</p>
     <div class="row">
+      <label>بلور <select id="cutmat" style="max-width:260px"></select></label>
       <label>صفحه <select id="cutplane"><option value="xz">xz (θ)</option><option value="yz">yz (θ)</option><option value="xy">xy (φ)</option></select></label>
       <label>زاویه‌ی برش <input id="cutangle" type="number" step="any" style="width:72px" placeholder="—"> °</label>
       <label>نوع <select id="cuttype"><option value="I">نوع I</option><option value="IIa">نوع II (s+f)</option><option value="IIb">نوع II (f+s)</option></select></label>
       <button class="alt" id="cutgo">دمای کار این برش</button>
     </div>
     <p id="cutinfo"></p>
-  </div>
-  <div class="card" style="margin-top:14px">
-    <h2>جواب‌ها</h2>
-    <div style="overflow-x:auto"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
-    <div id="pmqpm" class="hint" style="margin-top:10px"></div>
-    <div id="pmncpm" style="margin-top:10px"></div>
-    <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
-  </div>
-  <div class="card" style="margin-top:14px">
-    <h2 id="pmcharttitle">منحنی تنظیم</h2>
-    <div id="pmchart" style="position:relative;direction:ltr"><svg id="pmsvg" role="img" style="display:block;width:100%"></svg></div>
-    <div class="chips" id="pmlegend"></div>
-  </div>
-  <div class="card" style="margin-top:14px" id="pmallcard" hidden>
-    <h2>کدام بلورها؟</h2>
-    <p class="hint" id="pmallinfo"></p>
-    <div class="row"><label>مرتب‌سازی <select id="pmsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³ (بازده تبدیل)</option><option value="deff">d_eff</option><option value="walk">کمترین walk-off</option></select></label>
-    <label class="hint"><input type="checkbox" id="pmevery"> مواد دوشکستیِ بدون ضرایب غیرخطی را هم بیاور</label></div>
-    <div style="overflow-x:auto"><table id="pmalltable" style="direction:ltr;min-width:640px"></table></div>
   </div>
 </section>
 
@@ -628,6 +645,7 @@ const TAB_TITLE = {
   paper: ["مقاله", "همه‌ی بخش‌های یک مقاله"],
   index: ["ضریب شکست", "فرمول‌های پاشندگی، مقایسه‌ی منابع و جدول مقادیر"],
   pm: ["تطبیق فاز", "زاویه، walk-off، پهنای پذیرش، QPM و d_eff برای SHG، SFG و OPO"],
+  advisor: ["پیشنهاد بلور", "شرط‌ها را ثابت کنید، بلورهایی که شدنی‌اند با دلیل؛ و دمای کار بلوری که بریده شده"],
   spdc: ["جفت فوتون (SPDC)", "طیف مشترک، خلوص، عدد اشمیت، HOM، قطبش‌دهی آپودایز، بهینه‌سازی خلوص، زاویه‌ی گسیل، دما، کانونی‌کردن و جفت‌شدن به فیبر"],
   library: ["مجموعه و ارزیابی", "مقاله‌های مجموعه و کیفیت بازیابی"],
   about: ["راهنما", ""],
@@ -642,6 +660,7 @@ function showTab(name) {
   if (name === "library") { loadFacets(); loadPapers(); loadEval(); }
   if (name === "index") loadFormulas();
   if (name === "pm") window.loadPM?.();
+  if (name === "advisor") window.loadAdvisor?.();
   if (name === "spdc") window.loadSPDC?.();
   window.scrollTo(0, 0);
   document.querySelector("nav button.on")?.scrollIntoView({ block: "nearest", inline: "center" });
@@ -1466,7 +1485,7 @@ const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
 const PROC = {
   shg: ["طول موج اصلی", ""], sfg: ["طول موج ۱", "طول موج ۲"], opo: ["طول موج پمپ", "طول موج سیگنال"],
 };
-const PM = { list: null, crystal: null, source: null, dij: {} };
+const PM = { list: null, crystal: null, source: null, dij: {}, props: {} };
 const short = (c) => (c.name ? c.name.replace(/^\S+\s*/, "").replace(/^\(|\)$/g, "") : "");
 const key = (c) => c.material;
 
@@ -1499,7 +1518,8 @@ function inputs() {
 
 window.loadPM = async () => {
   if (PM.list) return;
-  [PM.list, PM.dij] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({}))]);
+  [PM.list, PM.dij, PM.props] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({})),
+    fetch("/ri/props.json").then((r) => r.json()).catch(() => ({}))]);
   // partial tensors (not all elements, or not in the dielectric frame) would give a wrong d_eff: card only
   PM.dij = Object.fromEntries(Object.entries(PM.dij).filter(([, v]) => !v.partial));
   const saved = store.get("pm"); if (saved) { $("pmproc").value = saved.proc; $("pma").value = saved.a; $("pmb").value = saved.b; }
@@ -1780,18 +1800,30 @@ $("pmmore").onchange = () => {
 };
 // ---------- crystal advisor: the fixed conditions in, every crystal that meets them out (phasematch.js advise)
 const numOr = (id) => { const v = $(id).value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
-const REASON = { range: "طول موج‌ها بیرون از بازه‌ی فرمول ضریب شکست", isotropic: "همسانگرد (مکعبی): فقط با QPM", "no-pm": "تطبیق فاز ندارد", "no-thermo": "وابستگی دمایی معلوم نیست",
+const REASON = { absorbed: "طول موجی بیرون از بازه‌ی شفافیت بلور (جذب)", range: "طول موج‌ها بیرون از بازه‌ی فرمول ضریب شکست", isotropic: "همسانگرد (مکعبی): فقط با QPM", "no-pm": "تطبیق فاز ندارد", "no-thermo": "وابستگی دمایی معلوم نیست",
   temp: "دمای تطبیق فاز ۹۰ درجه بیرون از بازه‌ی دمای شما", ncpm: "فقط تطبیق فاز بحرانی (زاویه‌ای) دارد", deff0: "d_eff صفر است", walkoff: "walk-off بیشتر از حد",
   spectral: "پهنای طیفی کمتر از حد", angular: "پهنای زاویه‌ای کمتر از حد", tempacc: "پهنای دمایی کمتر از حد (یا نامعلوم)" };
 // one source per crystal: the first that covers the three waves, a source with thermo-optic data first
 function advCrystals(w) {
   return PM.list.filter((c) => PM.dij[c.material]).map((c) => {
     const fits = c.sources.filter((s) => covers(s, w)), src = fits.find((s) => s.thermo) || fits[0] || c.sources[0];
-    return { material: c.material, src, kind: src.kind, range_um: src.range_um, thermo: Boolean(src.thermo), nAtT: (T) => nAtT(src, T), d: PM.dij[c.material].d };
+    return { material: c.material, src, kind: src.kind, range_um: src.range_um, thermo: Boolean(src.thermo), nAtT: (T) => nAtT(src, T), d: PM.dij[c.material].d,
+      transparency: PM.props[c.material]?.transparency_um };
   });
 }
+function advInputs() {
+  const proc = $("advproc").value, a = +$("adva").value, b = +$("advb").value;
+  return { proc, a, b, w: waves(proc, a, b) };
+}
+window.loadAdvisor = async () => {
+  await window.loadPM();
+  if ($("cutmat").options.length) return;
+  $("cutmat").innerHTML = PM.list.filter((c) => c.sources.some((x) => x.thermo))
+    .map((c) => `<option value="${esc(c.material)}">${esc(c.material)}${short(c) ? " — " + esc(short(c)) : ""}</option>`).join("");
+  $("cutmat").value = "LiB3O5";
+};
 function adviseRun() {
-  const { proc, a, b, w } = inputs(), lo = numOr("advlo") ?? 25, hi = numOr("advhi") ?? lo, L = numOr("advlen") || 1;
+  const { proc, a, b, w } = advInputs(), lo = numOr("advlo") ?? 25, hi = numOr("advhi") ?? lo, L = numOr("advlen") || 1;
   if (!(hi >= lo)) { $("advinfo").innerHTML = '<span class="err">بازه‌ی دما درست نیست</span>'; return; }
   $("advinfo").textContent = "در حال آزمودن همه‌ی بلورها…";
   setTimeout(() => {
@@ -1801,14 +1833,15 @@ function adviseRun() {
     const key = { walk: (x) => Math.max(...x.best.walkoff_mrad), spec: (x) => -(x.best.spectral_nm ?? 0), temp: (x) => -(x.best.temp_C ?? 0) }[$("advsort").value];
     if (key) r.ok.sort((p, q) => key(p) - key(q));
     const lam = [w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ") + " → " + w.l3.toFixed(4) + " µm";
-    $("advinfo").innerHTML = `${fa(r.ok.length)} بلور شرط‌ها را برمی‌آورد (<bdi dir="ltr">${lam}</bdi>، ${fa(lo)} تا ${fa(hi)} °C)؛ پهنای پذیرش برای بلور ${fa(L)} سانتی‌متری است. روی هر ردیف بزنید تا همه‌ی جواب‌هایش را بالا ببینید.`;
+    $("advinfo").innerHTML = `${fa(r.ok.length)} بلور شرط‌ها را برمی‌آورد (<bdi dir="ltr">${lam}</bdi>، ${fa(lo)} تا ${fa(hi)} °C)؛ پهنای پذیرش برای بلور ${fa(L)} سانتی‌متری است. روی هر ردیف بزنید تا در زبانه‌ی تطبیق فاز همه‌ی جواب‌هایش را ببینید.`;
     const how = (s) => (s.how === "ncpm-temp" ? `90° along ${s.axis}, ${s.pol.join("")} at ${s.T.toFixed(1)} °C` : `${s.plane} ${s.type === "I" ? "I" : "II"} · ${s.angle.toFixed(2)}°${s.noncritical ? " (NCPM)" : ""}`);
     const f1 = (v, k = 1) => (v == null || !Number.isFinite(v) ? "—" : v.toFixed(k));
     $("advtable").innerHTML = r.ok.length ? `<tr><th>#</th><th>crystal</th><th>how</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>walk-off (mrad)</th><th>Δλ (nm)</th><th>ΔT (°C)</th><th>angle drift over the range</th><th>note</th></tr>`
       + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b></td><td>${how(s)}</td>
         <td><b>${f1(s.deff, 2)}</b></td><td>${f1(s.fom, 2)}</td><td>${f1(Math.max(...s.walkoff_mrad))}</td><td>${f1(s.spectral_nm != null ? s.spectral_nm / L : null, 2)}</td>
         <td>${f1(s.temp_C != null ? s.temp_C / L : null)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : "—"}</td>
-        <td>${x.thermo ? "" : '<span class="err">رفتار دمایی نامعلوم</span>'}</td></tr>`; }).join("") : "";
+        <td>${[x.thermo ? "" : '<span class="err">رفتار دمایی نامعلوم</span>', x.edge ? '<span class="err">نزدیک لبه‌ی جذب</span>' : "",
+          PM.props[x.material]?.hygroscopic === false ? "غیرجاذب رطوبت" : ""].filter(Boolean).join("<br>")}</td></tr>`; }).join("") : "";
     const near = r.no.filter((n) => n.reason === "temp").map((n) => `<b>${esc(n.material)}</b> (<bdi dir="ltr">${n.near.T.toFixed(0)} °C</bdi>)`);
     const count = {}; for (const n of r.no) count[n.reason] = (count[n.reason] || 0) + 1;
     $("advno").innerHTML = (near.length ? `<p><b>تطبیق فاز ۹۰ درجه در دمای دیگر:</b> ${near.join("، ")}. اگر آونی دارید که به این دما می‌رسد، این بلورها هم شدنی‌اند.</p>` : "")
@@ -1816,22 +1849,35 @@ function adviseRun() {
   }, 20);
 }
 function cutRun() {
-  // the source chosen above, or else one of the same crystal that has a temperature-dependent formula
-  const chosen = PM.source || PM.crystal?.sources[0], src = chosen?.thermo ? chosen : PM.crystal?.sources.find((s) => s.thermo) || chosen;
-  const { proc, a, b } = inputs(), ang = numOr("cutangle");
+  const c = PM.list?.find((x) => x.material === $("cutmat").value), { proc, a, b, w } = advInputs(), ang = numOr("cutangle");
+  // a source with a temperature-dependent formula that covers the three waves, or any with one
+  const src = c && (c.sources.find((x) => x.thermo && covers(x, w)) || c.sources.find((x) => x.thermo));
   if (!src || ang == null) { $("cutinfo").innerHTML = '<span class="err">بلور و زاویه‌ی برش را بدهید</span>'; return; }
   const plane = src.kind === "uniaxial" ? "xz" : $("cutplane").value, type = $("cuttype").value, lo = numOr("advlo") ?? 20, hi = numOr("advhi") ?? 60;
   if (!src.thermo) { $("cutinfo").innerHTML = `<span class="err">برای منبع ${esc(src.label)} فرمول وابستگی دمایی نداریم: دمای کار این برش را نمی‌شود حساب کرد.</span>`; return; }
   const nT = (T) => nAtT(src, T), Ts = cutTemperatures(nT, plane, ang * Math.PI / 180, proc, a, b, type, [-50, 300]);
   if (!Ts.length) { $("cutinfo").innerHTML = '<span class="err">این برش بین ۵۰− و ۳۰۰ °C تطبیق فاز نمی‌دهد.</span>'; return; }
-  $("cutinfo").innerHTML = (src !== chosen ? `با فرمول وابستگی دمایی منبع ${esc(src.label)}:<br>` : "") + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / (numOr("advlen") || 1);
+  $("cutinfo").innerHTML = `با فرمول وابستگی دمایی منبع ${esc(src.label)}:<br>` + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / (numOr("advlen") || 1);
     const inside = T >= lo && T <= hi;
     return `دمای تطبیق فاز: <b><bdi dir="ltr">${T.toFixed(1)} °C</bdi></b> (پهنای دمایی <bdi dir="ltr">${acc.toFixed(1)} °C</bdi>) — ${inside ? '<b>درون بازه‌ی دمای شما</b>' : `<span class="err">بیرون از بازه‌ی ${fa(lo)} تا ${fa(hi)} °C شما</span>`}`; }).join("<br>");
 }
 $("advgo").onclick = adviseRun;
 $("advsort").onchange = () => { if ($("advtable").innerHTML) adviseRun(); };
 $("cutgo").onclick = cutRun;
-$("advtable").onclick = (e) => { const tr = e.target.closest("tr[data-mat]"); if (tr) { pick(tr.dataset.mat, tr.dataset.src); $("pmtable").scrollIntoView({ behavior: "smooth", block: "center" }); } };
+// a row opens the crystal in the phase-matching tab, with the advisor's process and wavelengths
+$("advtable").onclick = (e) => {
+  const tr = e.target.closest("tr[data-mat]"); if (!tr) return;
+  $("pmproc").value = $("advproc").value; $("pma").value = $("adva").value; $("pmb").value = $("advb").value;
+  $("pmT").value = (((numOr("advlo") ?? 25) + (numOr("advhi") ?? numOr("advlo") ?? 25)) / 2).toString();
+  showTab("pm"); pick(tr.dataset.mat, tr.dataset.src, false);
+};
+$("advproc").onchange = () => {
+  const p = $("advproc").value, [la, lb] = PROC[p];
+  $("advla").textContent = la; $("advlb").textContent = lb; $("advbwrap").style.display = p === "shg" ? "none" : "";
+  if (p === "sfg") { $("adva").value = 1.064; $("advb").value = 0.532; }
+  if (p === "opo") { $("adva").value = 0.532; $("advb").value = 0.8; }
+  if (p === "shg") $("adva").value = 1.064;
+};
 $("pmall").onclick = compareAll;
 $("pmevery").onchange = compareAll;
 $("pmsort").onchange = compareAll;

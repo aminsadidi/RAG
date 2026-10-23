@@ -8,10 +8,10 @@ const DAY = 86400;
 
 // Access levels: which tabs a user sees and whether the papers' PDFs are served to them.
 export const ROLES = {
-  full: { label: "کامل", tabs: ["search", "index", "pm", "spdc", "library", "about"], search: true, pdf: true },
-  guest: { label: "مهمان (بدون PDF)", tabs: ["search", "index", "pm", "spdc", "library", "about"], search: true, pdf: false },
+  full: { label: "کامل", tabs: ["search", "index", "pm", "advisor", "spdc", "library", "about"], search: true, pdf: true },
+  guest: { label: "مهمان (بدون PDF)", tabs: ["search", "index", "pm", "advisor", "spdc", "library", "about"], search: true, pdf: false },
   search: { label: "فقط جست‌وجو", tabs: ["search", "about"], search: true, pdf: false },
-  tools: { label: "فقط ابزارها", tabs: ["index", "pm", "spdc", "about"], search: false, pdf: false },
+  tools: { label: "فقط ابزارها", tabs: ["index", "pm", "advisor", "spdc", "about"], search: false, pdf: false },
 };
 export const OWNER = { name: "owner", role: "owner", quota: 0, tabs: ROLES.full.tabs, search: true, pdf: true };
 const account = (name, u) => ({ name, role: u.role || "full", quota: u.quota || 0, ...(ROLES[u.role] || ROLES.full) });

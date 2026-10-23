@@ -266,7 +266,8 @@ export function ncpmAcceptance(nAtT, process, a, b, pol, T) {
 // ---------- crystal advisor
 
 // Every crystal that can do the process under the fixed conditions, best first, and the ones that cannot
-// with the reason. crystals: [{material, kind, range_um, thermo (true if dn/dT is known), nAtT(T), d}].
+// with the reason. crystals: [{material, kind, range_um, thermo (true if dn/dT is known), nAtT(T), d,
+// transparency ([lo, hi] µm, if known)}].
 // want: {process, a, b, T: [lo, hi] (the oven or the room; one value for a fixed temperature), type
 // ("any", "I", "II"), ncpm (90° only), maxWalkoff (mrad), minSpectral (nm·cm), minAngular (mrad·cm),
 // minTemp (°C·cm), needThermo, length (cm, for the bandwidths)}.
@@ -277,6 +278,11 @@ export function advise(crystals, want) {
   const typeOk = (t) => !want.type || want.type === "any" || (want.type === "I" ? t === "I" : t !== "I");
   for (const c of crystals) {
     const why = (reason) => no.push({ material: c.material, reason });
+    // the transmission range a source states, when known (crystal_properties.yml): a wave outside it is absorbed,
+    // one within 10 % of an edge is marked (the "0" level edges are where transmission vanishes)
+    const t = c.transparency;
+    if (t && ![w.l1, w.l2, w.l3].every((l) => l >= t[0] && l <= t[1])) { why("absorbed"); continue; }
+    const edge = Boolean(t) && [w.l1, w.l2, w.l3].some((l) => l < t[0] * 1.1 || l > t[1] / 1.1);
     if (![w.l1, w.l2, w.l3].every((l) => l >= c.range_um[0] - 1e-9 && l <= c.range_um[1] + 1e-9)) { why("range"); continue; }
     if (want.needThermo && !c.thermo) { why("no-thermo"); continue; }
     // a cubic crystal (CdTe, GaAs) has no birefringence: phase matching by quasi-phase matching only
@@ -320,7 +326,7 @@ export function advise(crystals, want) {
     });
     const good = rated.filter((s) => !s.fails.length);
     const byFom = (p, q) => (q.fom ?? -1) - (p.fom ?? -1) || Math.max(...p.walkoff_mrad) - Math.max(...q.walkoff_mrad);
-    if (good.length) ok.push({ material: c.material, thermo: c.thermo, best: good.sort(byFom)[0], all: good.sort(byFom) });
+    if (good.length) ok.push({ material: c.material, thermo: c.thermo, edge, best: good.sort(byFom)[0], all: good.sort(byFom) });
     else {
       const near = rated.sort((p, q) => p.fails.length - q.fails.length || byFom(p, q))[0];
       no.push({ material: c.material, reason: near.fails[0], near });
