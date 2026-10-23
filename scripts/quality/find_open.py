@@ -2,10 +2,11 @@
 crystal, SubQ reads each abstract and says how likely the authors measured that kind of data. Writes a CSV of links and
 scores only (doi, crystal, kind, p, pdf, title) for the reader (Gemini) that extracts the numbers from the PDFs.
 
-    python scripts/quality/find_open.py OUT.csv "KBe2BO3F2:dndt" "CuGaS2:dij" ...   (SUBQ_KEYS)
+    python scripts/quality/find_open.py OUT.csv "KBe2BO3F2:dndt" "CuGaS2:dij" ...   (SUBQ_KEYS, OPENALEX_API_KEY)
 """
 import csv
 import json
+import os
 import sys
 import urllib.parse
 import urllib.request
@@ -41,7 +42,8 @@ def abstract(inv):
 def candidates(crystal, kind, n=25):
     term, _ = WHAT[kind]
     q = urllib.parse.urlencode({"filter": f"is_oa:true,title_and_abstract.search:{crystal}", "search": term, "per-page": n,
-                                "select": "doi,display_name,abstract_inverted_index,best_oa_location,locations"})
+                                "select": "doi,display_name,abstract_inverted_index,best_oa_location,locations",
+                                **({"api_key": os.environ["OPENALEX_API_KEY"]} if os.environ.get("OPENALEX_API_KEY") else {})})
     out = []
     for w in get(f"https://api.openalex.org/works?{q}").get("results", []):
         pdfs = [loc["pdf_url"] for loc in w.get("locations") or [] if loc.get("is_oa") and loc.get("pdf_url")]
