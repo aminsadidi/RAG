@@ -92,6 +92,12 @@ export function walkOff(nAt, plane, a, lam, pol) {
   return -(indexOf(nAt, plane, a + h, lam, pol) - indexOf(nAt, plane, a - h, lam, pol)) / (2 * h) / n;
 }
 
+// Group index n_g = n − λ·dn/dλ of the wave λ with polarization pol along the fixed direction.
+export function groupIndex(nAt, plane, a, lam, pol) {
+  const h = 1e-4;
+  return indexOf(nAt, plane, a, lam, pol) - lam * (indexOf(nAt, plane, a, lam + h, pol) - indexOf(nAt, plane, a, lam - h, pol)) / (2 * h);
+}
+
 // Everything about one phase-matching solution.
 export function describe(nAt, plane, a, process, p, q, type) {
   const w = waves(process, p, q), [p1, p2] = TYPES[type];
@@ -100,9 +106,12 @@ export function describe(nAt, plane, a, process, p, q, type) {
   const spectral = width((d) => deltaK(nAt, plane, a, shifted(process, p, q, d), type), limit, 1e-6, 0.5);
   const rho = [[w.l1, p1], [w.l2, p2], [w.l3, "f"]].map(([lam, pol]) => walkOff(nAt, plane, a, lam, pol));
   const n = [[w.l1, p1], [w.l2, p2], [w.l3, "f"]].map(([lam, pol]) => indexOf(nAt, plane, a, lam, pol));
+  const ng = [[w.l1, p1], [w.l2, p2], [w.l3, "f"]].map(([lam, pol]) => groupIndex(nAt, plane, a, lam, pol));
   return {
     plane, type, angle: a * 180 / Math.PI, waves: w, pol: [p1, p2, "f"], n,
     walkoff_mrad: rho.map((r) => Math.abs(r) * 1e3), // per wave
+    group_index: ng,
+    gvm_fs_mm: [ng[0] - ng[2], ng[1] - ng[2], ng[0] - ng[1]].map((d) => d / 2.99792458e-4), // 1/v_g differences: 1−3, 2−3, 1−2
     angular_mrad: angular * 1e3, // for a 1 cm crystal
     spectral_nm: spectral * 1e3, // of the tuned wavelength, for a 1 cm crystal
     noncritical: a < 1e-4 || Math.abs(a - Math.PI / 2) < 1e-4,

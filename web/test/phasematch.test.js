@@ -744,3 +744,10 @@ test("gaps filled from the collection: CaYAlO4 and GaS dn/dT, ZnO d", () => {
   // ZnO, Wang et al. 2001: χ33 = −14.31 pm/V, χ31/χ33 = −0.095, d = χ/2
   assert.ok(Math.abs(D.ZnO.d["33"] * 2 + 14.31) < 0.01 && Math.abs(D.ZnO.d["31"] / D.ZnO.d["33"] + 0.095) < 0.001);
 });
+
+test("temporal walk-off: group-velocity mismatch of type-I SHG of 800 nm in BBO", () => {
+  // 1/v_g(400 nm, e) − 1/v_g(800 nm, o) ≈ 190 fs/mm (e.g. Weiner, Ultrafast Optics, 2009)
+  const s = source("BaB2O4", "Tamosauskas"), r = solveAll(nAt(s), s.kind, "shg", 0.8, 0).find((x) => x.type === "I");
+  assert.ok(r.gvm_fs_mm[0] < 0 && Math.abs(-r.gvm_fs_mm[0] - 190) < 10, `${r.gvm_fs_mm}`);
+  assert.equal(r.gvm_fs_mm[2], 0); // the two fundamental photons are the same wave
+});
