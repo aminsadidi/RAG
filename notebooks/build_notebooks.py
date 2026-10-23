@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 15
+VERSION = 16
 WORKERS = 4
 
 
@@ -493,6 +493,37 @@ downloads = pathlib.Path(DOWNLOADS)
 from matrag.new_papers import auto_papers, needs_ocr
 auto, unmatched = auto_papers(downloads, pathlib.Path('/content/RAG/data/rag-optics/requested_papers.json'), set(PAPERS))
 PAPERS.update(auto)
+# Free copies of papers the collection has only as abstracts (data/rag-optics/free_sources.csv, made by
+# scripts/quality/free_sources.py): open-access PDFs go into the downloads folder and are added like the rest, if
+# their first pages show the paper's title; Supporting Information goes to RAG-Optics/supporting_info/<doi>/.
+import requests
+from matrag.new_papers import shows_title
+by_doi = {p['doi']: p for p in json.load(open('/content/RAG/web/src/papers.json')) if p.get('doi')}
+si_dir = root / 'supporting_info'
+got_oa = got_si = 0
+for row in csv.DictReader(open('/content/RAG/data/rag-optics/free_sources.csv', encoding='utf-8')):
+    p = by_doi.get(row['doi'])
+    if p is None or p['source_type'] == 'full_text_pdf' or not p.get('category'):
+        continue
+    target = (downloads / (doi_key(row['doi']) + '.pdf')) if row['kind'] == 'oa_pdf' else (si_dir / doi_key(row['doi']) / row['note'].rsplit(' (', 1)[0])
+    if not target.exists():
+        try:
+            r = requests.get(row['url'], timeout=120, headers={'user-agent': 'Mozilla/5.0 (MatRAG, University of Isfahan)'})
+        except requests.RequestException:
+            continue
+        if not r.ok or (row['kind'] == 'oa_pdf' and r.content[:4] != b'%PDF'):
+            continue  # a landing page or a refusal: left for a download by hand
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(r.content)
+    if row['kind'] == 'oa_pdf':
+        if shows_title(target, row['title']) is False:
+            print('⚠️ not the paper of its DOI, left out:', target.name)
+            continue
+        PAPERS[target.name] = (row['doi'], p['category'], p['material'], None)
+        got_oa += 1
+    else:
+        got_si += 1
+print(f'{got_oa} open-access copies of abstract-only papers added; {got_si} Supporting Information files in {si_dir}')
 print(f'{len(auto)} more PDFs recognised from their DOI file names')
 if unmatched:
     print(f'⚠️ {len(unmatched)} PDFs match no requested paper and are left as they are:', ', '.join(unmatched[:30]))

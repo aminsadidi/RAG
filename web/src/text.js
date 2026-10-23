@@ -144,8 +144,10 @@ const languageRules = (language) =>
 // Same file as build_context_pack() in qa.py.
 export function contextPack(question, payloads, about, language, searchQuery) {
   const rules = ["Write citations as plain text with the page, e.g. (Source 2, p. 5), not as links or footnotes.",
+    "Say whether each value you give was measured or calculated, as the source shows (each source is labelled with the kind of work it is).",
     ...languageRules(language)];
-  const context = payloads.map((p, i) => `[${i + 1}] (${sourceLabel(p)})\n${p.text}`).join("\n\n");
+  const kind = { experimental: "experimental work", theoretical: "theoretical/computational work", both: "experimental and theoretical work", review: "review or compilation" };
+  const context = payloads.map((p, i) => `[${i + 1}] (${sourceLabel(p)}${kind[p.basis] ? `; ${kind[p.basis]}` : ""})\n${p.text}`).join("\n\n");
   const prompt = S.RAG_PROMPT.replace("{not_found}", S.NOT_FOUND)
     .replace("{extra_rules}", rules.map((r) => `- ${r}\n`).join(""))
     .replace("{context}", context)
