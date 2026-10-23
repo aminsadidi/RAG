@@ -788,3 +788,19 @@ test("library papers: NLBO d22 (Zhang 2010), CdGa2S4 d36 (Levine 1974), Yb:YAB d
     assert.ok(Math.abs(dndt("o", l) - o) < 0.06e-6 && Math.abs(dndt("e", l) - e) < 0.06e-6, `YAB ${l}`);
   }
 });
+
+test("library papers: BeO (Jerphagnon 1971), Pb5Ge3O11 (Miller 1974), AlPO4 (Defregger 1990)", () => {
+  const esu = 4 * Math.PI / 3e4 * 1e12; // ESU (cm/statvolt) to pm/V
+  const q = 0.77 * 1.5e-9; // the paper's d11(SiO2) = 0.77 d36(KDP), d36(KDP) = 1.5e-9 ESU
+  assert.ok(Math.abs(D.BeO.d["31"] + 0.46 * q * esu) < 0.002 && Math.abs(D.BeO.d["33"] + 0.63 * q * esu) < 0.002);
+  const pg = D.Pb5Ge3O11.d; // Table I (×1e-9 ESU), right-handed crystal
+  for (const [k, v] of [["11", -2.59], ["22", -5.70], ["31", 1.38], ["33", -2.15]]) assert.ok(Math.abs(pg[k] - v * 1e-9 * esu) < 0.002, k);
+  assert.ok(Math.abs(D.AlPO4.d["11"] - 1.49 * 0.334) < 0.002); // 1.49 × d11(quartz), quartz 0.334 pm/V
+});
+
+test("alexandrite BeAl2O4 dn/dT (Loiko et al. 2018): 5.9, 6.9, 15.2 ×10⁻⁶ /K at 0.75 µm for E ∥ a, b, c", () => {
+  const s = source("BeAl2O4", "Walling");
+  const dndt = (ax) => thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], 0.75), 0.75, 26)
+    - thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], 0.75), 0.75, 25);
+  for (const [ax, v] of [["x", 5.9e-6], ["y", 6.9e-6], ["z", 15.2e-6]]) assert.ok(Math.abs(dndt(ax) - v) < 0.06e-6, `${ax} ${dndt(ax)}`);
+});

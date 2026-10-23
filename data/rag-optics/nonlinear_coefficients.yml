@@ -773,3 +773,24 @@
     - {doc_id: 10.1364_oe.21.016415, cite: "Fang et al. (2013)", pdf_page: 1, what: "d11 = 1.10 pm/V, determined by a phase-matching method (abstract; the paper of the site's Fang Sellmeier equations)"}
   notes: "32 with Kleinman: d12 = d26 = −d11 and d14 = 0. From the abstract only; the measurement wavelength (SHG of 1064 nm, presumably) is not stated there"
 
+- material: BeO
+  point_group: 6mm
+  d: {33: -0.305, 31: -0.223, 32: -0.223, 15: -0.223, 24: -0.223}
+  sources:
+    - {doi: 10.1063/1.1653649, cite: "Jerphagnon & Newkirk (1971)", pdf_page: 1, what: "Maker fringes at 1.064 µm: d31 = (0.46 ± 0.03) d11(SiO2), d33 = (0.63 ± 0.04) d11(SiO2), with d11(SiO2) = 0.77 d36(KDP) and d36(KDP) = 1.5 × 10⁻⁹ ESU (p. 245); both negative (p. 246)"}
+  notes: "6mm: d31 = d32, Kleinman d15 = d24 = d31. On the scale of the time (d36(KDP) = 1.5 × 10⁻⁹ ESU = 0.63 pm/V); with today's 0.39 pm/V the values would be about 40 % lower"
+
+- material: Pb5Ge3O11
+  point_group: "3"
+  d: {11: -1.085, 12: 1.085, 26: 1.085, 22: -2.388, 21: 2.388, 16: 2.388, 31: 0.578, 32: 0.578, 15: 0.578, 24: 0.578, 33: -0.901}
+  sources:
+    - {doi: 10.1080/00150197408237965, cite: "Miller, Nordland, Ballman (1974)", pdf_page: 2, what: "Table I, right-handed crystal at 300 K, SHG of 1.06 µm against quartz d11 = 0.87 × 10⁻⁹ ESU: d11 = −2.59 ± 0.39, d22 = −5.70 ± 0.86, d31 = +1.38 ± 0.21, d33 = −2.15 ± 0.32 (× 10⁻⁹ ESU); the table's columns are jumbled in the PDF text and were paired through the reduced nonlinearities δ (d/δ ≈ 2.0 for all four)"}
+  notes: "3 with Kleinman: d12 = d26 = −d11, d21 = d16 = −d22, d31 = d32 = d15 = d24, d14 = 0. Signs for a right-handed crystal: d22 changes sign for a left-handed one (p. 110). d31 and d33 vanish at the Curie point (177 °C), d11 and d22 do not"
+
+- material: AlPO4
+  point_group: "32"
+  d: {11: 0.498, 12: -0.498, 26: -0.498}
+  sources:
+    - {doi: 10.1002/pssb.2221620129, cite: "Defregger, Engel, Krempl (1990)", pdf_page: 5, what: "d11(AlPO4)/d11(quartz) = 1.49 ± 0.2 by Maker fringes at 1.064 µm, 296 K; with d11(quartz) = 0.334 pm/V, d11 = 0.498 ± 0.08 pm/V (Table 4; 35 % lower at 783 K)"}
+  notes: "32 (berlinite, quartz-like): d12 = d26 = −d11; d14 is zero with Kleinman symmetry. About 1.5 times the earlier value of Miller (1964)"
+
