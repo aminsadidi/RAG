@@ -727,3 +727,20 @@ test("ABF (NH4B4O6F), Shi et al. 2017: birefringence at 1.064 µm and the shorte
   const shortest = (plane) => { let lo = null; for (let l = 0.4; l >= 0.312; l -= 0.0002) if (solveAll(n, s.kind, "shg", l, 0).some((r) => r.plane === plane && r.type === "I")) lo = l; return lo / 2; };
   assert.ok(Math.abs(shortest("xy") - 0.158) < 0.001);
 });
+
+test("gaps filled from the collection: CaYAlO4 and GaS dn/dT, ZnO d", () => {
+  const shift = (s, ax, lam, T) => thermoShift(s.thermo.form, s.axes[ax].thermo, s.thermo.t0_c, entryIndex(s.axes[ax], lam), lam, T);
+  // CaYAlO4, Loiko et al. 2017, Table 3: dno/dT = −7.8, dne/dT = −8.7 ×10⁻⁶ /K at 1.03 µm
+  const c = source("CaYAlO4", "Loiko");
+  for (const [ax, v] of [["o", -7.8e-6], ["e", -8.7e-6]]) {
+    assert.ok(Math.abs(shift(c, ax, 1.03, 21) - shift(c, ax, 1.03, 20) - v) < 0.06e-6, `CaYAlO4 ${ax}`);
+  }
+  // GaS, Errandonea et al. 1999, Table III: ∂ln n/∂T = 3.5 (o) and 10.1 (e) ×10⁻⁵ /K at 1.4 µm
+  const g = source("GaS", "Kato");
+  for (const [ax, v] of [["o", 3.5e-5], ["e", 10.1e-5]]) {
+    const dndt = (shift(g, ax, 1.4, 30) - shift(g, ax, 1.4, 20)) / 10;
+    assert.ok(Math.abs(dndt / entryIndex(g.axes[ax], 1.4) - v) < 0.01e-5, `GaS ${ax}`);
+  }
+  // ZnO, Wang et al. 2001: χ33 = −14.31 pm/V, χ31/χ33 = −0.095, d = χ/2
+  assert.ok(Math.abs(D.ZnO.d["33"] * 2 + 14.31) < 0.01 && Math.abs(D.ZnO.d["31"] / D.ZnO.d["33"] + 0.095) < 0.001);
+});

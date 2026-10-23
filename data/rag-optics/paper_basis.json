@@ -204,10 +204,10 @@
 "review": 0.041
 },
 "10.1002_adom.201900681": {
-"label": "review",
-"measured": 0.015,
-"calculated": 0.013,
-"review": 0.996
+"label": "theoretical",
+"measured": 0.07,
+"calculated": 0.906,
+"review": 0.932
 },
 "10.1002_adom.201900936": {
 "label": "experimental",
@@ -5106,10 +5106,10 @@
 "review": 0.046
 },
 "10.1051_0004_6361_20053727": {
-"label": "both",
-"measured": 0.998,
-"calculated": 0.972,
-"review": 0.017
+"label": "experimental",
+"measured": 0.985,
+"calculated": 0.358,
+"review": 0.096
 },
 "10.1051_epjconf_202328705021": {
 "label": "experimental",
@@ -6037,9 +6037,9 @@
 },
 "10.1063_1.1640784": {
 "label": "experimental",
-"measured": 0.994,
-"calculated": 0.06,
-"review": 0.004
+"measured": 0.993,
+"calculated": 0.064,
+"review": 0.038
 },
 "10.1063_1.1647688": {
 "label": "both",
@@ -7015,9 +7015,9 @@
 },
 "10.1063_1.3327430": {
 "label": "experimental",
-"measured": 0.996,
-"calculated": 0.016,
-"review": 0.005
+"measured": 0.985,
+"calculated": 0.592,
+"review": 0.035
 },
 "10.1063_1.332850": {
 "label": "theoretical",
@@ -7398,10 +7398,10 @@
 "review": 0.137
 },
 "10.1063_1.3599884": {
-"label": "experimental",
-"measured": 0.993,
-"calculated": 0.478,
-"review": 0.01
+"label": "both",
+"measured": 0.941,
+"calculated": 0.888,
+"review": 0.171
 },
 "10.1063_1.360121": {
 "label": "experimental",
@@ -8533,9 +8533,9 @@
 },
 "10.1088_0034_4885_70_10_r03": {
 "label": "review",
-"measured": 0.098,
-"calculated": 0.586,
-"review": 0.947
+"measured": 0.086,
+"calculated": 0.744,
+"review": 0.971
 },
 "10.1088_0034_4885_72_12_126501": {
 "label": "review",
@@ -8701,9 +8701,9 @@
 },
 "10.1088_1361_6455_aa9735": {
 "label": "review",
-"measured": 0.037,
-"calculated": 0.026,
-"review": 0.93
+"measured": 0.09,
+"calculated": 0.024,
+"review": 0.942
 },
 "10.1088_1361_6463_ae172c": {
 "label": "experimental",
@@ -9769,9 +9769,9 @@
 },
 "10.1103_physrevb.77.235111": {
 "label": "experimental",
-"measured": 0.997,
-"calculated": 0.007,
-"review": 0.002
+"measured": 0.988,
+"calculated": 0.03,
+"review": 0.106
 },
 "10.1103_physrevb.82.035124": {
 "label": "theoretical",
@@ -10153,9 +10153,9 @@
 },
 "10.1103_physrevstab.11.072802": {
 "label": "theoretical",
-"measured": 0.033,
-"calculated": 0.973,
-"review": 0.041
+"measured": 0.08,
+"calculated": 0.621,
+"review": 0.368
 },
 "10.1103_revmodphys.54.437": {
 "label": "review",
