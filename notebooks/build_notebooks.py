@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 16
+VERSION = 17
 WORKERS = 4
 
 
@@ -501,9 +501,10 @@ from matrag.new_papers import shows_title
 by_doi = {p['doi']: p for p in json.load(open('/content/RAG/web/src/papers.json')) if p.get('doi')}
 si_dir = root / 'supporting_info'
 got_oa = got_si = 0
+added = set()
 for row in csv.DictReader(open('/content/RAG/data/rag-optics/free_sources.csv', encoding='utf-8')):
     p = by_doi.get(row['doi'])
-    if p is None or p['source_type'] == 'full_text_pdf' or not p.get('category'):
+    if p is None or p['source_type'] == 'full_text_pdf' or not p.get('category') or row['doi'] in added:
         continue
     target = (downloads / (doi_key(row['doi']) + '.pdf')) if row['kind'] == 'oa_pdf' else (si_dir / doi_key(row['doi']) / row['note'].rsplit(' (', 1)[0])
     if not target.exists():
@@ -518,8 +519,10 @@ for row in csv.DictReader(open('/content/RAG/data/rag-optics/free_sources.csv', 
     if row['kind'] == 'oa_pdf':
         if shows_title(target, row['title']) is False:
             print('⚠️ not the paper of its DOI, left out:', target.name)
+            target.unlink()  # the next copy of the same paper may be the right one
             continue
         PAPERS[target.name] = (row['doi'], p['category'], p['material'], None)
+        added.add(row['doi'])
         got_oa += 1
     else:
         got_si += 1

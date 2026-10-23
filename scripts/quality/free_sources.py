@@ -28,12 +28,13 @@ def get(url, body=None):
 def find(doi):
     rows = []
     w = get(f"https://api.openalex.org/works/doi:{urllib.parse.quote(doi)}?select=display_name,locations")
-    for loc in (w or {}).get("locations") or []:
-        if loc.get("pdf_url") and loc.get("is_oa"):
-            src = (loc.get("source") or {}).get("display_name") or ""
-            rows.append([doi, "oa_pdf", loc["pdf_url"], loc.get("license") or "", f"{loc.get('version') or ''} {src}".strip(),
-                         w.get("display_name") or ""])
-            break
+    # every open copy, repositories (arXiv, OSTI, PMC, university archives) first: publishers often answer a script
+    # with a web page instead of the PDF; the notebook takes the first that is a PDF
+    locs = [loc for loc in (w or {}).get("locations") or [] if loc.get("pdf_url") and loc.get("is_oa")]
+    for loc in sorted(locs, key=lambda loc: (loc.get("source") or {}).get("type") != "repository"):
+        src = (loc.get("source") or {}).get("display_name") or ""
+        rows.append([doi, "oa_pdf", loc["pdf_url"], loc.get("license") or "", f"{loc.get('version') or ''} {src}".strip(),
+                     w.get("display_name") or ""])
     for art in get("https://api.figshare.com/v2/articles/search", {"search_for": f":resource_doi: {doi}", "page_size": 10}) or []:
         if (art.get("resource_doi") or "").lower() != doi.lower():
             continue
