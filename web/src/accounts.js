@@ -28,18 +28,21 @@ export function newPassword(n = 10) {
   return [...crypto.getRandomValues(new Uint8Array(n))].map((b) => abc[b % abc.length]).join("");
 }
 
+// The user's salt is signed too (it changes with every new password), so a new password signs out old sessions.
 export async function makeSession(env, user, days = 30) {
   const payload = `${user}.${Math.floor(Date.now() / 1000) + days * DAY}`;
-  return `${payload}.${await hmac(env, payload)}`;
+  const salt = user === "owner" ? "" : (await getUser(env, user))?.salt || "";
+  return `${payload}.${await hmac(env, `${payload}.${salt}`)}`;
 }
 
 // The account of a signed session cookie ({name, role, quota, tabs, search, pdf}), or null (bad signature,
 // expired, or the account was disabled since).
 export async function sessionUser(env, token) {
   const m = /^([a-z0-9][a-z0-9_.-]{2,31})\.(\d+)\.([0-9a-f]{64})$/.exec(token || "");
-  if (!m || Number(m[2]) < Date.now() / 1000 || (await hmac(env, `${m[1]}.${m[2]}`)) !== m[3]) return null;
+  if (!m || Number(m[2]) < Date.now() / 1000) return null;
+  const u = m[1] === "owner" ? null : await getUser(env, m[1]);
+  if ((await hmac(env, `${m[1]}.${m[2]}.${u?.salt || ""}`)) !== m[3]) return null;
   if (m[1] === "owner") return OWNER;
-  const u = await getUser(env, m[1]);
   return u && usable(u) ? account(m[1], u) : null;
 }
 
@@ -99,11 +102,12 @@ export async function getSettings(env) { return (env.AICACHE && (await env.AICAC
 export async function setSettings(env, change) { const s = { ...(await getSettings(env)), ...change }; await env.AICACHE.put("site:settings", JSON.stringify(s)); return s; }
 
 // Daily search quota (0 = none): true if this search may run (and counts it).
-export async function takeQuota(env, acc) {
-  if (!acc.quota || acc.role === "owner") return true;
-  const key = `quota:${acc.name}:${new Date().toISOString().slice(0, 10)}`;
-  const used = Number(await env.AICACHE.get(key)) || 0;
+// kind: a second counter with its own limit (feedback). A KV failure (the daily write limit) never blocks the reader.
+export async function takeQuota(env, acc, kind = "quota") {
+  if (!acc.quota || acc.role === "owner" || !env.AICACHE) return true;
+  const key = `${kind}:${acc.name}:${new Date().toISOString().slice(0, 10)}`;
+  const used = Number(await env.AICACHE.get(key).catch(() => 0)) || 0;
   if (used >= acc.quota) return false;
-  await env.AICACHE.put(key, String(used + 1), { expirationTtl: 2 * DAY });
+  await env.AICACHE.put(key, String(used + 1), { expirationTtl: 2 * DAY }).catch((e) => console.log("quota put", String(e)));
   return true;
 }

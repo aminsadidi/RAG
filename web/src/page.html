@@ -573,6 +573,11 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 const fa = (n) => Number(n).toLocaleString(LANG === "en" ? "en-US" : "fa-IR");
+// a temperature below absolute zero is ignored (the line under the field says so)
+const tempOf = (id) => { const v = $(id).value.trim(); return v === "" || !Number.isFinite(+v) || +v < -273.15 ? null : +v; };
+const tempNote = (id, th) => { const v = +$(id).value;
+  if ($(id).value.trim() !== "" && v < -273.15) return " — <span class=\"err\">زیر صفر مطلق است؛ در نظر گرفته نشد</span>";
+  return th && $(id).value.trim() !== "" && Math.abs(v - th.t0_c) > 200 ? " — <span class=\"err\">بیش از ۲۰۰ °C دور از دمای فرمول: برون‌یابی است و ممکن است درست نباشد</span>" : ""; };
 // Data read from papers (paper_formulas.yml, thermo_optic.yml, nonlinear_coefficients.yml) is measured unless marked basis: calculated
 const basisName = (x) => (x?.basis === "calculated" ? "محاسباتی (نظری)" : "تجربی");
 // a paper's kind of work (scripts/quality/basis.py, read by SubQ)
@@ -1100,7 +1105,10 @@ $("rimatsugg").onclick = (e) => { const b = e.target.closest("[data-mat]"); if (
 for (const id of ["rilo", "rihi", "riprobe", "riref", "rirows"]) $(id).addEventListener("change", render);
 
 // ---------- units (inputs show the chosen unit; everything inside is in µm)
-const getRange = () => { let lo = +$("rilo").value / U(), hi = +$("rihi").value / U(); if (!(hi > lo)) [lo, hi] = [Math.min(lo, hi) || 0.3, Math.max(lo, hi) || 2]; return [lo, hi]; };
+const getRange = () => { // in µm; a wavelength cannot be zero or negative
+  let lo = Math.max(+$("rilo").value / U(), 1e-3), hi = +$("rihi").value / U();
+  if (!(hi > lo)) [lo, hi] = [Math.min(lo, hi) || 0.3, Math.max(lo, hi) || 2];
+  return [lo, hi]; };
 const setRange = (lo, hi) => { $("rilo").value = fmtL(lo); $("rihi").value = fmtL(hi); };
 const getProbe = () => +$("riprobe").value / U();
 const setProbe = (um) => { $("riprobe").value = fmtL(um); };
@@ -1428,7 +1436,7 @@ const key = (c) => c.material;
 
 // Principal indices of a source at temperature T (°C); sources without thermo-optic data (and T = null)
 // stay at the temperature of their formula.
-const tempC = () => { const v = $("pmT").value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
+const tempC = () => tempOf("pmT");
 function nAtT(src, T) {
   const ax = src.axes, th = src.thermo;
   const one = (e) => (lam) => {
@@ -1583,10 +1591,10 @@ function showTemp(src) {
   $("pmncpmgo").disabled = !th && other < 0;
   $("pmTinfo").innerHTML = th
     ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)}</button>` : esc(th.cite)}`
-      + (T === null ? ` — خالی = ${fa(th.t0_c)} °C (دمای فرمول)` : "")
+      + (T === null ? ` — خالی = ${fa(th.t0_c)} °C (دمای فرمول)` : "") + tempNote("pmT", th)
     : "برای این منبع فرمول وابستگی دمایی در مجموعه نیست" + (other >= 0
       ? `؛ <button class="chip coll" style="border:0;cursor:pointer" id="pmTalt">رفتن به منبع ${esc(PM.crystal.sources[other].label)} که دارد</button>`
-      : T === null ? "." : "؛ محاسبه در دمای اندازه‌گیری فرمول است و دما اثری ندارد.");
+      : T === null ? "." : "؛ محاسبه در دمای اندازه‌گیری فرمول است و دما اثری ندارد.") + (th ? "" : tempNote("pmT", null));
   if (!th && other >= 0) $("pmTalt").onclick = () => { $("pmsrc").value = String(other); run(); };
 }
 
@@ -1885,7 +1893,7 @@ const SP = { list: null };
 const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
 // Principal indices of a source, at the crystal temperature of the tab when one is set and the source has
 // thermo-optic data (else at the temperature of its formula)
-const spTemp = () => { const v = $("spT").value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
+const spTemp = () => tempOf("spT");
 const spNAt = (s, T = spTemp()) => {
   const th = s.thermo;
   const one = (e) => (lam) => { const n0 = entryIndex(e, lam); return th && e.thermo && T !== null ? n0 + thermoShift(th.form, e.thermo, th.t0_c, n0, lam, T) : n0; };
@@ -1945,12 +1953,21 @@ function fillSrc() {
   const c = SP.list.find((x) => x.material === $("spmat").value);
   $("spsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} (${s.range_um[0]}–${s.range_um[1]} µm)</option>`).join("");
 }
+// Inputs every SPDC computation needs, or why they are wrong ("" when fine); stop(out) shows it and says to stop.
+function spBad() {
+  const lp = +$("splp").value, l1 = +$("spl1").value, L = +$("spL").value;
+  if (!(lp > 0) || !(l1 > 0)) return "طول موج‌ها باید مثبت باشند.";
+  if (!(l1 > lp)) return "طول موج فوتون ۱ باید بلندتر از طول موج پمپ باشد (1/λp = 1/λ₁ + 1/λ₂).";
+  if (!(L > 0)) return "طول بلور باید بیشتر از صفر باشد.";
+  return "";
+}
+const spStop = (out) => { const why = spBad(); if (why) $(out).innerHTML = `<span class="err">${why}</span>`; return Boolean(why); };
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
   $("spT").placeholder = s.thermo ? String(s.thermo.t0_c) : "—";
-  $("spTinfo").textContent = s.thermo ? `وابستگی دمایی: ${s.thermo.cite || s.thermo.source || "دارد"}` : "این منبع وابستگی دمایی ندارد؛ دما اثری ندارد.";
-  $("spl2").textContent = Number.isFinite(l2) && l2 > 0 ? `λ₂ = ${l2.toFixed(4)} µm` : "";
+  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")}` : "این منبع وابستگی دمایی ندارد؛ دما اثری ندارد.") + tempNote("spT", s.thermo);
+  $("spl2").innerHTML = spBad() ? `<span class="err">${spBad()}</span>` : `λ₂ = ${l2.toFixed(4)} µm`;
   const opts = [];
   try {
     for (const r of solveAll(nAt, s.kind, "opo", lp, l1)) opts.push({ label: `تطبیق فاز زاویه‌ای: صفحه‌ی ${r.plane}، ${r.type}، زاویه ${r.angle.toFixed(2)}°`, plane: r.plane, angle: r.angle * Math.PI / 180, type: r.type, sol: r });
@@ -1980,6 +1997,7 @@ function fillCfg() {
   fillDeff();
 }
 function run() {
+  if (spStop("spinfo")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
   $("spinfo").textContent = "در حال محاسبه…";
@@ -2029,6 +2047,7 @@ function run() {
 }
 // The pump bandwidth of the highest purity for the configuration, written into the pump field, then the spectrum
 function optimize() {
+  if (spStop("spinfo")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
   $("spinfo").textContent = "در حال جست‌وجوی پهنای پمپ بهینه…";
@@ -2044,6 +2063,7 @@ function optimize() {
 }
 // Emission angles of the two photons against λ1, for the configuration tilted from collinear phase matching
 function angles() {
+  if (spStop("spangres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
   const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
@@ -2101,6 +2121,7 @@ function fillDeff() {
 }
 // Absolute pair rate into the Gaussian modes of the fibre card's focal parameters (ξ = L/zR as there)
 function pairs() {
+  if (spStop("spratres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
   const dEff = +$("spdeff").value, P = +$("sppow").value;
@@ -2125,6 +2146,7 @@ function pairs() {
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
 function fiber(optimize) {
+  if (spStop("spfibres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
   const dir = direction(o.plane, o.angle), pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
@@ -2366,7 +2388,7 @@ document.addEventListener("click", (e) => {
   // later (results, messages, plots) is translated as it appears.
   fetch("/i18n/en.json").then((r) => r.json()).then((dict) => {
     const keys = Object.keys(dict).sort((a, b) => b.length - a.length);
-    const L = "\u0621-\u064A\u0671-\u06D3\u06FA-\u06FF";
+    const L = "\u0621-\u064A\u0671-\u06D3\u06FA-\u06FF\u200c"; // ZWNJ: «محاسبه‌ی» is one word
     const esc = (k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const re = new RegExp(`(?<![${L}])(?:${keys.map(esc).join("|")})(?![${L}])`, "g");
     const PERSIAN = /[\u0600-\u06FF]/;

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { checkLogin, createUser, makeSession, sessionUser, updateUser } from "../src/accounts.js";
+import { checkLogin, createUser, makeSession, sessionUser, takeQuota, updateUser } from "../src/accounts.js";
 import { telegramWebhook } from "../src/admin.js";
 
 // KV with list() metadata, as Workers KV
@@ -77,4 +77,24 @@ test("admin panel: buttons, a user made in three steps, only the owner", async (
   await press("banner"); await text("سرور امشب به‌روز می‌شود");
   assert.equal((await e.AICACHE.get("site:settings", "json")).banner, "سرور امشب به‌روز می‌شود");
   await press("udel:sara"); await press("udely:sara"); assert.equal(await e.AICACHE.get("user:sara"), null);
+});
+
+test("a new password signs out the sessions made with the old one", async () => {
+  const e = env();
+  await createUser(e, "sara", 0, "");
+  const old = await makeSession(e, "sara");
+  const { password } = await updateUser(e, "sara", { resetPassword: true });
+  assert.equal(await sessionUser(e, old), null);
+  assert.ok(await checkLogin(e, "sara", password));
+  assert.equal((await sessionUser(e, await makeSession(e, "sara"))).name, "sara");
+  assert.equal((await sessionUser(e, await makeSession(e, "owner"))).role, "owner");
+});
+
+test("quota: counts per kind, and a KV that refuses writes does not block the reader", async () => {
+  const e = env(), acc = { name: "sara", quota: 2 };
+  assert.ok(await takeQuota(e, acc) && await takeQuota(e, acc));
+  assert.equal(await takeQuota(e, acc), false);
+  assert.ok(await takeQuota(e, acc, "feedback")); // its own counter
+  e.AICACHE.put = async () => { throw new Error("KV put() limit exceeded for the day"); };
+  assert.ok(await takeQuota(e, { name: "ali", quota: 5 }));
 });
