@@ -8,7 +8,7 @@ import urllib.error
 import urllib.request
 
 URL = "https://api.subq.ai/v1/systemone"
-MODEL = os.environ.get("SUBQ_MODEL", "subq-snap-preview")  # subq-snap-1.1 is the newer model
+MODEL = os.environ.get("SUBQ_MODEL", "subq-snap-1.1")  # gives the preview's answers digit for digit (2026-10); some keys allow only it
 _keys = [k.strip() for k in os.environ.get("SUBQ_KEYS", "").split(",") if k.strip()]
 _lock = threading.Lock()
 _at = [0]
