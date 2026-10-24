@@ -157,11 +157,13 @@ async function subqRerank(env, query, points, topK) {
 const within = (ms, promise) => Promise.race([promise, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
 
 function filterOf(opts) {
-  const must = [];
-  if (opts.material) must.push({ key: "material", match: { value: opts.material } });
-  if (opts.category) must.push({ key: "category", match: { value: opts.category } });
+  const must = [], str = (v) => (typeof v === "string" && v ? v.slice(0, 200) : null);
+  // the request's own values: a number or an object here made Qdrant refuse the query and the search fail (500)
+  if (str(opts.material)) must.push({ key: "material", match: { value: str(opts.material) } });
+  if (str(opts.category)) must.push({ key: "category", match: { value: str(opts.category) } });
   if (opts.fullTextOnly) must.push({ key: "source_type", match: { value: "full_text_pdf" } });
-  if (opts.docIds?.length) must.push({ key: "doc_id", match: { any: opts.docIds } });
+  const docIds = Array.isArray(opts.docIds) ? opts.docIds.filter((x) => typeof x === "string").slice(0, 500) : [];
+  if (docIds.length) must.push({ key: "doc_id", match: { any: docIds } });
   // The `junk` field (scripts/quality/enrich.py) is not used as a filter: leaving junk > 0.9 out lowered the
   // MRR@10 of the 200 gold questions from 0.511 to 0.485 (scripts/quality/reports), as cover pages, with the
   // title and the crystal's name, were among the "junk" and are what finds some papers.
@@ -182,18 +184,25 @@ async function pointId(nodeId) {
 // rows. The passages just before and after a table hit (same paper, heading and page, also tables) are
 // fetched in one request and joined to it in order, so the shown hit and the answer see the whole table.
 const STITCH_SPAN = 3, STITCH_MAX = 6000;
-async function stitchTables(env, hits) {
-  const tables = hits.filter((h) => h.content_type === "table" && /::\d+$/.test(String(h.node_id)));
-  if (!tables.length) return;
-  const want = new Map();
-  for (const h of tables) {
+const isTable = (h) => h.content_type === "table" && /::\d+$/.test(String(h.node_id));
+// The neighbours of the table passages among `payloads`, node_id -> payload, in one request. The search fetches
+// them for its whole candidate pool while the reranker runs, so stitching costs no time of its own.
+async function tableNeighbours(env, payloads) {
+  const want = new Set();
+  for (const h of payloads.filter(isTable)) {
     const [base, n] = [String(h.node_id).replace(/::\d+$/, ""), Number(String(h.node_id).split("::").pop())];
-    for (let d = -STITCH_SPAN; d <= STITCH_SPAN; d++) if (d && n + d >= 0) want.set(`${base}::${n + d}`, null);
+    for (let d = -STITCH_SPAN; d <= STITCH_SPAN; d++) if (d && n + d >= 0) want.add(`${base}::${n + d}`);
   }
-  const ids = await Promise.all([...want.keys()].map(pointId));
+  if (!want.size) return new Map();
+  const ids = await Promise.all([...want].map(pointId));
   const got = await qdrant(env, `/collections/${env.COLLECTION}/points`,
     { ids, with_payload: ["node_id", "text", "content_type", "headings", "pages"], with_vector: false });
-  const byNode = new Map(got.map((p) => [String(p.payload.node_id), p.payload]));
+  return new Map(got.map((p) => [String(p.payload.node_id), p.payload]));
+}
+async function stitchTables(env, hits, neighbours) {
+  const tables = hits.filter(isTable);
+  if (!tables.length) return;
+  const byNode = await (neighbours || tableNeighbours(env, tables));
   for (const h of tables) {
     const base = String(h.node_id).replace(/::\d+$/, ""), n = Number(String(h.node_id).split("::").pop());
     const same = (p) => p && p.content_type === "table" && p.headings === h.headings && String(p.pages) === String(h.pages);
@@ -229,12 +238,16 @@ async function search(env, opts) {
   // With the reranker, Qdrant returns a wider candidate list and the cross-encoder picks the topK of it.
   const limit = rerank ? Math.max(topK, RERANK_POOL) : topK;
   const started = Date.now();
+  // how long each step took (ms), returned with the results: where a slow search spends its time
+  const timing = {}; let mark = started;
+  const lap = (step) => { const now = Date.now(); timing[step] = now - mark; mark = now; };
   // Workers AI out of quota or down: the search goes on with less (the original question; keywords only)
   // and says so, rather than failing.
   const degraded = [];
   const searchQuery = isPersian(question)
     ? await translate(env, question).catch(() => { degraded.push("translation"); return null; }) : null;
   const query = searchQuery || question;
+  lap("translate");
   const filter = filterOf(opts);
   const sparse = { text: expandQuery(query), model: shared.BM25_MODEL };
   // The materials of the question searched on their own as well: in a long question ("the dispersion formula
@@ -255,6 +268,7 @@ async function search(env, opts) {
   // The query vector is needed in every mode: its best cosine similarity is one signal of the relevance check.
   const vector = await embed(env, query).catch(() => { degraded.push("embedding"); return null; });
   if (!vector) mode = "bm25";
+  lap("embed");
   // The best cosine similarity rides in the same request as the search (/points/query/batch) when it can: one
   // subrequest instead of two (perPaper needs the groups endpoint, so it keeps its own request).
   const cosine = { query: vector, using: shared.DENSE, filter, limit: 1 };
@@ -286,14 +300,20 @@ async function search(env, opts) {
         { ...body, group_by: "doc_id", group_size: 1, with_payload: PAYLOAD })).groups.map((g) => g.hits[0])
       : (await qdrant(env, `/collections/${env.COLLECTION}/points/query`, { ...body, with_payload: PAYLOAD })).points;
   }
+  lap("qdrant");
+  // the table neighbours of the whole pool, fetched while the reranker runs
+  const neighbours = opts.stitch !== false && points.some((p) => isTable(p.payload)) ? tableNeighbours(env, points.map((p) => p.payload)) : null;
+  neighbours?.catch(() => {}); // a failure is reported by stitchTables, which awaits it
   // A failing reranker (Workers AI quota, outage) leaves the first-stage order rather than failing the search.
   let reranked = rerank, ranked = points.slice(0, topK);
   if (rerank) ranked = await within(12000, subq ? subqRerank(env, query, points, topK) : rerankPoints(env, query, points, topK))
     .catch((e) => { console.log("rerank", String(e)); degraded.push("rerank"); reranked = false; return ranked; });
+  lap("rerank");
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload, basis: basisOf(p.payload.doc_id) }));
-  if (opts.stitch !== false) await stitchTables(env, hits).catch((e) => { console.log("stitch", String(e)); degraded.push("stitch"); });
+  if (opts.stitch !== false) await stitchTables(env, hits, neighbours).catch((e) => { console.log("stitch", String(e)); degraded.push("stitch"); });
+  lap("stitch");
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
-  return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started };
+  return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started, timing };
 }
 
 async function facets(env) {
@@ -311,7 +331,7 @@ async function facets(env) {
 
 // Which of these papers are in the collection: "full" text or "abstract" only.
 async function inCollection(env, ids) {
-  ids = [...new Set((ids || []).filter((x) => typeof x === "string"))].slice(0, 500);
+  ids = [...new Set((Array.isArray(ids) ? ids : []).filter((x) => typeof x === "string"))].slice(0, 500);
   if (!ids.length) return {};
   const facet = (extra) => qdrant(env, `/collections/${env.COLLECTION}/facet`, {
     key: "doc_id", limit: ids.length, exact: true,
@@ -375,6 +395,17 @@ async function ciKeys(request, env) {
     ARTIFACT_KEY: [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") });
 }
 
+// A short hash of a text (FNV-1a), for the ETag of the modules served from the Worker's bundle
+const etags = new Map();
+function etagOf(text) {
+  if (!etags.has(text)) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 0x01000193) >>> 0;
+    etags.set(text, `${h.toString(16)}-${text.length}`);
+  }
+  return etags.get(text);
+}
+
 async function handle(request, env, ctx) {
   const url = new URL(request.url);
   if (url.pathname === "/ci/keys" && request.method === "POST") return ciKeys(request, env);
@@ -421,14 +452,12 @@ async function handle(request, env, ctx) {
   const PDF_FIELDS = ["source_file", "drive_id", "boxes", "pdf_mismatch"];
   const noPdf = (rows) => (acc.pdf ? rows : rows.map((r) => Object.fromEntries(Object.entries(r).filter(([k]) => !PDF_FIELDS.includes(k)))));
   if (url.pathname === "/") return html(PAGE);
-  if (url.pathname === "/phasematch.js") {
-    return new Response(PHASEMATCH_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
-  }
-  if (url.pathname === "/spdc.js") {
-    return new Response(SPDC_BROWSER_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
-  }
-  if (url.pathname === "/dispersion.js") {
-    return new Response(DISPERSION_JS, { headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache" } });
+  const SCRIPT = { "/phasematch.js": PHASEMATCH_JS, "/spdc.js": SPDC_BROWSER_JS, "/dispersion.js": DISPERSION_JS }[url.pathname];
+  if (SCRIPT) {
+    // checked on every load (no-cache), but an unchanged module is answered 304 by its ETag, not sent again
+    const etag = `"${etagOf(SCRIPT)}"`;
+    const headers = { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache", etag };
+    return request.headers.get("if-none-match") === etag ? new Response(null, { status: 304, headers }) : new Response(SCRIPT, { headers });
   }
   if (url.pathname.startsWith("/pdf/") && env.PDFS) {
     if (!acc.pdf) return denied("PDFs are not available on this account");
@@ -479,7 +508,7 @@ async function handle(request, env, ctx) {
     if (url.pathname === "/api/facets") return json(await facets(env));
     if (url.pathname === "/api/papers") return json(PAPERS);
     if (url.pathname === "/api/incollection" && request.method === "POST") {
-      return json(await inCollection(env, (await request.json()).ids));
+      return json(await inCollection(env, (await request.json().catch(() => ({}))).ids));
     }
     if (url.pathname === "/api/paper") {
       if (!acc.search) return denied("search is not available on this account"); // the papers' full text

@@ -320,13 +320,29 @@ export const MIN_PERIOD = 1.4;
 // minTemp (°C·cm), needThermo, dry (no crystal a source calls hygroscopic), qpm (false: birefringent only),
 // qpmOnly, minPeriod (µm: shorter gratings are hard to pole), classes (the cls values to keep; "research" for none),
 // length (cm, for the bandwidths)}.
+// nAtT with its values kept: the advisor asks for the same few wavelengths at the same temperatures thousands of
+// times (every step of an angle scan needs the principal indices at λ1, λ2, λ3 again), which made it ~10× slower.
+function memoT(nAtT) {
+  const byT = new Map();
+  return (T) => {
+    let f = byT.get(T);
+    if (!f) {
+      const n = nAtT(T), byL = new Map();
+      f = (l) => { let v = byL.get(l); if (v === undefined) { v = n(l); byL.set(l, v); } return v; };
+      byT.set(T, f);
+    }
+    return f;
+  };
+}
+
 export function advise(crystals, want) {
   const { process, a, b } = want, w = waves(process, a, b);
   const [lo, hi] = Array.isArray(want.T) ? want.T : [want.T ?? 25, want.T ?? 25];
   const mid = (lo + hi) / 2, L = want.length || 1, ok = [], no = [];
   // type "0": QPM with all three waves along one axis (d33 of PPLN, PPKTP)
   const typeOk = (t) => !want.type || want.type === "any" || want.type === t || (want.type === "II" && (t === "IIa" || t === "IIb"));
-  for (const c of crystals) {
+  for (const c0 of crystals) {
+    const c = { ...c0, nAtT: memoT(c0.nAtT) };
     const why = (reason) => no.push({ material: c.material, reason });
     // the transmission range a source states, when known (crystal_properties.yml): a wave outside it is absorbed,
     // one within 10 % of an edge is marked (the "0" level edges are where transmission vanishes)
