@@ -223,7 +223,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>روش
         <select id="mode"><option value="hybrid">ترکیبی (برداری + BM25)</option><option value="vector">برداری (معنایی)</option><option value="bm25">BM25 (کلیدواژه)</option></select>
       </label>
-      <label>تعداد منبع <input id="topk" type="number" min="1" max="30" value="8" style="width:72px"></label>
+      <label>تعداد منبع <input id="topk" type="text" inputmode="decimal" dir="ltr" data-num min="1" max="30" value="8" style="width:72px"></label>
       <label>ماده <select id="material"><option value="">همه</option></select></label>
       <label><input id="fulltext" type="checkbox"> فقط متن کامل مقاله‌ها</label>
       <label title="بهترین بخش هر مقاله؛ یک مقاله نمی‌تواند همه‌ی نتیجه‌ها را بگیرد"><input id="perpaper" type="checkbox"> هر مقاله یک بار</label>
@@ -256,8 +256,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button>
     </div>
     <div class="row">
-      <label>از λ <input id="rilo" type="number" step="any" style="width:90px"> تا <input id="rihi" type="number" step="any" style="width:90px"> <span class="riunit">µm</span></label>
-      <label>n در λ = <input id="riprobe" type="number" step="any" value="1.064" style="width:96px"> <span class="riunit">µm</span></label>
+      <label>از λ <input id="rilo" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:90px"> تا <input id="rihi" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:90px"> <span class="riunit">µm</span></label>
+      <label>n در λ = <input id="riprobe" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.064" style="width:96px"> <span class="riunit">µm</span></label>
       <div class="seg" id="riunits" role="group" aria-label="unit"><button data-u="um" class="on">µm</button><button data-u="nm">nm</button></div>
       <label>نمودار <select id="riref"><option value="">ضریب شکست n</option></select></label>
     </div>
@@ -302,7 +302,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
           <label style="flex:1">ضرایب <input id="ufcoef" style="flex:1;min-width:220px;direction:ltr" placeholder="1.03961212 0.00600069867 0.231792344 0.0200179144 1.01046945 103.560653"></label>
         </div>
         <div class="row">
-          <label>معتبر از λ <input id="uflo" type="number" step="any" value="0.3" style="width:90px"> تا <input id="ufhi" type="number" step="any" value="2.5" style="width:90px"> µm</label>
+          <label>معتبر از λ <input id="uflo" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.3" style="width:90px"> تا <input id="ufhi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.5" style="width:90px"> µm</label>
         </div>
       </div>
       <div id="ufpoints" hidden>
@@ -348,8 +348,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
         <option value="sfg">SFG — جمع بسامد</option>
         <option value="opo">OPO / DFG — پمپ و سیگنال</option>
       </select></label>
-      <label><span id="pmla">طول موج اصلی</span> <input id="pma" type="number" step="any" value="1.064" style="width:96px"> µm</label>
-      <label id="pmbwrap" hidden><span id="pmlb">طول موج دوم</span> <input id="pmb" type="number" step="any" value="0.532" style="width:96px"> µm</label>
+      <label><span id="pmla">طول موج اصلی</span> <input id="pma" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.064" style="width:96px"> µm</label>
+      <label id="pmbwrap" hidden><span id="pmlb">طول موج دوم</span> <input id="pmb" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.532" style="width:96px"> µm</label>
       <span id="pmderived" class="hint" style="direction:ltr"></span>
     </div>
     <div class="row">
@@ -359,7 +359,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <button class="alt" id="pmall">مقایسه‌ی همه‌ی بلورها</button>
     </div>
     <div class="row">
-      <label>دمای بلور <input id="pmT" type="number" step="any" style="width:84px" placeholder="—"> °C</label>
+      <label>دمای بلور <input id="pmT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:84px" placeholder="—"> °C</label>
       <button class="alt" id="pmncpmgo">دمای تطبیق فاز غیربحرانی (NCPM)</button>
       <span class="hint" id="pmTinfo"></span>
     </div>
@@ -397,18 +397,18 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
         <option value="sfg">SFG — جمع بسامد</option>
         <option value="opo">OPO / DFG — پمپ و سیگنال</option>
       </select></label>
-      <label><span id="advla">طول موج اصلی</span> <input id="adva" type="number" step="any" value="1.064" style="width:96px"> µm</label>
-      <label id="advbwrap" style="display:none"><span id="advlb">طول موج دوم</span> <input id="advb" type="number" step="any" value="0.532" style="width:96px"> µm</label>
+      <label><span id="advla">طول موج اصلی</span> <input id="adva" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.064" style="width:96px"> µm</label>
+      <label id="advbwrap" style="display:none"><span id="advlb">طول موج دوم</span> <input id="advb" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.532" style="width:96px"> µm</label>
     </div>
     <div class="row">
-      <label>بازه‌ی دما <input id="advlo" type="number" step="any" value="20" style="width:64px"> تا <input id="advhi" type="number" step="any" value="60" style="width:64px"> °C</label>
+      <label>بازه‌ی دما <input id="advlo" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="20" style="width:64px"> تا <input id="advhi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="60" style="width:64px"> °C</label>
       <label>نوع <select id="advtype"><option value="any">هر نوع</option><option value="I">نوع I</option><option value="II">نوع II</option><option value="0">نوع 0 (فقط QPM، هر سه موج هم‌قطبش)</option></select></label>
-      <label>طول بلور <input id="advlen" type="number" step="any" value="1" style="width:56px"> cm</label>
+      <label>طول بلور <input id="advlen" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:56px"> cm</label>
     </div>
     <div class="row">
-      <label>بیشترین walk-off <input id="advwo" type="number" step="any" style="width:64px" placeholder="—"> mrad</label>
-      <label>کمترین پهنای طیفی <input id="advspec" type="number" step="any" style="width:64px" placeholder="—"> nm</label>
-      <label>کمترین پهنای دمایی <input id="advtemp" type="number" step="any" style="width:64px" placeholder="—"> °C</label>
+      <label>بیشترین walk-off <input id="advwo" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" placeholder="—"> mrad</label>
+      <label>کمترین پهنای طیفی <input id="advspec" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" placeholder="—"> nm</label>
+      <label>کمترین پهنای دمایی <input id="advtemp" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" placeholder="—"> °C</label>
     </div>
     <div class="row">
       <label class="hint"><input type="checkbox" id="advncpm"> فقط تطبیق فاز غیربحرانی (۹۰ درجه)</label>
@@ -429,7 +429,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="row">
       <label>بلور <select id="cutmat" style="max-width:260px"></select></label>
       <label>صفحه <select id="cutplane"><option value="xz">xz (θ)</option><option value="yz">yz (θ)</option><option value="xy">xy (φ)</option></select></label>
-      <label>زاویه‌ی برش <input id="cutangle" type="number" step="any" style="width:72px" placeholder="—"> °</label>
+      <label>زاویه‌ی برش <input id="cutangle" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:72px" placeholder="—"> °</label>
       <label>نوع <select id="cuttype"><option value="I">نوع I</option><option value="IIa">نوع II (s+f)</option><option value="IIb">نوع II (f+s)</option></select></label>
       <button class="alt" id="cutgo">دمای کار این برش</button>
     </div>
@@ -446,22 +446,22 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
     </div>
     <div class="row">
-      <label>طول موج پمپ <input id="splp" type="number" step="any" value="0.775" style="width:84px"> µm</label>
-      <label>طول موج فوتون ۱ <input id="spl1" type="number" step="any" value="1.55" style="width:84px"> µm</label>
+      <label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> µm</label>
+      <label>طول موج فوتون ۱ <input id="spl1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.55" style="width:84px"> µm</label>
       <span id="spl2" class="hint" style="direction:ltr"></span>
-      <label>طول بلور <input id="spL" type="number" step="any" value="10" style="width:70px"> mm</label>
+      <label>طول بلور <input id="spL" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:70px"> mm</label>
     </div>
     <div class="row">
-      <label>پهنای طیف پمپ (FWHM) <input id="spdp" type="number" step="any" value="1" style="width:96px"> nm</label>
-      <label>یا پالس محدود به تبدیل <input id="sptau" type="number" step="any" placeholder="—" style="width:70px"> ps</label>
-      <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="number" step="any" placeholder="بدون" style="width:70px"> nm</label>
+      <label>پهنای طیف پمپ (FWHM) <input id="spdp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:96px"> nm</label>
+      <label>یا پالس محدود به تبدیل <input id="sptau" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="—" style="width:70px"> ps</label>
+      <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="بدون" style="width:70px"> nm</label>
       <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی</option></select></label>
-      <label id="spapodl" hidden>σ/L <input id="spapod" type="number" step="any" value="0.25" style="width:76px"></label>
+      <label id="spapodl" hidden>σ/L <input id="spapod" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.25" style="width:76px"></label>
     </div>
     <div class="row">
       <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
-      <input id="spxi" type="number" step="any" value="2.84" style="width:64px">
-      <label>دمای بلور <input id="spT" type="number" step="any" style="width:76px" placeholder="—"> °C</label>
+      <input id="spxi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.84" style="width:64px">
+      <label>دمای بلور <input id="spT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:76px" placeholder="—"> °C</label>
       <span class="hint" id="spTinfo"></span>
     </div>
     <div class="row">
@@ -486,8 +486,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2>زاویه‌ی گسیل (غیرهم‌خط)</h2>
     <p class="hint">زاویه‌ی خروج هر فوتون نسبت به پمپ بر حسب طول موج فوتون ۱، در صفحه‌ی پیکربندی (همان صفحه‌ای که زاویه‌ی تطبیق فاز در آن است): k₁ sin θ₁ = k₂ sin θ₂ و k₁ cos θ₁ + k₂ cos θ₂ = k<sub>p</sub> − k<sub>g</sub>، با ضریب شکست هر فوتون در امتداد خودش. زاویه‌ی بیرونی برای وجه عمود بر پمپ است (sin θ<sub>ext</sub> = n sin θ). با چرخاندن بلور از زاویه‌ی هم‌خط (یا تغییر دما در QPM) مخروط گسیل باز می‌شود. پهنای پمپ و طول بلور در این حساب نیست (پمپ تک‌فام، تطبیق فاز دقیق).</p>
     <div class="row">
-      <label>چرخش بلور از زاویه‌ی هم‌خط <input id="sptilt" type="number" step="any" value="0.4" style="width:64px"> درجه (درون بلور)</label>
-      <label>گستره‌ی λ₁ ± <input id="spaspan" type="number" step="any" value="40" style="width:64px"> nm</label>
+      <label>چرخش بلور از زاویه‌ی هم‌خط <input id="sptilt" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.4" style="width:64px"> درجه (درون بلور)</label>
+      <label>گستره‌ی λ₁ ± <input id="spaspan" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="40" style="width:64px"> nm</label>
       <button id="spang">محاسبه</button>
     </div>
     <svg id="spangsvg" role="img" style="display:block;width:100%;height:240px;direction:ltr"></svg>
@@ -497,9 +497,9 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2>جفت‌شدن به فیبر تک‌مُد</h2>
     <p class="hint">پمپ تک‌فام گاوسی و تطبیق فاز هم‌خط (Δk = 0 روی محور)، مُدهای هم‌خوان با فیبر گاوسی، کمر همه در وسط بلور (Ljunggren &amp; Tengner 2005). ξ = L/z<sub>R</sub> با z<sub>R</sub> = k w²/2 (k درون بلور). γ₁ و γ₂: سهم فوتون‌های هر بازو که در فیبر می‌افتند؛ γc: سهم جفت‌هایی که هر دو فوتونشان در فیبرند؛ μ: احتمال شرطی (نسبت اعلام). مقاله فقط بخش متقارن چرخشی (l = 0) حالت را نگه داشته و برای همین عددهایش بزرگ‌تر است؛ هر دو حساب نشان داده می‌شود. از پیکربندی و طول موج‌های بالا استفاده می‌کند.</p>
     <div class="row">
-      <label>ξ پمپ <input id="spxp" type="number" step="any" value="1.7" style="width:64px"></label>
-      <label>ξ فیبر ۱ <input id="spxs" type="number" step="any" value="2.3" style="width:64px"></label>
-      <label>ξ فیبر ۲ <input id="spxf2" type="number" step="any" value="2.3" style="width:64px"></label>
+      <label>ξ پمپ <input id="spxp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.7" style="width:64px"></label>
+      <label>ξ فیبر ۱ <input id="spxs" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.3" style="width:64px"></label>
+      <label>ξ فیبر ۲ <input id="spxf2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.3" style="width:64px"></label>
       <button id="spfib">محاسبه</button>
       <button class="alt" id="spfibopt">بهینه‌سازی کانونی</button>
     </div>
@@ -507,8 +507,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h3 style="margin-top:16px">آهنگ مطلق تولید جفت</h3>
     <p class="hint">تعداد جفت‌هایی که هر دو فوتونشان در مُدهای گاوسی بالا (با همان ξها) گسیل می‌شوند، با پمپ پیوسته: R = Γ₀ ∫dν |∫O(z) e<sup>iΔk z</sup> dz|²، با Γ₀ = 8π² d<sub>eff</sub>² P/(n<sub>p</sub>n₁n₂ ε₀ c λ₁λ₂) و O(z) هم‌پوشانی سه مُد گاوسی (با فاز گوی و انحنا). این آهنگ پیش از هر اتلافی است؛ هم‌فرودی آشکارشده = R × بازده کل بازوی ۱ × بازده کل بازوی ۲. با اندازه‌گیری‌ها آزموده شده: Evans و همکاران (2010) ۱۲۳٬۰۰۰ جفت/ثانیه/میلی‌وات گزارش کرده‌اند و این حساب ۱۲۹٬۰۰۰ می‌دهد؛ برای Fedrizzi و همکاران (2007) هم در محدوده‌ی اندازه‌گیری است. فرمول بسته‌ی Bennink (2010، معادله‌ی ۴۰) حدود n<sub>p</sub>n₁n₂ (≈ ۶ در KTP) برابر بیشتر می‌دهد. واگردی فضایی (walk-off) پرتوهای غیرعادی حساب شده است: پوش هر مُد در بلور به اندازه‌ی ρ·z کنار می‌رود (Boyd و Kleinman 1968) و هم‌پوشانی O(z) کم می‌شود؛ آهنگ بدون آن هم کنارش نشان داده می‌شود. واگردی زمانی (اختلاف سرعت گروه) در خود Δk(ν) هست و تأخیر دو فوتون در طول بلور هم گزارش می‌شود.</p>
     <div class="row">
-      <label>d<sub>eff</sub> <input id="spdeff" type="number" step="any" style="width:76px"> pm/V</label>
-      <label>توان پمپ <input id="sppow" type="number" step="any" value="1" style="width:70px"> mW</label>
+      <label>d<sub>eff</sub> <input id="spdeff" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:76px"> pm/V</label>
+      <label>توان پمپ <input id="sppow" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:70px"> mW</label>
       <button id="sprate">محاسبه‌ی آهنگ</button>
       <span class="hint" id="spdeffinfo"></span>
     </div>
@@ -668,6 +668,16 @@ function showTab(name) {
   window.scrollTo(0, 0);
   document.querySelector("nav button.on")?.scrollIntoView({ block: "nearest", inline: "center" });
 }
+// Number fields are text fields (inputmode decimal): a number input refuses the digits of a Persian keyboard and
+// was left empty. Persian and Arabic digits, the Persian decimal sign and the minus sign become ASCII as typed.
+const ASCII_NUM = (t) => t.replace(/[۰-۹]/g, (c) => c.charCodeAt(0) - 0x06f0).replace(/[٠-٩]/g, (c) => c.charCodeAt(0) - 0x0660)
+  .replace(/[٫]/g, ".").replace(/[٬]/g, "").replace(/[−–]/g, "-");
+document.addEventListener("input", (e) => {
+  const el = e.target;
+  if (!(el instanceof HTMLInputElement) || !(el.hasAttribute("data-num") || el.id === "ufcoef")) return;
+  const v = ASCII_NUM(el.value);
+  if (v !== el.value) { const at = el.selectionStart; el.value = v; try { el.setSelectionRange(at, at); } catch { /* not a text field */ } }
+}, true);
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => showTab(b.dataset.tab);
 showTab("search");
 // long introductory notes collapse behind an "about" toggle
@@ -1243,7 +1253,7 @@ function renderEntries(probe) {
   }).join("") || '<p class="hint">داده‌ای برای این ماده نیست.</p>';
   $("rispread").textContent = values.length > 1
     ? `در λ = ${fmtL(probe)} ${unitName()}: کمترین n = ${Math.min(...values).toFixed(5)}، بیشترین = ${Math.max(...values).toFixed(5)} (همه‌ی جهت‌ها با هم؛ مقایسه‌ی منصفانه فقط بین منابع هم‌جهت است).`
-    : values.length ? "" : `هیچ داده‌ای λ = ${fmtL(probe)} ${unitName()} را پوشش نمی‌دهد.`;
+    : values.length ? "" : !(probe > 0) ? "طول موج «n در λ» باید عدد مثبت باشد." : `هیچ داده‌ای λ = ${fmtL(probe)} ${unitName()} را پوشش نمی‌دهد.`;
 }
 
 function renderUser(probe) {
@@ -1300,8 +1310,8 @@ $("uftype").onchange = showHelp; showHelp();
 function drawRows() {
   const pu = $("ufpu").value === "nm" ? 1000 : 1;
   $("uftable").innerHTML = `<tr><th>#</th><th>λ (${$("ufpu").value === "nm" ? "nm" : "µm"})</th><th>n</th><th></th></tr>` +
-    rows.map(([l, n], i) => `<tr data-i="${i}"><td>${i + 1}</td><td><input type="number" step="any" data-c="0" value="${Number.isFinite(l) ? +(l * pu).toPrecision(8) : ""}"></td>
-      <td><input type="number" step="any" data-c="1" value="${Number.isFinite(n) ? n : ""}"></td><td><button class="chip" data-act="rm" style="border:0;cursor:pointer">✕</button></td></tr>`).join("");
+    rows.map(([l, n], i) => `<tr data-i="${i}"><td>${i + 1}</td><td><input type="text" inputmode="decimal" dir="ltr" data-num step="any" data-c="0" value="${Number.isFinite(l) ? +(l * pu).toPrecision(8) : ""}"></td>
+      <td><input type="text" inputmode="decimal" dir="ltr" data-num step="any" data-c="1" value="${Number.isFinite(n) ? n : ""}"></td><td><button class="chip" data-act="rm" style="border:0;cursor:pointer">✕</button></td></tr>`).join("");
 }
 $("uftable").addEventListener("input", (e) => {
   const tr = e.target.closest("tr"); if (!tr || e.target.dataset.c === undefined) return;
@@ -1609,9 +1619,20 @@ function pick(mat, label, fit = true) {
   run();
 }
 
+// What is wrong with the PM tab's inputs, or "" (the advisor and SPDC tabs check theirs the same way)
+function pmBad() {
+  const { proc, a, b } = inputs(), T = $("pmT").value.trim();
+  if (!(a > 0) || (proc !== "shg" && !(b > 0))) return "طول موج‌ها باید عدد مثبت باشند.";
+  if (proc === "opo" && !(b > a)) return "طول موج سیگنال باید بلندتر از طول موج پمپ باشد (1/λp = 1/λs + 1/λi).";
+  if (T !== "" && !Number.isFinite(+T)) return "دمای بلور باید عدد باشد (یا خالی، برای دمای فرمول).";
+  if (T !== "" && +T < -273.15) return "دما نمی‌تواند پایین‌تر از صفر مطلق (۲۷۳٫۱۵− °C) باشد.";
+  return "";
+}
 function run() {
   const c = PM.crystal; if (!c) return;
   setProc();
+  const bad = pmBad();
+  if (bad) { $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">${bad}</td></tr>`; $("pmqpm").innerHTML = ""; $("pmncpm").innerHTML = ""; return; }
   const src0 = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
   // a formula extrapolated by up to 10 % beyond its range, when asked (a row of the advisor that needed it, or the button)
   const src = PM.extrapolate && !covers(src0, w) && covers(stretch(src0), w) ? stretch(src0) : src0;
@@ -1666,6 +1687,7 @@ function showTemp(src) {
 // NCPM: propagation along a principal axis, tuned by temperature only (-50 to 300 °C).
 function ncpmRun() {
   const c = PM.crystal;
+  if (pmBad()) return run(); // run() shows what is wrong
   if (!c.sources[+$("pmsrc").value].thermo) { $("pmsrc").value = String(c.sources.findIndex((s) => s.thermo)); run(); }
   const src = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
   if (!src?.thermo) return;
@@ -1774,6 +1796,8 @@ async function drawTuning(src, proc, a, b) {
 
 // Comparison: every crystal that phase-matches the process, with its least walk-off solution.
 function compareAll() {
+  const bad = pmBad();
+  if (bad) { $("pmallcard").hidden = false; $("pmallinfo").innerHTML = `<span class="err">${bad}</span>`; $("pmalltable").innerHTML = ""; return; }
   const { proc, a, b, w } = inputs(), every = $("pmevery").checked, rows = [];
   for (const c of PM.list) {
     if (!every && !PM.dij[c.material]) continue;
@@ -2021,7 +2045,8 @@ const catName = (c) => (c ? c.replace(/^\d+_/, "").replaceAll("_", " ") : "—")
 let PL = null, plShown = 50;
 window.loadPapers = async () => {
   if (!PL) {
-    PL = await (await api("/api/papers")).json();
+    // a failed load (network, server) says so and is tried again when the tab is opened next
+    try { PL = await (await api("/api/papers")).json(); } catch (e) { $("plsum").innerHTML = `<span class="err">فهرست مقاله‌ها بار نشد (${esc(e.message)})؛ زبانه را دوباره باز کنید.</span>`; return; }
     const cats = [...new Set(PL.map((p) => p.category).filter(Boolean))].sort();
     $("plcat").innerHTML = '<option value="">همه‌ی دسته‌ها</option>' + cats.map((c) => `<option value="${esc(c)}">${esc(catName(c))}</option>`).join("");
     const byCat = cats.map((c) => [c, PL.filter((p) => p.category === c)]).sort((a, b) => b[1].length - a[1].length);
@@ -2039,6 +2064,7 @@ function filtered() {
     (!q || `${p.reference} ${p.doi} ${p.material}`.toLowerCase().includes(q)));
 }
 function renderList() {
+  if (!PL) return; // the list did not load (loadPapers says so)
   const list = filtered();
   $("plcount").textContent = `${fa(list.length)} مقاله`;
   $("pllist").innerHTML = list.slice(0, plShown).map((p) => `<div class="prow" data-doc="${esc(p.doc_id)}">
