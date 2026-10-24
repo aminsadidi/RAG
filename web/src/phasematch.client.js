@@ -286,7 +286,7 @@ export function qpmSolutions(nAtT, cryst, kind, d, process, a, b, T) {
   for (const k of cryst === "uniaxial" ? [0] : [0, 1]) { // along x (and y for biaxial crystals); z is the polar axis
     const across = [0, 1, 2].filter((i) => i !== k);
     for (const p3 of across) for (const p1 of across) for (const p2 of across) {
-      if (process === "shg" && p1 > p2) continue; // the same pair of fundamental waves
+      if (p1 > p2 && Math.abs(w.l1 - w.l2) < 1e-9) continue; // SHG or degenerate: the same pair of waves
       const deff = (2 / Math.PI) * Math.abs(contract(D, unit(p3), unit(p1), unit(p2)));
       if (deff < 0.005) continue;
       const dk = (T2, ww) => { const n = nAtT(T2); return TWO_PI * (n(ww.l3)[p3] / ww.l3 - n(ww.l1)[p1] / ww.l1 - n(ww.l2)[p2] / ww.l2); };
@@ -300,7 +300,9 @@ export function qpmSolutions(nAtT, cryst, kind, d, process, a, b, T) {
         temp_C: width((x) => dk(T + x, w) - kg, HALF / L_UM, 1e-3, 500) });
     }
   }
-  return out;
+  // along y the all-z configuration repeats the one along x (same indices): kept once
+  const seen = new Set();
+  return out.filter((r) => { const k = `${r.pol.join("")}|${r.period_um.toFixed(6)}`; if (seen.has(k)) return false; seen.add(k); return true; });
 }
 
 // ---------- crystal advisor

@@ -368,7 +368,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   </div>
   <div class="card" style="margin-top:14px">
     <h2>جواب‌ها</h2>
-    <div style="overflow-x:auto"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
+    <div style="overflow-x:auto;direction:ltr"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
     <div id="pmqpm" class="hint" style="margin-top:10px"></div>
     <div id="pmncpm" style="margin-top:10px"></div>
     <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
@@ -383,7 +383,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <p class="hint" id="pmallinfo"></p>
     <div class="row"><label>مرتب‌سازی <select id="pmsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³ (بازده تبدیل)</option><option value="deff">d_eff</option><option value="walk">کمترین walk-off</option></select></label>
     <label class="hint"><input type="checkbox" id="pmevery"> مواد دوشکستیِ بدون ضرایب غیرخطی را هم بیاور</label></div>
-    <div style="overflow-x:auto"><table id="pmalltable" style="direction:ltr;min-width:640px"></table></div>
+    <div style="overflow-x:auto;direction:ltr"><table id="pmalltable" style="direction:ltr;min-width:640px"></table></div>
   </div>
 </section>
 
@@ -420,7 +420,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <button id="advgo">پیشنهاد بلور</button>
     </div>
     <p class="hint" id="advinfo"></p>
-    <div style="overflow-x:auto"><table id="advtable" style="direction:ltr;min-width:640px"></table></div>
+    <div style="overflow-x:auto;direction:ltr"><table id="advtable" style="direction:ltr;min-width:640px"></table></div>
     <div id="advno" class="hint" style="margin-top:10px"></div>
   </div>
   <div class="card" style="margin-top:14px">
@@ -1482,7 +1482,7 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 <script type="module">
 // ---------- phase-matching tab (web/src/phasematch.client.js does the physics)
 import { entryIndex, thermoShift } from "/dispersion.js";
-import { advise, cutTemperatures, effectiveD, ncpmTemperatures, solveAll, temperatureAcceptance, waves } from "/phasematch.js";
+import { advise, cutTemperatures, effectiveD, MIN_PERIOD, ncpmTemperatures, qpmSolutions, solveAll, temperatureAcceptance, waves } from "/phasematch.js";
 
 const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
 const PROC = {
@@ -1612,12 +1612,15 @@ function pick(mat, label, fit = true) {
 function run() {
   const c = PM.crystal; if (!c) return;
   setProc();
-  const src = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
+  const src0 = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
+  // a formula extrapolated by up to 10 % beyond its range, when asked (a row of the advisor that needed it, or the button)
+  const src = PM.extrapolate && !covers(src0, w) && covers(stretch(src0), w) ? stretch(src0) : src0;
   store.set("pm", { proc, a, b, mat: key(c) });
   const ref = Object.values(src.axes)[0];
   const moved = PM.moved; PM.moved = "";
   showTemp(src); $("pmncpm").innerHTML = "";
-  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "") + `${esc(c.name || c.material)} — ${src.isotropic ? "همسان‌گرد (مکعبی)" : src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
+  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "")
+    + (src !== src0 ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src0.range_um[0]}–${src0.range_um[1]} µm</bdi></span><br>` : "") + `${esc(c.name || c.material)} — ${src.isotropic ? "همسان‌گرد (مکعبی)" : src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
         + PM.dij[c.material].sources.map((s) => (s.doc_id
@@ -1627,7 +1630,9 @@ function run() {
   if (!covers(src, w)) {
     const other = c.sources.findIndex((s) => covers(s, w));
     $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">طول موج‌های این فرایند (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) همه باید در بازه‌ی فرمول این منبع (${src.range_um[0]}–${src.range_um[1]} µm) باشند و نیستند. `
-      + (other >= 0 ? `<button id="pmother">رفتن به منبع ${esc(c.sources[other].label)} که این بازه را دارد</button>` : `<button id="pmfit">تنظیم خودکار طول موج برای این بلور</button>`) + `</td></tr>`;
+      + (other >= 0 ? `<button id="pmother">رفتن به منبع ${esc(c.sources[other].label)} که این بازه را دارد</button>` : `<button id="pmfit">تنظیم خودکار طول موج برای این بلور</button>`)
+      + (other < 0 && covers(stretch(src), w) ? ` <button class="alt" id="pmextra">محاسبه با برون‌یابی فرمول (تا ۱۰٪ بیرون از بازه)</button>` : "") + `</td></tr>`;
+    if ($("pmextra")) $("pmextra").onclick = () => { PM.extrapolate = true; run(); };
     if (other >= 0) $("pmother").onclick = () => { $("pmsrc").value = String(other); run(); };
     else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
   } else {
@@ -1667,27 +1672,32 @@ function ncpmRun() {
   const rows = ncpmTemperatures((T) => nAtT(src, T), src.kind, proc, a, b, PM.dij[c.material]?.d, [-50, 300]);
   const lam = (i) => [w.l1, w.l2, w.l3][i].toFixed(4);
   $("pmncpm").innerHTML = `<h3 style="margin:6px 0">تطبیق فاز غیربحرانی با تنظیم دما (−۵۰ تا ۳۰۰ °C)</h3>`
-    + (rows.length ? `<div style="overflow-x:auto"><table style="direction:ltr;min-width:520px"><tr><th>k along</th><th>polarizations (λ₁ + λ₂ → λ₃)</th><th>T (°C)</th><th>d<sub>eff</sub> (pm/V)</th></tr>`
+    + (rows.length ? `<div style="overflow-x:auto;direction:ltr"><table style="direction:ltr;min-width:520px"><tr><th>k along</th><th>polarizations (λ₁ + λ₂ → λ₃)</th><th>T (°C)</th><th>d<sub>eff</sub> (pm/V)</th></tr>`
       + rows.map((r) => `<tr><td>${r.axis}</td><td>${lam(0)}<sup>${r.pol[0]}</sup> + ${lam(1)}<sup>${r.pol[1]}</sup> → ${lam(2)}<sup>${r.pol[2]}</sup></td><td><b>${r.T.toFixed(1)}</b></td><td>${r.deff == null ? "—" : r.deff < 0.005 ? "≈ 0" : r.deff.toFixed(2)}</td></tr>`).join("")
       + `</table></div><p class="hint">جهت انتشار در امتداد یک محور اصلی است (θ = 90° یا 0°)، پس walk-off صفر و پهنای پذیرش زاویه‌ای زیاد است؛ فقط دما Δk را صفر می‌کند. بالانویس‌ها محور قطبش هر موج‌اند. دقت این عدد به دقت فرمول وابستگی دمایی منبع بستگی دارد.</p>`
       : `<p class="hint">برای این طول موج‌ها در این بازه‌ی دما، تطبیق فاز غیربحرانی پیدا نشد.</p>`);
 }
 
-// Quasi-phase matching in the periodically poled ferroelectrics: all three waves polarized along z (d33),
-// first order, period Λ = 1 / (n3/λ3 − n1/λ1 − n2/λ2), d_eff = (2/π)·d33.
+// Quasi-phase matching in the periodically poled ferroelectrics: every assignment of the three polarizations to the
+// two axes across the propagation (x, and y in biaxial crystals), first order, d_eff = (2/π)·|d|, from qpmSolutions
+// of phasematch.js (the advisor uses the same); at the temperature entered, else that of the formula.
 const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "Mg-LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
 // cubic crystals made in orientation-patterned form (OP-GaAs, OP-GaP), the advisor's QPM candidates among them
 const OP = new Set(["GaAs", "GaP"]);
 function qpm(c, src, w) {
   if (src.isotropic) return qpmCubic(c, src, w);
-  const d33 = PM.dij[c.material]?.d["33"];
-  if (!POLED.has(c.material) || d33 == null) { $("pmqpm").innerHTML = ""; return; }
-  if (!covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
-  const nz = (l) => nAt(src)(l)[2], [n1, n2, n3] = [nz(w.l1), nz(w.l2), nz(w.l3)];
-  const period = 1 / (n3 / w.l3 - n1 / w.l1 - n2 / w.l2), deff = (2 / Math.PI) * Math.abs(d33);
-  $("pmqpm").innerHTML = `<b>تطبیق فاز شبه‌فازی (QPM)</b> در بلور قطبیده‌ی تناوبی (مثل PPLN/PPKTP)، هر سه موج قطبیده در امتداد z (ضریب d<sub>33</sub>)، مرتبه‌ی اول، دمای اتاق: `
-    + `<bdi dir="ltr">Λ = <b>${period.toFixed(2)} µm</b>, n<sub>z</sub> = ${[n1, n2, n3].map((x) => x.toFixed(4)).join(", ")}, d<sub>eff</sub> = (2/π)·|d33| = <b>${deff.toFixed(1)} pm/V</b>, d<sub>eff</sub>²/n³ = ${(deff ** 2 / (n1 * n2 * n3)).toFixed(1)} pm²/V²</bdi>`
-    + ` — بدون walk-off. دوره‌ی واقعی با دما و ترکیب بلور کمی جابه‌جا می‌شود؛ این عدد از همان فرمول پاشندگی منبع انتخاب‌شده است.`;
+  const d = PM.dij[c.material]?.d;
+  if (!POLED.has(c.material) || !d || !covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
+  const { proc, a, b } = inputs(), T = tempC() ?? src.thermo?.t0_c ?? 25;
+  const rows = qpmSolutions((t) => nAtT(src, t), src.kind, "poled", d, proc, a, b, T).filter((r) => r.period_um >= MIN_PERIOD)
+    .sort((p, q) => q.deff ** 2 / (q.n[0] * q.n[1] * q.n[2]) - p.deff ** 2 / (p.n[0] * p.n[1] * p.n[2]));
+  if (!rows.length) { $("pmqpm").innerHTML = ""; return; }
+  const lam = [w.l1, w.l2, w.l3].map((x) => x.toFixed(4));
+  $("pmqpm").innerHTML = `<b>تطبیق فاز شبه‌فازی (QPM)</b> در بلور قطبیده‌ی تناوبی (مثل PPLN/PPKTP)، مرتبه‌ی اول، در <bdi dir="ltr">${(+T).toFixed(1)} °C</bdi>؛ نوع 0 (هر سه موج در امتداد z) بیشترین ضریب غیرخطی را دارد و نوع II برای جفت فوتون‌های قطبش‌متعامد به کار می‌رود:`
+    + `<div style="overflow-x:auto;direction:ltr"><table style="direction:ltr;min-width:560px;margin-top:6px"><tr><th>k along</th><th>type</th><th>polarizations (λ₁ + λ₂ → λ₃)</th><th>Λ (µm)</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>Δλ·L (nm·cm)</th><th>ΔT·L (°C·cm)</th></tr>`
+    + rows.map((r) => `<tr><td>${r.axis}</td><td>${r.type}</td><td>${lam[0]}<sup>${r.pol[0]}</sup> + ${lam[1]}<sup>${r.pol[1]}</sup> → ${lam[2]}<sup>${r.pol[2]}</sup></td><td><b>${r.period_um.toFixed(3)}</b></td>
+      <td><b>${r.deff.toFixed(2)}</b></td><td>${(r.deff ** 2 / (r.n[0] * r.n[1] * r.n[2])).toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td><td>${src.thermo ? (r.temp_C >= 999 ? "> 500" : r.temp_C.toFixed(1)) : "—"}</td></tr>`).join("")
+    + `</table></div><span>بدون walk-off. دوره‌ی واقعی با دما و ترکیب بلور کمی جابه‌جا می‌شود و انبساط گرمایی توری در این حساب نیست؛ این اعداد از همان فرمول پاشندگی منبع انتخاب‌شده است.</span>`;
 }
 
 // Orientation-patterned cubic semiconductors (OP-GaAs, OP-GaP): optically isotropic, so only QPM; first order,
@@ -1799,7 +1809,7 @@ $("pmsrc").onchange = run;
 $("pmT").addEventListener("change", run);
 $("pmncpmgo").onclick = ncpmRun;
 $("pmgo").onclick = run;
-$("pmmat").onchange = (e) => pick(e.target.value);
+$("pmmat").onchange = (e) => { PM.extrapolate = false; pick(e.target.value); };
 $("pmmore").onchange = () => {
   if (!$("pmmore").checked && PM.crystal && !PM.dij[PM.crystal.material]) { PM.crystal = null; fillMats(); pick("BaB2O4"); } else fillMats();
 };
@@ -1850,9 +1860,22 @@ window.loadAdvisor = async () => {
     .map((c) => `<option value="${esc(c.material)}">${esc(c.material)}${short(c) ? " — " + esc(short(c)) : ""}</option>`).join("");
   $("cutmat").value = "LiB3O5";
 };
+// What is wrong with the advisor's inputs, or "" (the PM and SPDC tabs check theirs the same way)
+function advBad() {
+  const { proc, a, b, w } = advInputs(), lo = numOr("advlo"), hi = numOr("advhi"), L = numOr("advlen");
+  if (!(a > 0) || (proc !== "shg" && !(b > 0))) return "طول موج‌ها باید عدد مثبت باشند.";
+  if (proc === "opo" && !(b > a)) return "طول موج سیگنال باید بلندتر از طول موج پمپ باشد (1/λp = 1/λs + 1/λi).";
+  if (![w.l1, w.l2, w.l3].every((x) => x > 0 && x < 1000)) return "طول موج‌ها بیرون از گستره‌ی معقول‌اند.";
+  if ((lo !== null && lo < -273.15) || (hi !== null && hi < -273.15)) return "دما نمی‌تواند پایین‌تر از صفر مطلق (۲۷۳٫۱۵− °C) باشد.";
+  if (lo !== null && hi !== null && !(hi >= lo)) return "بازه‌ی دما درست نیست: دمای بالا باید بیشتر از دمای پایین باشد.";
+  if (L !== null && !(L > 0)) return "طول بلور باید بیشتر از صفر باشد.";
+  for (const id of ["advwo", "advspec", "advtemp"]) if (numOr(id) !== null && !(numOr(id) >= 0)) return "حدها نمی‌توانند منفی باشند.";
+  return "";
+}
 function adviseRun() {
+  const why = advBad();
+  if (why) { $("advinfo").innerHTML = `<span class="err">${why}</span>`; $("advtable").innerHTML = ""; $("advno").innerHTML = ""; return; }
   const { proc, a, b, w } = advInputs(), lo = numOr("advlo") ?? 25, hi = numOr("advhi") ?? lo, L = numOr("advlen") || 1;
-  if (!(hi >= lo)) { $("advinfo").innerHTML = '<span class="err">بازه‌ی دما درست نیست</span>'; return; }
   $("advinfo").textContent = "در حال آزمودن همه‌ی بلورها…";
   setTimeout(() => {
     const list = advCrystals(w), srcOf = Object.fromEntries(list.map((c) => [c.material, c.src.label]));
@@ -1866,7 +1889,7 @@ function adviseRun() {
     const how = (s) => (s.how === "qpm" ? `QPM${s.qpm === "op" ? " (OP)" : ` along ${s.axis}, ${s.pol.join("")}`} · Λ = ${s.period_um.toFixed(2)} µm` : s.how === "ncpm-temp" ? `90° along ${s.axis}, ${s.pol.join("")} at ${s.T.toFixed(1)} °C` : `${s.plane} ${s.type === "I" ? "I" : "II"} · ${s.angle.toFixed(2)}°${s.noncritical ? " (NCPM)" : ""}`);
     const f1 = (v, k = 1) => (v == null || !Number.isFinite(v) ? "—" : v.toFixed(k));
     $("advtable").innerHTML = r.ok.length ? `<tr><th>#</th><th>crystal</th><th>how</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>walk-off (mrad)</th><th>Δλ (nm)</th><th>ΔT (°C)</th><th>angle drift over the range</th><th>note</th></tr>`
-      + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b><br><span class="hint" title="${esc(PM.props[x.material]?.class?.what || "")}">${CLASS_FA[PM.props[x.material]?.class?.value || "research"]}</span></td><td>${how(s)}</td>
+      + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" data-extra="${extra[x.material] ? 1 : 0}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b><br><span class="hint" title="${esc(PM.props[x.material]?.class?.what || "")}">${CLASS_FA[PM.props[x.material]?.class?.value || "research"]}</span></td><td>${how(s)}</td>
         <td><b>${f1(s.deff, 2)}</b></td><td>${f1(s.fom, 2)}</td><td>${f1(Math.max(...s.walkoff_mrad))}</td><td>${f1(s.spectral_nm != null ? s.spectral_nm / L : null, 2)}</td>
         <td>${s.temp_C == null ? "—" : s.temp_C >= 999 ? "> 500" : f1(s.temp_C / L)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : s.lostInRange ? '<span class="err">در بخشی از بازه تطبیق فاز ندارد</span>' : "—"}</td>
         <td>${[x.thermo ? "" : '<span class="err">رفتار دمایی نامعلوم</span>', x.edge ? '<span class="err">نزدیک لبه‌ی جذب</span>' : "",
@@ -1882,15 +1905,23 @@ function adviseRun() {
   }, 20);
 }
 function cutRun() {
-  const c = PM.list?.find((x) => x.material === $("cutmat").value), { proc, a, b, w } = advInputs(), ang = numOr("cutangle");
-  // a source with a temperature-dependent formula that covers the three waves, or any with one
-  const src = c && (c.sources.find((x) => x.thermo && covers(x, w)) || c.sources.find((x) => x.thermo));
+  const c = PM.list?.find((x) => x.material === $("cutmat").value), { proc, a, b, w } = advInputs(), raw = numOr("cutangle");
+  // θ, 180° − θ and −θ (φ likewise) give the same indices: the angle is folded into 0-90°
+  const ang = raw === null ? null : 90 - Math.abs(90 - (Math.abs(raw) % 180));
+  const why = advBad(); if (why) { $("cutinfo").innerHTML = `<span class="err">${why}</span>`; return; }
+  // a source with a temperature-dependent formula that covers the three waves, else one extrapolated by up to 10 %
+  const thermo = c ? c.sources.filter((x) => x.thermo) : [];
+  const src = thermo.find((x) => covers(x, w)) || thermo.map(stretch).find((x) => covers(x, w)) || thermo[0];
   if (!src || ang == null) { $("cutinfo").innerHTML = '<span class="err">بلور و زاویه‌ی برش را بدهید</span>'; return; }
+  if (!covers(src, w)) { $("cutinfo").innerHTML = `<span class="err">طول موج‌ها بیرون از بازه‌ی فرمول وابستگی دمایی این بلور: <bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi></span>`; return; }
   const plane = src.kind === "uniaxial" ? "xz" : $("cutplane").value, type = $("cuttype").value, lo = numOr("advlo") ?? 20, hi = numOr("advhi") ?? 60;
   if (!src.thermo) { $("cutinfo").innerHTML = `<span class="err">برای منبع ${esc(src.label)} فرمول وابستگی دمایی نداریم: دمای کار این برش را نمی‌شود حساب کرد.</span>`; return; }
   const nT = (T) => nAtT(src, T), Ts = cutTemperatures(nT, plane, ang * Math.PI / 180, proc, a, b, type, [-50, 300]);
-  if (!Ts.length) { $("cutinfo").innerHTML = '<span class="err">این برش بین ۵۰− و ۳۰۰ °C تطبیق فاز نمی‌دهد.</span>'; return; }
-  $("cutinfo").innerHTML = `با فرمول وابستگی دمایی منبع ${esc(src.label)}:<br>` + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / (numOr("advlen") || 1);
+  const folded = raw !== ang ? `زاویه به بازه‌ی ۰ تا ۹۰ درجه برده شد: <bdi dir="ltr">${raw}° → ${+ang.toFixed(4)}°</bdi><br>` : "";
+  if (!Ts.length) { $("cutinfo").innerHTML = folded + '<span class="err">این برش بین ۵۰− و ۳۰۰ °C تطبیق فاز نمی‌دهد.</span>'; return; }
+  $("cutinfo").innerHTML = folded
+    + (src.extrapolated ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src.extrapolated[0]}–${src.extrapolated[1]} µm</bdi></span><br>` : "")
+    + `با فرمول وابستگی دمایی منبع ${esc(src.label)}:<br>` + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / (numOr("advlen") || 1);
     const inside = T >= lo && T <= hi;
     return `دمای تطبیق فاز: <b><bdi dir="ltr">${T.toFixed(1)} °C</bdi></b> (پهنای دمایی <bdi dir="ltr">${acc.toFixed(1)} °C</bdi>) — ${inside ? '<b>درون بازه‌ی دمای شما</b>' : `<span class="err">بیرون از بازه‌ی ${fa(lo)} تا ${fa(hi)} °C شما</span>`}`; }).join("<br>");
 }
@@ -1902,6 +1933,7 @@ $("advtable").onclick = (e) => {
   const tr = e.target.closest("tr[data-mat]"); if (!tr) return;
   $("pmproc").value = $("advproc").value; $("pma").value = $("adva").value; $("pmb").value = $("advb").value;
   $("pmT").value = (((numOr("advlo") ?? 25) + (numOr("advhi") ?? numOr("advlo") ?? 25)) / 2).toString();
+  PM.extrapolate = tr.dataset.extra === "1";
   showTab("pm"); pick(tr.dataset.mat, tr.dataset.src, false);
 };
 $("advproc").onchange = () => {
