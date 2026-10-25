@@ -282,6 +282,19 @@
     y: [{range_um: [0.633, 10.591], terms: [[0.6914, -3], [-0.8399, -2], [0.6655, -1], [2.3081, 0]]}]
     z: [{range_um: [0.633, 10.591], terms: [[0.6854, -3], [-0.8233, -2], [0.3813, -1], [1.3766, 0]]}]
 
+- material: BaB2O4
+  source: Tamosauskas
+  doc_id: 10.1007_bf00323647
+  doi: 10.1007/bf00323647
+  cite: "Nikogosyan (1991)"
+  pdf_page: 1
+  where: "Eqs. (1), (2) (page image): dno/dT = −16.6 × 10⁻⁶ /°C, dne/dT = −9.3 × 10⁻⁶ /°C, constant over 20–80 °C and 0.4–1.0 µm (a review of BBO's measured properties); outside 0.4–1.0 µm the same constants are used, so temperatures there are approximate. The Ghosh-1995 source carries a dispersive thermo-optic formula"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.4, 1.0], terms: [[-1.66, 0]]}]
+    e: [{range_um: [0.4, 1.0], terms: [[-0.93, 0]]}]
+
 - material: BaGa4Se7
   source: Kato
   prefer: true
