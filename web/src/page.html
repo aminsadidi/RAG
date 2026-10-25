@@ -1773,7 +1773,7 @@ async function drawTuning(src, proc, a, b) {
       for (const r of solveAll(fn, src.kind, proc, x, b)) add(`${r.plane} ${r.type}`, x, r.angle);
     }
   }
-  $("pmcharttitle").textContent = PAIR.has(proc) ? `منحنی تنظیم ${PNAME[proc]}: طول موج سیگنال و آیدلر بر حسب زاویه` : "زاویه‌ی تطبیق فاز بر حسب طول موج";
+  $("pmcharttitle").textContent = proc === "spdc" ? "منحنی تنظیم SPDC: طول موج سیگنال و آیدلر بر حسب زاویه" : proc === "opo" ? "منحنی تنظیم OPO: طول موج سیگنال و آیدلر بر حسب زاویه" : "زاویه‌ی تطبیق فاز بر حسب طول موج";
   const svg = $("pmsvg"), W = Math.round($("pmchart").clientWidth) || 800, H = Math.round(Math.min(340, Math.max(240, W * 0.6)));
   svg.style.height = H + "px"; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   const all = [...pts.values()].flat();
