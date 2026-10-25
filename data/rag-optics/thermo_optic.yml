@@ -252,6 +252,22 @@
     y: [{range_um: [0.5321, 3.1842], terms: [[0.5487, -3], [-1.7317, -2], [1.9380, -1], [0.1057, 0]]}]
     z: [{range_um: [0.5321, 3.1842], terms: [[1.1823, -3], [-2.8099, -2], [2.6613, -1], [0.1415, 0]]}]
 
+- material: RbTiOPO4
+  source: Fragemann
+  prefer: true  # PPRTP: its z index and dn/dT come from QPM devices; Mikami-2009 stays for birefringent phase matching
+  doc_id: 10.1063_1.1619211
+  doi: 10.1063/1.1619211
+  cite: "Fragemann et al. (2003)"
+  pdf_page: 4
+  where: "z: Eq. (4) and Table I (page image), dnz/dT = (p1/λ³ + p2/λ² + p3/λ + p4) × 10⁻⁶ K⁻¹, p1..p4 = 12.4126, −51.5705, 59.0696, −12.0918, fitted to PPRTP OPO temperature tuning at 1.064–3.4 µm, 20–150 °C; with α = 1.08 × 10⁻⁵ K⁻¹, the linear expansion the fit uses (p. 4). x and y: Mikami, Okamoto & Katō (2009), Eq. (2), as for the Mikami-2009 source"
+  t0_c: 20
+  form: kato
+  expansion: {alpha: 1.08e-5, beta: 0, t0_c: 20}
+  axes:
+    x: [{range_um: [0.5321, 3.1842], terms: [[0.1227, -3], [-0.3064, -2], [0.4469, -1], [0.0941, 0]]}]
+    y: [{range_um: [0.5321, 3.1842], terms: [[0.5487, -3], [-1.7317, -2], [1.9380, -1], [0.1057, 0]]}]
+    z: [{range_um: [1.064, 3.4], terms: [[1.24126, -3], [-5.15705, -2], [5.90696, -1], [-1.20918, 0]]}]
+
 - material: BaGa4Se7
   source: Kato
   prefer: true
