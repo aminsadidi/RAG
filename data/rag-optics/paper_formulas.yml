@@ -1468,3 +1468,18 @@
   - {direction: x, page: Fragemann, type: 4, range_um: [0.5321, 3.1842], coefficients: [4.65575, 0.04068, 0.0, 0.0475, 1.0, 204.2586, 0.0, 130.7684, 1.0]}
   - {direction: y, page: Fragemann, type: 4, range_um: [0.5321, 3.1842], coefficients: [4.76892, 0.0449, 0.0, 0.0513, 1.0, 221.3309, 0.0, 134.2832, 1.0]}
   checks: []
+
+# BaGa4S7: the Sellmeier equations that go with the thermo-optic formula of the same paper (thermo_optic.yml), both
+# read from the page images; together they give the paper's 90° phase-matching temperatures.
+- material: BaGa4S7
+  name: BaGa4S7 (Barium gallium sulfide, BGS)
+  doc_id: 10.1117_12.2077463
+  doi: 10.1117/12.2077463
+  reference: "Umemura, Petrov, Badikov, Kato (2015). Temperature-tuned 90° phase-matched SHG and DFG in BaGa4S7. Proc. SPIE 9347, 93470N. doi:10.1117/12.2077463"
+  pdf_page: 2
+  where: "Eq. (1) (from their Ref. 1, Kato et al. 2013), at 25 °C, 0.633–7.560 µm: n² = A + B/(λ² − C) + D/(λ² − E), x: 5.78803, 0.15708, 0.03195, 229.950, 316.494; y: 6.02286, 0.16719, 0.03310, 311.691, 353.976; z: 6.49125, 0.16872, 0.03783, 503.619, 402.991"
+  entries:
+  - {direction: x, page: Umemura-2015, type: 4, range_um: [0.633, 7.56], coefficients: [5.78803, 0.15708, 0.0, 0.03195, 1.0, 229.950, 0.0, 316.494, 1.0]}
+  - {direction: y, page: Umemura-2015, type: 4, range_um: [0.633, 7.56], coefficients: [6.02286, 0.16719, 0.0, 0.03310, 1.0, 311.691, 0.0, 353.976, 1.0]}
+  - {direction: z, page: Umemura-2015, type: 4, range_um: [0.633, 7.56], coefficients: [6.49125, 0.16872, 0.0, 0.03783, 1.0, 503.619, 0.0, 402.991, 1.0]}
+  checks: []

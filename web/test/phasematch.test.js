@@ -960,3 +960,11 @@ test("PPRTP (Fragemann et al. 2003): idler of the 1.064 µm-pumped OPOs of Fig. 
     assert.ok(Math.abs(idler(20) - at20) < 0.03 && Math.abs(idler(150) - at150) < 0.04, `${L} µm: ${idler(20)}, ${idler(150)}`);
   }
 });
+
+test("BaGa4S7 (Umemura et al. 2015): 90° SHG temperatures along z of Figs. 2 and 3, and the 25 °C angle", () => {
+  const s = source("BaGa4S7", "Umemura-2015"), at = (l) => ncpmTemperatures((T) => nAtTemp(s, T), "biaxial", "shg", l, 0, null, [-50, 300]).find((r) => r.axis === "z").T;
+  assert.ok(Math.abs(at(2.7918) - 120) < 1, `2.7918 µm: ${at(2.7918)}`);
+  assert.ok(Math.abs(at(5.2955) - 127.2) < 1, `5.2955 µm: ${at(5.2955)}`);
+  const th = solveAll(nAtTemp(s, 25), "biaxial", "shg", 2.7918, 0).find((r) => r.plane === "xz" && r.type === "I" && r.angle < 30).angle;
+  assert.ok(Math.abs(th - 9.8) < 0.15, `θ ${th}`);
+});
