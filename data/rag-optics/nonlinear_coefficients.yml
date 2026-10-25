@@ -755,7 +755,7 @@
   point_group: -62m
   d: {22: 2.31, 21: -2.31, 16: -2.31}
   sources:
-    - {doi: 10.1364/oe.18.000237, cite: "Zhang et al. (2010)", pdf_page: 4, what: "d22 = (5.925 ± 0.171) d36(KDP) = 2.31 ± 0.07 pm/V, type-I Maker fringes of a c-cut plate at 1064.2 nm (p. 4); the paper's own d_eff at 1064 nm: 1.90 pm/V for type I at (θ, φ) = (34.0°, 30°), 0.93 pm/V for type II at (50.6°, 0°) (p. 5)"}
+    - {doc_id: "10.1364_oe.18.000237", doi: 10.1364/oe.18.000237, cite: "Zhang et al. (2010)", pdf_page: 4, what: "d22 = (5.925 ± 0.171) d36(KDP) = 2.31 ± 0.07 pm/V, type-I Maker fringes of a c-cut plate at 1064.2 nm (p. 4); the paper's own d_eff at 1064 nm: 1.90 pm/V for type I at (θ, φ) = (34.0°, 30°), 0.93 pm/V for type II at (50.6°, 0°) (p. 5)"}
   notes: "−6m2, Kleinman: d21 = d16 = −d22, the only independent element. The principal axis x is 30° from the crystallographic a axis (p. 6)"
 
 - material: CdGa2S4
@@ -763,7 +763,7 @@
   partial: true
   d: {36: 26.8, 14: 26.8, 25: 26.8}
   sources:
-    - {doi: 10.1109/jqe.1974.1068125, cite: "Levine, Bethea, Kasper (1974)", pdf_page: 1, what: "d36/d11(quartz) = 80 ± 15 % by Maker fringes at 1.064 µm on a [1,1,2] plate, with d11(quartz) = 0.80 × 10⁻⁹ ESU: d36 = 64 × 10⁻⁹ ESU = 26.8 pm/V (Eqs. 5, 6, pp. 904–905)"}
+    - {doc_id: "10.1109_jqe.1974.1068125", doi: 10.1109/jqe.1974.1068125, cite: "Levine, Bethea, Kasper (1974)", pdf_page: 1, what: "d36/d11(quartz) = 80 ± 15 % by Maker fringes at 1.064 µm on a [1,1,2] plate, with d11(quartz) = 0.80 × 10⁻⁹ ESU: d36 = 64 × 10⁻⁹ ESU = 26.8 pm/V (Eqs. 5, 6, pp. 904–905)"}
   notes: "−4 (thiogallate): only d36 was measured; d14 = d25 = d36 by Kleinman symmetry; d15 and d31 are not known. Today's quartz d11 = 0.30 pm/V would make it about 10 % lower"
 
 - material: LuAl3(BO3)4
@@ -777,20 +777,20 @@
   point_group: 6mm
   d: {33: -0.305, 31: -0.223, 32: -0.223, 15: -0.223, 24: -0.223}
   sources:
-    - {doi: 10.1063/1.1653649, cite: "Jerphagnon & Newkirk (1971)", pdf_page: 1, what: "Maker fringes at 1.064 µm: d31 = (0.46 ± 0.03) d11(SiO2), d33 = (0.63 ± 0.04) d11(SiO2), with d11(SiO2) = 0.77 d36(KDP) and d36(KDP) = 1.5 × 10⁻⁹ ESU (p. 245); both negative (p. 246)"}
+    - {doc_id: "10.1063_1.1653649", doi: 10.1063/1.1653649, cite: "Jerphagnon & Newkirk (1971)", pdf_page: 1, what: "Maker fringes at 1.064 µm: d31 = (0.46 ± 0.03) d11(SiO2), d33 = (0.63 ± 0.04) d11(SiO2), with d11(SiO2) = 0.77 d36(KDP) and d36(KDP) = 1.5 × 10⁻⁹ ESU (p. 245); both negative (p. 246)"}
   notes: "6mm: d31 = d32, Kleinman d15 = d24 = d31. On the scale of the time (d36(KDP) = 1.5 × 10⁻⁹ ESU = 0.63 pm/V); with today's 0.39 pm/V the values would be about 40 % lower"
 
 - material: Pb5Ge3O11
   point_group: "3"
   d: {11: -1.085, 12: 1.085, 26: 1.085, 22: -2.388, 21: 2.388, 16: 2.388, 31: 0.578, 32: 0.578, 15: 0.578, 24: 0.578, 33: -0.901}
   sources:
-    - {doi: 10.1080/00150197408237965, cite: "Miller, Nordland, Ballman (1974)", pdf_page: 2, what: "Table I, right-handed crystal at 300 K, SHG of 1.06 µm against quartz d11 = 0.87 × 10⁻⁹ ESU: d11 = −2.59 ± 0.39, d22 = −5.70 ± 0.86, d31 = +1.38 ± 0.21, d33 = −2.15 ± 0.32 (× 10⁻⁹ ESU); the table's columns are jumbled in the PDF text and were paired through the reduced nonlinearities δ (d/δ ≈ 2.0 for all four)"}
+    - {doc_id: "10.1080_00150197408237965", doi: 10.1080/00150197408237965, cite: "Miller, Nordland, Ballman (1974)", pdf_page: 2, what: "Table I, right-handed crystal at 300 K, SHG of 1.06 µm against quartz d11 = 0.87 × 10⁻⁹ ESU: d11 = −2.59 ± 0.39, d22 = −5.70 ± 0.86, d31 = +1.38 ± 0.21, d33 = −2.15 ± 0.32 (× 10⁻⁹ ESU); the table's columns are jumbled in the PDF text and were paired through the reduced nonlinearities δ (d/δ ≈ 2.0 for all four)"}
   notes: "3 with Kleinman: d12 = d26 = −d11, d21 = d16 = −d22, d31 = d32 = d15 = d24, d14 = 0. Signs for a right-handed crystal: d22 changes sign for a left-handed one (p. 110). d31 and d33 vanish at the Curie point (177 °C), d11 and d22 do not"
 
 - material: AlPO4
   point_group: "32"
   d: {11: 0.498, 12: -0.498, 26: -0.498}
   sources:
-    - {doi: 10.1002/pssb.2221620129, cite: "Defregger, Engel, Krempl (1990)", pdf_page: 5, what: "d11(AlPO4)/d11(quartz) = 1.49 ± 0.2 by Maker fringes at 1.064 µm, 296 K; with d11(quartz) = 0.334 pm/V, d11 = 0.498 ± 0.08 pm/V (Table 4; 35 % lower at 783 K)"}
+    - {doc_id: "10.1002_pssb.2221620129", doi: 10.1002/pssb.2221620129, cite: "Defregger, Engel, Krempl (1990)", pdf_page: 5, what: "d11(AlPO4)/d11(quartz) = 1.49 ± 0.2 by Maker fringes at 1.064 µm, 296 K; with d11(quartz) = 0.334 pm/V, d11 = 0.498 ± 0.08 pm/V (Table 4; 35 % lower at 783 K)"}
   notes: "32 (berlinite, quartz-like): d12 = d26 = −d11; d14 is zero with Kleinman symmetry. About 1.5 times the earlier value of Miller (1964)"
 
