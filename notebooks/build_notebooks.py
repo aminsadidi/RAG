@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 21
+VERSION = 22
 WORKERS = 4
 
 
@@ -624,6 +624,12 @@ print('Copying the database from Drive...')
 !mkdir -p /content/storage && cp -rT "{WORK}/storage" /content/storage
 """ + INSTALL + NEW_PAPERS + QDRANT_KEYS + """
 %cd {WORK}
+# Book parts converted by colab_books (maybe from another account, into proDownloads/_book_parts) join the collection's cache
+import shutil as _sh
+_parts = os.path.join(DOWNLOADS, '_book_parts', '_RAG_processed')
+if os.path.isdir(_parts):
+    _sh.copytree(_parts, os.path.join(root, '_RAG_processed'), dirs_exist_ok=True)
+    print('Book parts from', _parts, 'copied into the collection')
 # 2. Only the new papers are converted and embedded (the rest is already in the database)
 print('2/4 Indexing the new papers (the rest are skipped as unchanged)...')
 !matrag --corpus rag-optics ingest 2>&1 | grep -vE "Warning|Loading|it/s\\]" | tee -a "{WORK}/logs/ingest.log"
@@ -789,16 +795,27 @@ def books() -> dict:
 بخش‌های ناتمام هم را با اجرای دوباره با `WORKERS = 1` تمام می‌کنند.
 
 بعد از تمام شدن، نوت‌بوک «افزودن مقاله‌های تازه» را اجرا کنید: بخش‌ها را به هم وصل، نمایه و روی سایت می‌فرستد.
+
+**با حساب دیگر (مثلاً دوستی که GPU دارد):** فقط دسترسی Editor به پوشه‌ی `proDownloads` لازم است. او در Drive روی پوشه
+راست‌کلیک کند ← Organize ← Add shortcut ← My Drive، بعد این نوت‌بوک را با T4 GPU اجرا کند. بخش‌ها در
+`proDownloads/_book_parts` ذخیره می‌شوند و نوت‌بوک «افزودن مقاله‌های تازه» آن‌ها را خودش به مجموعه منتقل می‌کند.
 """),
         code(f"""
 #@title ▶️ تبدیل کتاب‌ها
 WORKER = 1  #@param {{type:"integer"}}
 WORKERS = {BOOK_WORKERS}  #@param {{type:"integer"}}
 DOWNLOADS = '/content/drive/MyDrive/proDownloads'  #@param {{type:"string"}}
-COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {{type:"string"}}
+# where the finished parts are saved: a folder inside the downloads folder, so this runs with access to that
+# folder alone (another Google account too); the new-papers notebook moves them into the collection
+PARTS = DOWNLOADS + '/_book_parts'  #@param {{type:"string"}}
 """ + ENV + INSTALL + """
 !pip install -q "rapidocr>=3" onnxruntime 2>&1 | grep -iE "^error" || true
-os.environ['MATRAG_DATA_DIR'] = '/content/book_data'  # only the link to the collection lives here
+if not os.path.isdir(DOWNLOADS):
+    raise SystemExit(f'{DOWNLOADS} not found. If the folder was shared with you: in Google Drive, right-click it → '
+                     'Organize → Add shortcut → My Drive, then run this cell again.')
+os.makedirs(PARTS, exist_ok=True)
+COLLECTION = PARTS
+os.environ['MATRAG_DATA_DIR'] = '/content/book_data'  # only the link to the parts folder lives here
 os.environ['MATRAG_CORPUS'] = 'rag-optics'
 !matrag link "{COLLECTION}" > /dev/null
 # the handbooks of the new-papers notebook: file name -> doc_id (its DOI, or ISBN, as a file name)
