@@ -13,8 +13,6 @@
 #   form "gayer": Gayer et al. (2008) / Dolev et al. (2009), coefficients times f = (T − t0)(T + t0 + 546.32):
 #                 n² = a0 + b0·f + (a1 + b1·f)/(λ² − (a2 + b2·f)²) + (a3 + b3·f)/(λ² − (a4 + b4·f)²) − a5·λ²;
 #                 f_c replaces 546.32 (Edwards & Lawrence 1984 write 546).
-#   form "emanueli": Δn = n1(λ)(T − t0) + n2(λ)(T − t0)², n1,2 = Σ am/λ^m (m = 0..3), n1 in 10⁻⁶, n2 in 10⁻⁸ (Emanueli & Arie 2003).
-#   expansion: the length along x, L = L0[1 + α(T − t0) + β(T − t0)²]; a QPM grating period grows with it.
 #   form "bhar":  n² = A + B/(1 − C/λ²) + D/(1 − E/λ²) with A, B, C, D = m·T + c (T in °C) and E constant
 #                 (Bhar & Ghosh 1979); Δn = n(T) − n(t0) of that equation. kelvin: true when T is in K.
 #   form "skauli": n² = g0 + Σ gi/(λi⁻² − λ⁻²), i = 1..3, every gi and λi a polynomial in T − t0 (coefficients of
@@ -37,6 +35,7 @@
 # partial: true marks a paper that measured only some of the axes; the others keep their t0 index.
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
 # phase-matching temperatures the papers report.
+# expansion (optional, any form): the length along x, L = L0[1 + α(T − t0) + β(T − t0)²]; a QPM grating period grows with it.
 
 - material: KTiOPO4
   source: Kato
@@ -700,6 +699,7 @@
   where: "Table 2 and Eqs. (2)–(4), y and z axes only, measured at 0.532–1.585 µm from 25 to 200 °C; the z axis carries the paper's mid-IR correction of Eq. (4) (λ0 = 1.55 µm, γ = 10 µm⁻¹, B = 4.6 × 10⁻⁶ and 8 × 10⁻⁹), fitted to a KTA OPO. The x axis was not measured: nx stays at its 25 °C value, so temperatures of interactions polarized along x are not reliable"
   t0_c: 25
   form: emanueli
+  expansion: {alpha: 7.6e-6, beta: 8.4e-9, t0_c: 25}  # Table 1 and Eq. (1), along x
   axes:
     y: {n1: [-4.1053, 44.261, -38.012, 11.302], n2: [0.5857, 3.9386, -4.0081, 1.4316]}
     z: {n1: [-6.1537, 64.505, -56.447, 17.169], n2: [-0.96751, 13.192, -11.78, 3.6292],
