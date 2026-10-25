@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>گزارش جامع MatRAG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* A4 report: cover, contents, numbered chapters. Screen view is a centred paper column;
+   print view drops the shadows and starts each chapter on a new page. */
+:root {
+  --bg: #eceef2; --paper: #ffffff; --fg: #1b2230; --muted: #5d6676; --line: #dce0e7;
+  --accent: #1c4f9c; --accent-2: #0f7b6c; --soft: #eef3fb; --soft-2: #eaf6f3;
+  --warn: #9a5b00; --warn-soft: #fbf3e4; --bad: #a52a22; --bad-soft: #fbecea; --good: #1d7346; --good-soft: #e8f5ee;
+  --bar: #c9d6ec;
+  --body: "Vazirmatn", "Tahoma", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f1218; --paper: #181d26; --fg: #e4e8ef; --muted: #9aa3b3; --line: #2b3240;
+  --accent: #82aef0; --accent-2: #5cc9b6; --soft: #1c2840; --soft-2: #16302c;
+  --warn: #f0b55a; --warn-soft: #2e2615; --bad: #f08a80; --bad-soft: #351c1a; --good: #66cf98; --good-soft: #15291f; --bar: #2e4466;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f1218; --paper: #181d26; --fg: #e4e8ef; --muted: #9aa3b3; --line: #2b3240;
+  --accent: #82aef0; --accent-2: #5cc9b6; --soft: #1c2840; --soft-2: #16302c;
+  --warn: #f0b55a; --warn-soft: #2e2615; --bad: #f08a80; --bad-soft: #351c1a; --good: #66cf98; --good-soft: #15291f; --bar: #2e4466;
+  color-scheme: dark }
+* { box-sizing: border-box }
+html { -webkit-text-size-adjust: 100% }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15.5px; line-height: 1.95; direction: rtl }
+.sheet { max-width: 900px; margin: 24px auto; background: var(--paper); padding: 48px 56px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 8px 28px rgba(0,0,0,.06) }
+@media (max-width: 720px) { .sheet { margin: 0; padding: 28px 16px; border-radius: 0 } }
+h1, h2, h3, h4 { line-height: 1.5; margin: 0 }
+h2 { font-size: 24px; font-weight: 800; color: var(--accent); padding-bottom: 8px; border-bottom: 2px solid var(--accent); margin: 8px 0 18px }
+h2 .n { display: inline-block; min-width: 1.6em; color: var(--accent-2) }
+h3 { font-size: 18px; font-weight: 700; margin: 26px 0 8px }
+h4 { font-size: 15.5px; font-weight: 700; margin: 18px 0 4px; color: var(--accent-2) }
+p { margin: 0 0 12px; text-align: justify }
+ul, ol { margin: 0 0 12px; padding-inline-start: 22px }
+li { margin-bottom: 4px }
+a { color: var(--accent) }
+code, .ltr { font-family: var(--mono); font-size: .86em; direction: ltr; unicode-bidi: isolate }
+.en { direction: ltr; unicode-bidi: isolate }
+small, .muted { color: var(--muted) }
+section.chapter { margin-top: 44px }
+
+/* cover */
+.cover { min-height: 1020px; display: flex; flex-direction: column; justify-content: space-between; padding: 8px 0 0 }
+.cover .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; color: var(--muted); font-size: 14px }
+.cover .mark { font-weight: 800; font-size: 15px; letter-spacing: .02em; color: var(--accent) }
+.cover .title { margin-top: 120px }
+.cover .eyebrow { color: var(--accent-2); font-weight: 700; font-size: 15px; margin-bottom: 10px }
+.cover h1 { font-size: 40px; font-weight: 800; line-height: 1.35; margin-bottom: 14px }
+.cover h1 .en { font-size: .78em; color: var(--accent) }
+.cover .sub { font-size: 18px; color: var(--muted); max-width: 640px }
+.cover .rule { height: 4px; width: 120px; background: linear-gradient(90deg, var(--accent-2), var(--accent)); margin: 26px 0 }
+.cover dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; font-size: 15px; margin: 0 }
+.cover dt { color: var(--muted) } .cover dd { margin: 0; font-weight: 500; min-width: 0; overflow-wrap: anywhere }
+.cover dl { grid-template-columns: max-content minmax(0, 1fr) }
+@media (max-width: 720px) { .cover h1 { font-size: 28px } .cover .title { margin-top: 48px } .cover { min-height: 0; gap: 32px } }
+.cover .foot { border-top: 1px solid var(--line); padding-top: 14px; font-size: 13px; color: var(--muted) }
+
+/* contents */
+.toc ol { list-style: none; padding: 0; margin: 0; columns: 2; column-gap: 40px }
+@media (max-width: 720px) { .toc ol { columns: 1 } }
+.toc li { break-inside: avoid; display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px dotted var(--line) }
+.toc li b { color: var(--accent-2); min-width: 1.8em }
+.toc a { color: var(--fg); text-decoration: none }
+
+/* figures */
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0 22px }
+@media (max-width: 720px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
+.kpi { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; background: var(--soft); break-inside: avoid }
+.kpi b { display: block; font-size: 25px; font-weight: 800; color: var(--accent); line-height: 1.3 }
+.kpi span { font-size: 13px; color: var(--muted); line-height: 1.6; display: block }
+.kpi.alt { background: var(--soft-2) } .kpi.alt b { color: var(--accent-2) }
+
+.tw { overflow-x: auto; margin: 10px 0 18px }
+table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.7; break-inside: auto }
+caption { caption-side: top; text-align: right; font-weight: 700; font-size: 14px; padding-bottom: 6px; color: var(--muted) }
+th, td { border-bottom: 1px solid var(--line); padding: 7px 9px; text-align: right; vertical-align: top }
+thead th { background: var(--soft); font-weight: 700; border-bottom: 2px solid var(--accent) }
+tr { break-inside: avoid }
+td.num, th.num { text-align: left; direction: ltr; font-variant-numeric: tabular-nums; white-space: nowrap }
+tfoot td { font-weight: 700; border-top: 2px solid var(--line) }
+.bar { display: inline-block; height: 9px; background: var(--accent); border-radius: 2px; vertical-align: middle; margin-inline-start: 6px }
+.bar.b2 { background: var(--accent-2) } .bar.b3 { background: var(--bar) }
+
+.note { border-inline-start: 4px solid var(--accent-2); background: var(--soft-2); padding: 10px 14px; border-radius: 4px; margin: 12px 0 16px; break-inside: avoid }
+.note.warn { border-color: var(--warn); background: var(--warn-soft) }
+.note.bad { border-color: var(--bad); background: var(--bad-soft) }
+.note.good { border-color: var(--good); background: var(--good-soft) }
+.note b:first-child { display: block; margin-bottom: 2px }
+.note p:last-child { margin-bottom: 0 }
+
+.flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 12px 0 18px; font-size: 13.5px }
+.flow span { border: 1px solid var(--accent); color: var(--accent); background: var(--soft); border-radius: 6px; padding: 4px 10px; font-weight: 500 }
+.flow i { font-style: normal; color: var(--muted) }
+
+.timeline { border-inline-start: 2px solid var(--line); margin: 8px 6px 18px 0; padding-inline-start: 18px }
+.timeline .ev { position: relative; margin-bottom: 14px; break-inside: avoid }
+.timeline .ev::before { content: ""; position: absolute; inset-inline-start: -25px; top: 9px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-2); border: 2px solid var(--paper) }
+.timeline .d { font-weight: 700; color: var(--accent-2); font-size: 14px }
+.timeline .ev p { margin: 2px 0 0 }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px }
+@media (max-width: 720px) { .two { grid-template-columns: 1fr } }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; break-inside: avoid }
+.card h4 { margin-top: 0 }
+.tag { display: inline-block; font-size: 12px; padding: 0 8px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); margin-inline-start: 4px }
+.y { color: var(--good); font-weight: 700 } .no { color: var(--bad); font-weight: 700 } .pa { color: var(--warn); font-weight: 700 }
+.sev { font-size: 12px; font-weight: 700; padding: 1px 8px; border-radius: 10px; white-space: nowrap }
+.sev.h { background: var(--bad-soft); color: var(--bad) } .sev.m { background: var(--warn-soft); color: var(--warn) } .sev.l { background: var(--soft); color: var(--accent) }
+
+.sign { margin-top: 40px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); padding-top: 12px }
+
+@page { size: A4; margin: 16mm 15mm 18mm }
+@media print {
+  :root { --bg: #fff; --paper: #fff; --fg: #111; --muted: #555; --line: #cfd4dc; --accent: #1c4f9c; --accent-2: #0f7b6c;
+    --soft: #eef3fb; --soft-2: #eaf6f3; --warn-soft: #fbf3e4; --bad-soft: #fbecea; --good-soft: #e8f5ee; --bar: #c9d6ec }
+  body { background: #fff; font-size: 11pt; line-height: 1.85; -webkit-print-color-adjust: exact; print-color-adjust: exact }
+  .sheet { max-width: none; margin: 0; padding: 0; box-shadow: none; border-radius: 0 }
+  .cover { min-height: 255mm; break-after: page }
+  .toc { break-after: page }
+  section.chapter { break-before: page; margin-top: 0 }
+  h2, h3, h4 { break-after: avoid }
+  .tw { overflow: visible }
+  a { color: inherit; text-decoration: none }
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<!-- ============ COVER ============ -->
+<div class="cover">
+  <div class="top">
+    <div class="mark en">MatRAG · Optics</div>
+    <div>دانشگاه اصفهان · دانشکده‌ی فیزیک</div>
+  </div>
+  <div class="title">
+    <div class="eyebrow">گزارش جامع پروژه · از آغاز تا ۳ آبان ۱۴۰۵</div>
+    <h1>MatRAG: سامانه‌ی هوشمند بازیابی و محاسبه‌ی ثابت‌های نوری بلورها<br><span class="en">Retrieval-Augmented Knowledge Base for Linear &amp; Nonlinear Optical Crystals</span></h1>
+    <p class="sub">از کتابخانه‌ای با ۲٬۸۴۵ مقاله تا موتور جست‌وجوی معنایی، پایگاه داده‌ی آزموده، محاسبه‌گر تطبیق فاز و مشاور انتخاب بلور</p>
+    <div class="rule"></div>
+    <dl>
+      <dt>پژوهشگر</dt><dd>امین حسین سدیدی، دانشجوی فیزیک</dd>
+      <dt>استاد راهنما</dt><dd>دکتر مالک باقری هارونی</dd>
+      <dt>مخاطب</dt><dd>مرکز هوش مصنوعی دانشگاه اصفهان</dd>
+      <dt>نشانی سامانه</dt><dd class="en">matrag.ethanjamescarter1995.workers.dev <small>(دسترسی با حساب کاربری)</small></dd>
+      <dt>تاریخ</dt><dd>۳ آبان ۱۴۰۵ (۲۵ اکتبر ۲۰۲۶)</dd>
+    </dl>
+  </div>
+  <div class="foot">همه‌ی عددهای این گزارش از خود سامانه شمرده شده‌اند: پایگاه برداری Qdrant، فایل‌های داده‌ی مخزن کد، گزارش‌های ارزیابی خودکار و فهرست SCImago. جایی که عددی تخمینی است، صریحاً گفته شده.</div>
+</div>
+
+<!-- ============ CONTENTS ============ -->
+<div class="toc">
+  <h2>فهرست</h2>
+  <ol>
+    <li><b>۱</b><a href="#s1">چکیده‌ی مدیریتی</a></li>
+    <li><b>۲</b><a href="#s2">مسئله، انگیزه و هدف</a></li>
+    <li><b>۳</b><a href="#s3">مجموعه‌ی مقاله‌ها و کتاب‌ها</a></li>
+    <li><b>۴</b><a href="#s4">کیفیت منابع: چارک مجله‌ها</a></li>
+    <li><b>۵</b><a href="#s5">معماری فنی سامانه</a></li>
+    <li><b>۶</b><a href="#s6">پایگاه داده‌ی فیزیکی آزموده</a></li>
+    <li><b>۷</b><a href="#s7">ابزارهای سایت</a></li>
+    <li><b>۸</b><a href="#s8">مشاور انتخاب بلور</a></li>
+    <li><b>۹</b><a href="#s9">ارزیابی و آزمون</a></li>
+    <li><b>۱۰</b><a href="#s10">مسیر پروژه از روز اول</a></li>
+    <li><b>۱۱</b><a href="#s11">مقایسه با سامانه‌های مشابه</a></li>
+    <li><b>۱۲</b><a href="#s12">کمبودها و محدودیت‌ها</a></li>
+    <li><b>۱۳</b><a href="#s13">برنامه‌ی آینده</a></li>
+    <li><b>۱۴</b><a href="#s14">زمینه‌های همکاری با مرکز هوش مصنوعی</a></li>
+    <li><b>۱۵</b><a href="#s15">پیوست: واژه‌نامه و منشأ عددها</a></li>
+  </ol>
+</div>
+
+<!-- ============ 1 ============ -->
+<section class="chapter" id="s1">
+<h2><span class="n">۱</span> چکیده‌ی مدیریتی</h2>
+<p>MatRAG یک سامانه‌ی «تولید تقویت‌شده با بازیابی» (RAG) است که برای حوزه‌ی تخصصی اپتیک خطی و غیرخطی و بلورهای نوری ساخته شده است. در این حوزه، داده‌های اصلی در جدول‌ها و معادله‌های هزاران مقاله پراکنده‌اند: ضریب شکست و فرمول پاشندگی (سلمایر)، ضرایب غیرخطی <span class="ltr">d<sub>ij</sub></span>، ضریب ترمواپتیک <span class="ltr">dn/dT</span>، آستانه‌ی آسیب و بازه‌ی شفافیت. مدل‌های زبانی عمومی این عددها را اغلب از حافظه می‌سازند و منبع قابل‌اتکایی نمی‌دهند.</p>
+<p>این پروژه در حدود یک ماه کار متمرکز (از ۵ مهر ۱۴۰۵) و ۲۴۵ نسخه‌ی ثبت‌شده در مخزن کد، از مرحله‌ی «جمع‌آوری مقاله» به یک سامانه‌ی کامل رسیده است. سامانه سه لایه دارد:</p>
+<ol>
+  <li><b>لایه‌ی دانش:</b> ۲٬۸۴۵ سند علمی. ۲٬۲۱۴ سند متن کامل دارند و به ۶۸٬۱۹۰ بخش قابل‌جست‌وجو تقسیم شده‌اند (۱۱٬۴۲۱ بخش از آن‌ها جدول است). هر بخش با مختصات دقیقش روی صفحه‌ی PDF ذخیره شده است.</li>
+  <li><b>لایه‌ی داده:</b> یک پایگاه داده‌ی فیزیکی است و همه‌ی داده‌ها با عدد خود مقاله آزموده شده‌اند:
+    <ul>
+      <li>منحنی ضریب شکست برای ۲٬۳۳۰ ماده؛</li>
+      <li>تانسور غیرخطی برای ۱۰۵ بلور؛</li>
+      <li>مدل ترمواپتیک برای ۶۷ بلور؛</li>
+      <li>کارت مشخصات عملی (شفافیت، رطوبت‌گیری، آستانه‌ی آسیب، میزان جاافتادگی) برای ۵۸ بلور.</li>
+    </ul>
+  </li>
+  <li><b>لایه‌ی ابزار:</b> روی همین داده‌ها ساخته شده است:
+    <ul>
+      <li>جست‌وجوی دوزبانه (فارسی و انگلیسی)؛</li>
+      <li>نمودار ضریب شکست؛</li>
+      <li>محاسبه‌گر تطبیق فاز برای ۱۸۶ بلور ناهمسانگرد، شامل QPM؛</li>
+      <li>شبیه‌ساز تولید جفت فوتون (SPDC)؛</li>
+      <li>«مشاور انتخاب بلور» که از شرایط آزمایشگاه، بلورهای مناسب را با دلیل پیشنهاد می‌دهد.</li>
+    </ul>
+  </li>
+</ol>
+<div class="kpis">
+  <div class="kpi"><b>۲٬۸۴۵</b><span>سند در مجموعه (مقاله، کتاب مرجع، اطلاعات تکمیلی)</span></div>
+  <div class="kpi"><b>۲٬۲۱۴</b><span>سند با متن کامل PDF (۷۷٫۸٪)</span></div>
+  <div class="kpi"><b>۶۸٬۱۹۰</b><span>بخش قابل جست‌وجو؛ ۱۱٬۴۲۱ جدول</span></div>
+  <div class="kpi"><b>۸۳٫۳٪</b><span>مقاله‌های مجله‌ای در چارک Q1 یا Q2 (۱٬۳۳۳ Q1)</span></div>
+  <div class="kpi alt"><b>۲٬۳۳۰</b><span>ماده با منحنی ضریب شکست</span></div>
+  <div class="kpi alt"><b>۱۰۵</b><span>بلور با تانسور ضرایب غیرخطی d</span></div>
+  <div class="kpi alt"><b>۶۷</b><span>بلور با مدل ترمواپتیک (dn/dT)</span></div>
+  <div class="kpi alt"><b>۱۸۶</b><span>بلور در محاسبه‌گر تطبیق فاز</span></div>
+  <div class="kpi"><b>۰٫۶۱۳</b><span>MRR@10 جست‌وجو با رتبه‌بندی دوم (۸۰ سؤال طلایی)</span></div>
+  <div class="kpi"><b>۷۶٪</b><span>سؤال‌هایی که مقاله‌ی درست در ۱۰ نتیجه‌ی اول است</span></div>
+  <div class="kpi"><b>۱٫۱–۱٫۴ s</b><span>زمان پاسخ جست‌وجو (قبلاً ۲٫۱–۲٫۹ ثانیه)</span></div>
+  <div class="kpi"><b>۳۱۹</b><span>آزمون خودکار (۲۳۷ پایتون، ۸۲ سایت)</span></div>
+</div>
+<div class="note">
+<b>تفاوت اصلی با یک «چت‌بات روی PDF»</b>
+<p>هر عددی که سامانه نشان می‌دهد، به صفحه و جدول مشخصی از یک مقاله‌ی مشخص وصل است. در پایگاه داده هیچ عددی بدون آزمون با مقدار گزارش‌شده در خود مقاله وارد نشده است. اگر منبعی پیدا نشود، سامانه به‌جای ساختن جواب می‌گوید «پیدا نشد». داده‌ها هم فقط برای نمایش نیستند: مستقیماً به محاسبه‌گرها وصل‌اند. پرسشی مثل «کدام بلور را بخرم که در اون ۶۰ درجه‌ی آزمایشگاه من کار کند؟» در چند ثانیه جواب می‌گیرد.</p>
+</div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section class="chapter" id="s2">
+<h2><span class="n">۲</span> مسئله، انگیزه و هدف</h2>
+<h3>۲-۱. مسئله</h3>
+<p>طراحی هر آزمایش اپتیک غیرخطی با چند پرسش ساده شروع می‌شود: برای تبدیل یک طول موج به طول موج دیگر چه بلوری مناسب است؟ با چه زاویه‌ای باید بریده شود؟ در چه دمایی کار می‌کند؟ ضریب مؤثر غیرخطی‌اش چقدر است؟ پاسخ این پرسش‌ها به داده‌هایی بستگی دارد که این ویژگی‌ها را دارند:</p>
+<ul>
+  <li><b>پراکنده‌اند:</b> فرمول سلمایر یک بلور در یک مقاله است، وابستگی دمایی‌اش در مقاله‌ای دیگر و ضرایب d در مقاله‌ی سوم.</li>
+  <li><b>ناهمگون‌اند:</b> قرارداد محورها (بلورشناسی در برابر دی‌الکتریک)، علامت ضرایب، واحدها و بازه‌ی اعتبار فرمول‌ها از مقاله‌ای به مقاله‌ی دیگر فرق می‌کند. جابه‌جایی <span class="ltr">d<sub>31</sub></span> و <span class="ltr">d<sub>32</sub></span> در KTP و LBO یک خطای رایج در ادبیات است.</li>
+  <li><b>در قالب‌های سخت‌خوان‌اند:</b> جدول‌های چندستونه، معادله‌های تصویری، و اسکن مقاله‌های دهه‌ی ۱۹۶۰ تا ۱۹۹۰ که بخش بزرگی از اندازه‌گیری‌های پایه را در خود دارند.</li>
+  <li><b>هزینه‌ی خطا در آن‌ها بالاست:</b> یکی از گروه‌های آزمایشگاهی بلوری خرید که آون آن فقط تا ۶۰ درجه‌ی سانتی‌گراد را پوشش می‌داد، در حالی که تطبیق فاز در ۸۰ درجه رخ می‌داد. نتیجه سه ماه توقف کار بود. این مورد واقعی، انگیزه‌ی مستقیم ساخت «مشاور انتخاب بلور» است.</li>
+</ul>
+<h3>۲-۲. چرا ابزارهای موجود کافی نیستند</h3>
+<p>پایگاه‌های عمومی مثل refractiveindex.info فقط ضریب شکست دارند. نرم‌افزارهایی مثل SNLO محاسبه را خوب انجام می‌دهند، ولی پایگاه داده‌شان بسته است و به متن مقاله‌ها راه نمی‌دهند. دستیارهای پژوهشی مبتنی بر مدل زبانی عمومی‌اند و در سطح عدد و جدول دقیق نیستند. فصل ۱۱ این مقایسه را با جزئیات آورده است.</p>
+<h3>۲-۳. هدف</h3>
+<ol>
+  <li>برای هر داده‌ی نوری، منبع دقیقش (مقاله، صفحه، جدول) در یک مجموعه‌ی بزرگ و انتخاب‌شده پیدا و نشان داده شود.</li>
+  <li>وقتی منبع وجود ندارد، این صریحاً گفته شود.</li>
+  <li>داده‌ی پیداشده پس از آزمون با خود مقاله به پایگاه داده برود.</li>
+  <li>پایگاه داده به ابزارهای محاسبه وصل شود تا پرسش «کدام بلور، با چه برش، در چه دما؟» پاسخ کمّی و مستند بگیرد.</li>
+  <li>رابط کاربری فارسی و انگلیسی باشد تا برای دانشجویان و پژوهشگران ایرانی قابل‌استفاده باشد.</li>
+</ol>
+</section>
+
+<!-- ============ 3 ============ -->
+<section class="chapter" id="s3">
+<h2><span class="n">۳</span> مجموعه‌ی مقاله‌ها و کتاب‌ها</h2>
+<h3>۳-۱. ترکیب کلی</h3>
+<div class="tw"><table>
+<caption>جدول ۳-۱. نوع سندها و بخش‌های نمایه‌شده (شمارش مستقیم از پایگاه Qdrant، ۳ آبان ۱۴۰۵)</caption>
+<thead><tr><th>نوع</th><th class="num">سند</th><th class="num">سهم</th><th class="num">بخش</th><th>توضیح</th></tr></thead>
+<tbody>
+<tr><td>متن کامل PDF</td><td class="num">2,214</td><td class="num">77.8%</td><td class="num">67,559</td><td>۵۶٬۱۳۸ بخش متن و ۱۱٬۴۲۱ بخش جدول، با کادر هر بخش روی صفحه</td></tr>
+<tr><td>فقط چکیده</td><td class="num">598</td><td class="num">21.0%</td><td class="num">598</td><td>PDF آزاد یا قانونی در دسترس نبود؛ چکیده از OpenAlex گرفته شد</td></tr>
+<tr><td>فقط مشخصات</td><td class="num">33</td><td class="num">1.2%</td><td class="num">33</td><td>نه PDF موجود بود نه چکیده؛ فقط عنوان، نویسنده و DOI</td></tr>
+</tbody>
+<tfoot><tr><td>جمع</td><td class="num">2,845</td><td class="num">100%</td><td class="num">68,190</td><td></td></tr></tfoot>
+</table></div>
+
+<h3>۳-۲. مقاله‌ها، کتاب‌ها و سایر سندها</h3>
+<div class="tw"><table>
+<caption>جدول ۳-۲. نوع انتشار (از مشخصات OpenAlex و تطبیق با SCImago)</caption>
+<thead><tr><th>نوع انتشار</th><th class="num">تعداد</th><th>توضیح</th></tr></thead>
+<tbody>
+<tr><td>مقاله‌ی مجله</td><td class="num">2,728</td><td>بدنه‌ی اصلی مجموعه</td></tr>
+<tr><td>نامعلوم یا بدون مشخصات انتشار</td><td class="num">92</td><td>بیشترشان فایل‌های «اطلاعات تکمیلی» (Supporting Information) مقاله‌ها و پیش‌چاپ‌ها هستند</td></tr>
+<tr><td>مقاله‌ی کنفرانس</td><td class="num">13</td><td></td></tr>
+<tr><td>کتاب و مجموعه‌ی کتاب</td><td class="num">3</td><td>«مجموعه‌ی کتاب» (۲) و «سکوی کتاب الکترونیک» (۱)</td></tr>
+<tr><td>مخزن و سایر</td><td class="num">9</td><td>مخزن‌های دانشگاهی، گزارش‌های فنی</td></tr>
+</tbody></table></div>
+<p><b>کتاب‌های مرجع.</b> چهار کتاب دستی (Handbook) مرجع در مجموعه هست:</p>
+<ul>
+  <li>دو کتاب با متن کامل، که پایه‌ی بخش بزرگی از داده‌ها هستند:
+    <ul>
+      <li><span class="en">Dmitriev, Gurzadyan, Nikogosyan — Handbook of Nonlinear Optical Crystals (1999)</span>. هر ۴۲۶ صفحه‌ی آن با OCR خوانده و به سایت اضافه شد.</li>
+      <li><span class="en">Nikogosyan — Nonlinear Optical Crystals: A Complete Survey (2005)</span>.</li>
+    </ul>
+  </li>
+  <li>دو کتاب فقط با مشخصات و چکیده:
+    <ul>
+      <li><span class="en">Ghosh — Handbook of Thermo-Optic Coefficients (1998)</span></li>
+      <li><span class="en">Nalwa — Handbook of Organic Conductive Molecules and Polymers (1997)</span></li>
+    </ul>
+  </li>
+  <li>مقاله‌ی مروری مرجع <span class="en">Roberts (1992)</span> دربارهٔ ضرایب غیرخطی هم با متن کامل در مجموعه هست.</li>
+</ul>
+<p><b>اطلاعات تکمیلی.</b> ۳۳ فایل «اطلاعات تکمیلی» مقاله‌های ACS، Optica و APL جداگانه نمایه شده‌اند. داده‌ی اندازه‌گیری خام (طیف، جدول ضرایب) اغلب در همین فایل‌هاست.</p>
+
+<h3>۳-۳. پوشش موضوعی</h3>
+<div class="tw"><table>
+<caption>جدول ۳-۳. سندها به تفکیک خانواده‌ی بلور (۹ قفسه‌ی اصلی، ۴۸ زیرپوشه‌ی بلور)</caption>
+<thead><tr><th>قفسه</th><th class="num">سند</th><th>نمونه‌ی بلورها</th></tr></thead>
+<tbody>
+<tr><td>بورات‌ها</td><td class="num">541 <span class="bar" style="width:108px"></span></td><td>BBO، LBO، CLBO، BiBO، KBBF، YCOB، GdCOB</td></tr>
+<tr><td>کالکوپیریت‌ها و کالکوژنیدهای فروسرخ میانی</td><td class="num">503 <span class="bar" style="width:100px"></span></td><td>AgGaS2، AgGaSe2، ZnGeP2، CdSiP2، GaSe، BaGa4S7، LiInS2</td></tr>
+<tr><td>نظریه، مدل‌های پاشندگی و تطبیق فاز</td><td class="num">416 <span class="bar" style="width:83px"></span></td><td>مدل‌های سلمایر، نظریه‌ی d، مقاله‌های مروری</td></tr>
+<tr><td>نیوبات‌ها، تانتالات‌ها و یدات‌ها</td><td class="num">339 <span class="bar" style="width:68px"></span></td><td>LiNbO3، PPLN، LiTaO3، KNbO3، LiIO3</td></tr>
+<tr><td>نیمه‌رساناها و QPM</td><td class="num">317 <span class="bar" style="width:63px"></span></td><td>GaAs، OP-GaAs، GaP، ZnSe، Si، Ge</td></tr>
+<tr><td>فسفات‌ها، آرسنات‌ها و KDP</td><td class="num">287 <span class="bar" style="width:57px"></span></td><td>KTP، PPKTP، RTP، KTA، KDP، ADP</td></tr>
+<tr><td>بلورهای خطی و میزبان‌ها</td><td class="num">275 <span class="bar" style="width:55px"></span></td><td>یاقوت کبود، کوارتز، کلسیت، YVO4، فلوئوریدها</td></tr>
+<tr><td>آلی، اپتیک غیرخطی و تراهرتز</td><td class="num">109 <span class="bar" style="width:22px"></span></td><td>DAST، DSTMS، OH1، MNA</td></tr>
+<tr><td>طبقه‌بندی‌نشده (اطلاعات تکمیلی و تازه‌واردها)</td><td class="num">58 <span class="bar b3" style="width:12px"></span></td><td></td></tr>
+</tbody></table></div>
+
+<h3>۳-۴. پوشش زمانی</h3>
+<div class="tw"><table>
+<caption>جدول ۳-۴. سندها به تفکیک دهه‌ی انتشار</caption>
+<thead><tr><th>دهه</th><th class="num">سند</th><th>اهمیت</th></tr></thead>
+<tbody>
+<tr><td>۱۹۴۰ و ۱۹۵۰</td><td class="num">5 <span class="bar b3" style="width:2px"></span></td><td>اندازه‌گیری‌های کلاسیک ضریب شکست</td></tr>
+<tr><td>۱۹۶۰</td><td class="num">110 <span class="bar b2" style="width:26px"></span></td><td>آغاز اپتیک غیرخطی؛ نخستین اندازه‌گیری‌های d</td></tr>
+<tr><td>۱۹۷۰</td><td class="num">199 <span class="bar b2" style="width:47px"></span></td><td>کالکوپیریت‌ها، اندازه‌گیری‌های Levine، Boyd و Jerphagnon</td></tr>
+<tr><td>۱۹۸۰</td><td class="num">167 <span class="bar b2" style="width:40px"></span></td><td>BBO، LBO، KTP</td></tr>
+<tr><td>۱۹۹۰</td><td class="num">474 <span class="bar b2" style="width:112px"></span></td><td>PPLN، فرمول‌های دمایی دقیق (Kato)</td></tr>
+<tr><td>۲۰۰۰</td><td class="num">620 <span class="bar b2" style="width:147px"></span></td><td>بلورهای فروسرخ میانی، QPM جهت‌دار</td></tr>
+<tr><td>۲۰۱۰</td><td class="num">844 <span class="bar b2" style="width:200px"></span></td><td>بلورهای تازه، کوانتومی (SPDC)</td></tr>
+<tr><td>۲۰۲۰ تا امروز</td><td class="num">364 <span class="bar b2" style="width:86px"></span></td><td>بلورهای نسل جدید (ABF، MgSiP2، BaGa4Se7)</td></tr>
+<tr><td>نامعلوم</td><td class="num">62 <span class="bar b3" style="width:15px"></span></td><td></td></tr>
+</tbody></table></div>
+<p>حدود ۱۷٪ مجموعه (۴۸۱ سند) پیش از ۱۹۹۰ منتشر شده است. بسیاری از اندازه‌گیری‌های پایه‌ای که هنوز مرجع‌اند در همین مقاله‌ها هستند. این مقاله‌ها اغلب اسکن تصویری‌اند و برای همین OCR در این پروژه نقش مهمی دارد (بخش ۵-۳).</p>
+
+<h3>۳-۵. نوع پژوهش هر مقاله</h3>
+<p>نوع پژوهش ۲٬۷۹۶ سند با یک مدل زبانی و از روی ۹٬۰۸۵ بخش متن برچسب خورد. سپس ۸٬۸۵۱ بخش جداگانه هم برچسب خوردند تا هر نتیجه‌ی جست‌وجو نشان دهد عددش «اندازه‌گیری‌شده» است یا «محاسبه‌شده» یا «نقل از کار دیگران». این برچسب‌ها روی نمونه‌ای دستی آزموده شدند:</p>
+<ul>
+  <li>برچسب‌های «اندازه‌گیری»، «مروری» و «هر دو» در ۱۸ مورد از ۱۸ مورد درست بودند.</li>
+  <li>برچسب «محاسباتی» فقط در ۴ مورد از ۸ مورد درست بود، پس آستانه‌اش سخت‌گیرانه‌تر شد.</li>
+</ul>
+<div class="tw"><table>
+<caption>جدول ۳-۵. نوع پژوهش مقاله‌ها</caption>
+<thead><tr><th>نوع</th><th class="num">مقاله</th><th class="num">سهم</th></tr></thead>
+<tbody>
+<tr><td>تجربی (اندازه‌گیری)</td><td class="num">1,518</td><td class="num">54.3% <span class="bar" style="width:109px"></span></td></tr>
+<tr><td>تجربی و نظری</td><td class="num">815</td><td class="num">29.1% <span class="bar" style="width:58px"></span></td></tr>
+<tr><td>نظری یا محاسباتی</td><td class="num">296</td><td class="num">10.6% <span class="bar" style="width:21px"></span></td></tr>
+<tr><td>مروری</td><td class="num">151</td><td class="num">5.4% <span class="bar" style="width:11px"></span></td></tr>
+<tr><td>نامعلوم</td><td class="num">16</td><td class="num">0.6%</td></tr>
+</tbody></table></div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section class="chapter" id="s4">
+<h2><span class="n">۴</span> کیفیت منابع: چارک مجله‌ها</h2>
+<p>مجله‌ی هر مقاله با فهرست رسمی SCImago Journal Rank تطبیق داده شد. در هر مجله، بهترین چارک در میان دسته‌های موضوعی‌اش ملاک قرار گرفت. ۲٬۷۲۸ مقاله‌ی مجله‌ای در ۳۳۴ مجله‌ی مختلف چاپ شده‌اند.</p>
+<div class="two">
+<div class="tw"><table>
+<caption>جدول ۴-۱. مقاله‌ها به تفکیک چارک</caption>
+<thead><tr><th>چارک</th><th class="num">مقاله</th><th class="num">سهم</th></tr></thead>
+<tbody>
+<tr><td><b>Q1</b></td><td class="num">1,333</td><td class="num">48.9% <span class="bar" style="width:98px"></span></td></tr>
+<tr><td><b>Q2</b></td><td class="num">938</td><td class="num">34.4% <span class="bar" style="width:69px"></span></td></tr>
+<tr><td>Q3</td><td class="num">155</td><td class="num">5.7% <span class="bar b3" style="width:11px"></span></td></tr>
+<tr><td>Q4</td><td class="num">41</td><td class="num">1.5% <span class="bar b3" style="width:3px"></span></td></tr>
+<tr><td>در SCImago نیست</td><td class="num">232</td><td class="num">8.5% <span class="bar b3" style="width:17px"></span></td></tr>
+<tr><td>بدون چارک</td><td class="num">29</td><td class="num">1.1%</td></tr>
+</tbody>
+<tfoot><tr><td>جمع</td><td class="num">2,728</td><td class="num">100%</td></tr></tfoot>
+</table></div>
+<div class="tw"><table>
+<caption>جدول ۴-۲. مجله‌ها به تفکیک چارک</caption>
+<thead><tr><th>چارک</th><th class="num">مجله</th></tr></thead>
+<tbody>
+<tr><td><b>Q1</b></td><td class="num">144</td></tr>
+<tr><td><b>Q2</b></td><td class="num">89</td></tr>
+<tr><td>Q3</td><td class="num">34</td></tr>
+<tr><td>Q4</td><td class="num">17</td></tr>
+<tr><td>در SCImago نیست</td><td class="num">44</td></tr>
+<tr><td>بدون چارک</td><td class="num">6</td></tr>
+</tbody>
+<tfoot><tr><td>جمع</td><td class="num">334</td></tr></tfoot>
+</table></div>
+</div>
+<div class="note">
+<b>خوانش درست عدد «در SCImago نیست»</b>
+<p>بیشتر این ۲۳۲ مقاله در مجله‌هایی بی‌کیفیت نیستند. آن‌ها با نام‌های قدیمی مجله‌های معتبر ثبت شده‌اند که SCImago (که از ۱۹۹۶ شروع می‌شود) نمی‌شناسد. نمونه‌ها: <span class="en">Physical Review B, Condensed Matter</span> (۷۷ مقاله)، <span class="en">Physical Review</span> (۳۰)، <span class="en">Journal of the Optical Society of America</span> پیش از تقسیم به A و B (۲۷)، و <span class="en">Physical Review B, Solid State</span> (۲۲). با احتساب این مقاله‌ها، سهم واقعی مجله‌های طراز اول احتمالاً از ۹۰٪ بیشتر است.</p>
+</div>
+<h3>۴-۱. مجله‌های پرتکرار</h3>
+<div class="tw"><table>
+<caption>جدول ۴-۳. پانزده مجله‌ی پرتکرار مجموعه</caption>
+<thead><tr><th>مجله</th><th>چارک</th><th class="num">مقاله</th></tr></thead>
+<tbody>
+<tr><td class="en">Journal of Applied Physics</td><td>Q2</td><td class="num">249</td></tr>
+<tr><td class="en">Applied Physics Letters</td><td>Q1</td><td class="num">230</td></tr>
+<tr><td class="en">Optics Letters</td><td>Q1</td><td class="num">216</td></tr>
+<tr><td class="en">Optics Express</td><td>Q1</td><td class="num">126</td></tr>
+<tr><td class="en">Applied Optics</td><td>Q2</td><td class="num">126</td></tr>
+<tr><td class="en">JOSA B</td><td>Q2</td><td class="num">108</td></tr>
+<tr><td class="en">Physical Review B (old title)</td><td>نام قدیمی</td><td class="num">77</td></tr>
+<tr><td class="en">Japanese Journal of Applied Physics</td><td>Q3</td><td class="num">64</td></tr>
+<tr><td class="en">Angewandte Chemie International Edition</td><td>Q1</td><td class="num">58</td></tr>
+<tr><td class="en">Journal of the American Chemical Society</td><td>Q1</td><td class="num">55</td></tr>
+<tr><td class="en">IEEE Journal of Quantum Electronics</td><td>Q2</td><td class="num">55</td></tr>
+<tr><td class="en">Nature Communications</td><td>Q1</td><td class="num">50</td></tr>
+<tr><td class="en">Optical Materials</td><td>Q1</td><td class="num">48</td></tr>
+<tr><td class="en">Optical Materials Express</td><td>Q2</td><td class="num">47</td></tr>
+<tr><td class="en">Physical Review Letters</td><td>Q1</td><td class="num">47</td></tr>
+</tbody></table></div>
+<p>حضور مجله‌های شیمی (JACS، Angewandte، Chemistry of Materials) نشان می‌دهد که مجموعه فقط فیزیک لیزر نیست. سنتز و مشخصه‌یابی بلورهای غیرخطی تازه هم در آن پوشش داده شده است. مقاله‌های این بلورها هنوز به هیچ پایگاه داده‌ی رسمی راه نیافته‌اند.</p>
+</section>
+
+<!-- ============ 5 ============ -->
+<section class="chapter" id="s5">
+<h2><span class="n">۵</span> معماری فنی سامانه</h2>
+<div class="flow"><span>PDF مقاله</span><i>←</i><span>Docling / OCR</span><i>←</i><span>متن، جدول، معادله، مختصات</span><i>←</i><span>بخش‌بندی</span><i>←</i><span>بردار bge-base + نمایه‌ی BM25</span><i>←</i><span>Qdrant</span><i>←</i><span>جست‌وجوی ترکیبی</span><i>←</i><span>رتبه‌بندی دوم</span><i>←</i><span>نتیجه با کادر روی PDF</span></div>
+
+<h3>۵-۱. تبدیل سند</h3>
+<p>PDFها با <b>Docling</b> به متن ساختاریافته تبدیل می‌شوند: عنوان بخش، پاراگراف، جدول با سطر و ستون، و کادر محدودکننده‌ی هر عنصر روی صفحه. در این مرحله چند مشکل ویژه‌ی حوزه حل شد:</p>
+<ul>
+  <li>حروف یونانی (λ، Δ، χ) که در استخراج متن گم می‌شدند، دوباره یکسان‌سازی شدند.</li>
+  <li>زیرنویس فرمول‌های شیمیایی یکسان‌سازی شد (<span class="ltr">LiB<sub>3</sub>O<sub>5</sub> → LiB3O5</span>) تا جست‌وجوی کلیدواژه کار کند.</li>
+  <li>معادله‌های ۴۶ مقاله با مدل CodeFormula روی GPU به LaTeX درآمدند.</li>
+  <li>PDFهای بلند در قطعه‌های ۴۰ صفحه‌ای تبدیل و روی Google Drive ذخیره می‌شوند. اگر Colab قطع شود، کار از همان قطعه ادامه پیدا می‌کند.</li>
+  <li>تبدیل بین چند نوت‌بوک Colab هم‌زمان پخش شد. برای OCR از ۲۰ اجراکننده‌ی موازی GitHub Actions استفاده شد.</li>
+</ul>
+
+<h3>۵-۲. نمایه و جست‌وجو</h3>
+<ul>
+  <li><b>بردار معنایی:</b> هر بخش با مدل <span class="en">bge-base-en-v1.5</span> به یک بردار ۷۶۸ بعدی تبدیل می‌شود و در Qdrant Cloud ذخیره می‌شود.</li>
+  <li><b>کلیدواژه:</b> یک نمایه‌ی BM25 سمت سرور در کنار بردارها ساخته شده است. نتایج دو روش با Reciprocal Rank Fusion ادغام می‌شوند.</li>
+  <li><b>گسترش نام ماده:</b> نام کوتاه، نام کامل و نام فارسی بلور به فرمول شیمیایی تبدیل می‌شود (BBO و «باریم بورات» هر دو به BaB2O4). اگر پرسش نام ماده داشته باشد، یک جست‌وجوی جداگانه روی همان ماده هم اجرا می‌شود. این کار MRR را از ۰٫۵۱۸ به ۰٫۵۳۸ رساند.</li>
+  <li><b>جدول‌های تکه‌شده:</b> ۴۱٪ جدول‌ها هنگام بخش‌بندی دو یا چند تکه شده بودند. سایت حالا هر تکه‌ی جدول را با تکه‌های قبل و بعدش یکجا نشان می‌دهد.</li>
+  <li><b>رتبه‌بندی دوم:</b> ۳۰ نامزد اول با یک مدل داور (SubQ) دوباره مرتب می‌شوند. این مدل برای هر بخش تشخیص می‌دهد که آیا به پرسش پاسخ می‌دهد یا نه. اثرش در ارزیابی زنده: MRR از ۰٫۵۳۲ به ۰٫۶۱۴ رسید. مدل <span class="en">bge-reranker-base</span> هم آزموده شد، اما نتیجه را بدتر کرد (۰٫۴۳۹ به ۰٫۴۰۱)، پس کنار گذاشته شد.</li>
+  <li><b>نگهبان «پیدا نشد»:</b> اگر نام ماده یا واژه‌های اصلی پرسش در هیچ نتیجه‌ای نباشد، یا شباهت برداری بهترین نتیجه از آستانه کمتر باشد، سامانه صریحاً می‌گوید منبعی پیدا نشد.</li>
+  <li><b>پرسش فارسی:</b> پرسش فارسی با یک مدل زبانی و یک واژه‌نامه‌ی ثابت فیزیک به انگلیسی ترجمه می‌شود (مثلاً «غیرعادی» به <span class="en">extraordinary</span>). ترجمه‌ها و بردار پرسش‌ها در حافظه‌ی KV نگه داشته می‌شوند تا پرسش تکراری بی‌هزینه باشد.</li>
+</ul>
+
+<h3>۵-۳. کیفیت داده‌ی متنی</h3>
+<ul>
+  <li><b>OCR:</b> در دور اول ۶۱ مقاله‌ی اسکن‌شده OCR شدند. هر مقاله فقط وقتی جایگزین شد که متنش بهتر شده بود و هیچ عددی از جدول‌هایش گم نشده بود (۴۵ مقاله). کل کتاب Dmitriev (۴۲۶ صفحه) هم OCR شد. دور دوم شامل ۴۷ مقاله‌ی پیش از ۱۹۹۸ با متن خراب است و هم‌اکنون در حال اجراست.</li>
+  <li><b>نقشه‌ی داده:</b> با ۲۰ اجراکننده‌ی موازی، هر بخش از ۶۸ هزار بخش برای ده نوع داده (سلمایر، d، dn/dT، آسیب و …) و برای «بی‌ارزش بودن» امتیاز گرفت.
+    <ul>
+      <li>نتیجه‌ی این نقشه فهرست صفحه‌هایی است که باید برای هر داده‌ی ناموجود خوانده شوند.</li>
+      <li>فیلتر کردن بخش‌های بی‌ارزش آزموده شد، اما MRR را از ۰٫۵۱۱ به ۰٫۴۸۵ کاهش داد. برای همین کنار گذاشته شد.</li>
+    </ul>
+  </li>
+  <li><b>ممیزی آرشیو:</b> برای هر سند سه چیز سنجیده شد: ربطش به اپتیک، اینکه فایل همان مقاله‌ی ثبت‌شده است، و اینکه فایل «اطلاعات تکمیلی» است یا نه. نتیجه‌ها در بخش ۱۲ آمده‌اند.</li>
+</ul>
+
+<h3>۵-۴. زیرساخت و دسترسی</h3>
+<div class="tw"><table>
+<caption>جدول ۵-۱. اجزای زیرساخت</caption>
+<thead><tr><th>جزء</th><th>فناوری</th><th>نقش</th></tr></thead>
+<tbody>
+<tr><td>سایت و API</td><td class="en">Cloudflare Workers</td><td>جست‌وجو، ابزارها، احراز هویت، نمایش PDF با pdf.js</td></tr>
+<tr><td>پایگاه برداری</td><td class="en">Qdrant Cloud</td><td>۶۸٬۱۹۰ بخش با بردار متراکم و BM25</td></tr>
+<tr><td>مدل‌های زبانی سمت سرور</td><td class="en">Workers AI</td><td>ترجمه‌ی پرسش فارسی و بردار پرسش</td></tr>
+<tr><td>حافظه‌ی نهان</td><td class="en">Workers KV</td><td>ترجمه، بردار پرسش، حساب کاربران</td></tr>
+<tr><td>پردازش سنگین</td><td class="en">Google Colab (T4) + GitHub Actions</td><td>تبدیل PDF، OCR، نمایه‌سازی، نقشه‌ی داده</td></tr>
+<tr><td>ذخیره‌ی PDF</td><td class="en">Google Drive</td><td>آرشیو اصلی و کش تبدیل‌ها</td></tr>
+<tr><td>مدیریت</td><td>ربات تلگرام</td><td>ساخت حساب، سطح دسترسی، سهمیه‌ی روزانه، اطلاعیه، حالت تعمیر</td></tr>
+</tbody></table></div>
+<p><b>سطوح دسترسی.</b> متن مقاله‌ها حق نشر دارد. برای همین سایت عمومی نیست و چهار نقش دارد:</p>
+<ul>
+  <li>«مالک»؛</li>
+  <li>«کامل»: همه‌ی ابزارها و PDF؛</li>
+  <li>«مهمان»: جست‌وجو و ابزارها، بدون دیدن PDF؛</li>
+  <li>«فقط ابزارها»: بدون جست‌وجو در متن.</li>
+</ul>
+<p>کلیدهای سرویس‌ها فقط سمت سرور نگه داشته می‌شوند و هیچ متن مقاله‌ای در مخزن عمومی کد نیست. در مخزن فقط امتیازها، شناسه‌ها و داده‌ی فیزیکی استخراج‌شده هست.</p>
+</section>
+
+<!-- ============ 6 ============ -->
+<section class="chapter" id="s6">
+<h2><span class="n">۶</span> پایگاه داده‌ی فیزیکی آزموده</h2>
+<p>قاعده‌ی کلیدی پروژه این است: <b>هیچ عددی بدون آزمون با عدد خود مقاله وارد پایگاه نمی‌شود.</b></p>
+<ul>
+  <li>هر رکورد شناسه‌ی سند، شماره‌ی صفحه‌ی PDF و جای دقیق داده (مثلاً «جدول ۲، ستون سوم») را دارد.</li>
+  <li>هر فرمول یک «آزمون» همراه دارد: مقداری که خود مقاله گزارش کرده است، مثل زاویه‌ی تطبیق فاز، ضریب شکست در یک طول موج یا دوره‌ی قطبش. اگر یک ضریب اشتباه وارد شود، آزمون‌های خودکار شکست می‌خورند.</li>
+</ul>
+<div class="tw"><table>
+<caption>جدول ۶-۱. دارایی‌های داده</caption>
+<thead><tr><th>داده</th><th class="num">پوشش</th><th>منبع و روش</th></tr></thead>
+<tbody>
+<tr><td>منحنی ضریب شکست</td><td class="num">2,330 ماده</td><td>refractiveindex.info (مجوز CC0)، به‌اضافه‌ی ۹۷ فرمول برای ۸۴ ماده که مستقیماً از مقاله‌های مجموعه خوانده شد</td></tr>
+<tr><td>تانسور غیرخطی <span class="ltr">d<sub>ij</sub></span></td><td class="num">105 بلور</td><td>Roberts 1992، کتاب‌های Dmitriev و Nikogosyan، و اندازه‌گیری‌های مستقیم؛ با گروه نقطه‌ای و قرارداد محور</td></tr>
+<tr><td>مدل ترمواپتیک <span class="ltr">dn/dT</span></td><td class="num">67 بلور (79 مدل)</td><td>فرمول‌های دمایی Kato و همکاران، Ghosh، و اندازه‌گیری‌های مستقیم</td></tr>
+<tr><td>بلور ناهمسانگرد در محاسبه‌گر</td><td class="num">186 بلور</td><td>هر بلوری که فرمول دو یا سه محور دارد</td></tr>
+<tr><td>بازه‌ی شفافیت</td><td class="num">58 بلور</td><td>Nikogosyan 2005 و مقاله‌های مجموعه</td></tr>
+<tr><td>رطوبت‌گیری</td><td class="num">24 بلور</td><td>چهار سطح: ندارد، کم، دارد، شدید</td></tr>
+<tr><td>آستانه‌ی آسیب لیزری</td><td class="num">23 بلور</td><td>با طول موج و پهنای پالس اندازه‌گیری</td></tr>
+<tr><td>میزان جاافتادگی بلور</td><td class="num">56 بلور</td><td>دسته‌بندی فصل‌های Nikogosyan (پایه، اصلی فروسرخ، پرکاربرد، قطبیده، نو، کمیاب) و Petrov 2015 برای بلورهای نسل جدید</td></tr>
+<tr><td>محدودیت طول موج دمش</td><td class="num">3 بلور</td><td>AgGaSe2 از ۱٫۵، ZnGeP2 از ۲٫۰ و GaAs از ۱٫۷۳ میکرومتر به بالا (به دلیل جذب دوفوتونی)</td></tr>
+</tbody></table></div>
+
+<h3>۶-۱. نمونه‌هایی از درستی‌آزمایی</h3>
+<p>جدول زیر نمونه‌هایی از آزمون‌ها را نشان می‌دهد. در هر سطر، خروجی محاسبه‌گر سایت با عددی که خود مقاله گزارش کرده مقایسه شده است. همه‌ی این موارد در کد پروژه به‌صورت آزمون خودکار وجود دارند.</p>
+<div class="tw"><table>
+<caption>جدول ۶-۲. خروجی سامانه در برابر عدد مقاله</caption>
+<thead><tr><th>آزمون</th><th class="num">سایت</th><th class="num">مقاله</th></tr></thead>
+<tbody>
+<tr><td>BBO، زاویه‌ی SHG نوع I در ۱٫۰۶۴ میکرومتر</td><td class="num">22.83°</td><td class="num">22.8°</td></tr>
+<tr><td>GdCOB، زاویه در صفحه‌ی xz و xy (Aka 1997)</td><td class="num">19.68° / 45.99°</td><td class="num">19.68° / 45.99°</td></tr>
+<tr><td>CdSiP2، SHG در ۴٫۷۸۴۶ میکرومتر (Kato 2011)</td><td class="num">43.14°</td><td class="num">43.13°</td></tr>
+<tr><td><span class="ltr">d<sub>eff</sub></span> بلورهای BBO و LBO (Eckardt، Sarrouf)</td><td class="num">2.02 / 0.83 pm/V</td><td class="num">1.94 / 0.82</td></tr>
+<tr><td><span class="ltr">d<sub>eff</sub></span> بلورهای LiInS2 و LiInSe2 (Petrov 2010)</td><td class="num">6.51 / 9.34</td><td class="num">6.54 / 9.35</td></tr>
+<tr><td>دوره‌ی QPM بلورهای PPLN و PPKTP برای SHG ۱٫۰۶۴ میکرومتر</td><td class="num">6.9 / 9.0 µm</td><td class="num">≈6.8–6.9 / 9.0</td></tr>
+<tr><td>PPKTP، SPDC با دمش ۴۰۵ نانومتر (Fedrizzi 2007)</td><td class="num">10.0 µm @ 49.2 °C</td><td class="num">10.0 µm، ~49 °C</td></tr>
+<tr><td>KTP، دمای NCPM سه فرایند (Katō 2002)</td><td class="num">63.77 / 77.56 / 59.64 °C</td><td class="num">63.8 / 77.6 / 59.8</td></tr>
+<tr><td>LBO، دمای NCPM برای SHG ۱٫۰۶۴ میکرومتر</td><td class="num">≈149 °C</td><td class="num">148–149.5 (اندازه‌گیری)</td></tr>
+<tr><td>CdSiP2، نقطه‌ی همسانگرد در ۷۷ و ۴٫۲ کلوین</td><td class="num">0.4994 / 0.4950 µm</td><td class="num">0.4998 / 0.4950</td></tr>
+<tr><td>CLBO، پذیرش دمایی <span class="ltr">ΔT·l</span></td><td class="num">در حد گرد کردن</td><td class="num">جدول مقاله</td></tr>
+</tbody></table></div>
+
+<h3>۶-۲. ناسازگاری‌هایی که در خود ادبیات پیدا شد</h3>
+<p>آزمون منظم داده‌ها چند خطا یا ناسازگاری را در خود مقاله‌ها یا در نقل آن‌ها آشکار کرد:</p>
+<ul>
+  <li>یک عدد تکراری در جدول ضرایب CBO.</li>
+  <li>اختلاف ۰٫۰۳ در <span class="ltr">n<sub>x</sub></span> فرمول YCOB نسبت به جدول اندازه‌گیری همان مقاله.</li>
+  <li>جابه‌جایی <span class="ltr">d<sub>31</sub></span> و <span class="ltr">d<sub>32</sub></span> در KTP و LBO میان قراردادهای مختلف محور. این مورد با مقایسه با اندازه‌گیری‌های مستقیم حل شد.</li>
+  <li>نگاشت محورهای بلورشناسی به محورهای دی‌الکتریک در LiInS2، LiInSe2، BiBO و MNA.</li>
+  <li>چند فرمول Gemini که بازه‌ی اعتبار یا ضرایبشان با PDF نمی‌خواند. همه‌شان پیش از ورود اصلاح شدند.</li>
+  <li><span class="ltr">d<sub>32</sub></span> بلور LBO: عدد پایگاه ۰٫۶۷− است، ولی متن OCR شده‌ی Roberts عدد ۰٫۶۱− را نشان می‌دهد. احتمالاً خطای OCR است و پس از OCR تازه دوباره بررسی می‌شود.</li>
+</ul>
+<p>در یک ممیزی خودکار، مقدار هر داده‌ی محاسبه‌گر کنار بخش منبعش گذاشته و با مدل زبانی سنجیده شد. ده موردی که کمترین امتیاز را گرفتند، دستی بازبینی شدند و هیچ عدد اشتباهی پیدا نشد. علت امتیاز پایین، جدول‌های خراب یا تصویری و نگاشت عمدی محورها بود.</p>
+</section>
+
+<!-- ============ 7 ============ -->
+<section class="chapter" id="s7">
+<h2><span class="n">۷</span> ابزارهای سایت</h2>
+<div class="tw"><table>
+<caption>جدول ۷-۱. تب‌های سایت</caption>
+<thead><tr><th>تب</th><th>کارکرد</th><th>کاربرد</th></tr></thead>
+<tbody>
+<tr><td><b>جست‌وجو</b></td><td>پرسش فارسی یا انگلیسی؛ نتایج گروه‌بندی‌شده به تفکیک مقاله با نام، سال، صفحه، DOI و چارک؛ برچسب «اندازه‌گیری، محاسبه یا نقل» برای هر بخش؛ کادر زرد روی صفحه‌ی اصلی PDF؛ «پیدا نشد»؛ بسته‌ی منابع آماده برای ChatGPT و Gemini؛ بازخورد کاربر روی هر منبع</td><td>پیدا کردن داده، مرور ادبیات</td></tr>
+<tr><td><b>کارت بلور</b></td><td>با آمدن نام بلور در پرسش، خلاصه‌ی همه‌ی داده‌های آن بلور ظاهر می‌شود و تب‌های دیگر را پر می‌کند</td><td>شروع سریع کار با یک بلور</td></tr>
+<tr><td><b>ضریب شکست</b></td><td>منحنی <span class="ltr">n(λ)</span> برای ۲٬۳۳۰ ماده، Δn، ضریب گروهی و GVD، مقایسه‌ی منابع، ورود داده‌ی خود کاربر، خروجی CSV</td><td>انتخاب فرمول، مقایسه با اندازه‌گیری خود</td></tr>
+<tr><td><b>تطبیق فاز</b></td><td>
+  <ul>
+    <li>فرایندهای SHG، SFG، DFG و OPO در ۱۸۶ بلور؛</li>
+    <li>حل معادله‌ی فرنل برای بلور دومحوری؛</li>
+    <li>walk-off فضایی و زمانی؛</li>
+    <li>پهنای پذیرش زاویه‌ای، طیفی و دمایی؛</li>
+    <li><span class="ltr">d<sub>eff</sub></span> از بردار میدان سه موج؛</li>
+    <li>دمای NCPM؛</li>
+    <li>جدول کامل پیکربندی‌های QPM (همه‌ی ترکیب‌های قطبش در PPLN، PPKTP و OP-GaAs)؛</li>
+    <li>مقایسه‌ی همه‌ی بلورها.</li>
+  </ul>
+</td><td>طراحی آزمایش</td></tr>
+<tr><td><b>مشاور بلور</b> <span class="tag">تازه</span></td><td>شرط‌ها را ثابت می‌کنی و همه‌ی بلورهای سازگار با دلیل، رتبه و هشدار نمایش داده می‌شوند. برای بلوری که برش خورده، دمای لازم هم محاسبه می‌شود. جزئیات در فصل ۸ آمده است.</td><td>تصمیم خرید و طراحی</td></tr>
+<tr><td><b>SPDC</b></td><td>
+  <ul>
+    <li>دامنه و شدت طیفی مشترک (JSA و JSI)، خلوص، عدد اشمیت و فرورفتگی HOM؛</li>
+    <li>دمش گاوسی کانونی‌شده (Bennink 2010) و جفت‌شدگی به فیبر تک‌مد؛</li>
+    <li>قطبش‌ورزی آپودایزشده و بهینه‌سازی خلوص؛</li>
+    <li>نرخ مطلق تولید جفت فوتون.</li>
+  </ul>
+</td><td>منابع فوتون کوانتومی</td></tr>
+<tr><td><b>مجموعه</b></td><td>آمار و فهرست قابل‌پالایش مقاله‌ها به تفکیک سال، قفسه و نوع</td><td>شناخت دامنه</td></tr>
+<tr><td><b>ارزیابی</b></td><td>نتایج ارزیابی جست‌وجو به تفکیک گروه پرسش</td><td>شفافیت</td></tr>
+<tr><td><b>مقاله</b></td><td>همه‌ی بخش‌های یک مقاله، صفحه به صفحه</td><td>خواندن بافت کامل</td></tr>
+</tbody></table></div>
+<p><b>رابط دوزبانه.</b> کل سایت با یک کلید در نوار کناری بین فارسی و انگلیسی جابه‌جا می‌شود. هر جمله‌ی فارسی یک ترجمه‌ی کامل و بازبینی‌شده دارد (بیش از ۵۰۰ جمله) و یک آزمون خودکار جلوی جا افتادن ترجمه را می‌گیرد. ورودی‌های عددی ارقام فارسی و عربی را هم می‌پذیرند.</p>
+<p><b>تجربه‌ی موبایل.</b> سایت روی تلفن همراه آزموده شده است. جدول‌های چپ‌چین در صفحه‌ی راست‌چین درست نمایش داده می‌شوند.</p>
+</section>
+
+<!-- ============ 8 ============ -->
+<section class="chapter" id="s8">
+<h2><span class="n">۸</span> مشاور انتخاب بلور</h2>
+<p>این ابزار پاسخ مستقیم به مشکل واقعی بخش ۲-۱ است و تازه‌ترین بخش سامانه به شمار می‌رود. کاربر آنچه را که در آزمایشگاهش ثابت است وارد می‌کند و سامانه همه‌ی ۱۸۶ بلور را می‌سنجد. ورودی‌ها این‌ها هستند:</p>
+<ul>
+  <li>فرایند و طول موج‌ها؛</li>
+  <li>بازه‌ی دمایی آون؛</li>
+  <li>نوع تطبیق فاز؛</li>
+  <li>طول بلور؛</li>
+  <li>حداکثر walk-off؛</li>
+  <li>حداقل پهنای پذیرش طیفی و دمایی؛</li>
+  <li>نیاز به NCPM؛</li>
+  <li>نیاز به بلور غیر رطوبت‌گیر؛</li>
+  <li>میزان جاافتادگی بلور؛</li>
+  <li>QPM یا تطبیق فاز دوشکستی.</li>
+</ul>
+<p>خروجی دو بخش دارد: فهرست بلورهای مناسب با رتبه، و دلیل رد شدن هر بلور دیگر.</p>
+<h3>۸-۱. دلیل‌های رد شدن</h3>
+<p>هر بلوری که کنار گذاشته شود، دلیلش صریحاً گفته می‌شود. شانزده دلیل تعریف شده است:</p>
+<ul>
+  <li>جذب در یکی از طول موج‌ها؛</li>
+  <li>خارج بودن طول موج از بازه‌ی اعتبار فرمول؛</li>
+  <li>میزان جاافتادگی؛</li>
+  <li>محدودیت طول موج دمش؛</li>
+  <li>نبود داده‌ی دمایی؛</li>
+  <li>رطوبت‌گیری؛</li>
+  <li>همسانگرد بودن؛</li>
+  <li>نبود تطبیق فاز؛</li>
+  <li>دمای خارج از بازه‌ی آون؛</li>
+  <li>نبود NCPM؛</li>
+  <li>صفر بودن <span class="ltr">d<sub>eff</sub></span>؛</li>
+  <li>walk-off بیش از حد؛</li>
+  <li>پذیرش طیفی، زاویه‌ای یا دمایی کم؛</li>
+  <li>دوره‌ی QPM کوتاه‌تر از حد ساخت (۱٫۴ میکرومتر).</li>
+</ul>
+<h3>۸-۲. ویژگی‌های مهندسی</h3>
+<ul>
+  <li><b>دمای برش:</b> اگر بلور از پیش برای یک زاویه بریده شده باشد، سامانه دمایی را که در آن تطبیق فاز رخ می‌دهد حساب می‌کند. دقیقاً همان پرسشی که سه ماه وقت آن آزمایشگاه را گرفت.</li>
+  <li><b>رانش با دما:</b> برای هر جواب نشان داده می‌شود که در بازه‌ی دمایی آون، زاویه چقدر جابه‌جا می‌شود. اگر تطبیق فاز در بخشی از بازه از دست برود، این هم هشدار داده می‌شود.</li>
+  <li><b>برون‌یابی کنترل‌شده:</b> اگر هیچ منبعی طول موج را پوشش ندهد، فرمول تا حداکثر ۱۰٪ بیرون از بازه‌اش امتداد داده می‌شود. نتیجه با برچسب هشدار نمایش داده می‌شود.</li>
+  <li><b>QPM:</b> برای بلورهای قطبیده و جهت‌دار، همه‌ی ترکیب‌های قطبش در نظر گرفته می‌شود، با <span class="ltr">d<sub>eff</sub> = (2/π)|d|</span> و دوره‌ی <span class="ltr">Λ = 2π/|Δk|</span>.</li>
+  <li><b>هشدار عملی:</b> سامانه آستانه‌ی آسیب را با منبعش نشان می‌دهد و هشدارهایی مثل خطر فوتورفرکتیو در LiNbO3 بدون آلایش MgO می‌دهد.</li>
+  <li><b>سرعت:</b> بهینه‌سازی (حافظه‌ی نهان ضریب شکست برای هر دما و طول موج) محاسبه را ۳٫۵ تا ۴٫۵ برابر سریع‌تر کرد و خروجی‌ها دقیقاً یکسان ماندند.</li>
+</ul>
+<h3>۸-۳. آزمون با سناریوهای آزمایشگاهی</h3>
+<p>مشاور با ۱۵ سناریوی نمونه آزموده شد و در همه‌ی آن‌ها پیشنهادهای اول با انتخاب رایج متخصصان هم‌خوان بود:</p>
+<ul>
+  <li>تولید فرابنفش: BBO و CLBO؛</li>
+  <li>تبدیل در ناحیه‌ی مرئی: PPLN و PPKTP؛</li>
+  <li>فروسرخ میانی: GaSe، ZnGeP2، CdSiP2 و OP-GaAs.</li>
+</ul>
+<div class="note warn">
+<b>گام باقی‌مانده</b>
+<p>این ۱۵ سناریو را خودمان ساخته‌ایم. سناریوهای واقعی چند آزمایشگاه تا پایان هفته جمع می‌شود و مشاور پیش از اعلام نهایی با آن‌ها آزموده خواهد شد.</p>
+</div>
+</section>
+
+<!-- ============ 9 ============ -->
+<section class="chapter" id="s9">
+<h2><span class="n">۹</span> ارزیابی و آزمون</h2>
+<h3>۹-۱. روش</h3>
+<p>کیفیت جست‌وجو با «سؤال‌های طلایی» سنجیده می‌شود. در این سؤال‌ها مقاله‌ی درست، و جایی که معلوم است صفحه‌ی درست، از قبل مشخص است. سه سنجه به کار می‌رود:</p>
+<ul>
+  <li><b>R@k:</b> سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده است.</li>
+  <li><b>MRR@10:</b> میانگین معکوس رتبه‌ی اولین مقاله‌ی درست. عدد ۱ یعنی جواب درست همیشه نتیجه‌ی اول است.</li>
+  <li><b>دروازه‌ی کیفیت:</b> یک ارزیابی ۸۰ سؤالی روی سایت زنده، خودکار در GitHub اجرا می‌شود. اگر نتیجه از خط پایه پایین‌تر بیاید، هشدار می‌دهد.</li>
+</ul>
+<p>بانک کامل سؤال‌ها بزرگ‌تر از این ۸۰ سؤال است:</p>
+<ul>
+  <li>۴۹۳ سؤال از داده‌های بررسی‌شده؛</li>
+  <li>۲۲۴ سؤال که مدل qwen3 از متن مقاله‌ها نوشت؛</li>
+  <li>۲۴۰ سؤال از داده‌های خود سایت، با ۲۳۲ پاسخ جایگزین معتبر.</li>
+</ul>
+<h3>۹-۲. نتیجه‌ی تازه (۲ آبان ۱۴۰۵)</h3>
+<div class="tw"><table>
+<caption>جدول ۹-۱. ارزیابی ۸۰ سؤال طلایی روی سایت زنده</caption>
+<thead><tr><th>روش</th><th class="num">R@1</th><th class="num">R@3</th><th class="num">R@10</th><th class="num">MRR@10</th></tr></thead>
+<tbody>
+<tr><td>جست‌وجوی ترکیبی (بدون رتبه‌بندی دوم)</td><td class="num">0.438</td><td class="num">0.613</td><td class="num">0.725</td><td class="num"><b>0.535</b></td></tr>
+<tr><td>با رتبه‌بندی دوم SubQ روی ۳۰ نامزد</td><td class="num">0.512</td><td class="num">0.688</td><td class="num">0.762</td><td class="num"><b>0.613</b></td></tr>
+<tr><td class="muted">خط پایه‌ی دروازه</td><td class="num"></td><td class="num"></td><td class="num"></td><td class="num">0.512</td></tr>
+</tbody></table></div>
+<div class="tw"><table>
+<caption>جدول ۹-۲. به تفکیک گروه سؤال (MRR@10)</caption>
+<thead><tr><th>گروه</th><th class="num">تعداد</th><th class="num">ترکیبی</th><th class="num">با SubQ</th><th>تفسیر</th></tr></thead>
+<tbody>
+<tr><td>سؤال‌های نوشته‌شده از متن مقاله</td><td class="num">31</td><td class="num">0.730</td><td class="num">0.731</td><td>سؤال مشخص و جواب در متن؛ بسیار خوب</td></tr>
+<tr><td>منبع فرمول ضریب شکست (refractiveindex.info)</td><td class="num">43</td><td class="num">0.434</td><td class="num">0.589</td><td>سخت‌گیرانه: فقط مقاله‌ای درست حساب می‌شود که پایگاه به آن ارجاع داده</td></tr>
+<tr><td>ضریب ترمواپتیک</td><td class="num">3</td><td class="num">0.167</td><td class="num">0.194</td><td>ضعیف؛ تعداد سؤال برای نتیجه‌گیری کم است</td></tr>
+<tr><td>ضرایب d</td><td class="num">2</td><td class="num">0.500</td><td class="num">0.250</td><td>تعداد سؤال برای نتیجه‌گیری کم است</td></tr>
+<tr><td>مقاله‌ی فرمول</td><td class="num">1</td><td class="num">0.000</td><td class="num">0.000</td><td></td></tr>
+</tbody></table></div>
+<p>در ۲۲ سؤال از ۸۰ سؤال، مقاله‌ی طلایی در ۱۰ نتیجه‌ی اول نیست. بیشتر این سؤال‌ها از نوع «منبع فرمول ضریب شکست» هستند. در بسیاری از آن‌ها مقاله‌های دیگری که همان داده را دارند در نتایج آمده‌اند، اما در این سنجه غلط حساب می‌شوند. پس عدد واقعی که کاربر تجربه می‌کند احتمالاً بهتر از این است.</p>
+<h3>۹-۳. روند بهبود</h3>
+<div class="tw"><table>
+<caption>جدول ۹-۳. تغییرات مهم و اثر اندازه‌گیری‌شده‌ی آن‌ها</caption>
+<thead><tr><th>تغییر</th><th class="num">قبل</th><th class="num">بعد</th><th>تصمیم</th></tr></thead>
+<tbody>
+<tr><td>BM25 سمت سرور به‌جای نسخه‌ی Colab</td><td class="num"></td><td class="num">+73%</td><td class="y">نگه داشته شد</td></tr>
+<tr><td>جست‌وجوی جداگانه‌ی نام ماده: «پیدا نشد»های اشتباه</td><td class="num">52</td><td class="num">13</td><td class="y">نگه داشته شد</td></tr>
+<tr><td>bge-reranker-base</td><td class="num">0.439</td><td class="num">0.401</td><td class="no">کنار گذاشته شد</td></tr>
+<tr><td>حذف بخش‌های بی‌ارزش</td><td class="num">0.511</td><td class="num">0.485</td><td class="no">کنار گذاشته شد</td></tr>
+<tr><td>پیش‌واکشی متمرکز بر بلور</td><td class="num">0.518</td><td class="num">0.538</td><td class="y">نگه داشته شد</td></tr>
+<tr><td>رتبه‌بندی دوم SubQ (زنده)</td><td class="num">0.532</td><td class="num">0.614</td><td class="y">پیش‌فرض شد</td></tr>
+<tr><td>بهینه‌سازی سرعت: زمان پاسخ</td><td class="num">2.1–2.9 s</td><td class="num">1.1–1.4 s</td><td class="y">کیفیت بدون تغییر ماند</td></tr>
+</tbody></table></div>
+<div class="note">
+<b>شیوه‌ی کار</b>
+<p>هر تغییری که روی کاغذ منطقی به نظر می‌رسید، پیش از ماندن در سامانه اندازه‌گیری شد. دو ایده‌ی ظاهراً خوب (رتبه‌بند bge و حذف بخش‌های بی‌ارزش) چون عدد را پایین آوردند کنار گذاشته شدند. نتیجه‌های منفی هم در گزارش‌های مخزن ثبت شده‌اند.</p>
+</div>
+<h3>۹-۴. آزمون نرم‌افزار</h3>
+<p>۲۳۷ آزمون پایتون و ۸۲ آزمون سمت سایت وجود دارد. این آزمون‌ها این موارد را می‌سنجند:</p>
+<ul>
+  <li>درستی فیزیک: زاویه، دما، دوره‌ی QPM و <span class="ltr">d<sub>eff</sub></span> در برابر عدد مقاله؛</li>
+  <li>ساختار داده‌ها؛</li>
+  <li>کامل بودن ترجمه‌ی انگلیسی؛</li>
+  <li>رفتار API در برابر ورودی‌های خراب.</li>
+</ul>
+<p>سه دور اشکال‌یابی مستقل روی سایت هم انجام شد و هر اشکال پیداشده یک آزمون تازه به مجموعه اضافه کرد. نمونه‌ها: خطای ۵۰۰ با ورودی نادرست، نمایش NaN، رد شدن ارقام فارسی، و پنهان شدن ستون‌های جدول روی موبایل.</p>
+</section>
+
+<!-- ============ 10 ============ -->
+<section class="chapter" id="s10">
+<h2><span class="n">۱۰</span> مسیر پروژه از روز اول</h2>
+<div class="timeline">
+  <div class="ev"><div class="d">۵ مهر ۱۴۰۵ — هسته‌ی RAG</div><p>نقشه‌ی راه، خط لوله‌ی پایه (تبدیل، نمایه، بازیابی ترکیبی، پرسش و پاسخ، استخراج)، محدود کردن بخش‌ها به سقف مدل برداری، و گزینه‌ی مدل محلی Ollama.</p></div>
+  <div class="ev"><div class="d">مهر ۱۴۰۵، هفته‌ی اول — کیفیت متن و مشخصات</div><p>رفع گم شدن حروف یونانی، افزودن مشخصات مقاله به هر منبع، نمایش صفحه‌ی PDF با کادر منبع، و پرسش فارسی.</p></div>
+  <div class="ev"><div class="d">موتور فرمول پاشندگی</div><p>پیاده‌سازی همه‌ی ۹ نوع فرمول refractiveindex.info با وابستگی دمایی. خروجی در ۶٬۸۶۷ نقطه با نسخه‌ی مرجع یکسان بود.</p>
+    <p><b>نتیجه‌ی منفی:</b> استخراج خودکار فرمول با مدل زبانی روی ۲۴ مقاله، در هیچ موردی تا دقت ۰٫۰۱ درست نبود. این نتیجه شیوه‌ی کار بعدی را تعیین کرد: استخراج نیمه‌دستی، سپس آزمون.</p></div>
+  <div class="ev"><div class="d">بزرگ‌سازی به ۲٬۶۰۰ مقاله</div><p>تبدیل موازی در چند Colab، کش روی Drive، مرتب‌سازی خودکار با DOI، و انتقال به Cloudflare و Qdrant.</p></div>
+  <div class="ev"><div class="d">۱۳ مهر — گزارش اول به استاد راهنما</div><p>در این مرحله ۲٬۶۲۳ مقاله، ۵۶٬۹۱۳ بخش، ۱۲۷ بلور در محاسبه‌گر، ضرایب d برای ۳۰ بلور و ۷۱۷ سؤال ارزیابی آماده بود. MRR کل ۰٫۴۵۵ بود.</p></div>
+  <div class="ev"><div class="d">۱۵ تا ۱۷ مهر — گسترش داده‌ی غیرخطی</div><p>ده‌ها فرمول ترمواپتیک و ضرایب d از مقاله‌های Kato، Petrov، Ghosh و دیگران. افزودن QPM جهت‌دار برای نیمه‌رساناها (OP-GaAs، OP-GaP، ZnSe) و تب SPDC. طراحی تازه‌ی سایت با نوار کناری.</p></div>
+  <div class="ev"><div class="d">۱۸ و ۱۹ مهر — سرعت، OCR و کاربران</div><p>
+    <ul>
+      <li>کش ترجمه و بردار؛ آزمون رتبه‌بند bge.</li>
+      <li>کارت بلور.</li>
+      <li>OCR روی ۲۰ اجراکننده‌ی GitHub و OCR کامل کتاب Dmitriev.</li>
+      <li>بازخورد کاربر، رابط انگلیسی، حساب‌های کاربری و پنل مدیریت تلگرام.</li>
+      <li>لوگوی پروژه.</li>
+    </ul></p></div>
+  <div class="ev"><div class="d">۲۱ مهر — نقشه‌ی داده و دروازه‌ی کیفیت</div><p>امتیاز ده نوع داده برای همه‌ی بخش‌ها، ارزیابی خودکار با خط پایه، و ابزار پیدا کردن مقاله‌ی ناموجود از روی DOI.</p></div>
+  <div class="ev"><div class="d">۲۴ تا ۲۷ مهر — ۱۴۵ مقاله‌ی تازه و رتبه‌بندی دوم</div><p>
+    <ul>
+      <li>فهرست ۲۱۶ مقاله‌ی لازم برای ۵۱ بلور؛ افزودن ۱۴۵ مقاله‌ی تازه.</li>
+      <li>رتبه‌بندی دوم SubQ پیش‌فرض شد (MRR از ۰٫۵۳۲ به ۰٫۶۱۴).</li>
+      <li>داده از کتاب‌ها: هم‌ریخت‌های KDP، فرمات‌ها، بلورهای آلی و ABF.</li>
+    </ul></p></div>
+  <div class="ev"><div class="d">۱ آبان — نوع پژوهش، شکاف‌ها و ممیزی</div><p>
+    <ul>
+      <li>برچسب نوع پژوهش برای ۲٬۷۵۴ مقاله.</li>
+      <li>نسخه‌ی آزاد همه‌ی مقاله‌ها (۸۳ متن کامل تازه).</li>
+      <li>فهرست شکاف‌های داده و پر کردن بخشی از آن‌ها (MgSiP2 با <span class="ltr">d<sub>36</sub></span> = ۸۹ pm/V، BeO، Pb5Ge3O11، AlPO4 و غیره).</li>
+      <li>walk-off زمانی.</li>
+      <li>ممیزی خودکار آرشیو و داده‌ها.</li>
+    </ul></p></div>
+  <div class="ev"><div class="d">۱ و ۲ آبان — مشاور بلور، اشکال‌یابی و سرعت</div><p>
+    <ul>
+      <li>تب مستقل مشاور بلور، همراه با شفافیت، رطوبت‌گیری، آستانه‌ی آسیب، QPM و میزان جاافتادگی.</li>
+      <li>سه دور اشکال‌یابی.</li>
+      <li>بهینه‌سازی سرعت جست‌وجو (دو برابر) و سرعت مشاور (۴ برابر).</li>
+      <li>گزارش کیفیت تازه.</li>
+    </ul></p></div>
+  <div class="ev"><div class="d">۳ آبان — در جریان</div><p>OCR دوم برای ۴۷ مقاله‌ی قدیمی و افزودن ۱۳ مقاله‌ی تازه از کتابخانه در Colab.</p></div>
+</div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section class="chapter" id="s11">
+<h2><span class="n">۱۱</span> مقایسه با سامانه‌های مشابه</h2>
+<p>MatRAG در محل تلاقی سه دسته ابزار قرار دارد:</p>
+<ol>
+  <li>پایگاه‌های داده‌ی مواد نوری؛</li>
+  <li>نرم‌افزارهای محاسبه‌ی اپتیک غیرخطی؛</li>
+  <li>دستیارهای پژوهشی مبتنی بر هوش مصنوعی.</li>
+</ol>
+<p>هیچ‌کدام از این‌ها به‌تنهایی کار MatRAG را نمی‌کند، اما هر کدام در حوزه‌ی خودش از ما قوی‌تر است. توصیف سامانه‌های دیگر بر پایه‌ی اطلاعات عمومی منتشرشده‌ی آن‌هاست و ممکن است نسخه‌های تازه‌شان قابلیت بیشتری داشته باشند.</p>
+<h3>۱۱-۱. جدول مقایسه</h3>
+<div class="tw"><table>
+<caption>جدول ۱۱-۱. مقایسه‌ی قابلیت‌ها (<span class="y">●</span> دارد، <span class="pa">◐</span> تا حدی، <span class="no">○</span> ندارد)</caption>
+<thead><tr><th>سامانه</th><th>نوع</th><th>جست‌وجو در متن مقاله</th><th>عدد با منبع صفحه</th><th>داده‌ی غیرخطی</th><th>محاسبه‌ی تطبیق فاز</th><th>پیشنهاد بلور</th><th>فارسی</th></tr></thead>
+<tbody>
+<tr><td><b>MatRAG</b></td><td>RAG تخصصی</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td class="y">●</td></tr>
+<tr><td class="en">refractiveindex.info</td><td>پایگاه داده</td><td class="no">○</td><td class="pa">◐ ارجاع</td><td class="no">○</td><td class="no">○</td><td class="no">○</td><td class="no">○</td></tr>
+<tr><td class="en">SNLO (AS-Photonics)</td><td>نرم‌افزار محاسبه</td><td class="no">○</td><td class="pa">◐ ارجاع</td><td class="y">●</td><td class="y">● بسیار کامل</td><td class="pa">◐</td><td class="no">○</td></tr>
+<tr><td>کتاب‌های دستی (Dmitriev، Nikogosyan)</td><td>مرجع چاپی</td><td class="no">○</td><td class="y">●</td><td class="y">●</td><td class="pa">◐ جدول</td><td class="no">○</td><td class="no">○</td></tr>
+<tr><td>پایگاه‌های خودکار ChemDataExtractor</td><td>استخراج خودکار</td><td class="no">○</td><td class="y">●</td><td class="pa">◐</td><td class="no">○</td><td class="no">○</td><td class="no">○</td></tr>
+<tr><td class="en">Materials Project / AFLOW</td><td>داده‌ی محاسباتی DFT</td><td class="no">○</td><td class="pa">◐</td><td class="pa">◐ محاسباتی</td><td class="no">○</td><td class="no">○</td><td class="no">○</td></tr>
+<tr><td class="en">Elicit / Consensus / SciSpace</td><td>دستیار پژوهش عمومی</td><td class="pa">◐ بیشتر چکیده</td><td class="pa">◐</td><td class="no">○</td><td class="no">○</td><td class="no">○</td><td class="pa">◐</td></tr>
+<tr><td class="en">NotebookLM</td><td>RAG روی منابع کاربر</td><td class="y">●</td><td class="y">●</td><td class="no">○</td><td class="no">○</td><td class="no">○</td><td class="y">●</td></tr>
+<tr><td class="en">PaperQA2 (FutureHouse)</td><td>عامل پژوهشی</td><td class="y">●</td><td class="y">●</td><td class="no">○</td><td class="no">○</td><td class="no">○</td><td class="no">○</td></tr>
+<tr><td>ChatGPT / Gemini (Deep Research)</td><td>مدل زبانی عمومی</td><td class="pa">◐ وب</td><td class="pa">◐ عدد قابل اعتماد نیست</td><td class="pa">◐</td><td class="pa">◐ تقریبی</td><td class="pa">◐ بدون ضمانت</td><td class="y">●</td></tr>
+</tbody></table></div>
+
+<h3>۱۱-۲. آنچه ما داریم و دیگران ندارند</h3>
+<ul>
+  <li><b>زنجیره‌ی کامل از متن تا محاسبه:</b> هیچ‌کدام از ابزارهای بالا هم‌زمان متن مقاله را جست‌وجو نمی‌کنند، عدد آزموده با شماره‌ی صفحه نمی‌دهند و همان عدد را در محاسبه‌گر به کار نمی‌برند.</li>
+  <li><b>مشاور انتخاب بلور با دلیل رد:</b> در نرم‌افزارهای محاسبه، کاربر باید خودش بلور را انتخاب کند و یکی‌یکی امتحان کند. MatRAG همه را می‌سنجد و می‌گوید هر بلور چرا کنار گذاشته شد.</li>
+  <li><b>پوشش بلورهای تازه:</b> بلورهای سال‌های اخیر مثل ABF، MgSiP2، BaGa4Se7، BGSe و LiGaSe2 که هنوز در کتاب‌ها و نرم‌افزارهای قدیمی نیستند.</li>
+  <li><b>شفافیت درباره‌ی نوع عدد:</b> هر بخش نشان می‌دهد عددش اندازه‌گیری است، محاسبه است یا نقل از مقاله‌ی دیگر.</li>
+  <li><b>صداقت در «پیدا نشد»:</b> مدل‌های زبانی عمومی تقریباً همیشه جوابی می‌سازند.</li>
+  <li><b>رابط فارسی</b> با واژه‌نامه‌ی ثابت فیزیک.</li>
+</ul>
+
+<h3>۱۱-۳. آنچه از دیگران کم داریم</h3>
+<div class="tw"><table>
+<caption>جدول ۱۱-۲. کمبودهای ما در برابر هر دسته</caption>
+<thead><tr><th>در برابر</th><th>آنچه ما نداریم</th></tr></thead>
+<tbody>
+<tr><td class="en">SNLO</td><td>مدل‌سازی انتشار پالس در زمان و فضا، مدل حفره‌ی OPO، اثرهای حرارتی و عدسی گرمایی، کانونی‌سازی Boyd–Kleinman برای بازده SHG، و دهه‌ها اعتبارسنجی با جامعه‌ی بزرگ کاربران. محاسبه‌گر ما فعلاً بیشتر در تقریب موج تخت است، به‌جز تب SPDC.</td></tr>
+<tr><td class="en">refractiveindex.info</td><td>عمومی و آزاد بودن، مشارکت جامعه، و پوشش گسترده‌ی شیشه‌ها، فلزها و لایه‌های نازک. ما از داده‌ی آن استفاده می‌کنیم ولی خودمان عمومی نیستیم.</td></tr>
+<tr><td>کتاب‌های دستی</td><td>داوری تخصصی توسط مؤلفان برجسته و اعتبار علمی تثبیت‌شده.</td></tr>
+<tr><td>پایگاه‌های ChemDataExtractor</td><td>استخراج خودکار در مقیاس ده‌ها هزار رکورد. استخراج ما نیمه‌دستی است: دقیق‌تر، ولی کند و کم‌مقیاس.</td></tr>
+<tr><td class="en">Materials Project / AFLOW</td><td>داده‌ی محاسباتی برای بیش از صد هزار ماده، که برای بلورهای فرضی و هنوز ساخته‌نشده هم کاربرد دارد. همچنین API عمومی و استانداردهای داده‌ی بین‌المللی.</td></tr>
+<tr><td>دستیارهای پژوهشی عمومی</td><td>
+  <ul>
+    <li>مقیاس صدها میلیون مقاله و به‌روزرسانی خودکار؛</li>
+    <li>تولید پاسخ نوشتاری و خلاصه‌ی چندمقاله‌ای؛</li>
+    <li>گراف ارجاع؛</li>
+    <li>تیم و بودجه‌ی پشتیبانی.</li>
+  </ul>
+  مجموعه‌ی ما ۲٬۸۴۵ سند است و فقط با دخالت دستی بزرگ می‌شود.</td></tr>
+<tr><td class="en">NotebookLM</td><td>بارگذاری منبع توسط خود کاربر، پاسخ نوشتاری مستند، خلاصه‌ی صوتی و رابط بسیار صیقل‌خورده. سایت ما جواب را به‌شکل بخش‌های منبع می‌دهد و نوشتن پاسخ را به مدل زبانی بیرونی می‌سپارد (بسته‌ی منابع).</td></tr>
+<tr><td class="en">PaperQA2</td><td>استدلال چندمرحله‌ای عاملی (جست‌وجو، خواندن و ارزیابی تکراری)، تشخیص تناقض میان مقاله‌ها، و ارزیابی منتشرشده در برابر متخصصان انسانی روی بنچمارک‌های استاندارد.</td></tr>
+<tr><td>مدل‌های زبانی بزرگ</td><td>درک زبان آزاد، پاسخ به پرسش‌های مفهومی و توضیح نظری، و استدلال میان‌رشته‌ای.</td></tr>
+</tbody></table></div>
+<div class="note">
+<b>جایگاه پروژه</b>
+<p>MatRAG قرار نیست جای SNLO یا NotebookLM را بگیرد. هدفش پر کردن فاصله‌ی میان آن‌هاست: عدد دقیق و مستند از ادبیات، در خدمت تصمیم آزمایشگاهی. کم‌هزینه‌ترین راه برای رفع کمبودهای جدول بالا، وصل شدن به همین ابزارهاست، نه ساختن دوباره‌ی آن‌ها. نمونه‌ها: خروجی پارامتر برای SNLO، و تولید پاسخ نوشتاری با یک مدل زبانی روی بسته‌ی منابع ما.</p>
+</div>
+</section>
+
+<!-- ============ 12 ============ -->
+<section class="chapter" id="s12">
+<h2><span class="n">۱۲</span> کمبودها و محدودیت‌ها</h2>
+<p>این بخش عمداً با جزئیات آمده است تا تصویر واقعی پروژه روشن باشد. شدت هر مورد با سه برچسب مشخص شده است: <span class="sev h">جدی</span> <span class="sev m">متوسط</span> <span class="sev l">کم</span>.</p>
+
+<h3>۱۲-۱. مجموعه‌ی مقاله‌ها</h3>
+<div class="tw"><table>
+<thead><tr><th>کمبود</th><th>اندازه</th><th>شدت</th><th>راه حل</th></tr></thead>
+<tbody>
+<tr><td>سندهای بدون متن کامل</td><td>۵۹۸ فقط چکیده (۲۱٪) و ۳۳ فقط مشخصات</td><td><span class="sev h">جدی</span></td><td>دسترسی کتابخانه‌ی دانشگاه و درخواست مستقیم از نویسندگان. پیش از این ۸۳ مقاله از نسخه‌های آزاد اضافه شد.</td></tr>
+<tr><td>PDF اشتباه (مقاله‌ی دیگری داخل فایل)</td><td>حدود ۴۳ سند</td><td><span class="sev m">متوسط</span></td><td>دانلود دستی نسخه‌ی درست. فعلاً فقط با چکیده نمایه شده‌اند.</td></tr>
+<tr><td>مقاله‌های اسکن‌شده با متن خراب</td><td>۴۷ مقاله‌ی پیش از ۱۹۹۸</td><td><span class="sev m">متوسط</span></td><td>OCR دوم هم‌اکنون در Colab در حال اجراست.</td></tr>
+<tr><td>سندهای کم‌ربط به اپتیک</td><td>۱۷۹ سند با امتیاز ربط کمتر از ۰٫۵ (۱۰۴ سند زیر ۰٫۲)</td><td><span class="sev l">کم</span></td><td>بازبینی دستی پیش از حذف. بعضی‌شان داده‌ی مفیدی مثل ساختار بلور یا رشد دارند.</td></tr>
+<tr><td>نام قدیمی مجله‌ها</td><td>۲۳۲ مقاله بدون چارک SCImago</td><td><span class="sev l">کم</span></td><td>نگاشت دستی نام قدیمی به نام فعلی</td></tr>
+<tr><td>مقاله‌های تازه‌ی در صف</td><td>۱۳ مقاله</td><td><span class="sev l">کم</span></td><td>در همین اجرای Colab اضافه می‌شوند.</td></tr>
+<tr><td>به‌روزرسانی خودکار</td><td>ندارد</td><td><span class="sev m">متوسط</span></td><td>پایش دوره‌ای OpenAlex برای مقاله‌های تازه‌ی هر بلور</td></tr>
+</tbody></table></div>
+
+<h3>۱۲-۲. داده‌ی فیزیکی</h3>
+<div class="tw"><table>
+<thead><tr><th>کمبود</th><th>اندازه</th><th>شدت</th></tr></thead>
+<tbody>
+<tr><td>مدل ترمواپتیک فقط برای بخشی از بلورهای محاسبه‌گر وجود دارد. بقیه پاسخ دمایی ندارند و مشاور در سناریوهای دمایی کنارشان می‌گذارد.</td><td>۶۷ از ۱۸۶ بلور</td><td><span class="sev h">جدی</span></td></tr>
+<tr><td>تانسور d برای بعضی بلورها ناقص است و فقط بخشی از مؤلفه‌ها اندازه‌گیری شده‌اند (مثل BaGa4S7، ABF و CdGa2S4).</td><td>چند بلور</td><td><span class="sev m">متوسط</span></td></tr>
+<tr><td>آستانه‌ی آسیب و رطوبت‌گیری فقط برای حدود ۴۰٪ بلورهای دارای کارت ثبت شده است. رسانندگی گرمایی فقط برای ۳ بلور.</td><td>۲۳ و ۲۴ از ۵۸</td><td><span class="sev m">متوسط</span></td></tr>
+<tr><td>طیف جذب، ضریب جذب در طول موج‌های کاری، و جذب دوفوتونی به‌جز سه مورد وجود ندارد.</td><td>—</td><td><span class="sev m">متوسط</span></td></tr>
+<tr><td>داده‌ی بازار (قیمت، اندازه‌ی در دسترس، تأمین‌کننده) وجود ندارد، در حالی که برای تصمیم خرید ضروری است.</td><td>—</td><td><span class="sev m">متوسط</span></td></tr>
+<tr><td>موارد باز: <span class="ltr">d<sub>32</sub></span> بلور LBO (۰٫۶۷− در برابر ۰٫۶۱−) و معادله‌های Umemura برای BaGa4S7</td><td>۲ مورد</td><td><span class="sev l">کم</span></td></tr>
+</tbody></table></div>
+
+<h3>۱۲-۳. جست‌وجو و هوش مصنوعی</h3>
+<ul>
+  <li><span class="sev h">جدی</span> <b>استخراج خودکار قابل‌اعتماد نیست.</b> مدل‌های زبانی در خواندن ضرایب، توان‌ها و علامت‌ها خطا می‌کنند. داده‌های دقیق فعلی با استخراج نیمه‌دستی و آزمون جمع شده‌اند. همین گلوگاه اصلی بزرگ شدن پایگاه داده است.</li>
+  <li><span class="sev m">متوسط</span> <b>مجموعه‌ی ارزیابی دروازه کوچک است.</b> ۸۰ سؤال دارد و گروه‌های ترمواپتیک و d فقط ۲ یا ۳ سؤال دارند، پس عددشان از نظر آماری معنادار نیست. ارزیابی با کاربر واقعی هم هنوز انجام نشده است.</li>
+  <li><span class="sev m">متوسط</span> <b>مدل برداری فقط انگلیسی است.</b> پرسش فارسی از مسیر ترجمه می‌گذرد و ترجمه گاهی خطا دارد.</li>
+  <li><span class="sev m">متوسط</span> <b>وابستگی به اعتبار رایگان سرویس‌های بیرونی.</b> رتبه‌بندی دوم و برچسب‌زنی با SubQ انجام می‌شود و استخراج بخشی از داده‌ها با Gemini انجام شد. اگر اعتبار تمام شود، کیفیت جست‌وجو به حالت ترکیبی (MRR ۰٫۵۳۵) برمی‌گردد.</li>
+  <li><span class="sev l">کم</span> <b>پاسخ نوشتاری روی سایت تولید نمی‌شود.</b> سامانه بخش‌های منبع را نشان می‌دهد و بسته‌ی منابع را برای یک مدل زبانی بیرونی آماده می‌کند.</li>
+  <li><span class="sev l">کم</span> <b>نگهبان «پیدا نشد» کامل نیست.</b> در ارزیابی پیشین ۹ سؤال از ۴۰ سؤال بی‌جواب رد نشدند.</li>
+</ul>
+
+<h3>۱۲-۴. مدل فیزیکی</h3>
+<ul>
+  <li><span class="sev m">متوسط</span> محاسبه‌ی تطبیق فاز در تقریب موج تخت است. بازده تبدیل با کانونی‌سازی، انتشار پالس، اثر گرمایی بلور، فوتورفرکتیو و افت دمش مدل نشده‌اند.</li>
+  <li><span class="sev l">کم</span> برون‌یابی فرمول بیرون از بازه‌ی اعتبار، هرچند به ۱۰٪ محدود است و با هشدار همراه است، ذاتاً نامطمئن است.</li>
+</ul>
+
+<h3>۱۲-۵. زیرساخت و پایداری</h3>
+<ul>
+  <li><span class="sev h">جدی</span> <b>یک نفر کل پروژه را پیش می‌برد</b>، با کمک دستیارهای هوش مصنوعی. دانش نگه‌داری سامانه در یک نفر متمرکز است.</li>
+  <li><span class="sev m">متوسط</span> <b>پردازش سنگین در Colab رایگان انجام می‌شود</b> و با قطع اینترنت یا پایان جلسه متوقف می‌شود. نمونه: اجرای OCR مرحله‌ی دوم یک بار پیش از آپلود قطع شد. کش روی Drive جلوی از دست رفتن کار را می‌گیرد، ولی کار را کند می‌کند.</li>
+  <li><span class="sev m">متوسط</span> <b>حق نشر:</b> سایت عمومی نیست و نمی‌تواند مثل refractiveindex.info آزاد منتشر شود. حالت «مهمان» بدون PDF و «فقط ابزارها» راه میانه است.</li>
+  <li><span class="sev l">کم</span> <b>سرویس‌ها در لایه‌ی رایگان یا ارزان‌اند</b> (Cloudflare و Qdrant) و تضمین سطح خدمت ندارند.</li>
+</ul>
+</section>
+
+<!-- ============ 13 ============ -->
+<section class="chapter" id="s13">
+<h2><span class="n">۱۳</span> برنامه‌ی آینده</h2>
+<h3>کوتاه‌مدت (دو هفته)</h3>
+<ol>
+  <li>پایان OCR دوم و افزودن ۱۳ مقاله‌ی تازه. سپس برچسب‌زنی دوباره‌ی بخش‌ها و بررسی دوباره‌ی <span class="ltr">d<sub>32</sub></span> بلور LBO.</li>
+  <li>آزمودن مشاور بلور با سناریوهای واقعی آزمایشگاه‌ها و اصلاح بر اساس نتیجه.</li>
+  <li>تهیه‌ی فهرست دانلود دستی برای ۴۳ PDF اشتباه و تلاش برای متن کامل مقاله‌های فقط‌چکیده از راه کتابخانه‌ی دانشگاه.</li>
+</ol>
+<h3>میان‌مدت (یک تا سه ماه)</h3>
+<ol>
+  <li><b>پوشش دمایی:</b> رساندن مدل ترمواپتیک از ۶۷ بلور به بیش از ۱۲۰ بلور، با فهرست صفحه‌هایی که نقشه‌ی داده از پیش مشخص کرده است.</li>
+  <li><b>استخراج نیمه‌خودکار با تأیید انسانی:</b> مدل زبانی روی GPU جدول‌های دارای pm/V و dn/dT را پیشنهاد می‌دهد و انسان تأیید می‌کند. همان آزمون «عدد مقاله» دروازه‌ی ورود می‌ماند.</li>
+  <li><b>ارزیابی بزرگ‌تر:</b> دست‌کم ۳۰ سؤال برای هر گروه داده، به‌اضافه‌ی ارزیابی با کاربر واقعی.</li>
+  <li><b>مدل فیزیکی:</b> بازده تبدیل با کانونی‌سازی Boyd–Kleinman، پهنای پذیرش پالسی، و خروجی پارامتر برای SNLO.</li>
+  <li><b>مدل برداری چندزبانه</b> برای پرسش فارسی بدون واسطه‌ی ترجمه.</li>
+</ol>
+<h3>بلندمدت</h3>
+<ol>
+  <li>عامل پژوهشی چندمرحله‌ای روی همین داده‌ها، به سبک PaperQA2، که پاسخ نوشتاری مستند تولید کند.</li>
+  <li>نسخه‌ی عمومی «فقط داده و ابزار» (بدون متن مقاله) برای جامعه‌ی پژوهشی فارسی‌زبان.</li>
+  <li>گسترش روش به حوزه‌های دیگر مواد، مثل بلورهای لیزری و مواد فوتوولتائیک. خط لوله‌ی سامانه از نظر حوزه عمومی است.</li>
+  <li>انتشار علمی: مقاله‌ای درباره‌ی روش «RAG با داده‌ی آزموده» و مجموعه‌ی ارزیابی.</li>
+</ol>
+</section>
+
+<!-- ============ 14 ============ -->
+<section class="chapter" id="s14">
+<h2><span class="n">۱۴</span> زمینه‌های همکاری با مرکز هوش مصنوعی</h2>
+<p>بیشتر کمبودهای فصل ۱۲ با منابعی رفع می‌شوند که یک مرکز دانشگاهی می‌تواند فراهم کند:</p>
+<div class="two">
+<div class="card"><h4>توان پردازشی (GPU)</h4><p>OCR و تبدیل پایدار بدون وابستگی به Colab رایگان، اجرای مدل زبانی محلی برای استخراج داده، و نمایه‌ی دوباره با مدل برداری چندزبانه.</p></div>
+<div class="card"><h4>دسترسی به مدل‌های زبانی</h4><p>جایگزینی اعتبارهای رایگان و ناپایدار با دسترسی پایدار برای رتبه‌بندی دوم، برچسب‌زنی و استخراج.</p></div>
+<div class="card"><h4>نیروی انسانی برای برچسب‌زنی</h4><p>دانشجویان فیزیک و اپتیک برای ساخت مجموعه‌ی ارزیابی بزرگ‌تر و تأیید داده‌های استخراج‌شده. این کار تخصصی است و سهم مستقیمی در کیفیت سامانه دارد.</p></div>
+<div class="card"><h4>میزبانی و دسترسی کتابخانه</h4><p>میزبانی پایدار درون دانشگاه، و دسترسی قانونی به متن کامل ۵۹۸ مقاله‌ای که فقط چکیده‌شان در دست است.</p></div>
+<div class="card"><h4>مشاوره‌ی روش‌شناسی</h4><p>طراحی ارزیابی، عامل‌های پژوهشی چندمرحله‌ای، و استخراج ساختاریافته از جدول و معادله.</p></div>
+<div class="card"><h4>کاربران آزمایشی</h4><p>گروه‌های آزمایشگاهی دانشگاه به‌عنوان نخستین کاربران مشاور بلور و منبع سناریوهای واقعی.</p></div>
+</div>
+</section>
+
+<!-- ============ 15 ============ -->
+<section class="chapter" id="s15">
+<h2><span class="n">۱۵</span> پیوست: واژه‌نامه و منشأ عددها</h2>
+<h3>واژه‌نامه</h3>
+<div class="tw"><table>
+<thead><tr><th>اصطلاح</th><th>معنا</th></tr></thead>
+<tbody>
+<tr><td>RAG</td><td>تولید تقویت‌شده با بازیابی: مدل یا کاربر به‌جای تکیه بر حافظه، از متن منابع بازیابی‌شده استفاده می‌کند.</td></tr>
+<tr><td>بخش (Chunk)</td><td>واحد جست‌وجو؛ یک پاراگراف، یک جدول یا یک تکه‌ی جدول</td></tr>
+<tr><td>BM25</td><td>جست‌وجوی کلیدواژه‌ای کلاسیک با وزن‌دهی بر پایه‌ی تکرار واژه</td></tr>
+<tr><td>RRF</td><td>ادغام چند فهرست رتبه‌بندی‌شده بر پایه‌ی معکوس رتبه</td></tr>
+<tr><td>MRR@10</td><td>میانگین معکوس رتبه‌ی اولین نتیجه‌ی درست در ۱۰ نتیجه‌ی اول</td></tr>
+<tr><td>سلمایر</td><td>فرمول تجربی وابستگی ضریب شکست به طول موج</td></tr>
+<tr><td><span class="ltr">d<sub>ij</sub></span> و <span class="ltr">d<sub>eff</sub></span></td><td>مؤلفه‌های تانسور غیرخطی مرتبه‌ی دوم، و ضریب مؤثر آن برای یک هندسه‌ی مشخص</td></tr>
+<tr><td>تطبیق فاز</td><td>شرط هم‌فاز ماندن موج‌ها در بلور برای تبدیل مؤثر طول موج. «بحرانی» با زاویه و «غیربحرانی» (NCPM) با دما تنظیم می‌شود.</td></tr>
+<tr><td>QPM</td><td>تطبیق فاز شبه‌فازی با وارون کردن دوره‌ای قطبش بلور (PPLN، PPKTP) یا جهت‌گیری دوره‌ای (OP-GaAs)</td></tr>
+<tr><td>walk-off</td><td>جدا شدن مسیر انرژی (فضایی) یا پالس‌ها (زمانی) در بلور دوشکستی</td></tr>
+<tr><td>SPDC</td><td>فروتبدیل پارامتری خودبه‌خودی؛ منبع جفت فوتون درهم‌تنیده</td></tr>
+<tr><td>OCR</td><td>تبدیل تصویر صفحه به متن</td></tr>
+</tbody></table></div>
+<h3>منشأ عددها</h3>
+<ul>
+  <li>تعداد سندها، بخش‌ها، قفسه‌ها و دهه‌ها: شمارش مستقیم پایگاه Qdrant در ۳ آبان ۱۴۰۵.</li>
+  <li>چارک‌ها: تطبیق مشخصات OpenAlex با فهرست SCImago Journal Rank.</li>
+  <li>نوع پژوهش: <code>data/rag-optics/paper_basis.json</code></li>
+  <li>داده‌ی فیزیکی: <code>nonlinear_coefficients.yml</code>، <code>thermo_optic.yml</code>، <code>paper_formulas.yml</code> و <code>crystal_properties.yml</code> در مخزن کد.</li>
+  <li>ارزیابی جست‌وجو: <code>scripts/quality/reports/search-2026-10-24.md</code>؛ رتبه‌بند bge: <code>docs/reranker_eval.md</code></li>
+  <li>تاریخچه: ۲۴۵ نسخه‌ی ثبت‌شده‌ی مخزن، از ۵ مهر تا ۲ آبان ۱۴۰۵.</li>
+</ul>
+<div class="sign">تهیه‌شده برای جلسه با مرکز هوش مصنوعی دانشگاه اصفهان · امین حسین سدیدی · آبان ۱۴۰۵</div>
+</section>
+
+</div>
+</body>
+</html>
