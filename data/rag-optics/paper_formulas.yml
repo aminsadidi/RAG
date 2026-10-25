@@ -1443,3 +1443,28 @@
   - {direction: o, page: Jundt-1997, type: 4, range_um: [0.4, 4.0],
      coefficients: [4.9048, 0.11775, 0.0, 0.21802, 2.0, 0.0, 0.0, 0.0, 1.0, -0.027153, 2.0]}
   checks: []
+
+# PPRTP: the z index refined on periodically poled RTP (QPM periods of OPOs pumped at 1.064 µm and of SHG, 0.43–3.4 µm);
+# x and y, which QPM along x with z-polarized waves does not use, are those of Mikami, Okamoto & Katō (2009).
+- material: RbTiOPO4
+  name: RbTiOPO4 (Rubidium titanyl phosphate, RTP)
+  doc_id: 10.1063_1.1619211
+  doi: 10.1063/1.1619211
+  reference: "Fragemann, Pasiskevicius, Nordborg, Hellström, Karlsson, Laurell (2003). Frequency converters from visible to mid-infrared with periodically poled RbTiOPO4. Appl. Phys. Lett. 83, 3090. doi:10.1063/1.1619211"
+  pdf_page: 3
+  where: "Eq. (1) and Table I (read from the page image): nz² = A + B/(1 − Cλ⁻²) + D/(1 − Eλ⁻²) − Fλ², A = 2.229382, B = 1.230476, C = 0.052475, D = 2.40099, E = 159.4113, F = 0.00131914, flux-grown RTP at room temperature, 0.43–3.4 µm; it gives the 35.4 µm grating of the paper's OPO (1.064 → 1.55 + 3.39 µm, Figs. 1, 3)"
+  entries:
+  - {direction: z, page: Fragemann, type: 4, range_um: [0.43, 3.4],
+     coefficients: [2.229382, 1.230476, 2, 0.229074, 2, 2.40099, 2, 12.625819, 2, -0.00131914, 2]}
+  checks: []
+- material: RbTiOPO4
+  name: RbTiOPO4 (Rubidium titanyl phosphate, RTP)
+  doc_id: 10.1016_j.optmat.2009.03.012
+  doi: 10.1016/j.optmat.2009.03.012
+  reference: "Mikami, Okamoto, Katō (2009). Sellmeier and thermo-optic dispersion formulas for RbTiOPO4. Opt. Mater. 31, 1628. doi:10.1016/j.optmat.2009.03.012"
+  pdf_page: 2
+  where: "Eq. (1), nx and ny at 20 °C: the x and y indices of the Fragemann source (QPM along x with z-polarized waves does not use them)"
+  entries:
+  - {direction: x, page: Fragemann, type: 4, range_um: [0.5321, 3.1842], coefficients: [4.65575, 0.04068, 0.0, 0.0475, 1.0, 204.2586, 0.0, 130.7684, 1.0]}
+  - {direction: y, page: Fragemann, type: 4, range_um: [0.5321, 3.1842], coefficients: [4.76892, 0.0449, 0.0, 0.0513, 1.0, 221.3309, 0.0, 134.2832, 1.0]}
+  checks: []

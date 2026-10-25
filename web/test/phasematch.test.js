@@ -951,3 +951,12 @@ test("solver: widths shrink as 1/L and the tuning slopes of signal and idler are
   assert.ok(Math.abs(w10.temp_C / w20.temp_C - 2) < 0.05 && Math.abs(w10.signal_nm / w20.signal_nm - 2) < 0.1);
   assert.ok(Math.abs(w10.dls_dT_nm + w10.dli_dT_nm) < 1e-6);
 });
+
+test("PPRTP (Fragemann et al. 2003): idler of the 1.064 µm-pumped OPOs of Fig. 3 at 20 and 150 °C", () => {
+  const s = source("RbTiOPO4", "Fragemann"), m = { kind: "qpm", nAtT: (T) => nAtTemp(s, T), pol: [2, 2, 2], expansion: s.thermo.expansion };
+  // read from Fig. 3: grating (µm) → idler (µm) at 20 °C and at 150 °C
+  for (const [L, at20, at150] of [[35.4, 3.38, 3.27], [36.0, 3.21, 3.10], [37.4, 2.76, 2.55], [37.8, 2.60, 2.28]]) {
+    const idler = (T) => Math.max(...solveMixing(m, { lp: 1.064, T, x: L }, { lam: [0.43, 3.4], T: [-50, 300] }).roots.map((r) => r.li));
+    assert.ok(Math.abs(idler(20) - at20) < 0.03 && Math.abs(idler(150) - at150) < 0.04, `${L} µm: ${idler(20)}, ${idler(150)}`);
+  }
+});
