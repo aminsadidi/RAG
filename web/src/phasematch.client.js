@@ -27,15 +27,19 @@ export function eigenIndices([nx, ny, nz], [sx, sy, sz]) {
   return [1 / Math.sqrt((b - r) / 2), 1 / Math.sqrt((b + r) / 2)];
 }
 
-// The three wavelengths of a process: SHG of λ; SFG of λ1 and λ2; DFG/OPO with pump λp and signal λs.
+// The three wavelengths of a process: SHG of λ; THG of λ (λ + λ/2 → λ/3, the second step of a cascade); SFG of
+// λ1 and λ2; DFG/OPO and SPDC with pump λp and signal λs (the same three waves: SPDC is the spontaneous OPO).
+export const PAIR = new Set(["opo", "spdc"]); // pump and signal given, idler derived
+export const ONE = new Set(["shg", "thg"]); // one wavelength given
 export function waves(process, a, b) {
   if (process === "shg") return { l1: a, l2: a, l3: a / 2 };
+  if (process === "thg") return { l1: a, l2: a / 2, l3: a / 3 };
   if (process === "sfg") return { l1: a, l2: b, l3: 1 / (1 / a + 1 / b) };
-  return { l1: b, l2: 1 / (1 / a - 1 / b), l3: a }; // opo: a = pump, b = signal → idler
+  return { l1: b, l2: 1 / (1 / a - 1 / b), l3: a }; // opo, spdc: a = pump, b = signal → idler
 }
-// The same process with its tuned wavelength moved by d (SHG: λ; SFG: λ1; OPO: the signal).
+// The same process with its tuned wavelength moved by d (SHG, THG: λ; SFG: λ1; OPO, SPDC: the signal, pump fixed).
 export function shifted(process, a, b, d) {
-  return process === "shg" ? waves(process, a + d) : process === "sfg" ? waves(process, a + d, b) : waves(process, a, b + d);
+  return ONE.has(process) ? waves(process, a + d) : process === "sfg" ? waves(process, a + d, b) : waves(process, a, b + d);
 }
 
 function indexOf(nAt, plane, a, lam, pol) {
