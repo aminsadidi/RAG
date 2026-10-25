@@ -134,6 +134,31 @@ def convert(
     typer.echo(", ".join(f"{k.replace('_', ' ')}: {v}" for k, v in counts.items()))
 
 
+@app.command("convert-book")
+def convert_book(
+    pdf: Annotated[Path, typer.Argument(help="The book's PDF.")],
+    doc_id: Annotated[str, typer.Argument(help="Its doc_id (the DOI or ISBN as a file name, e.g. isbn_9780122818554).")],
+    shard: Annotated[int, typer.Option(help="This session's number: 0, 1, ..., shards-1.")] = 0,
+    shards: Annotated[int, typer.Option(help="Number of sessions sharing the book.")] = 1,
+) -> None:
+    """Convert a share of a long PDF's 10-page parts into the shared cache (OCR if it has no text layer); several
+    sessions with --shard/--shards split one book, and `ingest` then joins the parts."""
+    from matrag.ingest import convert_parts, make_converter
+    from matrag.new_papers import needs_ocr
+
+    s = _workspace().settings
+    ocr = needs_ocr(pdf)
+    cache = s.processed_dir.parent / "docling_ocr" if ocr else s.processed_dir
+    if (cache / f"{doc_id}.json.gz").exists():
+        typer.echo(f"{pdf.name}: already converted")
+        return
+    conv = make_converter(s.model_copy(update={"force_ocr": True}) if ocr else s)
+    typer.echo(f"{pdf.name}: {'OCR' if ocr else 'text layer'}, share {shard + 1} of {shards}")
+    total, now = convert_parts(pdf, conv, cache, doc_id, shard, shards,
+                               on_part=lambda k, n, a, b: typer.echo(f"  part {k}/{n} (pages {a}-{b}) saved"))
+    typer.echo(f"{pdf.name}: {total} parts in this share, {now} converted now")
+
+
 @app.command()
 def status() -> None:
     """How many papers there are (full text / abstract / title only), converted and indexed."""
