@@ -226,12 +226,15 @@ class Workspace:
                           and conversions.get(item.doc_id, "") == (self.conversion_of(item.doc_id) if item.pdf else ""))
             if up_to_date and self._stale_conversion(item):
                 up_to_date = False  # listed in reconvert.txt: its cached conversion was deleted above
+            parts = self._book_parts(item)
+            if parts:
+                up_to_date = False  # a book's parts (convert-book) wait to be joined, whole, and indexed again
             if up_to_date and not force:
                 report(name)
                 results.append(IngestResult(name, library.get(item.doc_id).short_citation(), 0, skipped=True))
                 continue
             how = self.conversion_of(item.doc_id) if item.pdf is not None else ""
-            if item.pdf is not None and item.doc_id in converted and not how:
+            if item.pdf is not None and item.doc_id in converted and not how and not parts:
                 parallel.append(item)
                 continue
             report(name)
@@ -487,6 +490,14 @@ class Workspace:
                     out[parts[0]] = dt.datetime.fromisoformat(parts[1]).replace(tzinfo=dt.timezone.utc).timestamp()
             cache["_reconvert"] = out
         return cache["_reconvert"]
+
+    def _book_parts(self, item) -> bool:
+        """Whether the parts of a book converted with convert-book are in its cache, not yet joined."""
+        if item.pdf is None:
+            return False
+        how = self.conversion_of(item.doc_id)
+        folder = self.settings.processed_dir.parent / f"docling_{how.replace('+', '_')}" if how else self.settings.processed_dir
+        return any((folder / "parts" / item.doc_id).glob("*.json.gz"))
 
     def _stale_conversion(self, item) -> bool:
         """Delete the cached conversion of a paper listed in reconvert.txt if it is older than its date."""
