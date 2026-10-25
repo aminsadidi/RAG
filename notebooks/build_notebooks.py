@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 18
+VERSION = 19
 WORKERS = 4
 
 
@@ -478,6 +478,13 @@ PAPERS = {
     '10.1016-j.optmat.2014.07.026.pdf': ('10.1016/j.optmat.2014.07.026', '01_Borates', 'SBBO_KABO_other_borates', {'title': 'Temperature-dependent Sellmeier equations of nonlinear optical crystal Na3La9O3(BO3)8', 'authors': 'Faxian Shan; Guochun Zhang; Naixia Zhai; Bo Xu; Xinyuan Zhang; Yuxiao Wu; Yicheng Wu', 'year': 2014, 'journal': 'Optical Materials'}),
     '10.1016-0925-3467(95)00050-X.pdf': ('10.1016/0925-3467(95)00050-x', '01_Borates', 'KBBF_KBe2BO3F2', None),
     'ol-47-4-842.pdf': ('10.1364/ol.449826', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', None),
+    # 2026-10-25: handbooks from the university library, for dn/dT, damage, transparency and d_ij. Books without a DOI
+    # get an ISBN (or a fixed name) in its place, so their doc_id is stable. Rename the files to these names.
+    'ghosh1998.pdf': ('isbn/9780122818554', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Thermo-Optic Coefficients of Optical Materials with Applications', 'authors': 'Gorachand Ghosh', 'year': 1998, 'journal': 'Academic Press (book; Handbook of Optical Constants of Solids, Vol. 5)'}),
+    'weber2003.pdf': ('10.1201/9781420050196', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Optical Materials', 'authors': 'Marvin J. Weber', 'year': 2003, 'journal': 'CRC Press (book)'}),
+    'weber1986.pdf': ('isbn/9780849335044', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'CRC Handbook of Laser Science and Technology, Vol. IV: Optical Materials, Part 2: Properties', 'authors': 'Marvin J. Weber', 'year': 1986, 'journal': 'CRC Press (book)'}),
+    'bass2010.pdf': ('book/handbook-of-optics-3rd-ed-vol-4', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Optics, 3rd ed., Vol. IV: Optical Properties of Materials, Nonlinear Optics, Quantum Optics', 'authors': 'Michael Bass; Guifang Li; Eric Van Stryland', 'year': 2010, 'journal': 'McGraw-Hill (book)'}),
+    'palik1985.pdf': ('10.1016/c2009-0-20920-2', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Optical Constants of Solids', 'authors': 'Edward D. Palik', 'year': 1985, 'journal': 'Academic Press (book)'}),
     'ome-13-7-1852.pdf': ('10.1364/ome.491299', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', {'title': 'Refined Sellmeier and thermo-optic dispersion formulas for BaGa4Se7', 'authors': 'Kiyoshi Kato; Kentaro Miyata; Valentin Petrov', 'year': 2023, 'journal': 'Optical Materials Express'}),
     'badikov2011.pdf': ('10.1364/ome.1.000316', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', {'title': 'BaGa4S7: wide-bandgap phase-matchable nonlinear crystal for the mid-infrared', 'authors': 'Valeriy Badikov; Dmitrii Badikov; Galina Shevyrdyaeva; Aleksey Tyazhev; Georgi Marchev; Vladimir Panyutin; Frank Noack; Valentin Petrov; Albert Kwasniewski', 'year': 2011, 'journal': 'Optical Materials Express'}),
     'johnston1977.pdf': ('10.1364/ao.16.001796', '08_Theory_Dispersion_Models', 'Thermo-optic_coefficients', {'title': 'Wavelength dependence of dn/dT in infrared-transmitting semiconductor materials', 'authors': 'George T. Johnston', 'year': 1977, 'journal': 'Applied Optics'}),
