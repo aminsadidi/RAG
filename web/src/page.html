@@ -1762,11 +1762,14 @@ function qpm(c, src, w) {
     .sort((p, q) => q.deff ** 2 / (q.n[0] * q.n[1] * q.n[2]) - p.deff ** 2 / (p.n[0] * p.n[1] * p.n[2]));
   if (!rows.length) { $("pmqpm").innerHTML = ""; return; }
   const lam = [w.l1, w.l2, w.l3].map((x) => x.toFixed(4));
+  // the period at T grows with the crystal: the grating to make (its period at the expansion's reference temperature)
+  const ex = c.sources.find((s) => s.thermo?.expansion)?.thermo.expansion, dT = T - (ex?.t0_c ?? 25);
+  const grow = (p) => (ex && Math.abs(dT) > 0.5 ? ` <span class="hint" title="Λ at ${ex.t0_c} °C">(${(p / (1 + ex.alpha * dT + (ex.beta || 0) * dT * dT)).toFixed(3)} @ ${ex.t0_c} °C)</span>` : "");
   $("pmqpm").innerHTML = `<b>تطبیق فاز شبه‌فازی (QPM)</b> در بلور قطبیده‌ی تناوبی (مثل PPLN/PPKTP)، مرتبه‌ی اول، در <bdi dir="ltr">${(+T).toFixed(1)} °C</bdi>؛ نوع 0 (هر سه موج در امتداد z) بیشترین ضریب غیرخطی را دارد و نوع II برای جفت فوتون‌های قطبش‌متعامد به کار می‌رود:`
     + `<div style="overflow-x:auto;direction:ltr"><table style="direction:ltr;min-width:560px;margin-top:6px"><tr><th>k along</th><th>type</th><th>polarizations (λ₁ + λ₂ → λ₃)</th><th>Λ (µm)</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>Δλ·L (nm·cm)</th><th>ΔT·L (°C·cm)</th></tr>`
-    + rows.map((r) => `<tr><td>${r.axis}</td><td>${r.type}</td><td>${lam[0]}<sup>${r.pol[0]}</sup> + ${lam[1]}<sup>${r.pol[1]}</sup> → ${lam[2]}<sup>${r.pol[2]}</sup></td><td><b>${r.period_um.toFixed(3)}</b></td>
+    + rows.map((r) => `<tr><td>${r.axis}</td><td>${r.type}</td><td>${lam[0]}<sup>${r.pol[0]}</sup> + ${lam[1]}<sup>${r.pol[1]}</sup> → ${lam[2]}<sup>${r.pol[2]}</sup></td><td><b>${r.period_um.toFixed(3)}</b>${grow(r.period_um)}</td>
       <td><b>${r.deff.toFixed(2)}</b></td><td>${(r.deff ** 2 / (r.n[0] * r.n[1] * r.n[2])).toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td><td>${src.thermo ? (r.temp_C >= 999 ? "> 500" : r.temp_C.toFixed(1)) : "—"}</td></tr>`).join("")
-    + `</table></div><span>بدون walk-off. دوره‌ی واقعی با دما و ترکیب بلور کمی جابه‌جا می‌شود و انبساط گرمایی توری در این حساب نیست؛ این اعداد از همان فرمول پاشندگی منبع انتخاب‌شده است.</span>`;
+    + `</table></div><span>بدون walk-off. Λ دوره‌ی لازم در دمای کار است؛ عدد داخل پرانتز دوره‌ای است که باید ساخته شود، در دمای مرجع انبساط گرمایی (برای بلورهایی که منبعی انبساطشان را داده). ترکیب بلور (مثلاً درصد MgO) دوره را کمی جابه‌جا می‌کند؛ این اعداد از همان فرمول پاشندگی منبع انتخاب‌شده است.</span>`;
 }
 
 // Orientation-patterned cubic semiconductors (OP-GaAs, OP-GaP): optically isotropic, so only QPM; first order,
@@ -1948,7 +1951,9 @@ function svRun() {
     if (["lp", "ls", "li", "x"].every((k) => g[k] != null)) return info("این منبع وابستگی دمایی ندارد؛ دما را نمی‌توان حساب کرد. منبع دیگری را انتخاب کنید.");
     g.T = 25; // no thermo-optic data: the temperature does nothing, the formula's own is used
   }
-  const model = cfg.kind === "qpm" ? { kind: "qpm", nAtT: (T) => nAtT(src, T), pol: cfg.pol, m, expansion: src0.thermo?.expansion }
+  // the grating's expansion is the crystal's: any source of the crystal that gives it
+  const expansion = src0.thermo?.expansion ?? c.sources.find((s) => s.thermo?.expansion)?.thermo.expansion;
+  const model = cfg.kind === "qpm" ? { kind: "qpm", nAtT: (T) => nAtT(src, T), pol: cfg.pol, m, expansion }
     : { kind: "angle", nAtT: (T) => nAtT(src, T), plane: cfg.plane, type: cfg.type };
   const res = solveMixing(model, g, { lam: src.range_um, T: [-50, 300], x: [0, 90] });
   if (res.error) return info(`<span class="err">${SV_ERR[res.error]}</span>`);
@@ -1971,7 +1976,7 @@ function svRun() {
         + `<td>${f2(wd.signal_nm)}</td><td>${f2(wd.pump_nm)}</td><td>${src.thermo ? (wd.temp_C >= 999 ? "> 500" : f2(wd.temp_C)) : "—"}</td>`
         + `<td>${src.thermo ? `${f2(wd.dls_dT_nm)}, ${f2(wd.dli_dT_nm)}` : "—"}</td></tr>`;
     }).join("");
-  const exp = src0.thermo?.expansion;
+  const exp = expansion;
   $("svinfo").innerHTML = `<bdi dir="ltr">${esc(src0.label)}</bdi> · `
     + (src.thermo ? "" : "بدون وابستگی دمایی: محاسبه در دمای فرمول. ")
     + (cfg.kind === "qpm" && exp ? "Λ دوره‌ی توری در دمای مرجع انبساط (۲۵ °C) است، همان که روی بلور نوشته می‌شود؛ انبساط گرمایی آن در دمای کار حساب شده است. " : "")
