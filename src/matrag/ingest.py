@@ -149,20 +149,26 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
 
 
 # A book is converted PART_PAGES pages at a time, each part cached as it is done, so a run cut off by a
-# disconnect (an OCR'd book takes hours) carries on from the last finished part instead of page 1.
-PART_PAGES = 40
+# disconnect (an OCR'd book takes hours) carries on from the last finished part instead of page 1; small parts
+# lose little when a session drops, and let several sessions share one book (convert_parts).
+PART_PAGES = 10
+
+
+def _part(path: Path, converter: DocumentConverter, parts_dir: Path, start: int, end: int, pages: int) -> DoclingDocument:
+    target = parts_dir / f"{start:05d}-{end:05d}.json.gz"
+    part = cached_document(parts_dir, target.name[: -len(".json.gz")])
+    if part is None:
+        part = _convert_pages(path, converter, (start, end))
+        _write(part, target)
+        log.info("%s: pages %d-%d of %d converted", path.name, start, end, pages)
+    return part
 
 
 def _convert_in_parts(path: Path, converter: DocumentConverter, parts_dir: Path, pages: int) -> DoclingDocument:
     parts = []
     for start in range(1, pages + 1, PART_PAGES):
         end = min(start + PART_PAGES - 1, pages)
-        target = parts_dir / f"{start:05d}-{end:05d}.json.gz"
-        part = cached_document(parts_dir, target.name[: -len(".json.gz")])
-        if part is None:
-            part = _convert_pages(path, converter, (start, end))
-            _write(part, target)
-            log.info("%s: pages %d-%d of %d converted", path.name, start, end, pages)
+        part = _part(path, converter, parts_dir, start, end, pages)
         # concatenate() numbers each part's pages on from the previous part's last page, which is right only
         # if every page of the part is there; a page Docling dropped would shift all later page numbers.
         missing = set(range(start, end + 1)) - set(part.pages)
@@ -170,6 +176,25 @@ def _convert_in_parts(path: Path, converter: DocumentConverter, parts_dir: Path,
             raise RuntimeError(f"pages {sorted(missing)[:5]} missing from the conversion of {path.name}")
         parts.append(part)
     return DoclingDocument.concatenate(parts)
+
+
+def convert_parts(path: Path, converter: DocumentConverter, cache_dir: Path, name: str, shard: int = 0,
+                  shards: int = 1, on_part=None) -> tuple[int, int]:
+    """Convert this session's share of a long PDF's parts (every shards-th part, from the shard-th) into the cache
+    that convert() reads, without joining them: several sessions split one book, and the run that indexes it then
+    finds every part done. Returns (parts of this share, parts converted now)."""
+    pages = page_count(path)
+    extend_timeout(converter, path)
+    starts = list(range(1, pages + 1, PART_PAGES))[shard::shards]
+    done = 0
+    for k, start in enumerate(starts, 1):
+        end = min(start + PART_PAGES - 1, pages)
+        before = (cache_dir / "parts" / name / f"{start:05d}-{end:05d}.json.gz").exists()
+        _part(path, converter, cache_dir / "parts" / name, start, end, pages)
+        done += not before
+        if on_part:
+            on_part(k, len(starts), start, end)
+    return len(starts), done
 
 
 def _convert_pages(path: Path, converter: DocumentConverter, page_range: tuple[int, int]) -> DoclingDocument:

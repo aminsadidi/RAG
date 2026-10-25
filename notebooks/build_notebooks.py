@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 20
+VERSION = 21
 WORKERS = 4
 
 
@@ -771,6 +771,51 @@ print(f'✅ Worker {WORKER} finished.')
     ], gpu=False)
 
 
+BOOK_WORKERS = 3
+
+
+def books() -> dict:
+    """CPU or GPU sessions that split the handbooks' 10-page parts between them, before the new-papers run."""
+    return notebook([
+        md(f"""
+# تبدیل موازی کتاب‌ها (نسخه‌ی {VERSION})
+
+کتاب‌های بلند (به‌خصوص اسکن‌شده‌ها که OCR می‌خواهند) ساعت‌ها طول می‌کشند. این نوت‌بوک هر کتاب را به بخش‌های
+۱۰ صفحه‌ای می‌شکند و **هر بخش همین که تمام شد در Drive ذخیره می‌شود**؛ اگر قطع شد، دوباره اجرا کنید و از بخش
+بعدی ادامه می‌دهد.
+
+**موازی:** همین نوت‌بوک را در {BOOK_WORKERS} تب جدا باز کنید و در هر تب `WORKER` را ۱، ۲ و ۳ بگذارید؛ هر تب
+سهم خودش از بخش‌های همه‌ی کتاب‌ها را تبدیل می‌کند. اگر کولب همه را اجازه نداد، هر تعداد که شد کافی است: تب‌ها
+بخش‌های ناتمام هم را با اجرای دوباره با `WORKERS = 1` تمام می‌کنند.
+
+بعد از تمام شدن، نوت‌بوک «افزودن مقاله‌های تازه» را اجرا کنید: بخش‌ها را به هم وصل، نمایه و روی سایت می‌فرستد.
+"""),
+        code(f"""
+#@title ▶️ تبدیل کتاب‌ها
+WORKER = 1  #@param {{type:"integer"}}
+WORKERS = {BOOK_WORKERS}  #@param {{type:"integer"}}
+DOWNLOADS = '/content/drive/MyDrive/proDownloads'  #@param {{type:"string"}}
+COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {{type:"string"}}
+""" + ENV + INSTALL + """
+!pip install -q "rapidocr>=3" onnxruntime 2>&1 | grep -iE "^error" || true
+os.environ['MATRAG_DATA_DIR'] = '/content/book_data'  # only the link to the collection lives here
+os.environ['MATRAG_CORPUS'] = 'rag-optics'
+!matrag link "{COLLECTION}" > /dev/null
+# the handbooks of the new-papers notebook: file name -> doc_id (its DOI, or ISBN, as a file name)
+BOOKS = {'ghosh1998.pdf': 'isbn_9780122818554', 'bass2001.pdf': '10.1036_0071414797',
+         'weber2003.pdf': '10.1201_9781420050196', 'weber1986.pdf': 'isbn_9780849335044'}
+import pathlib
+for name, doc_id in BOOKS.items():
+    pdf = pathlib.Path(DOWNLOADS) / name
+    if not pdf.exists():
+        print('not in the downloads folder, skipped:', name)
+        continue
+    !matrag convert-book "{pdf}" {doc_id} --shard {WORKER - 1} --shards {WORKERS} 2>&1 | grep -vE "Warning|it/s\\]"
+print(f'✅ Share {WORKER} of {WORKERS} finished.')
+"""),
+    ], gpu=True)
+
+
 if __name__ == "__main__":
     (HERE / "colab_demo.ipynb").write_text(json.dumps(notebook(MAIN), ensure_ascii=False, indent=1) + "\n", "utf-8")
     for n in range(1, WORKERS + 1):
@@ -781,4 +826,5 @@ if __name__ == "__main__":
     (HERE / "colab_big_eval.ipynb").write_text(json.dumps(big_eval(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     (HERE / "colab_new_papers.ipynb").write_text(json.dumps(new_papers(), ensure_ascii=False, indent=1) + "\n",
                                                  "utf-8")
+    (HERE / "colab_books.ipynb").write_text(json.dumps(books(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     print("written")

@@ -103,3 +103,31 @@ def test_a_book_resumes_from_the_last_finished_part(monkeypatch, tmp_path):
     assert sorted(doc.pages) == list(range(1, 8))
     assert [t.text for t in doc.texts] == [f"page {n}" for n in range(1, 8)]
     assert ingest.is_cached(tmp_path / "cache", "book") and not (tmp_path / "cache" / "parts" / "book").exists()
+
+
+def test_sessions_split_a_book_and_the_join_converts_nothing_again(monkeypatch, tmp_path):
+    from docling_core.types.doc import DoclingDocument, Size
+
+    def part(path, converter, page_range):
+        calls.append(page_range)
+        doc = DoclingDocument(name="book")
+        for n in range(page_range[0], page_range[1] + 1):
+            doc.add_page(page_no=n, size=Size(width=1, height=1))
+            doc.add_text(label="text", text=f"page {n}")
+        return doc
+
+    pdf = tmp_path / "book.pdf"
+    pdf.write_bytes(b"%PDF")
+    monkeypatch.setattr(ingest, "page_count", lambda p: 7)
+    monkeypatch.setattr(ingest, "PART_PAGES", 2)
+    monkeypatch.setattr(ingest, "_convert_pages", part)
+    calls = []
+    assert ingest.convert_parts(pdf, FakeConverter(), tmp_path / "cache", "book", 0, 2) == (2, 2)
+    assert calls == [(1, 2), (5, 6)]
+    calls = []
+    assert ingest.convert_parts(pdf, FakeConverter(), tmp_path / "cache", "book", 1, 2) == (2, 2)
+    assert calls == [(3, 4), (7, 7)]
+    assert ingest.convert_parts(pdf, FakeConverter(), tmp_path / "cache", "book", 1, 2) == (2, 0)  # a rerun
+    calls = []
+    doc = ingest.convert(pdf, FakeConverter(), tmp_path / "cache", "book")
+    assert calls == [] and sorted(doc.pages) == list(range(1, 8))
