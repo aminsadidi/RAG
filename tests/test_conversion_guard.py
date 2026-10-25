@@ -131,3 +131,28 @@ def test_sessions_split_a_book_and_the_join_converts_nothing_again(monkeypatch, 
     calls = []
     doc = ingest.convert(pdf, FakeConverter(), tmp_path / "cache", "book")
     assert calls == [] and sorted(doc.pages) == list(range(1, 8))
+
+
+def test_a_book_converted_in_parts_is_joined_whole_despite_max_pages(monkeypatch, tmp_path):
+    from docling_core.types.doc import DoclingDocument, Size
+
+    def part(path, converter, page_range):
+        doc = DoclingDocument(name="book")
+        for n in range(page_range[0], min(page_range[1], 7) + 1):
+            doc.add_page(page_no=n, size=Size(width=1, height=1))
+            doc.add_text(label="text", text=f"page {n}")
+        return doc
+
+    pdf = tmp_path / "book.pdf"
+    pdf.write_bytes(b"%PDF")
+    monkeypatch.setattr(ingest, "page_count", lambda p: 7)
+    monkeypatch.setattr(ingest, "PART_PAGES", 2)
+    monkeypatch.setattr(ingest, "_convert_pages", part)
+    cache = tmp_path / "cache"
+    short = ingest.convert(pdf, FakeConverter(), cache, "book", max_pages=4)  # an older run: the first pages only
+    assert sorted(short.pages) == [1, 2, 3, 4]
+    ingest.convert_parts(pdf, FakeConverter(), cache, "book")
+    doc = ingest.convert(pdf, FakeConverter(), cache, "book", max_pages=4)
+    assert sorted(doc.pages) == list(range(1, 8))
+    assert not (cache / "parts" / "book").exists()  # removed once every page is joined
+    assert sorted(ingest.convert(pdf, FakeConverter(), cache, "book", max_pages=4).pages) == list(range(1, 8))

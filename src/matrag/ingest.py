@@ -133,18 +133,25 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
     lets several workers fill the same cache folder in parallel.
     """
     name = name or path.stem
-    doc = cached_document(cache_dir, name)
+    parts_dir = cache_dir / "parts" / name
+    # A book whose parts were converted on purpose (convert-book) is joined whole: max_pages is for theses
+    # that come along with the papers, and the parts left out would be lost when the folder is removed.
+    book = parts_dir.is_dir() and any(parts_dir.glob("*.json.gz"))
+    doc = None if book else cached_document(cache_dir, name)
     if doc is not None:
         return doc
-    pages = min(page_count(path), max_pages or sys.maxsize) if path.suffix.lower() == ".pdf" else 0
+    if book:
+        max_pages = None
+    total = page_count(path) if path.suffix.lower() == ".pdf" else 0
+    pages = min(total, max_pages or sys.maxsize)
     extend_timeout(converter, path, max_pages)
     if pages > PART_PAGES:
-        doc = _convert_in_parts(path, converter, cache_dir / "parts" / name, pages)
+        doc = _convert_in_parts(path, converter, parts_dir, pages)
     else:
         doc = _convert_pages(path, converter, (1, max_pages) if max_pages else (1, sys.maxsize))
     _write(doc, cache_dir / f"{name}.json.gz")
-    if pages > PART_PAGES:
-        shutil.rmtree(cache_dir / "parts" / name, ignore_errors=True)
+    if pages > PART_PAGES and pages == total:  # only once every page is in the joined document
+        shutil.rmtree(parts_dir, ignore_errors=True)
     return doc
 
 

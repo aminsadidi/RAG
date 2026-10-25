@@ -143,15 +143,17 @@ def convert_book(
 ) -> None:
     """Convert a share of a long PDF's 10-page parts into the shared cache (OCR if it has no text layer); several
     sessions with --shard/--shards split one book, and `ingest` then joins the parts."""
-    from matrag.ingest import convert_parts, make_converter
+    from matrag.ingest import cached_document, convert_parts, make_converter, page_count
     from matrag.new_papers import needs_ocr
 
     s = _workspace().settings
     ocr = needs_ocr(pdf)
     cache = s.processed_dir.parent / "docling_ocr" if ocr else s.processed_dir
-    if (cache / f"{doc_id}.json.gz").exists():
+    done = cached_document(cache, doc_id)
+    if done is not None and len(done.pages) >= page_count(pdf):
         typer.echo(f"{pdf.name}: already converted")
         return
+    # a conversion cut short (an older run kept only the first pages) is done again, whole
     conv = make_converter(s.model_copy(update={"force_ocr": True}) if ocr else s)
     typer.echo(f"{pdf.name}: {'OCR' if ocr else 'text layer'}, share {shard + 1} of {shards}")
     total, now = convert_parts(pdf, conv, cache, doc_id, shard, shards,
