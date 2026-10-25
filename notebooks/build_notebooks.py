@@ -806,7 +806,8 @@ def books() -> dict:
         code(f"""
 #@title ▶️ تبدیل کتاب‌ها
 WORKER = 1  #@param {{type:"integer"}}
-WORKERS = 1  #@param {{type:"integer"}}  — {BOOK_WORKERS} tabs in parallel: WORKERS = {BOOK_WORKERS} and WORKER = 1, 2, 3
+# {BOOK_WORKERS} tabs in parallel: WORKERS = {BOOK_WORKERS} in each and WORKER = 1, 2, 3
+WORKERS = 1  #@param {{type:"integer"}}
 COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {{type:"string"}}
 # the books wait in RAG-Optics/_books (folders starting with _ are not papers of the collection); the finished parts
 # go straight to the collection's conversion cache, RAG-Optics/_RAG_processed, where the new-papers run finds them
