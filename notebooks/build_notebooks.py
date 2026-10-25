@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 BRANCH = "claude/festive-bardeen-nnw123"
-VERSION = 22
+VERSION = 23
 WORKERS = 4
 
 
@@ -554,8 +554,9 @@ if unmatched:
 # Scanned PDFs (no text layer) are converted with full-page OCR: their doc_ids go to the OCR list.
 ocr_list = pathlib.Path(f'{WORK}/data/rag-optics/ocr_papers.txt')
 listed = set(ocr_list.read_text(encoding='utf-8').split()) if ocr_list.exists() else set()
+at = lambda name: downloads / name if (downloads / name).exists() else root / '_books' / name  # handbooks: RAG-Optics/_books
 scanned = [doi_key(doi) for name, (doi, *_r) in PAPERS.items()
-           if (downloads / name).exists() and doi_key(doi) not in listed and needs_ocr(downloads / name)]
+           if at(name).exists() and doi_key(doi) not in listed and needs_ocr(at(name))]
 if scanned:
     with ocr_list.open('a', encoding='utf-8') as f:
         f.write('\\n# new papers without a text layer\\n' + '\\n'.join(scanned) + '\\n')
@@ -566,6 +567,8 @@ have = {i.doc_id: i.pdf for i in plan(root).items if i.pdf is not None}  # a PDF
 rows, placed = [], 0
 for name, (doi, category, material, meta) in PAPERS.items():
     pdf = downloads / name
+    if not pdf.exists() and (root / '_books' / name).exists():
+        pdf = root / '_books' / name  # the handbooks wait in RAG-Optics/_books (colab_books converts them there)
     target = root / PAPERS_DIR / category / material / (doi_key(doi) + '.pdf')
     if target.exists() or doi_key(doi) in have:
         print('already in the collection:', name, '->', (target if target.exists() else have[doi_key(doi)]).relative_to(root))
@@ -796,25 +799,23 @@ def books() -> dict:
 
 بعد از تمام شدن، نوت‌بوک «افزودن مقاله‌های تازه» را اجرا کنید: بخش‌ها را به هم وصل، نمایه و روی سایت می‌فرستد.
 
-**با حساب دیگر (مثلاً دوستی که GPU دارد):** فقط دسترسی Editor به پوشه‌ی `proDownloads` لازم است. او در Drive روی پوشه
-راست‌کلیک کند ← Organize ← Add shortcut ← My Drive، بعد این نوت‌بوک را با T4 GPU اجرا کند. بخش‌ها در
-`proDownloads/_book_parts` ذخیره می‌شوند و نوت‌بوک «افزودن مقاله‌های تازه» آن‌ها را خودش به مجموعه منتقل می‌کند.
+**با حساب دیگر (مثلاً دوستی که GPU دارد):** دسترسی Editor به پوشه‌ی `RAG-Optics` لازم است (کتاب‌ها در
+`RAG-Optics/_books` هستند). او در Drive روی پوشه راست‌کلیک کند ← Organize ← Add shortcut ← My Drive، بعد این نوت‌بوک
+را با T4 GPU اجرا کند. بخش‌ها مستقیم در `RAG-Optics/_RAG_processed` ذخیره می‌شوند.
 """),
         code(f"""
 #@title ▶️ تبدیل کتاب‌ها
 WORKER = 1  #@param {{type:"integer"}}
 WORKERS = {BOOK_WORKERS}  #@param {{type:"integer"}}
-DOWNLOADS = '/content/drive/MyDrive/proDownloads'  #@param {{type:"string"}}
-# where the finished parts are saved: a folder inside the downloads folder, so this runs with access to that
-# folder alone (another Google account too); the new-papers notebook moves them into the collection
-PARTS = DOWNLOADS + '/_book_parts'  #@param {{type:"string"}}
+COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {{type:"string"}}
+# the books wait in RAG-Optics/_books (folders starting with _ are not papers of the collection); the finished parts
+# go straight to the collection's conversion cache, RAG-Optics/_RAG_processed, where the new-papers run finds them
+DOWNLOADS = COLLECTION + '/_books'
 """ + ENV + INSTALL + """
 !pip install -q "rapidocr>=3" onnxruntime 2>&1 | grep -iE "^error" || true
 if not os.path.isdir(DOWNLOADS):
-    raise SystemExit(f'{DOWNLOADS} not found. If the folder was shared with you: in Google Drive, right-click it → '
+    raise SystemExit(f'{DOWNLOADS} not found. If RAG-Optics was shared with you: in Google Drive, right-click it → '
                      'Organize → Add shortcut → My Drive, then run this cell again.')
-os.makedirs(PARTS, exist_ok=True)
-COLLECTION = PARTS
 os.environ['MATRAG_DATA_DIR'] = '/content/book_data'  # only the link to the parts folder lives here
 os.environ['MATRAG_CORPUS'] = 'rag-optics'
 !matrag link "{COLLECTION}" > /dev/null
