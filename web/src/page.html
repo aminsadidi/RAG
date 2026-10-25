@@ -375,6 +375,29 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div id="pmncpm" style="margin-top:10px"></div>
     <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
   </div>
+  <div class="card" style="margin-top:14px" id="solvecard">
+    <h2>حل‌کننده: هر مقداری را که نمی‌دانید خالی بگذارید</h2>
+    <p class="hint">پمپ → سیگنال + آیدلر (برای SPDC، OPO و DFG؛ SHG و SFG همین فرایند از سمت دیگرند). از طول موج‌ها، دما و دوره‌ی QPM یا زاویه، دقیقاً یکی را خالی بگذارید تا حساب شود؛ اگر دو طول موج را بدهید سومی از پایستگی انرژی می‌آید. Δk غیرصفر نقطه‌ای کنار قله‌ی منحنی sinc² را می‌دهد. با طول بلور، پهنای طیفی سیگنال، پهنای پذیرش پمپ و پهنای دمایی هم حساب می‌شود. انبساط گرمایی توری QPM در منبع‌هایی که آن را دارند (Fradkin-König برای KTP، Jundt برای LiNbO3) در حساب هست.</p>
+    <div class="row">
+      <label>پیکربندی <select id="svcfg" style="max-width:340px"></select></label>
+    </div>
+    <div class="row">
+      <label>λ پمپ <input id="svlp" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> µm</label>
+      <label>λ سیگنال <input id="svls" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> µm</label>
+      <label>λ آیدلر <input id="svli" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> µm</label>
+    </div>
+    <div class="row">
+      <label>دما <input id="svT" type="text" inputmode="decimal" dir="ltr" data-num style="width:72px"> °C</label>
+      <label><span id="svxl">دوره‌ی QPM (Λ)</span> <input id="svx" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> <span id="svxu">µm</span></label>
+      <label id="svmwrap">مرتبه‌ی QPM <input id="svm" type="text" inputmode="decimal" dir="ltr" data-num value="1" style="width:44px"></label>
+      <label>Δk <input id="svdk" type="text" inputmode="decimal" dir="ltr" data-num value="0" style="width:64px"> rad/mm</label>
+      <label>طول بلور <input id="svL" type="text" inputmode="decimal" dir="ltr" data-num value="10" style="width:56px"> mm</label>
+      <button id="svgo">حل کن</button>
+      <button class="alt" id="svfill">پر کردن از بالای صفحه</button>
+    </div>
+    <p class="hint" id="svinfo"></p>
+    <div style="overflow-x:auto;direction:ltr"><table id="svtable" style="direction:ltr;min-width:640px"></table></div>
+  </div>
   <div class="card" style="margin-top:14px">
     <h2 id="pmcharttitle">منحنی تنظیم</h2>
     <div id="pmchart" style="position:relative;direction:ltr"><svg id="pmsvg" role="img" style="display:block;width:100%"></svg></div>
@@ -1496,7 +1519,7 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 <script type="module">
 // ---------- phase-matching tab (web/src/phasematch.client.js does the physics)
 import { entryIndex, thermoShift } from "/dispersion.js";
-import { advise, cutTemperatures, effectiveD, MIN_PERIOD, ncpmTemperatures, ONE, PAIR, qpmSolutions, solveAll, temperatureAcceptance, waves } from "/phasematch.js";
+import { advise, contract, cutTemperatures, describe, dTensor, effectiveD, MIN_PERIOD, mixingWidths, ncpmTemperatures, ONE, PAIR, qpmSolutions, solveAll, solveMixing, temperatureAcceptance, waves } from "/phasematch.js";
 
 const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
 const PROC = {
@@ -1557,11 +1580,23 @@ window.pmSelectCrystal = (mat) => {
 };
 
 // The crystal menu: those with nonlinear coefficients (complete data), then, if asked, the other birefringent materials.
-const matLabel = (c) => `${c.material}${short(c) ? " — " + short(c) : ""}`;
+// the names the periodically poled forms go by in labs and catalogues, so "PPKTP" or "PPLN" is found in the menu
+const PP_NAME = { KTiOPO4: "PPKTP", LiNbO3: "PPLN", "MgO-LiNbO3": "MgO:PPLN", LiTaO3: "PPLT / PPSLT", "Mg-LiTaO3": "PPMgSLT",
+  RbTiOPO4: "PPRTP", KTiOAsO4: "PPKTA", RbTiOAsO4: "PPRTA" };
+const matLabel = (c) => `${c.material}${short(c) ? " — " + short(c) : ""}${PP_NAME[c.material] ? " · " + PP_NAME[c.material] : ""}`;
+// Whether a crystal's formulas can hold the process at all: SHG needs a range spanning a factor 2 (λ and λ/2), THG a
+// factor 3; the mixing processes any range. Cubic crystals only phase-match by QPM in their oriented-patterned form.
+function canDo(c, proc) {
+  const span = Math.max(...c.sources.map((s) => s.range_um[1] / s.range_um[0])) * (1 + EXTRA) ** 2;
+  return proc === "shg" ? span >= 2 : proc === "thg" ? span >= 3 : true;
+}
 function fillMats() {
   const opts = (cs) => cs.map((c) => `<option value="${esc(key(c))}">${esc(matLabel(c))}</option>`).join("");
-  const full = PM.list.filter((c) => PM.dij[c.material]), rest = PM.list.filter((c) => !PM.dij[c.material]);
-  $("pmmat").innerHTML = `<optgroup label="بلورهای غیرخطی با ضرایب d (${fa(full.length)})">${opts(full)}</optgroup>`
+  const proc = $("pmproc").value, ok = PM.list.filter((c) => canDo(c, proc));
+  const poled = ok.filter((c) => PM.dij[c.material] && (POLED.has(c.material) || OP.has(c.material)));
+  const full = ok.filter((c) => PM.dij[c.material] && !poled.includes(c)), rest = ok.filter((c) => !PM.dij[c.material]);
+  $("pmmat").innerHTML = `<optgroup label="قطبیده‌ی تناوبی یا الگودار (QPM): PPKTP، PPLN، OP-GaAs، …">${opts(poled)}</optgroup>`
+    + `<optgroup label="بلورهای غیرخطی با ضرایب d (${fa(full.length)})">${opts(full)}</optgroup>`
     + ($("pmmore").checked ? `<optgroup label="دوشکستی، بدون ضرایب غیرخطی (${fa(rest.length)})">${opts(rest)}</optgroup>` : "");
   if (PM.crystal && [...$("pmmat").options].some((o) => o.value === key(PM.crystal))) $("pmmat").value = key(PM.crystal);
 }
@@ -1641,6 +1676,8 @@ function pmBad() {
 function run() {
   const c = PM.crystal; if (!c) return;
   setProc();
+  // the solver card follows the crystal and source chosen here
+  if (PM.svFor !== `${key(c)}|${$("pmsrc").value}`) { PM.svFor = `${key(c)}|${$("pmsrc").value}`; svFillCfg(); if (!pmBad()) svFill(); }
   const bad = pmBad();
   if (bad) { $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">${bad}</td></tr>`; $("pmqpm").innerHTML = ""; $("pmncpm").innerHTML = ""; return; }
   const src0 = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
@@ -1834,7 +1871,10 @@ function compareAll() {
 $("pmproc").onchange = () => {
   const p = $("pmproc").value, [a, b] = START[p];
   $("pma").value = a; if (b) $("pmb").value = b;
-  setProc(); fillMats(); pick(key(PM.crystal));
+  setProc(); fillMats();
+  // a crystal whose formulas cannot hold the new process (THG needs a range spanning a factor 3) leaves the menu
+  const kept = [...$("pmmat").options].some((o) => o.value === key(PM.crystal));
+  pick(kept ? key(PM.crystal) : $("pmmat").options[0].value);
 };
 for (const id of ["pma", "pmb"]) $(id).addEventListener("change", () => pick(key(PM.crystal), undefined, false));
 $("pmsrc").onchange = run;
@@ -1845,6 +1885,103 @@ $("pmmat").onchange = (e) => { PM.extrapolate = false; pick(e.target.value); };
 $("pmmore").onchange = () => {
   if (!$("pmmore").checked && PM.crystal && !PM.dij[PM.crystal.material]) { PM.crystal = null; fillMats(); pick("BaB2O4"); } else fillMats();
 };
+// ---------- the solver card: any one missing quantity of pump → signal + idler (phasematch.js solveMixing)
+const AXN = ["x", "y", "z"];
+// The configurations of the crystal and source chosen above: QPM along x of a poled crystal (every assignment of
+// y and z to signal, idler and pump with d_eff > 0), and birefringent phase matching in each principal plane.
+function svConfigs() {
+  const c = PM.crystal, src = c?.sources[+$("pmsrc").value];
+  if (!src || src.isotropic) return [];
+  const out = [], d = PM.dij[c.material]?.d;
+  if (POLED.has(c.material) && d) {
+    const D = dTensor(d), u = (i) => [0, 1, 2].map((j) => (j === i ? 1 : 0));
+    for (const p of [2, 1]) for (const s of [2, 1]) for (const i of [2, 1]) {
+      const deff = (2 / Math.PI) * Math.abs(contract(D, u(p), u(s), u(i)));
+      if (deff < 0.005) continue;
+      const type = s === i ? (s === p ? "0" : "I") : "II";
+      out.push({ kind: "qpm", pol: [s, i, p], deff, label: `QPM type ${type}: signal ${AXN[s]}, idler ${AXN[i]}, pump ${AXN[p]} (k ∥ x) · d_eff ${deff.toFixed(2)} pm/V` });
+    }
+  }
+  for (const plane of src.kind === "uniaxial" ? ["xz"] : ["xy", "yz", "xz"]) for (const type of ["I", "IIa", "IIb"]) {
+    out.push({ kind: "angle", plane, type, label: `${src.kind === "uniaxial" ? "angle θ" : "plane " + PLANE_FA[plane]} · type ${type === "I" ? "I (s + s → f)" : type === "IIa" ? "II (signal s, idler f)" : "II (signal f, idler s)"}` });
+  }
+  return out;
+}
+function svFillCfg() {
+  const before = PM.svcfg?.[+$("svcfg").value]?.label;
+  PM.svcfg = svConfigs();
+  $("svcfg").innerHTML = PM.svcfg.map((x, i) => `<option value="${i}">${esc(x.label)}</option>`).join("");
+  const keep = PM.svcfg.findIndex((x) => x.label === before);
+  if (keep >= 0) $("svcfg").value = String(keep);
+  svUnits();
+}
+function svUnits() {
+  const q = PM.svcfg?.[+$("svcfg").value]?.kind !== "angle";
+  $("svxl").textContent = q ? "دوره‌ی QPM (Λ)" : "زاویه";
+  $("svxu").textContent = q ? "µm" : "°"; $("svmwrap").hidden = !q;
+}
+// the process above as pump, signal and idler
+function svFill() {
+  const { proc, a, b, w } = inputs(), src = PM.crystal?.sources[+$("pmsrc").value];
+  const [lp, ls] = PAIR.has(proc) ? [a, b] : [w.l3, w.l1];
+  $("svlp").value = +lp.toFixed(6); $("svls").value = +ls.toFixed(6); $("svli").value = "";
+  $("svT").value = tempC() ?? src?.thermo?.t0_c ?? 25; $("svx").value = "";
+  svRun();
+}
+const SV_ERR = {
+  order: "طول موج پمپ باید از سیگنال و آیدلر کوتاه‌تر باشد.",
+  energy: "سه طول موج با پایستگی انرژی (1/λp = 1/λs + 1/λi) جور نیستند؛ یکی را خالی بگذارید.",
+  wavelength: "دست‌کم یک طول موج لازم است.",
+  many: "بیش از یک مقدار خالی است؛ فقط یکی را خالی بگذارید.",
+  none: "چیزی خالی نیست؛ یکی را خالی بگذارید تا حساب شود.",
+};
+function svRun() {
+  const c = PM.crystal, cfg = PM.svcfg?.[+$("svcfg").value];
+  if (!c) return;
+  const info = (html) => { $("svinfo").innerHTML = html; $("svtable").innerHTML = ""; };
+  if (!cfg) return info("برای این بلور و منبع پیکربندی‌ای برای حل نیست (بلور مکعبی، یا بدون ضرایب غیرخطی و قطبش تناوبی).");
+  const src0 = c.sources[+$("pmsrc").value], src = stretch(src0);
+  const g = { lp: numOr("svlp"), ls: numOr("svls"), li: numOr("svli"), T: numOr("svT"), x: numOr("svx"), dk: (numOr("svdk") ?? 0) / 1000 };
+  const m = Math.max(1, Math.round(numOr("svm") ?? 1)), L = numOr("svL");
+  if (!(L > 0)) return info("طول بلور باید عدد مثبت باشد.");
+  if (!src.thermo && g.T == null) {
+    if (["lp", "ls", "li", "x"].every((k) => g[k] != null)) return info("این منبع وابستگی دمایی ندارد؛ دما را نمی‌توان حساب کرد. منبع دیگری را انتخاب کنید.");
+    g.T = 25; // no thermo-optic data: the temperature does nothing, the formula's own is used
+  }
+  const model = cfg.kind === "qpm" ? { kind: "qpm", nAtT: (T) => nAtT(src, T), pol: cfg.pol, m, expansion: src0.thermo?.expansion }
+    : { kind: "angle", nAtT: (T) => nAtT(src, T), plane: cfg.plane, type: cfg.type };
+  const res = solveMixing(model, g, { lam: src.range_um, T: [-50, 300], x: [0, 90] });
+  if (res.error) return info(`<span class="err">${SV_ERR[res.error]}</span>`);
+  if (!res.roots.length) return info("برای این ورودی‌ها جوابی در بازه‌ی فرمول این منبع (و دمای −۵۰ تا ۳۰۰ °C) پیدا نشد.");
+  const d = PM.dij[c.material]?.d, out = (l) => l < src0.range_um[0] - 1e-9 || l > src0.range_um[1] + 1e-9;
+  const deffOf = (r) => {
+    if (cfg.kind === "qpm") return cfg.deff / m;
+    if (!d) return null;
+    const sol = describe(nAtT(src, r.T), cfg.plane, r.x * Math.PI / 180, "opo", r.lp, r.ls, cfg.type);
+    return effectiveD(nAtT(src, r.T), src.kind, sol, d).deff;
+  };
+  const bold = (k, v) => (res.unknown === k || (res.unknown === "lam" && k.startsWith("l") && g[k] == null) ? `<b>${v}</b>` : v);
+  const f4 = (x) => (Number.isFinite(x) ? x.toFixed(4) : "—"), f2 = (x) => (Number.isFinite(x) ? x.toFixed(2) : "—");
+  $("svtable").innerHTML = `<tr><th>λp (µm)</th><th>λs (µm)</th><th>λi (µm)</th><th>T (°C)</th><th>${cfg.kind === "qpm" ? "Λ (µm)" : "angle (°)"}</th><th>d<sub>eff</sub> (pm/V)</th>`
+    + `<th>Δλs (nm)</th><th>Δλp (nm)</th><th>ΔT (°C)</th><th>dλs/dT, dλi/dT (nm/°C)</th></tr>`
+    + res.roots.map((r) => {
+      const wd = mixingWidths(model, r, L), ex = [r.lp, r.ls, r.li].some(out);
+      return `<tr><td>${bold("lp", f4(r.lp))}</td><td>${bold("ls", f4(r.ls))}</td><td>${bold("li", f4(r.li))}</td><td>${bold("T", r.T.toFixed(2))}</td>`
+        + `<td>${bold("x", cfg.kind === "qpm" ? r.x.toFixed(3) : r.x.toFixed(2))}${ex ? " *" : ""}</td><td>${deffOf(r) == null ? "—" : deffOf(r).toFixed(2)}</td>`
+        + `<td>${f2(wd.signal_nm)}</td><td>${f2(wd.pump_nm)}</td><td>${src.thermo ? (wd.temp_C >= 999 ? "> 500" : f2(wd.temp_C)) : "—"}</td>`
+        + `<td>${src.thermo ? `${f2(wd.dls_dT_nm)}, ${f2(wd.dli_dT_nm)}` : "—"}</td></tr>`;
+    }).join("");
+  const exp = src0.thermo?.expansion;
+  $("svinfo").innerHTML = `<bdi dir="ltr">${esc(src0.label)}</bdi> · `
+    + (src.thermo ? "" : "بدون وابستگی دمایی: محاسبه در دمای فرمول. ")
+    + (cfg.kind === "qpm" && exp ? "Λ دوره‌ی توری در دمای مرجع انبساط (۲۵ °C) است، همان که روی بلور نوشته می‌شود؛ انبساط گرمایی آن در دمای کار حساب شده است. " : "")
+    + (res.roots.some((r) => [r.lp, r.ls, r.li].some(out)) ? `<span class="err">* برون‌یابی: طول موجی بیرون از بازه‌ی فرمول این منبع، تا ۱۰٪.</span> <bdi dir="ltr">(${src0.range_um[0]}–${src0.range_um[1]} µm)</bdi> ` : "")
+    + "پهناها FWHM برای طول بلور واردشده‌اند؛ Δλs با پمپ ثابت و Δλp با سیگنال ثابت.";
+}
+$("svgo").onclick = svRun;
+$("svfill").onclick = svFill;
+$("svcfg").onchange = () => { svUnits(); svRun(); };
+
 // ---------- crystal advisor: the fixed conditions in, every crystal that meets them out (phasematch.js advise)
 const numOr = (id) => { const v = $(id).value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
 // one damage threshold a paper of the collection reports (crystal_properties.yml), with its paper a click away
