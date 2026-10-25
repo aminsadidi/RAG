@@ -97,6 +97,7 @@
   transparency_um: [0.2, 1.8]
   transparency_level: "α = 1 cm⁻¹"
   sources: [{doc_id: "10.1007_b138685", cite: "Nikogosyan (2005)", pdf_page: 155, what: "α = 1 cm⁻¹ level: ≈0.2 to ≈1.8 µm"}]
+  damage: {threshold: "1.5 GW/cm² (bulk)", lambda_um: 1.315, pulse: "1 ns", doc_id: "10.1007_978_3_540_46793_9", pdf_page: 104, what: "Laser-induced bulk-damage threshold: tp = 1 ns, λ = 1.315 µm, Ithr = 15 × 10¹² W/m² (Dmitriev et al. handbook, from its ref. 3.69)"}
 
 - material: "CsLiB6O10"
   class: {value: "often", doc_id: "10.1007_b138685", pdf_page: 8, what: "Contents, chapter 4: Often-Used Crystals (KDP, ADP, DKDP, CLBO, MgLN, KTA, KN)"}
@@ -164,6 +165,7 @@
   sources: [{doc_id: "10.1007_b138685", cite: "Nikogosyan (2005)", pdf_page: 213, what: "α = 1 cm⁻¹ level: 1.1-17 µm and 0.95-17 µm"}]
   min_pump_um: {value: 1.73, doc_id: "10.1016_j.pquantelec.2015.04.001", pdf_page: 33, what: "TPA sets a lower limit of 1.73-1.75 µm for GaAs (see Table 3) which is its only essential principle limitation"}
   thermal_conductivity: {value: "55", doc_id: "10.1016_j.pquantelec.2015.04.001", pdf_page: 33, what: "Table 3 (cubic semiconductors for QPM): transparency range at 3 cm⁻¹ level, thermal conductivity: GaAs 55 W/mK"}
+  damage: {threshold: "≈2 J/cm² (OP-GaAs, single test)", lambda_um: 2.0902, pulse: "Q-switched Ho:YAG, 20 kHz", doc_id: "10.1364_ol.34.000262", pdf_page: 2, what: "The damage occurred at a fluence of about 2 J/cm2. This value corresponds to a single test"}
 
 - material: "BiB3O6"
   class: {value: "new", doc_id: "10.1007_b138685", pdf_page: 9, what: "Contents, chapter 6: Newly Developed and Perspective Crystals"}
@@ -393,6 +395,7 @@
   transparency_level: "α = 3 cm⁻¹"
   sources: [{doc_id: "10.1016_j.pquantelec.2015.04.001", cite: "Petrov (2015)", pdf_page: 33, what: "Table 3 (cubic semiconductors for QPM): transparency range at 3 cm⁻¹ level, thermal conductivity: GaP 0.57-13.2 µm"}]
   thermal_conductivity: {value: "110", doc_id: "10.1016_j.pquantelec.2015.04.001", pdf_page: 33, what: "Table 3 (cubic semiconductors for QPM): transparency range at 3 cm⁻¹ level, thermal conductivity: GaP 110 W/mK"}
+  damage: {threshold: "1.25–1.5 J/cm² (OP-GaP, surface)", lambda_um: 2.09, pulse: "12 ns, 20 kHz", doc_id: "10.1364_josab.33.000d36", pdf_page: 6, what: "a maximum output power of 350 mW until surface damage occurred at a fluence of 1.25 - 1.5 J/cm2 (OPO pumped by a Q-switched Ho:YAG laser, 20 kHz, 12 ns pulses, at 2090 nm)"}
 
 - material: "ZnSe"
   transparency_um: [0.55, 20.0]
