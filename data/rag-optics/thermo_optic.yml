@@ -13,6 +13,8 @@
 #   form "gayer": Gayer et al. (2008) / Dolev et al. (2009), coefficients times f = (T − t0)(T + t0 + 546.32):
 #                 n² = a0 + b0·f + (a1 + b1·f)/(λ² − (a2 + b2·f)²) + (a3 + b3·f)/(λ² − (a4 + b4·f)²) − a5·λ²;
 #                 f_c replaces 546.32 (Edwards & Lawrence 1984 write 546).
+#   form "emanueli": Δn = n1(λ)(T − t0) + n2(λ)(T − t0)², n1,2 = Σ am/λ^m (m = 0..3), n1 in 10⁻⁶, n2 in 10⁻⁸ (Emanueli & Arie 2003).
+#   expansion: the length along x, L = L0[1 + α(T − t0) + β(T − t0)²]; a QPM grating period grows with it.
 #   form "bhar":  n² = A + B/(1 − C/λ²) + D/(1 − E/λ²) with A, B, C, D = m·T + c (T in °C) and E constant
 #                 (Bhar & Ghosh 1979); Δn = n(T) − n(t0) of that equation. kelvin: true when T is in K.
 #   form "skauli": n² = g0 + Σ gi/(λi⁻² − λ⁻²), i = 1..3, every gi and λi a polynomial in T − t0 (coefficients of
@@ -1047,3 +1049,37 @@
     y: [{range_um: [0.4, 1.1], terms: [[0.512, 0], [0.09848, -2], [-0.00129, -4], [0.00141, -6]]}]
     z: [{range_um: [0.4, 1.1], terms: [[1.272, 0], [0.13275, -2], [0.00320, -4], [0.00121, -6]]}]
 
+
+- material: KTiOPO4
+  source: Fradkin-König
+  doc_id: 10.1364_ao.42.006661
+  doi: 10.1364/ao.42.006661
+  cite: "Emanueli & Arie (2003)"
+  pdf_page: 3
+  where: "Eqs. (2), (3) and Table 2: Δn = n1(λ)(T − 25 °C) + n2(λ)(T − 25 °C)², n1,2 = Σ am/λ^m (m = 0..3), n1 in 10⁻⁶ °C⁻¹, n2 in 10⁻⁸ °C⁻², flux-grown KTP, 532–1585 nm, 25–200 °C, against Fradkin's nz and the y index of their Ref. 12; Eq. (1) and Table 1: L = L0[1 + α(T − 25) + β(T − 25)²], α = 6.7e-6, β = 11e-9 (along x). x is not measured and stays at 25 °C"
+  t0_c: 25
+  form: emanueli
+  partial: true
+  expansion: {alpha: 6.7e-6, beta: 11.0e-9, t0_c: 25}
+  axes:
+    z: {n1: [9.9587, 9.9228, -8.9603, 4.1010], n2: [-1.1882, 10.459, -9.8136, 3.1481]}
+    y: {n1: [6.2897, 6.3061, -6.0629, 2.6486], n2: [-0.14445, 2.2244, -3.5770, 1.3470]}
+
+- material: LiNbO3
+  source: Jundt-1997
+  doc_id: 10.1364_ol.22.001553
+  doi: 10.1364/ol.22.001553
+  cite: "Jundt (1997)"
+  pdf_page: 2
+  where: "Eq. (4), Table 2 (ne, f = (T − 24.5)(T + 570.82)); the o axis is that of Edwards & Lawrence (1984), Table I, F = (T − 24.5)(T + 570.5). Thermal expansion along x as quoted on p. 1 (from Kim & Smith 1969): l = l25[1 + α(T − 25) + β(T − 25)²], α = 1.54e-5, β = 5.3e-9"
+  t0_c: 24.5
+  form: gayer
+  expansion: {alpha: 1.54e-5, beta: 5.3e-9, t0_c: 25}
+  axes:
+    e:
+      a: [5.35583, 0.100473, 0.20692, 100, 11.34927, 0.015334]
+      b: [4.629e-7, 3.862e-8, -0.89e-8, 2.657e-5, 0]
+    o:
+      a: [4.9048, 0.11775, 0.21802, 0, 0, 0.027153]
+      b: [2.1429e-8, 2.2314e-8, -2.9671e-8, 0, 0]
+      f_c: 546

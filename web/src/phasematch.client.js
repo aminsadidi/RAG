@@ -309,6 +309,104 @@ export function qpmSolutions(nAtT, cryst, kind, d, process, a, b, T) {
   return out.filter((r) => { const k = `${r.pol.join("")}|${r.period_um.toFixed(6)}`; if (seen.has(k)) return false; seen.add(k); return true; });
 }
 
+// ---------- the solver: any one missing quantity of a three-wave process
+//
+// The process: pump λp → signal λs + idler λi (1/λp = 1/λs + 1/λi), which is also SFG/SHG read backwards, so one
+// model covers SPDC, OPO, DFG, SFG and SHG. Two equations bind the waves, the temperature T and the phase-matching
+// knob (the grating period Λ of a QPM crystal, or the angle of a birefringent one): energy conservation and
+// Δk = target (0 at the peak; any other value gives a point on the side of the sinc² curve). Whatever is left empty
+// is solved for, when that leaves exactly one unknown; all roots are returned (a scan, then bisection).
+//
+// model: {kind: "qpm", nAtT, pol: [i_s, i_i, i_p] (axes 0..2 of the signal, idler, pump), m (odd order, default 1),
+//         expansion: {alpha, beta, t0_c} (the grating grows with the crystal; Λ is the period at t0_c)}
+//     or {kind: "angle", nAtT, plane, type ("I", "IIa", "IIb": s and f of signal, idler; the pump is f)}.
+// given: {lp, ls, li, T, x (Λ in µm or the angle in degrees), dk (rad/µm, default 0)}, null for unknown.
+// range: {lam: [lo, hi] µm (the formula's), T: [lo, hi] °C, x: [lo, hi]} limits of the scans.
+// Returns {unknown, roots: [{lp, ls, li, T, x}]} or {error}.
+function stretchOf(model, T) {
+  const e = model.expansion;
+  if (!e) return 1;
+  const d = T - (e.t0_c ?? 25);
+  return 1 + e.alpha * d + (e.beta || 0) * d * d;
+}
+function kMaterial(model, s) { // 2π(n_p/λp − n_s/λs − n_i/λi), rad/µm
+  const n = model.nAtT(s.T);
+  if (model.kind === "qpm") {
+    const [a, b, c] = model.pol;
+    return TWO_PI * (n(s.lp)[c] / s.lp - n(s.ls)[a] / s.ls - n(s.li)[b] / s.li);
+  }
+  return deltaK(n, model.plane, s.x * Math.PI / 180, { l1: s.ls, l2: s.li, l3: s.lp }, model.type);
+}
+export function mismatch(model, s) { // Δk − target, rad/µm
+  const grating = model.kind === "qpm" ? TWO_PI * (model.m || 1) / (s.x * stretchOf(model, s.T)) : 0;
+  return kMaterial(model, s) - grating - (s.dk || 0);
+}
+function complete(g) { // the third wavelength from the other two (energy conservation)
+  const s = { ...g };
+  if (s.lp && s.ls && !s.li) s.li = 1 / (1 / s.lp - 1 / s.ls);
+  else if (s.lp && s.li && !s.ls) s.ls = 1 / (1 / s.lp - 1 / s.li);
+  else if (s.ls && s.li && !s.lp) s.lp = 1 / (1 / s.ls + 1 / s.li);
+  return s;
+}
+function scanRoots(f, lo, hi, steps) {
+  const out = [];
+  let x0 = lo, f0 = f(lo);
+  for (let k = 1; k <= steps; k++) {
+    const x1 = lo + (hi - lo) * k / steps, f1 = f(x1);
+    if (Number.isFinite(f0) && Number.isFinite(f1)) {
+      if (f0 === 0 && k === 1) out.push(x0);
+      else if (f0 !== 0 && Math.sign(f0) !== Math.sign(f1)) out.push(f1 === 0 ? x1 : bisect(f, x0, x1, f0));
+    }
+    x0 = x1; f0 = f1;
+  }
+  return out.filter((x, i) => i === 0 || Math.abs(x - out[i - 1]) > 1e-9 * Math.max(1, Math.abs(x)));
+}
+export function solveMixing(model, given, range) {
+  const g = complete({ dk: 0, ...given });
+  const lams = ["lp", "ls", "li"].filter((k) => g[k] > 0);
+  if (lams.length === 3 && Math.abs(1 / g.lp - 1 / g.ls - 1 / g.li) * g.lp > 1e-6 && given.lp && given.ls && given.li)
+    return { error: "energy" }; // three wavelengths that do not add up
+  if (["lp", "ls", "li"].some((k) => given[k] != null && !(given[k] > 0)) || (g.ls && g.lp && !(g.ls > g.lp)) || (g.li && g.lp && !(g.li > g.lp)))
+    return { error: "order" }; // the pump must be the shortest wave
+  const missing = [lams.length < 3 && "lam", g.T == null && "T", g.x == null && "x"].filter(Boolean);
+  if (lams.length === 0) return { error: "wavelength" };
+  if (missing.length !== 1) return { error: missing.length ? "many" : "none", missing };
+  const [lo, hi] = range.lam, unknown = missing[0], roots = [];
+  if (unknown === "x" && model.kind === "qpm") { // Λ directly: 2πm/(Λ·stretch) = k_material − target
+    const k = kMaterial(model, g) - (g.dk || 0);
+    if (k && Number.isFinite(k)) roots.push({ ...g, x: TWO_PI * (model.m || 1) / Math.abs(k) / stretchOf(model, g.T), reversed: k < 0 });
+  } else if (unknown === "x") {
+    for (const a of scanRoots((x) => mismatch(model, { ...g, x }), range.x?.[0] ?? 0, range.x?.[1] ?? 90, 900)) roots.push({ ...g, x: a });
+  } else if (unknown === "T") {
+    const [t0, t1] = range.T ?? [-50, 300];
+    for (const T of scanRoots((T) => mismatch(model, { ...g, T }), t0, t1, Math.max(50, Math.round(t1 - t0)))) roots.push({ ...g, T });
+  } else if (g.lp) { // the signal (and so the idler), pump fixed: every split of the pump photon
+    const f = (ls) => { const li = 1 / (1 / g.lp - 1 / ls); return li > 0 && li <= hi * 1.000001 ? mismatch(model, { ...g, ls, li }) : NaN; };
+    for (const ls of scanRoots(f, Math.max(lo, g.lp * 1.0001), Math.min(hi, 2 * g.lp * 50), 3000)) roots.push({ ...g, ls, li: 1 / (1 / g.lp - 1 / ls) });
+  } else { // the pump, from one of signal and idler: the other follows
+    const known = g.ls ? "ls" : "li", other = known === "ls" ? "li" : "ls", lk = g[known];
+    const f = (lp) => { const lo2 = 1 / (1 / lp - 1 / lk); return lo2 > 0 && lo2 <= hi * 1.000001 ? mismatch(model, { ...g, lp, [other]: lo2 }) : NaN; };
+    for (const lp of scanRoots(f, lo, lk * 0.9999, 3000)) roots.push({ ...g, lp, [other]: 1 / (1 / lp - 1 / lk) });
+  }
+  return { unknown, roots: roots.filter((r) => [r.lp, r.ls, r.li].every((l) => l >= lo - 1e-9 && l <= hi + 1e-9)) };
+}
+
+// Widths (FWHM of sinc²(ΔkL/2)) around a solution for a crystal L mm long: of the signal with the pump fixed (the
+// idler follows), of the pump with the signal fixed, and of the temperature; with the slopes dλs/dT and dλi/dT.
+export function mixingWidths(model, s, L_mm) {
+  const lim = HALF / (L_mm * 1e3), k0 = mismatch(model, s);
+  const at = (d) => ({ ...s, ...d });
+  const sig = width((d) => { const ls = s.ls + d; return mismatch(model, at({ ls, li: 1 / (1 / s.lp - 1 / ls) })) - k0; }, lim, 1e-7, 0.5);
+  const pump = width((d) => { const lp = s.lp + d; return mismatch(model, at({ lp, li: 1 / (1 / lp - 1 / s.ls) })) - k0; }, lim, 1e-7, 0.5);
+  const temp = width((d) => mismatch(model, at({ T: s.T + d })) - k0, lim, 1e-3, 500);
+  // dλs/dT with the pump fixed: from ∂Δk/∂T and ∂Δk/∂λs
+  const h = 1e-5, dkdl = (mismatch(model, at({ ls: s.ls + h, li: 1 / (1 / s.lp - 1 / (s.ls + h)) })) - mismatch(model, at({ ls: s.ls - h, li: 1 / (1 / s.lp - 1 / (s.ls - h)) }))) / (2 * h);
+  const dkdT = (mismatch(model, at({ T: s.T + 0.05 })) - mismatch(model, at({ T: s.T - 0.05 }))) / 0.1;
+  const slope = dkdl ? -dkdT / dkdl : NaN; // µm/°C
+  return { signal_nm: sig * 1e3, pump_nm: pump * 1e3, temp_C: temp, dls_dT_nm: slope * 1e3,
+    dli_dT_nm: -slope * (s.li / s.ls) ** 2 * 1e3 };
+}
+
 // ---------- crystal advisor
 
 // The shortest first-order poling period reported: 1.4 µm in PPMgLN (Nikogosyan 2005, p. 175 of the PDF)

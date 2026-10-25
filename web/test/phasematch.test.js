@@ -896,3 +896,58 @@ test("crystal advisor: a formula extrapolated 6 % below its range gives the PPKT
   const r = qpmSolutions((T) => nAtTemp(s, T), s.kind, "poled", D.KTiOPO4.d, "opo", 0.405, 0.81, 49.2).find((x) => x.axis === "x" && x.type === "II");
   assert.ok(Math.abs(r.period_um - 10.0) < 0.05, `PPKTP 405 nm: ${r.period_um}`);
 });
+
+// ---------- the solver: any one missing quantity
+import { solveMixing, mixingWidths, mismatch } from "../src/phasematch.client.js";
+const widened = (s) => ({ ...s, axes: Object.fromEntries(Object.entries(s.axes).map(([a, e]) => [a, { ...e, range_um: [e.range_um[0] / 1.1, e.range_um[1] * 1.1] }])) });
+const ppktp = () => { const s = source("KTiOPO4", "Fradkin-König"); return { s, model: { kind: "qpm", nAtT: (T) => nAtTemp(s, T), pol: [1, 2, 1], expansion: s.thermo.expansion } }; };
+const RANGE = { lam: [0.43, 3.4], T: [-50, 300] };
+
+test("solver: the papers' own QPM periods (Fradkin 1999, König & Wong 2004, Jundt 1997)", () => {
+  const { model } = ppktp();
+  // König & Wong: type-II SHG y + z → y, zero GVM at a 791.1 nm second harmonic, Λ = 46.15 µm
+  const kw = solveMixing(model, { lp: 0.7911, ls: 1.5822, T: 25 }, RANGE).roots[0].x;
+  assert.ok(Math.abs(kw - 46.15) < 0.05, `KW ${kw}`);
+  // Fradkin: all-z DFG of 1064.4 nm and 1552.3 nm in a 35.7 µm grating
+  const fr = solveMixing({ ...model, pol: [2, 2, 2] }, { lp: 1.0644, ls: 1.5523, T: 25 }, RANGE).roots[0].x;
+  assert.ok(Math.abs(fr - 35.7) < 0.15, `Fradkin ${fr}`);
+  // PPLN SHG of 1.064 µm (e + e → e): about 6.8 µm (Jundt's index)
+  const ln = source("LiNbO3", "Jundt-1997"), lnm = { kind: "qpm", nAtT: (T) => nAtTemp(ln, T), pol: [2, 2, 2], expansion: ln.thermo.expansion };
+  const p = solveMixing(lnm, { lp: 0.532, ls: 1.064, T: 25 }, { lam: [0.4, 5], T: [-50, 300] }).roots[0].x;
+  assert.ok(Math.abs(p - 6.8) < 0.1, `PPLN ${p}`);
+});
+
+test("solver: whichever quantity is left empty comes back to the case it was computed from", () => {
+  const { s, model } = ppktp(), m = { ...model, nAtT: (T) => nAtTemp(widened(s), T) }, R = { lam: [0.39, 3.7], T: [-50, 300] };
+  const L = solveMixing(m, { lp: 0.405, ls: 0.81, T: 37 }, R).roots[0].x; // type-II SPDC 405 → 810 + 810
+  assert.ok(Math.abs(L - 10.0) < 0.1, `period ${L}`);
+  const T = solveMixing(m, { lp: 0.405, ls: 0.81, x: L }, R).roots.map((r) => r.T);
+  assert.ok(T.some((t) => Math.abs(t - 37) < 1e-4), `T ${T}`);
+  const sig = solveMixing(m, { lp: 0.405, T: 37, x: L }, R).roots.map((r) => r.ls);
+  assert.ok(sig.some((l) => Math.abs(l - 0.81) < 1e-6), `signal ${sig}`);
+  const pump = solveMixing(m, { ls: 0.81, li: null, T: 37, x: L }, R).roots.map((r) => r.lp);
+  assert.ok(pump.some((l) => Math.abs(l - 0.405) < 1e-6), `pump ${pump}`);
+  // a Δk away from the peak moves the answer; the residual of every root is the target
+  const off = solveMixing(m, { lp: 0.405, ls: 0.81, x: L, dk: 1e-4 }, R).roots[0];
+  assert.ok(Math.abs(mismatch(m, off)) < 1e-9 && Math.abs(off.T - 37) > 0.1);
+  // and the grating's thermal expansion is in it: without it the same temperature needs another period
+  const bare = solveMixing({ ...m, expansion: null }, { lp: 0.405, ls: 0.81, T: 137 }, R).roots[0].x;
+  const grown = solveMixing(m, { lp: 0.405, ls: 0.81, T: 137 }, R).roots[0].x;
+  assert.ok(Math.abs(bare / grown - (1 + 6.7e-6 * 112 + 11e-9 * 112 ** 2)) < 1e-9);
+});
+
+test("solver: inputs it cannot use say why", () => {
+  const { model } = ppktp();
+  assert.equal(solveMixing(model, { lp: 0.8, ls: 0.6, T: 25 }, RANGE).error, "order");
+  assert.equal(solveMixing(model, { lp: 0.8, ls: 1.6, li: 1.7, T: 25 }, RANGE).error, "energy");
+  assert.equal(solveMixing(model, { lp: 0.8 }, RANGE).error, "many");
+  assert.equal(solveMixing(model, { lp: 0.8, ls: 1.6, T: 25, x: 40 }, RANGE).error, "none");
+});
+
+test("solver: widths shrink as 1/L and the tuning slopes of signal and idler are opposite at degeneracy", () => {
+  const { s, model } = ppktp(), m = { ...model, nAtT: (T) => nAtTemp(widened(s), T) };
+  const r = solveMixing(m, { lp: 0.405, ls: 0.81, T: 30 }, { lam: [0.39, 3.7], T: [-50, 300] }).roots[0];
+  const w10 = mixingWidths(m, r, 10), w20 = mixingWidths(m, r, 20);
+  assert.ok(Math.abs(w10.temp_C / w20.temp_C - 2) < 0.05 && Math.abs(w10.signal_nm / w20.signal_nm - 2) < 0.1);
+  assert.ok(Math.abs(w10.dls_dT_nm + w10.dli_dT_nm) < 1e-6);
+});

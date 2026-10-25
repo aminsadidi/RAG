@@ -154,6 +154,10 @@ export function thermoShift(form, spec, t0, n0, lam, T) {
     const corr = k ? (lam - k.lam0) / (1 + Math.exp(-k.gamma * (lam - k.lam0))) : 0;
     return (poly(spec.n1) + (k ? k.B1 * corr : 0)) * 1e-6 * d + (poly(spec.n2) * 1e-8 + (k ? k.B2 * corr * 1e-9 : 0)) * d * d;
   }
+  if (form === "emanueli") { // Δn = n1(λ)ΔT + n2(λ)ΔT², n1,2 = Σ am/λ^m, n1 in 1e-6, n2 in 1e-8 (Emanueli & Arie 2003, KTP)
+    const dT = T - t0, poly = (a) => a.reduce((s, c, m) => s + c / lam ** m, 0);
+    return poly(spec.n1) * 1e-6 * dT + poly(spec.n2) * 1e-8 * dT * dT;
+  }
   if (form === "gayer") {
     const f = (T - t0) * (T + t0 + (spec.f_c ?? 546.32));
     const { a, b } = spec;
