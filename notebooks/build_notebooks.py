@@ -765,7 +765,7 @@ COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {{type:"string"}}
 os.environ['MATRAG_DATA_DIR'] = '/content/worker_data'  # only the link to the collection lives here
 os.environ['MATRAG_CORPUS'] = 'rag-optics'
 !matrag link "{COLLECTION}" > /dev/null
-!matrag convert --shard {WORKER - 1} --shards {WORKERS} 2>&1 | grep -vE "Warning|it/s\\]"
+!matrag convert --shard {WORKER - 1} --shards {WORKERS} 2>&1 | grep --line-buffered -vE "Warning|it/s\\]"
 print(f'✅ Worker {WORKER} finished.')
 """),
     ], gpu=False)
@@ -810,7 +810,7 @@ for name, doc_id in BOOKS.items():
     if not pdf.exists():
         print('not in the downloads folder, skipped:', name)
         continue
-    !matrag convert-book "{pdf}" {doc_id} --shard {WORKER - 1} --shards {WORKERS} 2>&1 | grep -vE "Warning|it/s\\]"
+    !matrag convert-book "{pdf}" {doc_id} --shard {WORKER - 1} --shards {WORKERS} 2>&1 | grep --line-buffered -vE "Warning|it/s\\]"
 print(f'✅ Share {WORKER} of {WORKERS} finished.')
 """),
     ], gpu=True)
