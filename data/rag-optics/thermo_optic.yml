@@ -268,6 +268,20 @@
     y: [{range_um: [0.5321, 3.1842], terms: [[0.5487, -3], [-1.7317, -2], [1.9380, -1], [0.1057, 0]]}]
     z: [{range_um: [1.064, 3.4], terms: [[1.24126, -3], [-5.15705, -2], [5.90696, -1], [-1.20918, 0]]}]
 
+- material: BaGa4S7
+  source: Umemura-2015
+  doc_id: 10.1117_12.2077463
+  doi: 10.1117/12.2077463
+  cite: "Umemura, Petrov, Badikov, Kato (2015)"
+  pdf_page: 4
+  where: "Eq. (2) (page image), dn/dT = (a/λ³ + b/λ² + c/λ + d) × 10⁻⁵ °C⁻¹, 0.633–10.591 µm, built from dn/dT measured at 0.6328, 1.0642 and 1.535 µm and fitted to the temperature bandwidths of Table 1 (thermal expansion not separated out); with Eq. (1) it gives the 90° SHG of 2.7918 µm at 120 °C (Fig. 3) and of 5.2955 µm at 127.2 °C (Fig. 2)"
+  t0_c: 25
+  form: kato
+  axes:
+    x: [{range_um: [0.633, 10.591], terms: [[0.8097, -3], [-0.8578, -2], [0.6703, -1], [3.3207, 0]]}]
+    y: [{range_um: [0.633, 10.591], terms: [[0.6914, -3], [-0.8399, -2], [0.6655, -1], [2.3081, 0]]}]
+    z: [{range_um: [0.633, 10.591], terms: [[0.6854, -3], [-0.8233, -2], [0.3813, -1], [1.3766, 0]]}]
+
 - material: BaGa4Se7
   source: Kato
   prefer: true
