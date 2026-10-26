@@ -4,7 +4,7 @@
 //     node scripts/quality/data_metrics.mjs [OUT.json]
 import fs from "node:fs";
 
-const dir = new URL("../../web/public/ri/", import.meta.url);
+const dir = process.env.RI_DIR ? new URL(`file://${process.env.RI_DIR.replace(/\/?$/, "/")}`) : new URL("../../web/public/ri/", import.meta.url);
 const read = (f) => JSON.parse(fs.readFileSync(new URL(f, dir)));
 const aniso = read("aniso.json"), index = read("index.json");
 const dij = read("dij.json"), props = read("props.json");
@@ -29,6 +29,7 @@ const m = {
   "with damage threshold": count(Object.values(props), (p) => p.damage),
   "with hygroscopicity": count(Object.values(props), (p) => p.hygroscopic),
   "with thermal conductivity": count(Object.values(props), (p) => p.thermal_conductivity),
+  "with thermal expansion": count(Object.values(props), (p) => p.thermal_expansion),
   // the tools
   "phase matching: crystals with d (SFG/DFG/OPO/SPDC)": nlo.length,
   "phase matching: crystals that can do SHG": count(nlo, (c) => span(c) >= 2),
@@ -38,6 +39,8 @@ const m = {
   "solver: crystals that solve for temperature": count(nlo, (c) => c.sources.some((s) => s.thermo)),
   "advisor: crystals ranked (d + properties)": count(nlo, (c) => props[c.material]),
   "advisor: crystals with damage threshold": count(nlo, (c) => props[c.material]?.damage),
+  "temperature-dependence blocks by provenance": Object.fromEntries(["verified", "compiled", "database", "computed", "untagged"].map(
+    (t) => [t, count(sources.filter((s) => s.thermo), (s) => (s.thermo.tier || "untagged") === t)])),
   "sources by provenance": Object.fromEntries([...new Set(sources.map(tier))].map((t) => [t, count(sources, (s) => tier(s) === t)])),
 };
 const out = JSON.stringify(m, null, 1);
