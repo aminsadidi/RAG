@@ -1167,3 +1167,247 @@
   axes:
     o: {lig_um: 0.130, G: [-203.885], H: [-131.800]}
     e: {lig_um: 0.190, G: [-323.460], H: [53.575]}
+
+# Ghosh (1998), Handbook of Thermo-Optic Coefficients, Table 3.1 (G, H, λig at room temperature, constant in T;
+# H in 10⁻⁶ /°C like G), read from the page images (printed p. = PDF p. − 11); joined to Sellmeier sources that had
+# no temperature dependence, with t0 = 25 °C (room temperature, the sources' and the table's).
+- material: AgGaS2
+  source: Kato
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 140
+  where: "Table 3.1 (book p. 129), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 79, 81); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.26, G: [-398.8], H: [1122.0]}
+    e: {lig_um: 0.328, G: [255.0], H: [457.2]}
+
+- material: AgGaS2
+  source: Boyd
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 140
+  where: "Table 3.1 (book p. 129), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 79, 81); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.26, G: [-398.8], H: [1122.0]}
+    e: {lig_um: 0.328, G: [255.0], H: [457.2]}
+
+- material: ZnGeP2
+  source: Zelmon
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 148
+  where: "Table 3.1 (book p. 137), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 77); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.3898, G: [-132.416], H: [1042.46]}
+    e: {lig_um: 0.3889, G: [-210.839], H: [1217.77]}
+
+- material: ZnGeP2
+  source: Das
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 148
+  where: "Table 3.1 (book p. 137), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 77); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.3898, G: [-132.416], H: [1042.46]}
+    e: {lig_um: 0.3889, G: [-210.839], H: [1217.77]}
+
+- material: CdSe
+  source: Bond
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 142
+  where: "Table 3.1 (book p. 131), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 136-139); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.45, G: [-23.9], H: [323.0]}
+    e: {lig_um: 0.45, G: [-23.6], H: [343.8]}
+
+- material: CdS
+  source: Bieniewski
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 142
+  where: "Table 3.1 (book p. 131), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 135-137); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.36, G: [-17.8], H: [348.0]}
+    e: {lig_um: 0.36, G: [-20.6], H: [379.2]}
+
+- material: HgS
+  source: Bond
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 143
+  where: "Table 3.1 (book p. 132), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 102-104); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.385, G: [-433.1], H: [459.1]}
+    e: {lig_um: 0.395, G: [-338.7], H: [578.8]}
+
+- material: ZnSiAs2
+  source: Boyd
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 148
+  where: "Table 3.1 (book p. 137), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 78, 88); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.39, G: [-190.2], H: [1644.6]}
+    e: {lig_um: 0.404, G: [-89.1], H: [1616.2]}
+
+- material: NH4H2PO4
+  source: Zernike
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 140
+  where: "Table 3.1 (book p. 129), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 40, 41, 5, 35, 8, 37); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.15, G: [-150.678], H: [8.0121]}
+    e: {lig_um: 0.14, G: [-33.5894], H: [28.9714]}
+
+- material: YLiF4
+  source: Barnes
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 145
+  where: "Table 3.1 (book p. 134), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 132); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.12, G: [-26.7781], H: [23.439]}
+    e: {lig_um: 0.11, G: [-34.4546], H: [26.0227]}
+
+- material: CaCO3
+  source: Ghosh
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 141
+  where: "Table 3.1 (book p. 130), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 113); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.115, G: [-121.689], H: [122.494]}
+    e: {lig_um: 0.137, G: [12.7011], H: [20.4803]}
+
+- material: BeO
+  source: Edwards
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 141
+  where: "Table 3.1 (book p. 130), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 117); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.03, G: [-32.9658], H: [60.9064]}
+    e: {lig_um: 0.034, G: [-24.611], H: [70.9506]}
+
+- material: CaWO4
+  source: Bond
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 142
+  where: "Table 3.1 (book p. 131), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 120); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.31, G: [-27.1657], H: [5.12541]}
+    e: {lig_um: 0.31, G: [-40.1307], H: [8.96004]}
+
+- material: CaMoO4
+  source: Bond
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 141
+  where: "Table 3.1 (book p. 130), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 119; e on PDF p. 142); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.31, G: [-93.7427], H: [47.7368]}
+    e: {lig_um: 0.31, G: [-40.02], H: [8.03851]}
+
+- material: PbMoO4
+  source: Malitson
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 146
+  where: "Table 3.1 (book p. 135), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 119); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.35, G: [-215.916], H: [-11.2558]}
+    e: {lig_um: 0.35, G: [-91.9798], H: [-18.4567]}
+
+- material: Al2O3
+  source: Querry
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 140
+  where: "Table 3.1 (book p. 129), 2n·dn/dT = GR + HR², fitted to measured dn/dT (refs. 7, 115, 116); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.15, G: [-45.2665], H: [83.5457]}
+    e: {lig_um: 0.155, G: [-39.8961], H: [81.9579]}
+
+- material: SiO2
+  source: Radhakrishnan
+  doc_id: isbn_9780122818554
+  cite: "Ghosh (1998)"
+  pdf_page: 147
+  where: "Table 3.1 (book p. 136), 2n·dn/dT = GR + HR², fitted to measured dn/dT (ref. 1); with the Sellmeier equation of this source"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.12, G: [-61.184], H: [43.999]}
+    e: {lig_um: 0.12, G: [-70.1182], H: [49.2875]}
+
+- material: BaB2O4
+  source: Eimerl
+  doc_id: 10.1063_1.360499
+  cite: "Ghosh (1995)"
+  pdf_page: 4
+  where: "Table II (G, H, λig), constant in T (the measured dn/dT of BBO are constant from 20 to 80 °C); with the Sellmeier equation of this source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.0652, G: [-19.3007], H: [-34.9683]}
+    e: {lig_um: 0.0730, G: [-141.421], H: [110.8630]}
+
+- material: BaB2O4
+  source: Zhang
+  doc_id: 10.1063_1.360499
+  cite: "Ghosh (1995)"
+  pdf_page: 4
+  where: "Table II (G, H, λig), constant in T (the measured dn/dT of BBO are constant from 20 to 80 °C); with the Sellmeier equation of this source"
+  t0_c: 20
+  form: ghosh
+  axes:
+    o: {lig_um: 0.0652, G: [-19.3007], H: [-34.9683]}
+    e: {lig_um: 0.0730, G: [-141.421], H: [110.8630]}
+
+- material: LiB3O5
+  source: Chen
+  doc_id: 10.1063_1.360499
+  cite: "Ghosh (1995)"
+  pdf_page: 4
+  where: "Table II (G, H, λig) and Eqs. (7), (8): G of y and H of z vary with T; with the Sellmeier equation of Chen et al."
+  t0_c: 20
+  form: ghosh
+  axes:
+    x: {lig_um: 0.0530, G: [-127.70167], H: [122.13435]}
+    y: {lig_um: 0.0327, G: [372.170, -2.199e-1, 1.1748e-3, -2.05077e-6], H: [-415.10435]}
+    z: {lig_um: 0.0435, G: [-446.95031], H: [410.66123, 1.667e-1, -5.1887e-4, 5.56251e-7]}
