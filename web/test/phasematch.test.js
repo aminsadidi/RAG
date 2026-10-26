@@ -968,3 +968,13 @@ test("BaGa4S7 (Umemura et al. 2015): 90° SHG temperatures along z of Figs. 2 an
   const th = solveAll(nAtTemp(s, 25), "biaxial", "shg", 2.7918, 0).find((r) => r.plane === "xz" && r.type === "I" && r.angle < 30).angle;
   assert.ok(Math.abs(th - 9.8) < 0.15, `θ ${th}`);
 });
+
+test("Ghosh (1994) G, H of LiIO3 give the dn/dT measured constant by Umegaki, and of LiNbO3 near Jundt's", () => {
+  const dndt = (m, label, ax, lam) => {
+    const s = A.find((c) => c.material === m).sources.find((x) => x.label === label), e = s.axes[ax], n0 = entryIndex(e, lam);
+    return thermoShift(s.thermo.form, e.thermo, s.thermo.t0_c, n0, lam, s.thermo.t0_c + 10) / 10;
+  };
+  assert.ok(Math.abs(dndt("LiIO3", "Herbst", "o", 1.064) / -9.35e-5 - 1) < 0.03);
+  assert.ok(Math.abs(dndt("LiIO3", "Herbst", "e", 1.064) / -8.25e-5 - 1) < 0.03);
+  assert.ok(Math.abs(dndt("LiNbO3", "Zelmon", "e", 1.064) / dndt("LiNbO3", "Jundt-1997", "e", 1.064) - 1) < 0.05);
+});
