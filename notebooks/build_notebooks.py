@@ -845,7 +845,9 @@ for f in (sorted(inbox.iterdir()) if inbox.is_dir() else []):
         local = pathlib.Path('/content') / name
         if f.suffix.lower() == '.djvu':
             print('djvu -> pdf:', f.name)
-            subprocess.run(['apt-get', 'install', '-qq', '-y', 'djvulibre-bin'], capture_output=True)
+            if not shutil.which('ddjvu'):  # Colab's package lists start empty: update them first
+                subprocess.run(['apt-get', 'update', '-qq'], capture_output=True)
+                subprocess.run(['apt-get', 'install', '-qq', '-y', 'djvulibre-bin'], capture_output=True, check=True)
             subprocess.run(['ddjvu', '-format=pdf', str(f), str(local)], check=True)
         else:
             shutil.copy(f, local)
