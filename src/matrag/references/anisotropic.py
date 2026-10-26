@@ -203,7 +203,7 @@ def build_properties(out: Path, path: Path) -> int:
                 if not {"fa", "doc_id", "pdf_page", "what"} <= set(n):
                     raise ValueError(f"{r['material']}: a note needs fa, doc_id, pdf_page and what")
             e["notes"] = r["notes"]
-        for k in ("min_pump_um", "thermal_conductivity", "class"):
+        for k in ("min_pump_um", "thermal_conductivity", "thermal_expansion", "class"):
             if k in r:
                 if not {"value", "doc_id", "pdf_page", "what"} <= set(r[k]) or (k == "class" and r[k]["value"] not in CLASSES):
                     raise ValueError(f"{r['material']}: {k} needs value, doc_id, pdf_page and what")
@@ -214,7 +214,7 @@ def build_properties(out: Path, path: Path) -> int:
             e["damage"] = r["damage"]
     for e in data.values():  # the tier of every value, from the document it was read from
         for item in [*e.get("sources", []), e.get("hygroscopic_source"), *e.get("notes", []),
-                     *(e.get(k) for k in ("min_pump_um", "thermal_conductivity", "class", "damage"))]:
+                     *(e.get(k) for k in ("min_pump_um", "thermal_conductivity", "thermal_expansion", "class", "damage"))]:
             if isinstance(item, dict):
                 item["tier"] = tier(item.get("doc_id"), item.get("what", ""), item.get("tier"), item.get("basis"), item.get("doi"))
     (out / "props.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")

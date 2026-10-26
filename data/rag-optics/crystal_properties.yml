@@ -9,6 +9,7 @@
 # depend strongly on pulse length, beam size, surface and crystal quality, so read it as an order of magnitude.
 # min_pump_um: the shortest wavelength the crystal tolerates (two-photon or residual absorption), with its sentence.
 # thermal_conductivity: W/(m·K), with its sentence.
+# thermal_expansion: linear expansion coefficients, 10⁻⁶ /K, along the axes the source names, with its sentence.
 # class: how established the crystal is: the chapter of Nikogosyan (2005) that holds it (basic, main-ir, often, poled,
 # new, sfd, rare), or newer for crystals developed since that a later review treats as established.
 
@@ -412,3 +413,154 @@
 
 - material: "BaGa4Se7"
   class: {value: "newer", doc_id: "10.1016_j.pquantelec.2015.04.001", pdf_page: 31, what: "Two related compounds, BaGa4S7 (BGS) and BaGa4Se7 (BGSe), were recently added to this group"}
+
+# Thermal conductivity from Nikogosyan (2005), read from the page images (PDF pages; the book's tables quote the
+# measuring papers): one row per crystal, merged with the crystal's other properties above.
+- material: "BaB2O4"
+  thermal_conductivity: {value: "1.6 ∥c, 1.2 ⊥c", doc_id: "10.1007_b138685", pdf_page: 16, what: "Thermal conductivity coefficient: κ ∥c 1.6, ⊥c 1.2 W/mK [10] (0.8 and 0.08 in [5])"}
+- material: "LiB3O5"
+  thermal_conductivity: {value: "2.7 ∥X, 3.1 ∥Y, 4.5 ∥Z", doc_id: "10.1007_b138685", pdf_page: 30, what: "κ = 3.5 W/mK [9]; 2.7 (∥X), 3.1 (∥Y), 4.5 (∥Z) W/mK [2]"}
+- material: "LiNbO3"
+  thermal_conductivity: {value: "4.4 ∥c, 4.5 ⊥c", doc_id: "10.1007_b138685", pdf_page: 47, what: "300 K: κ = 4.4 (∥c), 4.5 (⊥c) [17]; 4.6 W/mK [18]"}
+- material: "KTiOPO4"
+  thermal_conductivity: {value: "2 ∥X, 3 ∥Y, 3.3 ∥Z", doc_id: "10.1007_b138685", pdf_page: 65, what: "Thermal conductivity coefficient [7]: 2 (∥X), 3 (∥Y), 3.3 (∥Z) W/mK"}
+- material: "AgGaS2"
+  thermal_conductivity: {value: "1.4 ∥c, 1.5 ⊥c", doc_id: "10.1007_b138685", pdf_page: 86, what: "Thermal conductivity coefficient κ [13], 293 K: 1.4 (∥c), 1.5 (⊥c) W/mK"}
+- material: "AgGaSe2"
+  thermal_conductivity: {value: "1.0 ∥c, 1.1 ⊥c", doc_id: "10.1007_b138685", pdf_page: 96, what: "Thermal conductivity coefficient κ [12], 293 K: 1.0 (∥c), 1.1 (⊥c) W/mK"}
+- material: "ZnGeP2"
+  thermal_conductivity: {value: "36 ∥c, 35 ⊥c", doc_id: "10.1007_b138685", pdf_page: 106, what: "Thermal conductivity coefficient κ [10], 293 K: 36 (∥c), 35 (⊥c) W/mK"}
+- material: "GaSe"
+  thermal_conductivity: {value: "16.2 ∥c, 2.0 ⊥c", doc_id: "10.1007_b138685", pdf_page: 118, what: "Thermal conductivity coefficient κ [3], 293 K: 16.2 (∥c), 2.0 (⊥c) W/mK"}
+- material: "KH2PO4"
+  thermal_conductivity: {value: "1.21 ∥c, 1.34 ⊥c", doc_id: "10.1007_b138685", pdf_page: 126, what: "Thermal conductivity coefficient [3]: 1.21 (∥c, 302 K), 1.34 (⊥c, 319 K), 1.30 / 1.76 at 428 K W/mK"}
+- material: "NH4H2PO4"
+  thermal_conductivity: {value: "0.71 ∥c, 1.26 ⊥c", doc_id: "10.1007_b138685", pdf_page: 143, what: "Thermal conductivity coefficient [3], 315 K: 0.71 (∥c), 1.26 (⊥c) W/mK"}
+- material: "KD2PO4"
+  thermal_conductivity: {value: "1.86 ∥c, 2.09 ⊥c", doc_id: "10.1007_b138685", pdf_page: 155, what: "Thermal conductivity coefficient [8]: 1.86 (∥c), 2.09 (⊥c) W/mK"}
+- material: "KNbO3"
+  thermal_conductivity: {value: "4", doc_id: "10.1007_b138685", pdf_page: 184, what: "Thermal conductivity coefficient: κ > 3.5 W/mK [9]; κ = 4 W/mK [8]"}
+- material: "LiTaO3"
+  thermal_conductivity: {value: "5", doc_id: "10.1007_b138685", pdf_page: 195, what: "Thermal conductivity coefficient [10], 300 K: 5 W/mK"}
+- material: "RbTiOAsO4"
+  thermal_conductivity: {value: "1.6", doc_id: "10.1007_b138685", pdf_page: 200, what: "Thermal conductivity coefficient [4], 300 K: 1.6 W/mK"}
+- material: "BaTiO3"
+  thermal_conductivity: {value: "1.34", doc_id: "10.1007_b138685", pdf_page: 206, what: "Thermal conductivity coefficient, 293 K: 1.34 W/mK [6]; 0.67 at 401 K [4]"}
+- material: "GdCa4O(BO3)3"
+  thermal_conductivity: {value: "2.54 ∥X, 1.32 ∥Y, 2.06 ∥Z", doc_id: "10.1007_b138685", pdf_page: 236, what: "Thermal conductivity coefficient at T = 293 K: 2.54 (∥X), 1.32 (∥Y), 2.06 (∥Z) W/mK [9]"}
+- material: "YCa4O(BO3)3"
+  thermal_conductivity: {value: "2.60 ∥X, 2.33 ∥Y, 3.01 ∥Z", doc_id: "10.1007_b138685", pdf_page: 242, what: "Thermal conductivity coefficient at T = 293 K [6]: 2.60 (∥X), 2.33 (∥Y), 3.01 (∥Z) W/mK"}
+- material: "LiInS2"
+  thermal_conductivity: {value: "6.2 ∥X, 6 ∥Y, 7.6 ∥Z", doc_id: "10.1007_b138685", pdf_page: 270, what: "Thermal conductivity coefficient [6]: 6.2 (∥X), 6 (∥Y), 7.6 (∥Z) W/mK"}
+- material: "YAl3(BO3)4"
+  thermal_conductivity: {value: "3–4 (Nd:YAB)", doc_id: "10.1007_b138685", pdf_page: 289, what: "Nd:YAB, thermal conductivity coefficient [10], 300 K: 3–4 W/mK (Yb:YAB, 5.6 at.% Yb: 4.7 W/mK, PDF p. 315)"}
+- material: "Ba2NaNb5O15"
+  thermal_conductivity: {value: "3.5", doc_id: "10.1007_b138685", pdf_page: 360, what: "Thermal conductivity coefficient [3]: κ = 3.5 W/mK"}
+- material: "LiIO3"
+  thermal_conductivity: {value: "0.65 ∥c, 1.27 ⊥c", doc_id: "10.1007_b138685", pdf_page: 371, what: "κ = 1.47 W/mK [3]; 300 K: 0.65 (∥c), 1.27 (⊥c) W/mK [5]"}
+- material: "Ag3AsS3"
+  thermal_conductivity: {value: "0.113 ∥c, 0.092 ⊥c", doc_id: "10.1007_b138685", pdf_page: 380, what: "Thermal conductivity coefficient κ [2], 300 K: 0.113 (∥c), 0.092 (⊥c) W/mK"}
+- material: "HgGa2S4"
+  thermal_conductivity: {value: "2.5–2.9 ∥c, 2.3–2.4 ⊥c", doc_id: "10.1007_b138685", pdf_page: 386, what: "Thermal conductivity coefficient κ [3], 293 K: 2.5–2.9 (∥c), 2.3–2.4 (⊥c) W/mK"}
+- material: "CdGeAs2"
+  thermal_conductivity: {value: "4.18", doc_id: "10.1007_b138685", pdf_page: 390, what: "Thermal conductivity coefficient [1]: κ = 4.18 W/mK (or 6.69 W/mK)"}
+- material: "CdSe"
+  thermal_conductivity: {value: "6.9 ∥c, 6.2 ⊥c", doc_id: "10.1007_b138685", pdf_page: 398, what: "Thermal conductivity coefficient [8], 293 K: 6.9 (∥c), 6.2 (⊥c) W/mK"}
+
+# Thermal expansion from Nikogosyan (2005), read from the page images (the values the book's tables quote).
+- material: "BaB2O4"
+  thermal_expansion: {value: "0.36 ∥c, −2.54 ⊥c (293 K)", doc_id: "10.1007_b138685", pdf_page: 15, what: "Linear thermal expansion coefficient αt [3], 293 K: 0.36 (∥c), −2.54 (⊥c) ×10⁻⁶ K⁻¹; mean value 298–1173 K [5]: 36 (∥c), 4.0 (⊥c)"}
+- material: "LiB3O5"
+  thermal_expansion: {value: "107.1 ∥X, −95.4 ∥Y, 33.7 ∥Z (273 K)", doc_id: "10.1007_b138685", pdf_page: 29, what: "Linear thermal expansion coefficient αt [5]: 273 K: 107.1 (∥X), −95.4 (∥Y), 33.7 (∥Z); 323 K: 108.2, −88.0, 33.6 ×10⁻⁶ K⁻¹ (mean 298–423 K [4], PDF p. 30: 66.4, −52.8, 27.3)"}
+- material: "LiNbO3"
+  thermal_expansion: {value: "4.0 ∥c, 15.7 ⊥c (300 K)", doc_id: "10.1007_b138685", pdf_page: 46, what: "Linear thermal expansion coefficient, 300 K: 4.0 (∥c), 15.7 (⊥c) [16]; 4.1, 15.0 [10] ×10⁻⁶ K⁻¹"}
+- material: "KTiOPO4"
+  thermal_expansion: {value: "11 ∥X, 9 ∥Y, 0.6 ∥Z", doc_id: "10.1007_b138685", pdf_page: 65, what: "Linear thermal expansion coefficient [7]: 11 (∥X), 9 (∥Y), 0.6 (∥Z) ×10⁻⁶ K⁻¹; at 373 K [15]: 8.7, 10.5, −0.2"}
+- material: "AgGaS2"
+  thermal_expansion: {value: "−13.2 ∥c, 12.7 ⊥c (298–523 K)", doc_id: "10.1007_b138685", pdf_page: 85, what: "Mean value of linear thermal expansion coefficient αt [7], 298–523 K: −13.2 (∥c), 12.7 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "AgGaSe2"
+  thermal_expansion: {value: "−8.1 ∥c, 19.8 ⊥c (298–423 K)", doc_id: "10.1007_b138685", pdf_page: 96, what: "Mean value of linear thermal expansion coefficient, 298–423 K: −8.1 (∥c), 19.8 (⊥c) [9]; −6.4, 23.4 [4] ×10⁻⁶ K⁻¹"}
+- material: "ZnGeP2"
+  thermal_expansion: {value: "15.9 ∥c, 17.5 ⊥c (293–573 K)", doc_id: "10.1007_b138685", pdf_page: 106, what: "Mean value of linear thermal expansion coefficient [6], 293–573 K: 15.9 (∥c), 17.5 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "GaSe"
+  thermal_expansion: {value: "9.15 ∥c, 10.85 ⊥c (300 K)", doc_id: "10.1007_b138685", pdf_page: 118, what: "Linear thermal expansion coefficient [1], 300 K: 9.15 (∥c), 10.85 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "KH2PO4"
+  thermal_expansion: {value: "42.4 ∥c, 26.8 ⊥c (300 K)", doc_id: "10.1007_b138685", pdf_page: 126, what: "Linear thermal expansion coefficient [4], 300 K: 42.4 (∥c), 26.8 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "NH4H2PO4"
+  thermal_expansion: {value: "4 ∥c, 37 ⊥c (293 K)", doc_id: "10.1007_b138685", pdf_page: 143, what: "Linear thermal expansion coefficient [4], 293 K: 4 (∥c), 37 (⊥c) ×10⁻⁶ K⁻¹; mean 223–323 K [7]: 4.2, 32.0"}
+- material: "KD2PO4"
+  thermal_expansion: {value: "44 ∥c, 24.9 ⊥c", doc_id: "10.1007_b138685", pdf_page: 155, what: "Linear thermal expansion coefficient [7]: 44 (∥c), 24.9 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "LiTaO3"
+  thermal_expansion: {value: "4.2 ∥c, 12.0 ⊥c (300 K)", doc_id: "10.1007_b138685", pdf_page: 195, what: "Linear thermal expansion coefficient [9], 300 K: 4.2 (∥c), 12.0 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "BaTiO3"
+  thermal_expansion: {value: "11.4 (300 K)", doc_id: "10.1007_b138685", pdf_page: 206, what: "Linear thermal expansion coefficient, 300 K: 11.4 ×10⁻⁶ K⁻¹ [10]"}
+- material: "GaAs"
+  thermal_expansion: {value: "5.7 (293 K)", doc_id: "10.1007_b138685", pdf_page: 213, what: "Linear thermal expansion coefficient: 5.7 at 293 K [12]; 5.82 at 300 K [8] ×10⁻⁶ K⁻¹"}
+- material: "BiB3O6"
+  thermal_expansion: {value: "−28.1 ∥a, 53.7 ∥b, 8.5 ∥c (173–573 K)", doc_id: "10.1007_b138685", pdf_page: 223, what: "Mean values of linear thermal expansion coefficient (10⁻⁶ K⁻¹), 173–573 K [4]: α11 (∥a) −28.1, α22 (∥b) 53.7, α33 (∥c) 8.5, α13 −5.5 (crystallographic axes, not x, y, z)"}
+- material: "K2Al2B2O7"
+  thermal_expansion: {value: "8.4 ∥a, 16.5 ∥c (298–573 K)", doc_id: "10.1007_b138685", pdf_page: 227, what: "Mean value of linear thermal expansion coefficient [1], 298–573 K: 8.4 (∥a), 16.5 (∥c) ×10⁻⁶ K⁻¹"}
+- material: "GdCa4O(BO3)3"
+  thermal_expansion: {value: "10.2 ∥a, 8.3 ∥b, 14.3 ∥c (293–1133 K)", doc_id: "10.1007_b138685", pdf_page: 236, what: "Mean value of linear thermal expansion coefficient, 293–1133 K [11]: 10.2 (∥a), 8.3 (∥b), 14.3 (∥c) ×10⁻⁶ K⁻¹"}
+- material: "YCa4O(BO3)3"
+  thermal_expansion: {value: "8.39 ∥a, 5.18 ∥b, 9.17 ∥c (293–473 K)", doc_id: "10.1007_b138685", pdf_page: 242, what: "Mean values of linear thermal expansion coefficient, 293–473 K [8]: 8.39 (∥a), 5.18 (∥b), 9.17 (∥c) ×10⁻⁶ K⁻¹"}
+- material: "Li2B4O7"
+  thermal_expansion: {value: "3.74 ∥c, 11.1 ⊥c", doc_id: "10.1007_b138685", pdf_page: 254, what: "Linear thermal expansion coefficient αt [4]: 3.74 (∥c), 11.1 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "LiInS2"
+  thermal_expansion: {value: "16.4 ∥X, 9.1 ∥Y, 6.8 ∥Z (293 K)", doc_id: "10.1007_b138685", pdf_page: 270, what: "Linear thermal expansion coefficient αt [7], 293 K: 16.4 (∥X), 9.1 (∥Y), 6.8 (∥Z) ×10⁻⁶ K⁻¹"}
+- material: "DLAP"
+  thermal_expansion: {value: "57.4 ∥a, 8.7 ∥b, 18.3 ∥c (298–373 K)", doc_id: "10.1007_b138685", pdf_page: 334, what: "Mean values of linear thermal expansion coefficient (10⁻⁶ K⁻¹) [3], 298–373 K: α11 (∥a) 57.4, α22 (∥b) 8.7, α33 (∥c) 18.3, α13 5.0"}
+- material: "RbH2PO4"
+  thermal_expansion: {value: "42.5 ∥c, 19 ⊥c", doc_id: "10.1007_b138685", pdf_page: 352, what: "Linear thermal expansion coefficient [4]: 42.5 (∥c), 19 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "LiIO3"
+  thermal_expansion: {value: "48 ∥c, 28 ⊥c (298 K)", doc_id: "10.1007_b138685", pdf_page: 371, what: "Linear thermal expansion coefficient, 298 K: 48 (∥c), 28 (⊥c) [6]; 300 K: 50, 25 [5] ×10⁻⁶ K⁻¹"}
+- material: "Ag3AsS3"
+  thermal_expansion: {value: "12 ∥c, 16 ⊥c (300 K)", doc_id: "10.1007_b138685", pdf_page: 380, what: "Linear thermal expansion coefficient [3], 300 K: 12 (∥c), 16 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "CdGeAs2"
+  thermal_expansion: {value: "1.0 ∥c, 11.4 ⊥c (293–673 K)", doc_id: "10.1007_b138685", pdf_page: 389, what: "Mean value of linear thermal expansion coefficient [2], 293–673 K: 1.0 (∥c), 11.4 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "Tl3AsSe3"
+  thermal_expansion: {value: "18.2 ∥c, 28 ⊥c (300 K)", doc_id: "10.1007_b138685", pdf_page: 394, what: "Linear thermal expansion coefficient [3], 300 K: 18.2 (∥c), 28 (⊥c) ×10⁻⁶ K⁻¹"}
+- material: "CdSe"
+  thermal_expansion: {value: "2.45 ∥c, 4.4 ⊥c (77–298 K)", doc_id: "10.1007_b138685", pdf_page: 397, what: "Mean value of linear thermal expansion coefficient [2], 77–298 K: 2.45 (∥c), 4.4 (⊥c) ×10⁻⁶ K⁻¹"}
+
+# Laser-damage thresholds from Nikogosyan (2005), read from the page images, for crystals that had none.
+- material: "AgGaS2"
+  damage: {threshold: "0.02–0.025 GW/cm² (surface)", lambda_um: 1.06, pulse: "35 ns", doc_id: "10.1007_b138685", pdf_page: 91, what: "Laser-induced surface-damage threshold: 1.06 µm, 35 ns, 0.02–0.025 GW/cm² [31]; bulk (PDF p. 92): 1.064 µm, 10 ns, >0.5 GW/cm² [21]"}
+- material: "NH4H2PO4"
+  damage: {threshold: "0.5 GW/cm² (bulk)", lambda_um: 1.06, pulse: "60 ns", doc_id: "10.1007_b138685", pdf_page: 150, what: "Laser-induced bulk-damage threshold: 1.06 µm, 60 ns, 0.5 GW/cm² [80]; 0.6943 µm, 5–25 ns, 0.15–0.24 [21]"}
+- material: "MgO-LiNbO3"
+  damage: {threshold: "0.61 GW/cm² (5 mol% MgO)", lambda_um: 1.0642, pulse: "≈20 ns", doc_id: "10.1007_b138685", pdf_page: 175, what: "Laser-induced damage threshold: 1.0642 µm, ≈20 ns, 0.61 GW/cm² [5], 5 mol% MgO"}
+- material: "LiTaO3"
+  damage: {threshold: "0.47 GW/cm² (surface, 1 pulse); 0.14 (25 pulses)", lambda_um: 1.06, pulse: "30 ns", doc_id: "10.1007_b138685", pdf_page: 197, what: "Laser-induced surface-damage threshold [26]: 1.06 µm, 30 ns, 0.14 (25 pulses), 0.22 (10 pulses), 0.47 GW/cm² (1 pulse)"}
+- material: "RbTiOAsO4"
+  damage: {threshold: ">0.4 GW/cm² (PPRTA)", lambda_um: 1.064, pulse: "10–20 ns", doc_id: "10.1007_b138685", pdf_page: 203, what: "Laser-induced damage threshold: 1.064 µm, 10–20 ns, >0.4 GW/cm² [20], PPRTA"}
+- material: "BaTiO3"
+  damage: {threshold: ">83 GW/cm² (bulk)", lambda_um: 0.596, pulse: "1 ps", doc_id: "10.1007_b138685", pdf_page: 208, what: "Laser-induced bulk-damage threshold [11]: 0.596 µm, 0.001 ns, >83 GW/cm²"}
+- material: "KBe2BO3F2"
+  damage: {threshold: ">11.6 GW/cm²", lambda_um: 0.532, pulse: "35 ps, 10 Hz", doc_id: "10.1007_b138685", pdf_page: 231, what: "Laser-induced damage threshold: 0.532 µm, 0.035 ns, >4.2 [10], >11.6 GW/cm² [8] (10 Hz)"}
+- material: "GdCa4O(BO3)3"
+  damage: {threshold: ">1 GW/cm² (bulk)", lambda_um: 1.064, pulse: "6 ns, 10 Hz", doc_id: "10.1007_b138685", pdf_page: 239, what: "Laser-induced bulk damage threshold: 1.064 µm, 6 ns, >1 GW/cm² [15] (10 Hz); 130 GW/cm² single pulse [6]"}
+- material: "YCa4O(BO3)3"
+  damage: {threshold: ">1 GW/cm² (bulk, 10 Hz); 85 single pulse (10 ns)", lambda_um: 1.064, pulse: "6 ns, 10 Hz", doc_id: "10.1007_b138685", pdf_page: 247, what: "Laser-induced bulk damage threshold: 1.064 µm, 10 ns, 85 GW/cm² (1 pulse) [9]; 6 ns, >1 (10 Hz) [7]"}
+- material: "LiRbB4O7"
+  damage: {threshold: "40 GW/cm² (bulk)", lambda_um: 1.064, pulse: "10 ns, 10 Hz", doc_id: "10.1007_b138685", pdf_page: 256, what: "Laser-induced bulk damage threshold: 1.064 µm, 10 ns, 40 GW/cm² [5] (10 Hz); surface [3]: 8.4 GW/cm²"}
+- material: "YAl3(BO3)4"
+  damage: {threshold: ">0.4–0.6 GW/cm² (Nd:YAB)", lambda_um: 1.06, pulse: "10 ns", doc_id: "10.1007_b138685", pdf_page: 293, what: "Nd:YAB, laser-induced damage threshold: 1.06 µm, 10 ns, >0.4–0.6 GW/cm² [2]"}
+- material: "KB5O8·4H2O"
+  damage: {threshold: ">0.085 GW/cm² (surface)", lambda_um: 1.0642, pulse: "12 ns, 10 Hz", doc_id: "10.1007_b138685", pdf_page: 329, what: "Laser-induced surface-damage threshold: 1.0642 µm, 12 ns, >0.085 GW/cm² [7] (10 Hz)"}
+- material: "DLAP"
+  damage: {threshold: "9–13 GW/cm²", lambda_um: 1.0642, pulse: "1 ns", doc_id: "10.1007_b138685", pdf_page: 336, what: "Laser-induced damage threshold: 1.0642 µm, 1 ns, 9–13 GW/cm² [2]; 14 ns, >1.4 [1]"}
+- material: "HIO3"
+  damage: {threshold: "8–10 GW/cm² (surface)", lambda_um: 0.532, pulse: "35 ps, 1 Hz", doc_id: "10.1007_b138685", pdf_page: 339, what: "α-HIO3, laser-induced surface-damage threshold: 0.532 µm, 0.035 ns, 8–10 GW/cm² [19] (1 Hz); 4–5 at 12.5 Hz"}
+- material: "LiCOOH"
+  damage: {threshold: "0.15 GW/cm² (surface)", lambda_um: 0.475, pulse: "330 ns", doc_id: "10.1007_b138685", pdf_page: 343, what: "LiCOOH·H2O (LFM), laser-induced surface-damage threshold: 0.475 µm, 330 ns, 0.15 GW/cm² [8]"}
+- material: "RbH2PO4"
+  damage: {threshold: ">0.26 GW/cm² (bulk)", lambda_um: 1.0642, pulse: "12 ns, 10–20 Hz", doc_id: "10.1007_b138685", pdf_page: 355, what: "Laser-induced bulk-damage threshold: 1.0642 µm, 12 ns, >0.26 GW/cm² [22] (10–20 Hz)"}
+- material: "Ba2NaNb5O15"
+  damage: {threshold: "0.004 GW/cm²", lambda_um: 1.0642, pulse: "450 ns, 2 kHz", doc_id: "10.1007_b138685", pdf_page: 363, what: "Laser-induced damage threshold: 1.0642 µm, 450 ns, 0.004 GW/cm² [15] (2 kHz)"}
+- material: "CH4N2O - urea"
+  damage: {threshold: "5 GW/cm² (bulk, single pulse)", lambda_um: 1.064, pulse: "10 ns", doc_id: "10.1007_b138685", pdf_page: 369, what: "Urea, laser-induced bulk-damage threshold: 1.064 µm, 10 ns, 5 GW/cm² [15] (single pulse)"}
+- material: "Ag3AsS3"
+  damage: {threshold: ">0.012 GW/cm² (surface)", lambda_um: 1.0642, pulse: "18 ns", doc_id: "10.1007_b138685", pdf_page: 383, what: "Proustite, laser-induced surface-damage threshold: 1.0642 µm, 18 ns, >0.012 GW/cm² [38]"}
+- material: "CdGeAs2"
+  damage: {threshold: "0.033–0.04 GW/cm² (surface)", lambda_um: 10.6, pulse: "150 ns", doc_id: "10.1007_b138685", pdf_page: 392, what: "Laser-induced surface-damage threshold: 10.6 µm, 150 ns, 0.033–0.04 GW/cm² [26]; 9.55 µm, 30 ns, 0.16 [17]"}

@@ -794,3 +794,22 @@
     - {doc_id: "10.1002_pssb.2221620129", doi: 10.1002/pssb.2221620129, cite: "Defregger, Engel, Krempl (1990)", pdf_page: 5, what: "d11(AlPO4)/d11(quartz) = 1.49 ± 0.2 by Maker fringes at 1.064 µm, 296 K; with d11(quartz) = 0.334 pm/V, d11 = 0.498 ± 0.08 pm/V (Table 4; 35 % lower at 783 K)"}
   notes: "32 (berlinite, quartz-like): d12 = d26 = −d11; d14 is zero with Kleinman symmetry. About 1.5 times the earlier value of Miller (1964)"
 
+
+# Computed (tier: computed): the static SHG tensors of the open DFPT database of Trinquet et al. (2024), Materials Cloud
+# Archive 2024.87, CC BY 4.0 (doi:10.24435/materialscloud:w5-d6), for crystals of the site with no measured d. Kept only
+# where the database's structure is the crystal's own phase and its dielectric tensor is diagonal with z the optic axis
+# (the frame of the dispersion formulas). Static (ω → 0) DFT values: of the right size, but typically below measured
+# optical values (GaN's measured d33 is −4.6 pm/V).
+- material: AlN
+  point_group: 6mm
+  d: {15: -0.259, 24: -0.259, 31: -0.259, 32: -0.259, 33: -3.403}
+  sources:
+    - {doi: 10.1038/s41597-024-03590-9, cite: "Trinquet et al. (2024), DFPT", basis: calculated, tier: computed, what: "static SHG tensor of wurtzite AlN (Materials Project mp-661, P6_3mc), nlodb.json; ε∞ = 4.47, 4.47, 4.69 (z the optic axis)"}
+  notes: "6mm, computed; Kleinman holds in the computed tensor (d31 = d15)"
+
+- material: PbTiO3
+  point_group: 4mm
+  d: {15: -23.193, 24: -23.193, 31: -23.193, 32: -23.193, 33: -3.133}
+  sources:
+    - {doi: 10.1038/s41597-024-03590-9, cite: "Trinquet et al. (2024), DFPT", basis: calculated, tier: computed, what: "static SHG tensor of tetragonal PbTiO3 (Materials Project mp-20459, P4mm), nlodb.json; ε∞ = 7.09, 7.09, 6.57 (z the optic axis)"}
+  notes: "4mm, computed; Kleinman holds in the computed tensor (d31 = d15)"

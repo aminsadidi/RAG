@@ -2077,7 +2077,8 @@ function adviseRun() {
         <td>${s.temp_C == null ? "—" : s.temp_C >= 999 ? "> 500" : f1(s.temp_C / L)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : s.lostInRange ? '<span class="err">در بخشی از بازه تطبیق فاز ندارد</span>' : "—"}</td>
         <td>${[x.thermo ? "" : '<span class="err">رفتار دمایی نامعلوم</span>', x.edge ? '<span class="err">نزدیک لبه‌ی جذب</span>' : "",
           HYGRO[PM.props[x.material]?.hygroscopic] || "", damageNote(PM.props[x.material]?.damage),
-          PM.props[x.material]?.thermal_conductivity ? `<span title="${esc(PM.props[x.material].thermal_conductivity.what)}">رسانایی گرمایی: <bdi dir="ltr">${esc(PM.props[x.material].thermal_conductivity.value)} W/(m·K)</bdi></span>` : "",
+          PM.props[x.material]?.thermal_conductivity ? `<span title="${esc(PM.props[x.material].thermal_conductivity.what)}">${tierMark(PM.props[x.material].thermal_conductivity)} رسانایی گرمایی: <bdi dir="ltr">${esc(PM.props[x.material].thermal_conductivity.value)} W/(m·K)</bdi></span>` : "",
+          PM.props[x.material]?.thermal_expansion ? `<span title="${esc(PM.props[x.material].thermal_expansion.what)}">${tierMark(PM.props[x.material].thermal_expansion)} انبساط گرمایی: <bdi dir="ltr">${esc(PM.props[x.material].thermal_expansion.value)} ×10⁻⁶/K</bdi></span>` : "",
           extra[x.material] ? `<span class="err">برون‌یابی؛ بازه‌ی فرمول ${esc(srcOf[x.material])}: <bdi dir="ltr">${extra[x.material][0]}–${extra[x.material][1]} µm</bdi></span>` : "",
           s.how === "qpm" && s.qpm === "poled" ? '<span title="small aperture (typical crystal thickness of ∼1 mm) (10.1364/ol.44.003358, p. 1)">بلور قطبیده: ضخامت معمولاً حدود ۱ میلی‌متر</span>' : "",
           ...(PM.props[x.material]?.notes || []).map((n) => `<span class="err" title="${esc(n.what)}">${esc(LANG === "en" && n.en ? n.en : n.fa)}</span>`)].filter(Boolean).join("<br>")}</td></tr>`; }).join("") : "";
