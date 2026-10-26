@@ -26,6 +26,9 @@ WHAT = {
     "dij": ("nonlinear", "absolute values of its second-order nonlinear coefficients d_ij in pm/V (not only a "
                                      "powder SHG intensity relative to KDP)"),
     "sellmeier": ("refractive", "its refractive indices at several wavelengths or Sellmeier (dispersion) equations"),
+    "damage": ("damage threshold", "its laser-induced damage threshold (with the laser wavelength and pulse duration)"),
+    "expansion": ("thermal expansion", "its thermal expansion coefficients along the crystal axes"),
+    "conductivity": ("thermal conductivity", "its thermal conductivity"),
 }
 
 
@@ -67,7 +70,7 @@ def judge(crystal, kind, c):
 
 
 def main(out, wants, oa=True):
-    jobs = [(cr, kind, c) for cr, kind in (w.split(":") for w in wants) for c in candidates(cr, kind, oa=oa)]
+    jobs = [(cr, kind, c) for cr, kind in (w.rsplit(":", 1) for w in wants) for c in candidates(cr, kind, oa=oa)]
     with ThreadPoolExecutor(8) as ex:
         rows = sorted(ex.map(lambda j: judge(*j), jobs), key=lambda r: (r["crystal"], -r["p"]))
     with open(out, "w", newline="", encoding="utf-8") as f:
