@@ -1483,3 +1483,69 @@
   - {direction: y, page: Umemura-2015, type: 4, range_um: [0.633, 7.56], coefficients: [6.02286, 0.16719, 0.0, 0.03310, 1.0, 311.691, 0.0, 353.976, 1.0]}
   - {direction: z, page: Umemura-2015, type: 4, range_um: [0.633, 7.56], coefficients: [6.49125, 0.16872, 0.0, 0.03783, 1.0, 503.619, 0.0, 402.991, 1.0]}
   checks: []
+
+# Ghosh (1992): room-temperature Sellmeier equations of ADP, KDP and KD*P that go with his thermo-optic constants
+# (thermo_optic.yml), read from the page images (Table I, n² = A + B/(1 − C/λ²) + D/(1 − E/λ²), E = 36 µm²).
+- material: NH4H2PO4
+  doc_id: 10.1117_12.637003
+  doi: 10.1117/12.637003
+  reference: "Ghosh (1992). Dispersion of thermo-optic coefficients and temperature-dependent nonlinear optical devices of some nonlinear crystals. Proc. SPIE 1622, 49–53. doi:10.1117/12.637003"
+  pdf_page: 2
+  where: "Table I (fitted to Zernike's indices at 24.8 °C, 0.2–1.5 µm): o: A = 1.4478123, B = 0.8543407, C = 0.0131030, D = 1.2988482; e: 1.4167795, 0.7464528, 0.0129195, 0.5087636; E = 36"
+  entries:
+  - {direction: o, page: Ghosh-1992, type: 4, range_um: [0.2, 1.5], coefficients: [1.4478123, 0.8543407, 2.0, 0.0131030, 1.0, 1.2988482, 2.0, 36.0, 1.0]}
+  - {direction: e, page: Ghosh-1992, type: 4, range_um: [0.2, 1.5], coefficients: [1.4167795, 0.7464528, 2.0, 0.0129195, 1.0, 0.5087636, 2.0, 36.0, 1.0]}
+  checks: []
+- material: KH2PO4
+  doc_id: 10.1117_12.637003
+  doi: 10.1117/12.637003
+  reference: "Ghosh (1992). Dispersion of thermo-optic coefficients and temperature-dependent nonlinear optical devices of some nonlinear crystals. Proc. SPIE 1622, 49–53. doi:10.1117/12.637003"
+  pdf_page: 2
+  where: "Table I (fitted to Zernike's indices at 24.8 °C, 0.2–1.5 µm): o: A = 1.4595649, B = 0.7988583, C = 0.0127367, D = 1.1062489; e: 1.4380983, 0.6944252, 0.0124272, 0.2731712; E = 36"
+  entries:
+  - {direction: o, page: Ghosh-1992, type: 4, range_um: [0.2, 1.5], coefficients: [1.4595649, 0.7988583, 2.0, 0.0127367, 1.0, 1.1062489, 2.0, 36.0, 1.0]}
+  - {direction: e, page: Ghosh-1992, type: 4, range_um: [0.2, 1.5], coefficients: [1.4380983, 0.6944252, 2.0, 0.0124272, 1.0, 0.2731712, 2.0, 36.0, 1.0]}
+  checks: []
+- material: KD2PO4
+  doc_id: 10.1117_12.637003
+  doi: 10.1117/12.637003
+  reference: "Ghosh (1992). Dispersion of thermo-optic coefficients and temperature-dependent nonlinear optical devices of some nonlinear crystals. Proc. SPIE 1622, 49–53. doi:10.1117/12.637003"
+  pdf_page: 2
+  where: "Table I (KD*P, fitted to Phillips' indices at 25 °C): o: A = 1.4513478, B = 0.7905108, C = 0.0129717, D = 0.5364005; e: 1.5596463, 0.5697706, 0.0144792, 0.3170391; E = 36"
+  entries:
+  - {direction: o, page: Ghosh-1992, type: 4, range_um: [0.2, 1.5], coefficients: [1.4513478, 0.7905108, 2.0, 0.0129717, 1.0, 0.5364005, 2.0, 36.0, 1.0]}
+  - {direction: e, page: Ghosh-1992, type: 4, range_um: [0.2, 1.5], coefficients: [1.5596463, 0.5697706, 2.0, 0.0144792, 1.0, 0.3170391, 2.0, 36.0, 1.0]}
+  checks: []
+
+# BiBO: Miyata, Umemura, Kato (2009), Eq. (1) at 20 °C, read from the page image.
+- material: BiB3O6
+  doc_id: 10.1364_ol.34.000500
+  doi: 10.1364/ol.34.000500
+  reference: "Miyata, Umemura, Kato (2009). Phase-matched pure χ(3) third-harmonic generation in noncentrosymmetric BiB3O6. Opt. Lett. 34, 500–502. doi:10.1364/ol.34.000500"
+  pdf_page: 1
+  where: "Eq. (1), at 20 °C, 0.3263–3.083 µm: n² = A + B/(λ² − C) − Dλ²; x: 3.0759, 0.03169, 0.03323, 0.01402; y: 3.1698, 0.03666, 0.03599, 0.01819; z: 3.6546, 0.05116, 0.03713, 0.02299 (reproduces their THG phase-matching points to ±0.3°)"
+  entries:
+  - {direction: x, page: Miyata-2009, type: 4, range_um: [0.3263, 3.083], coefficients: [3.0759, 0.03169, 0.0, 0.03323, 1.0, 0.0, 0.0, 0.0, 1.0, -0.01402, 2.0]}
+  - {direction: y, page: Miyata-2009, type: 4, range_um: [0.3263, 3.083], coefficients: [3.1698, 0.03666, 0.0, 0.03599, 1.0, 0.0, 0.0, 0.0, 1.0, -0.01819, 2.0]}
+  - {direction: z, page: Miyata-2009, type: 4, range_um: [0.3263, 3.083], coefficients: [3.6546, 0.05116, 0.0, 0.03713, 1.0, 0.0, 0.0, 0.0, 1.0, -0.02299, 2.0]}
+  checks: []
+
+# From the open database ndispers (v0.20, MIT licence), for papers the collection does not hold (tier: database):
+# the numbers are ndispers', which cites the original; not checked against a page here.
+- material: BaB2O4
+  tier: database
+  reference: "Kato, Umemura, Mikami (2010). Sellmeier and thermo-optic dispersion formulas for β-BaB2O4 (revisited). Proc. SPIE 7582, 75820H (as transcribed in ndispers 0.20, betaBBO_KK2010)"
+  where: "n² = A + B/(λ² − C) + D/(λ² − E) at 20 °C, 0.1916–3.22 µm; o: 3.63357, 0.01878, 0.01822, 60.9129, 67.8505; e: 3.33469, 0.01237, 0.01647, 79.0672, 82.2919"
+  entries:
+  - {direction: o, page: Kato-2010, type: 4, range_um: [0.1916, 3.22], coefficients: [3.63357, 0.01878, 0.0, 0.01822, 1.0, 60.9129, 0.0, 67.8505, 1.0]}
+  - {direction: e, page: Kato-2010, type: 4, range_um: [0.1916, 3.22], coefficients: [3.33469, 0.01237, 0.0, 0.01647, 1.0, 79.0672, 0.0, 82.2919, 1.0]}
+  checks: []
+- material: alpha-BaB2O4
+  name: "α-BaB2O4 (alpha barium borate, α-BBO; centrosymmetric: polarizers, not frequency conversion)"
+  tier: database
+  reference: "CASTECH α-BBO data sheet (vendor data), as transcribed in ndispers 0.20 (alphaBBO)"
+  where: "n² = A + B/(λ² − C) − Dλ², 0.19–3.5 µm; o: 2.7471, 0.01878, 0.01822, 0.01354; e: 2.37153, 0.01224, 0.01667, 0.01516"
+  entries:
+  - {direction: o, page: Castech, type: 4, range_um: [0.19, 3.5], coefficients: [2.7471, 0.01878, 0.0, 0.01822, 1.0, 0.0, 0.0, 0.0, 1.0, -0.01354, 2.0]}
+  - {direction: e, page: Castech, type: 4, range_um: [0.19, 3.5], coefficients: [2.37153, 0.01224, 0.0, 0.01667, 1.0, 0.0, 0.0, 0.0, 1.0, -0.01516, 2.0]}
+  checks: []

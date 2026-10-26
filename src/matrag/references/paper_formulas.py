@@ -42,6 +42,7 @@ def catalog(path: Path) -> list[dict]:
                 "doi": paper.get("doi"), "doc_id": paper.get("doc_id"), "path": None,  # no doc_id: the paper is not in the collection
                 "source": "paper", "pdf_page": paper.get("pdf_page"), "where": paper.get("where", ""),
                 "basis": paper.get("basis", "measured"),
+                **({"tier": paper["tier"]} if paper.get("tier") else {}),  # e.g. database: an open database's copy, not read here
             }
             if e["type"] == "tab":
                 pts = sorted([float(x), float(n)] for x, n in e["points"])

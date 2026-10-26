@@ -9,6 +9,8 @@ import json
 import re
 from pathlib import Path
 
+from matrag.references.provenance import tier
+
 AXIS = {"o": "o", "e": "e", "x": "x", "y": "y", "z": "z", "alpha": "x", "beta": "y", "gamma": "z",
         "1": "x", "2": "y", "3": "z"}
 # Database sources kept out of the phase-matching tab (they stay in the refractive index tab): a formula
@@ -20,7 +22,7 @@ EXCLUDE = {
     ("GaN", "Barker"),
 }
 
-KEEP = ("type", "coefficients", "points", "range_um", "reference", "doc_id", "doi", "page", "direction", "basis")
+KEEP = ("type", "coefficients", "points", "range_um", "reference", "doc_id", "doi", "page", "direction", "basis", "tier")
 
 
 def sources(entries: list[dict]) -> list[dict]:
@@ -95,6 +97,11 @@ def build(out: Path, thermo_path: Path | None = None, isotropic: tuple[str, ...]
         found = [s for s in found if (m["material"], s["label"]) not in EXCLUDE]
         if not found:
             continue
+        for s in found:  # the papers' formulas were read from their pages; the other shelves are refractiveindex.info's
+            first = next(iter(s["axes"].values()))
+            calc = "calculated" if any(e.get("basis") == "calculated" for e in s["axes"].values()) else None
+            s["tier"] = tier(first.get("doc_id"), first.get("reference", ""), first.get("tier"), calc) if m["shelf"] == "papers" \
+                else ("computed" if calc else "database")
         if m["material"] in crystals:
             crystals[m["material"]]["sources"] += found
         else:
@@ -129,6 +136,7 @@ def add_thermo(crystals: dict[str, dict], path: Path) -> None:
             raise ValueError(f"thermo_optic.yml: {block['material']} axes {sorted(block['axes'])} "
                              f"do not match the source's {sorted(src['axes'])}")
         src["thermo"] = {k: block[k] for k in ("form", "t0_c", "cite", "doc_id", "doi", "pdf_page", "where", "partial", "basis", "expansion") if k in block}
+        src["thermo"]["tier"] = tier(block.get("doc_id"), block.get("where", ""), block.get("tier"), block.get("basis"), block.get("doi"))
         for axis, spec in block["axes"].items():
             src["axes"][axis]["thermo"] = spec
         if block.get("prefer"):
@@ -158,6 +166,7 @@ def build_nonlinear(out: Path, path: Path) -> int:
             # YAML reads an unquoted id of digits, dots and '_' as a number (10.1088_1464_4258_10_10_104011)
             if "doc_id" in s and not isinstance(s["doc_id"], str):
                 raise ValueError(f"{r['material']}: quote the doc_id {s['doc_id']!r} in {path.name}")
+            s["tier"] = tier(s.get("doc_id"), s.get("what", ""), s.get("tier"), s.get("basis"), s.get("doi"))
     # `partial`: not the full tensor in the dielectric frame; shown, but kept out of d_eff by the site
     data = {r["material"]: {"point_group": str(r["point_group"]), "d": {str(k): float(v) for k, v in r["d"].items()},
                             "sources": r["sources"], "notes": r.get("notes", ""),
@@ -203,5 +212,10 @@ def build_properties(out: Path, path: Path) -> int:
             if not {"threshold", "doc_id", "pdf_page"} <= set(r["damage"]):
                 raise ValueError(f"{r['material']}: damage needs threshold, doc_id and pdf_page")
             e["damage"] = r["damage"]
+    for e in data.values():  # the tier of every value, from the document it was read from
+        for item in [*e.get("sources", []), e.get("hygroscopic_source"), *e.get("notes", []),
+                     *(e.get(k) for k in ("min_pump_um", "thermal_conductivity", "class", "damage"))]:
+            if isinstance(item, dict):
+                item["tier"] = tier(item.get("doc_id"), item.get("what", ""), item.get("tier"), item.get("basis"), item.get("doi"))
     (out / "props.json").write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     return len(data)

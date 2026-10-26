@@ -21,7 +21,8 @@
 #   form "mangin": (1/n)dn/dT = (c0 + c1·T) × 10⁻⁶ (T in °C), each c = [a + b/(λ² − C) + d/(λ² − E) + e/(λ² − E)²]/(2n0²)
 #                 with [a, b, d, e] given; n(T) = n0·exp(∫ from t0) (Mangin et al. 2009).
 #   form "ghosh": 2n·dn/dT = G·R + H·R², R = λ²/(λ² − λig²), G and H (10⁻⁶ /°C) polynomials in T (°C),
-#                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8).
+#                 integrated from t0 (Ghosh 1995, Eqs. 2, 3, 7, 8); optional L (and lil_um): + L·Rl², Rl = λ²/(λ² − λl²)
+#                 (the lattice term of Ghosh 1992).
 #   form "phillips": dn/dT = −c·(n² + a·n + b), constant in T, n the index at t0 (Phillips 1966, Eqs. 7–9).
 #   form "emanueli": Δn = n1·ΔT + n2·ΔT², n1 = Σ a_m/λ^m × 10⁻⁶, n2 = Σ b_m/λ^m × 10⁻⁸ (m = 0..3); `corr` adds
 #                 B(λ − λ0)/(1 + exp(−γ(λ − λ0))) to n1 (B1, 10⁻⁶) and n2 (B2, 10⁻⁹) (Emanueli & Arie 2003, Eqs. 2–4).
@@ -35,6 +36,8 @@
 # partial: true marks a paper that measured only some of the axes; the others keep their t0 index.
 # Every value was read from the PDF page given; the tests (web/test/phasematch.test.js) recompute the
 # phase-matching temperatures the papers report.
+# tier (optional): verified, compiled, database or computed (src/matrag/references/provenance.py); by default it
+# follows from doc_id.
 # expansion (optional, any form): the length along x, L = L0[1 + α(T − t0) + β(T − t0)²]; a QPM grating period grows with it.
 
 - material: KTiOPO4
@@ -1411,3 +1414,69 @@
     x: {lig_um: 0.0530, G: [-127.70167], H: [122.13435]}
     y: {lig_um: 0.0327, G: [372.170, -2.199e-1, 1.1748e-3, -2.05077e-6], H: [-415.10435]}
     z: {lig_um: 0.0435, G: [-446.95031], H: [410.66123, 1.667e-1, -5.1887e-4, 5.56251e-7]}
+
+# Ghosh (1992), Table II (G, H, L in 10⁻⁵ /°C on the page, written here ×10 in 10⁻⁶; λg, λl), read from the page image,
+# with the Sellmeier equations of his Table I.
+- material: NH4H2PO4
+  source: Ghosh-1992
+  doc_id: 10.1117_12.637003
+  cite: "Ghosh (1992)"
+  pdf_page: 3
+  where: "Table II, 2n·dn/dT = G·Re + H·Re² + L·Rl² (fitted to measured dn/dT, refs. 9, 10, 11 and 4, 9, 11); o: G −14.593, H 42.197, L −42.820 ×10⁻⁵, λg 0.138, λl 0.141 µm; e: −1.463, 29.732, −28.686, 0.134, 0.135"
+  t0_c: 24.8
+  form: ghosh
+  axes:
+    o: {lig_um: 0.138, G: [-145.93], H: [421.97], L: [-428.20], lil_um: 0.141}
+    e: {lig_um: 0.134, G: [-14.63], H: [297.32], L: [-286.86], lil_um: 0.135}
+
+- material: KH2PO4
+  source: Ghosh-1992
+  doc_id: 10.1117_12.637003
+  cite: "Ghosh (1992)"
+  pdf_page: 3
+  where: "Table II, 2n·dn/dT = G·Re + H·Re² + L·Rl² (refs. 9, 11, 12, 13 and 4, 9, 11); o: G −9.750, H 29.700, L −30.841 ×10⁻⁵, λg 0.132, λl 0.134 µm; e: −14.937, 28.899, −20.720, 0.128, 0.133"
+  t0_c: 24.8
+  form: ghosh
+  axes:
+    o: {lig_um: 0.132, G: [-97.50], H: [297.00], L: [-308.41], lil_um: 0.134}
+    e: {lig_um: 0.128, G: [-149.37], H: [288.99], L: [-207.20], lil_um: 0.133}
+
+- material: KD2PO4
+  source: Ghosh-1992
+  doc_id: 10.1117_12.637003
+  cite: "Ghosh (1992)"
+  pdf_page: 3
+  where: "Table II, 2n·dn/dT = G·Re + H·Re² + L·Rl² (refs. 4, 9, 11 and 9, 11, 13); o: G −7.357, H 28.990, L −29.426 ×10⁻⁵, λg 0.132, λl 0.133 µm; e: −13.462, 28.156, −19.797, 0.128, 0.134"
+  t0_c: 25
+  form: ghosh
+  axes:
+    o: {lig_um: 0.132, G: [-73.57], H: [289.90], L: [-294.26], lil_um: 0.133}
+    e: {lig_um: 0.128, G: [-134.62], H: [281.56], L: [-197.97], lil_um: 0.134}
+
+# BiBO: the dn/dT that Petrov et al. (2010, Table 3) quote from their ref. 63 at 632.8 and 1064 nm, read from the page image,
+# joined by a straight line in 1/λ (two points per axis: dn/dT = (a + b/λ) × 10⁻⁵), with the Sellmeier equations of Miyata et al.
+- material: BiB3O6
+  source: Miyata-2009
+  doc_id: 10.1002_lpor.200810075
+  cite: "Petrov et al. (2010)"
+  pdf_page: 6
+  where: "Table 3, as quoted from their ref. 63: dn/dT at 632.8 nm x 8.6, y −3.7, z −6.3; at 1064 nm x 3.5, y −5.6, z −6.8 (×10⁻⁶ K⁻¹); a straight line in 1/λ through the two points. These measured values are about ten times smaller than the formula of Umemura et al. (2007), which is fitted to phase-matching temperatures (the 'Umemura' source)"
+  tier: compiled
+  t0_c: 20
+  form: kato
+  axes:
+    x: [{range_um: [0.6328, 1.064], terms: [[-0.3984, 0], [0.7963, -1]]}]
+    y: [{range_um: [0.6328, 1.064], terms: [[-0.8388, 0], [0.2966, -1]]}]
+    z: [{range_um: [0.6328, 1.064], terms: [[-0.7534, 0], [0.0781, -1]]}]
+
+# β-BBO, Kato et al. (2010), from ndispers (tier: database): dn/dT = F/λ³ + G/λ² + H/λ + I (×10⁻⁵), 0.195–1.618 µm
+- material: BaB2O4
+  source: Kato-2010
+  tier: database
+  cite: "Kato, Umemura, Mikami (2010), via ndispers"
+  where: "Proc. SPIE 7582, 75820H, as transcribed in ndispers 0.20: o: F −0.0137, G 0.0607, H −0.1334, I −1.5287; e: 0.0413, −0.2119, 0.4408, −1.2749 (×10⁻⁵)"
+  t0_c: 20
+  form: kato
+  axes:
+    o: [{range_um: [0.195, 1.618], terms: [[-0.0137, -3], [0.0607, -2], [-0.1334, -1], [-1.5287, 0]]}]
+    e: [{range_um: [0.195, 1.618], terms: [[0.0413, -3], [-0.2119, -2], [0.4408, -1], [-1.2749, 0]]}]
