@@ -835,6 +835,67 @@ print(f'✅ Share {WORKER} of {WORKERS} finished.')
     ], gpu=True)
 
 
+def fetch() -> dict:
+    """CPU run: the open-access papers of data/rag-optics/fetch_list.csv saved into their category folders on Drive."""
+    return notebook([
+        md(f"""
+# دریافت مقاله‌های رایگان (نسخه‌ی {VERSION})
+
+فهرست مقاله‌ها (`data/rag-optics/fetch_list.csv`) را Claude در مخزن نگه می‌دارد. این نوت‌بوک روی سرورهای گوگل اجرا
+می‌شود (اینترنت خودتان مهم نیست): نسخه‌ی رایگان هر مقاله را از OpenAlex پیدا می‌کند، دانلود می‌کند و در پوشه‌ی دسته‌اش
+در `RAG-Optics/01_Papers_by_Category` می‌گذارد. GPU لازم نیست. بعد، نوت‌بوک «افزودن مقاله‌های تازه» آن‌ها را نمایه می‌کند.
+"""),
+        code(f"""
+#@title ▶️ دریافت مقاله‌ها
+COLLECTION = "/content/drive/MyDrive/RAG-Optics"  #@param {{type:"string"}}
+BRANCH = "{BRANCH}"
+from google.colab import drive
+drive.mount('/content/drive')
+import csv, io, os, json, time, urllib.parse, requests
+LIST = f"https://raw.githubusercontent.com/aminsadidi/RAG/{{BRANCH}}/data/rag-optics/fetch_list.csv"
+rows = list(csv.DictReader(io.StringIO(requests.get(LIST, timeout=60).text)))
+UA = {{"user-agent": "Mozilla/5.0 MatRAG (University of Isfahan)"}}
+
+def links(doi):
+    # every open-access copy OpenAlex knows (publisher, repository, preprint), PDFs first, then the DOI itself
+    try:
+        w = requests.get(f"https://api.openalex.org/works/doi:{{doi}}", timeout=60).json()
+    except Exception:
+        w = {{}}
+    locs = [l for l in (w.get("locations") or []) if l.get("is_oa")]
+    out = [l["pdf_url"] for l in locs if l.get("pdf_url")] + [l["landing_page_url"] for l in locs if l.get("landing_page_url")]
+    if doi.lower().startswith("10.48550/arxiv."):  # an arXiv DOI: the PDF is at arxiv.org/pdf/<id>
+        out.insert(0, "https://arxiv.org/pdf/" + doi.split("arxiv.", 1)[1])
+    return list(dict.fromkeys(out + [f"https://doi.org/{{doi}}"]))
+
+saved, failed = 0, []
+for r in rows:
+    folder = os.path.join(COLLECTION, "01_Papers_by_Category", r["category"], r["material"])
+    target = os.path.join(folder, r["doi"].replace("/", "-").replace(":", "_") + ".pdf")
+    if os.path.exists(target):
+        continue
+    for url in links(r["doi"]):
+        try:
+            resp = requests.get(url, headers=UA, timeout=120, allow_redirects=True)
+        except Exception:
+            continue
+        if resp.ok and resp.content[:4] == b"%PDF":
+            os.makedirs(folder, exist_ok=True)
+            open(target, "wb").write(resp.content)
+            saved += 1
+            print("✅", r["doi"], "—", r["why"])
+            break
+    else:
+        failed.append(r)
+print(f"\\n{{saved}} saved.")
+if failed:
+    print(f"{{len(failed)}} not downloadable automatically (the publisher asks for a browser). If you can, open the link and save the PDF into the folder shown:")
+    for r in failed:
+        print(f"  https://doi.org/{{r['doi']}}  →  01_Papers_by_Category/{{r['category']}}/{{r['material']}}/  ({{r['why']}})")
+"""),
+    ], gpu=False)
+
+
 if __name__ == "__main__":
     (HERE / "colab_demo.ipynb").write_text(json.dumps(notebook(MAIN), ensure_ascii=False, indent=1) + "\n", "utf-8")
     for n in range(1, WORKERS + 1):
@@ -846,4 +907,5 @@ if __name__ == "__main__":
     (HERE / "colab_new_papers.ipynb").write_text(json.dumps(new_papers(), ensure_ascii=False, indent=1) + "\n",
                                                  "utf-8")
     (HERE / "colab_books.ipynb").write_text(json.dumps(books(), ensure_ascii=False, indent=1) + "\n", "utf-8")
+    (HERE / "colab_fetch.ipynb").write_text(json.dumps(fetch(), ensure_ascii=False, indent=1) + "\n", "utf-8")
     print("written")
