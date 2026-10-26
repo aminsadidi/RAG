@@ -484,6 +484,12 @@ PAPERS = {
     'weber2003.pdf': ('10.1201/9781420050196', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Optical Materials', 'authors': 'Marvin J. Weber', 'year': 2003, 'journal': 'CRC Press (book)'}),
     'weber1986.pdf': ('isbn/9780849335044', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'CRC Handbook of Laser Science and Technology, Vol. IV: Optical Materials, Part 2: Properties', 'authors': 'Marvin J. Weber', 'year': 1986, 'journal': 'CRC Press (book)'}),
     'bass2001.pdf': ('10.1036/0071414797', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Optics, 2nd ed., Vol. IV: Fiber Optics and Nonlinear Optics', 'authors': 'Michael Bass; Jay M. Enoch; Eric W. Van Stryland; William L. Wolfe', 'year': 2001, 'journal': 'McGraw-Hill (book)'}),
+    # 2026-10-26: four more handbooks (uploaded to RAG-Optics/_inbox; the books notebook copies them to _books under
+    # these names). The two Soviet handbooks have no ISBN, so their doc_id is a fixed name
+    'grigoriev1997.pdf': ('isbn/9780849328619', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Handbook of Physical Quantities', 'authors': 'Igor S. Grigoriev; Evgenii Z. Meilikhov', 'year': 1997, 'journal': 'CRC Press (book)'}),
+    'kaye_laby.pdf': ('book/kaye-laby', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Tables of Physical and Chemical Constants', 'authors': 'G. W. C. Kaye; T. H. Laby', 'year': 1995, 'journal': 'Longman (book)'}),
+    'novoselova1979.pdf': ('book/novoselova1979', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Физико-химические свойства полупроводниковых веществ. Справочник (Physicochemical properties of semiconductor substances)', 'authors': 'А. В. Новоселова; В. Б. Лазарев (A. V. Novoselova; V. B. Lazarev)', 'year': 1979, 'journal': 'Наука, Москва (book)'}),
+    'blistanov1982.pdf': ('book/blistanov1982', '08_Theory_Dispersion_Models', 'Reviews_NLO_crystals_databases', {'title': 'Акустические кристаллы. Справочник (Acoustic crystals: a handbook)', 'authors': 'А. А. Блистанов и др., под ред. М. П. Шаскольской (A. A. Blistanov et al., ed. M. P. Shaskolskaya)', 'year': 1982, 'journal': 'Наука, Москва (book)'}),
     'ome-13-7-1852.pdf': ('10.1364/ome.491299', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', {'title': 'Refined Sellmeier and thermo-optic dispersion formulas for BaGa4Se7', 'authors': 'Kiyoshi Kato; Kentaro Miyata; Valentin Petrov', 'year': 2023, 'journal': 'Optical Materials Express'}),
     'badikov2011.pdf': ('10.1364/ome.1.000316', '04_Mid-IR_Chalcopyrites_Chalcogenides', 'BaGa4Se7_BaGa4S7', {'title': 'BaGa4S7: wide-bandgap phase-matchable nonlinear crystal for the mid-infrared', 'authors': 'Valeriy Badikov; Dmitrii Badikov; Galina Shevyrdyaeva; Aleksey Tyazhev; Georgi Marchev; Vladimir Panyutin; Frank Noack; Valentin Petrov; Albert Kwasniewski', 'year': 2011, 'journal': 'Optical Materials Express'}),
     'johnston1977.pdf': ('10.1364/ao.16.001796', '08_Theory_Dispersion_Models', 'Thermo-optic_coefficients', {'title': 'Wavelength dependence of dn/dT in infrared-transmitting semiconductor materials', 'authors': 'George T. Johnston', 'year': 1977, 'journal': 'Applied Optics'}),
@@ -821,15 +827,40 @@ os.environ['MATRAG_DATA_DIR'] = '/content/book_data'  # only the link to the par
 os.environ['MATRAG_CORPUS'] = 'rag-optics'
 !matrag link "{COLLECTION}" > /dev/null
 # the handbooks of the new-papers notebook: file name -> doc_id (its DOI, or ISBN, as a file name)
-BOOKS = {'ghosh1998.pdf': 'isbn_9780122818554', 'bass2001.pdf': '10.1036_0071414797',
-         'weber2003.pdf': '10.1201_9781420050196', 'weber1986.pdf': 'isbn_9780849335044'}
-import pathlib
-for name, doc_id in BOOKS.items():
+# (and the OCR languages of a scanned one: the Russian handbooks need EasyOCR's Cyrillic)
+BOOKS = {'ghosh1998.pdf': ('isbn_9780122818554', ''), 'bass2001.pdf': ('10.1036_0071414797', ''),
+         'weber2003.pdf': ('10.1201_9781420050196', ''), 'weber1986.pdf': ('isbn_9780849335044', ''),
+         'grigoriev1997.pdf': ('isbn_9780849328619', ''), 'kaye_laby.pdf': ('book_kaye_laby', ''),
+         'novoselova1979.pdf': ('book_novoselova1979', 'ru,en'), 'blistanov1982.pdf': ('book_blistanov1982', 'ru,en')}
+# books uploaded to RAG-Optics/_inbox: copied (never moved) to _books under the names above; a .djvu becomes a PDF
+INBOX = {'Handbook of physical quantities': 'grigoriev1997.pdf', 'Tables of physical and chemical constants': 'kaye_laby.pdf',
+         'Физико-химические свойства': 'novoselova1979.pdf', 'Акустические кристаллы': 'blistanov1982.pdf'}
+import pathlib, shutil, subprocess, unicodedata
+inbox = pathlib.Path(COLLECTION) / '_inbox'
+for f in (sorted(inbox.iterdir()) if inbox.is_dir() else []):
+    for start, name in INBOX.items():
+        target = pathlib.Path(DOWNLOADS) / name
+        if not unicodedata.normalize('NFC', f.name).startswith(start) or target.exists():
+            continue
+        local = pathlib.Path('/content') / name
+        if f.suffix.lower() == '.djvu':
+            print('djvu -> pdf:', f.name)
+            subprocess.run(['apt-get', 'install', '-qq', '-y', 'djvulibre-bin'], capture_output=True)
+            subprocess.run(['ddjvu', '-format=pdf', str(f), str(local)], check=True)
+        else:
+            shutil.copy(f, local)
+        shutil.copy(local, str(target) + '.part')  # a copy cut short never looks finished
+        os.replace(str(target) + '.part', target)
+        print('copied to _books:', name)
+if any(lang for _, lang in BOOKS.values()):
+    !pip install -q easyocr 2>&1 | grep -iE "^error" || true
+for name, (doc_id, lang) in BOOKS.items():
     pdf = pathlib.Path(DOWNLOADS) / name
     if not pdf.exists():
         print('not in the downloads folder, skipped:', name)
         continue
-    !matrag convert-book "{pdf}" {doc_id} --shard {WORKER - 1} --shards {WORKERS} 2>&1 | grep --line-buffered -vE "Warning|it/s\\]"
+    opt = f'--lang {lang}' if lang else ''
+    !matrag convert-book "{pdf}" {doc_id} {opt} --shard {WORKER - 1} --shards {WORKERS} 2>&1 | grep --line-buffered -vE "Warning|it/s\\]"
 print(f'✅ Share {WORKER} of {WORKERS} finished.')
 """),
     ], gpu=True)

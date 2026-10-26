@@ -46,6 +46,11 @@ def make_converter(settings: Settings) -> DocumentConverter:
         from docling.datamodel.pipeline_options import RapidOcrOptions
 
         pdf_options.ocr_options = RapidOcrOptions(force_full_page_ocr=True, lang=[settings.ocr_lang])
+        if settings.ocr_lang != "en":
+            # RapidOCR reads Latin script only; EasyOCR reads Cyrillic and others ("ru,en": a Russian handbook)
+            from docling.datamodel.pipeline_options import EasyOcrOptions
+
+            pdf_options.ocr_options = EasyOcrOptions(force_full_page_ocr=True, lang=settings.ocr_lang.split(","))
     converter = DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pdf_options)}
     )

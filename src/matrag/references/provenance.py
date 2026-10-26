@@ -41,6 +41,6 @@ def tier(doc_id: str | None, text: str = "", explicit: str | None = None, basis:
     doc = str(doc_id or "") or (doi_key(doi) if doi else "")
     if not doc:
         return "database"
-    if doc in COMPILATIONS or doc.startswith("isbn_") or "as quoted by" in text or "quoted in" in text:
+    if doc in COMPILATIONS or doc.startswith(("isbn_", "book_")) or "as quoted by" in text or "quoted in" in text:
         return "compiled"
     return "verified"
