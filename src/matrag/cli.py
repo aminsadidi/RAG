@@ -140,6 +140,7 @@ def convert_book(
     doc_id: Annotated[str, typer.Argument(help="Its doc_id (the DOI or ISBN as a file name, e.g. isbn_9780122818554).")],
     shard: Annotated[int, typer.Option(help="This session's number: 0, 1, ..., shards-1.")] = 0,
     shards: Annotated[int, typer.Option(help="Number of sessions sharing the book.")] = 1,
+    lang: Annotated[str, typer.Option(help="OCR languages for a scanned book, e.g. ru,en (EasyOCR).")] = "",
 ) -> None:
     """Convert a share of a long PDF's 10-page parts into the shared cache (OCR if it has no text layer); several
     sessions with --shard/--shards split one book, and `ingest` then joins the parts."""
@@ -154,7 +155,7 @@ def convert_book(
         typer.echo(f"{pdf.name}: already converted")
         return
     # a conversion cut short (an older run kept only the first pages) is done again, whole
-    conv = make_converter(s.model_copy(update={"force_ocr": True}) if ocr else s)
+    conv = make_converter(s.model_copy(update={"force_ocr": True, "ocr_lang": lang or s.ocr_lang}) if ocr else s)
     typer.echo(f"{pdf.name}: {'OCR' if ocr else 'text layer'}, share {shard + 1} of {shards}")
     total, now = convert_parts(pdf, conv, cache, doc_id, shard, shards,
                                on_part=lambda k, n, a, b: typer.echo(f"  part {k}/{n} (pages {a}-{b}) saved"))
