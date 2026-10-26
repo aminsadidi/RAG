@@ -540,6 +540,22 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <span class="hint" id="spdeffinfo"></span>
     </div>
     <div id="spratres" style="direction:ltr" class="hint"></div>
+    <h3 style="margin-top:16px">شمارش آشکارسازها و CAR (برنامه‌ریزی آزمایش)</h3>
+    <p class="hint">آنچه دو آشکارساز تک‌فوتون از این چشمه‌ی پیوسته می‌شمارند: آهنگ جفت R (کارت بالا، با همان ξها) و احتمال‌های شرطی جفت‌شدن به فیبر μ (کارت فیبر)، ضرب در عبور هر بازو (اپتیک، فیلتر، فیبر) و بازده آشکارساز، به‌اضافه‌ی شمارش تاریک. هم‌فرودی تصادفی A = S₁·S₂·τ (دو شمارش بی‌ربط در یک پنجره) است و CAR = C/A. بازده اعلام (Klyshko) احتمال آشکار شدن یک فوتون است وقتی جفتش آشکار شده. چون C با توان پمپ خطی و A با مجذور آن بالا می‌رود، CAR بیشینه‌ای دارد که شمارش تاریک تعیین می‌کند؛ توان‌هایی که به CAR هدف می‌رسند هم داده می‌شوند.</p>
+    <div class="row">
+      <label>عبور بازوی ۱ <input id="spT1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
+      <label>عبور بازوی ۲ <input id="spT2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
+      <label>بازده آشکارساز ۱ <input id="spE1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.6" style="width:56px"></label>
+      <label>بازده آشکارساز ۲ <input id="spE2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.6" style="width:56px"></label>
+    </div>
+    <div class="row">
+      <label>شمارش تاریک ۱ <input id="spD1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="100" style="width:64px"> /s</label>
+      <label>شمارش تاریک ۲ <input id="spD2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="100" style="width:64px"> /s</label>
+      <label>پنجره‌ی هم‌فرودی <input id="spTau" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:56px"> ns</label>
+      <label>CAR هدف <input id="spCarT" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="100" style="width:64px"></label>
+      <button id="spcnt">محاسبه‌ی شمارش</button>
+    </div>
+    <div id="spcntres" style="direction:ltr" class="hint"></div>
   </div>
 </section>
 
@@ -2273,7 +2289,7 @@ new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).o
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
 import { entryIndex, thermoShift } from "/dispersion.js";
 import { eigenIndices, direction, solveAll, effectiveD, fieldVectors, dTensor, contract, groupIndex } from "/phasematch.js";
-import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, pairRate, C_UM_PS } from "/spdc.js";
+import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, pairRate, detectedCounts, powerForCar, C_UM_PS } from "/spdc.js";
 
 const SP = { list: null };
 const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
@@ -2306,6 +2322,7 @@ window.loadSPDC = async () => {
   $("spT").onchange = fillCfg;
   $("spfib").onclick = () => fiber(false);
   $("sprate").onclick = pairs;
+  $("spcnt").onclick = counts;
   $("spcfg").addEventListener("change", fillDeff);
   $("spfibopt").onclick = () => fiber(true);
   fillSrc(); fitWl(); fillCfg();
@@ -2528,6 +2545,37 @@ function pairs() {
       + (r.walkoffMrad.some((x) => Math.abs(x) > 1e-3)
         ? `<br>spatial walk-off ρ (pump, 1, 2) = ${r.walkoffMrad.map((x) => Math.abs(x).toFixed(1)).join(", ")} mrad, included; without it the rate would be ${f(pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw: P, walkoff: false }).rate)} pairs/s`
         : "");
+  }, 20);
+}
+// What the two detectors count (detectedCounts): the pair rate of the card above and the conditional couplings of the
+// fibre card, with the arms' losses, detector efficiencies, dark counts and coincidence window
+function counts() {
+  if (spStop("spcntres")) return;
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
+  const dEff = +$("spdeff").value, P = +$("sppow").value;
+  if (!(dEff > 0) || !(P > 0)) { $("spcntres").textContent = "d_eff و توان پمپ را وارد کنید."; return; }
+  const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
+  const dir = direction(o.plane, o.angle), k = (lam, pol) => { const [sl, fa] = eigenIndices(nAt(lam), dir); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
+  const xs = [+$("spxp").value, +$("spxs").value, +$("spxf2").value];
+  const w = (lam, pol, xi) => Math.sqrt(2 * L_mm * 1000 / (k(lam, pol) * xi));
+  $("spcntres").textContent = "در حال محاسبه…";
+  setTimeout(() => {
+    const r = pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp: w(lp, pols[0], xs[0]), w1: w(l1, pols[1], xs[1]), w2: w(l2, pols[2], xs[2]), powerMw: P });
+    if (!r || !Number.isFinite(r.rate)) { $("spcntres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند.</span>`; return; }
+    const fc = fiberCoupling({ kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]), L_mm, xiP: xs[0], xiS: xs[1], xiI: xs[2], n: 80 });
+    const opts = { R: r.rate, mu12: fc.muIgS, mu21: fc.muSgI, T1: +$("spT1").value, T2: +$("spT2").value, eta1: +$("spE1").value, eta2: +$("spE2").value,
+      dark1: +$("spD1").value, dark2: +$("spD2").value, tauNs: +$("spTau").value };
+    const c = detectedCounts(opts), pw = powerForCar(opts, P, +$("spCarT").value);
+    const f = (v) => v >= 1e6 ? (v / 1e6).toPrecision(3) + "·10⁶" : v >= 100 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3);
+    const pc = (v) => (v * 100).toFixed(1) + "%";
+    const mw = (v) => v >= 1 ? v.toPrecision(3) + " mW" : v >= 1e-3 ? (v * 1e3).toPrecision(3) + " µW" : v >= 1e-6 ? (v * 1e6).toPrecision(3) + " nW" : (v * 1e9).toPrecision(3) + " pW";
+    $("spcntres").innerHTML = `at ${P} mW: R = ${f(r.rate)} pairs/s in the modes; μ₂|₁ = ${pc(fc.muIgS)}, μ₁|₂ = ${pc(fc.muSgI)}<br>`
+      + `<b>singles S₁ = ${f(c.S1)}/s, S₂ = ${f(c.S2)}/s; coincidences C = ${f(c.C)}/s; accidentals A = ${f(c.A)}/s; CAR = ${f(c.CAR)}</b><br>`
+      + `heralding (Klyshko) efficiency: photon 1 ${pc(c.h1)}, photon 2 ${pc(c.h2)}; mean pairs per window R·τ = ${c.pairsPerWindow.toPrecision(3)}`
+      + (Math.max(c.S1, c.S2) > 2e6 ? `<br><span class="err">singles above 2·10⁶/s: most single-photon detectors saturate (dead time); lower the power</span>` : "")
+      + `<br>highest CAR ${f(pw.best.CAR)} at ${pw.best.P > 0 ? mw(pw.best.P) : "the lowest power (no dark counts)"}`
+      + (pw.high ? `; CAR = ${$("spCarT").value} at ${pw.low ? mw(pw.low) + " and " : "up to "}${mw(pw.high)} (between them it is higher)` : `; CAR ${$("spCarT").value} is not reachable with these dark counts`);
   }, 20);
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
