@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex, refractiveIndex } from "../src/dispersion.client.js";
 import { solveAll } from "../src/phasematch.client.js";
-import { apodized, bestPumpBandwidth, benninkF, emissionAngles, pairRate, fiberCoupling, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm } from "../src/spdc.client.js";
+import { apodized, bestPumpBandwidth, benninkF, emissionAngles, pairRate, fiberCoupling, focusing, jointSpectrum, purity, intensity, hom, transformLimitedNm, detectedCounts, powerForCar } from "../src/spdc.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const source = (mat, label) => A.find((c) => c.material === mat).sources.find((s) => !label || s.label === label);
@@ -248,4 +248,18 @@ test("pair rate: spatial walk-off of the e beams in type-II BBO (collimated limi
     ex += (q === 0 || q === 2000 ? 0.5 : 1) * Math.exp(-2 * S) / 2000;
   }
   assert.ok(ex < 0.9 && Math.abs(r.rate / r0.rate / ex - 1) < 0.02, `${r.rate / r0.rate} vs ${ex}`);
+});
+
+test("detected counts: Klyshko efficiency = μ·T·η, CAR = C/(S1·S2·τ), and the pump powers for a target CAR", () => {
+  const base = { R: 1e6, mu12: 0.8, mu21: 0.75, T1: 0.8, T2: 0.9, eta1: 0.6, eta2: 0.5, tauNs: 1 };
+  const c = detectedCounts(base);
+  assert.ok(Math.abs(c.h1 - 0.75 * 0.8 * 0.6) < 1e-12 && Math.abs(c.h2 - 0.8 * 0.9 * 0.5) < 1e-12);
+  assert.ok(Math.abs(c.CAR - c.C / (c.S1 * c.S2 * 1e-9)) < 1e-9 && Math.abs(c.pairsPerWindow - 1e-3) < 1e-15);
+  // with dark counts the CAR has a maximum: at P* = √(D1D2/(b1b2)); the two powers of a lower target bracket it
+  const opts = { ...base, dark1: 500, dark2: 800 }, P = 10, car = (p) => detectedCounts({ ...opts, R: (opts.R / P) * p }).CAR;
+  const r = powerForCar(opts, P, 1000);
+  assert.ok(r.low < r.best.P && r.best.P < r.high);
+  assert.ok(Math.abs(car(r.low) / 1000 - 1) < 1e-9 && Math.abs(car(r.high) / 1000 - 1) < 1e-9);
+  assert.ok(car(r.best.P) > car(r.best.P * 1.05) && car(r.best.P) > car(r.best.P / 1.05));
+  assert.equal(powerForCar(opts, P, 10 * r.best.CAR).high, null); // above the best CAR: unreachable
 });

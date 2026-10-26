@@ -401,3 +401,34 @@ function fiberCouplingFull({ kp, ks, ki, L_mm, xiP, xiS, xiI, n = 64 }) {
   const gs = numS / tot, gi = numI / tot, gc = pair * pair / tot;
   return { wp, ws, wi, gammaS: gs, gammaI: gi, gammaC: gc, muIgS: gc / gs, muSgI: gc / gi };
 }
+
+// What two single-photon detectors count from a CW pair source, for planning an experiment. R: pairs/s with both
+// photons in the collection modes (pairRate); mu12 = μ₂|₁ and mu21 = μ₁|₂: the conditional couplings of
+// fiberCoupling (a photon 1 in its mode has its twin in mode 2 with probability μ₂|₁), so R/μ₂|₁ photons 1 reach mode 1.
+// Each arm then has a transmission T (optics, filter, fibre) and a detector efficiency eta, and dark counts (/s);
+// tauNs is the coincidence window. Returns singles S1, S2, true coincidences C, accidentals A = S1·S2·τ (uncorrelated
+// counts falling in the window), CAR = C/A, the heralding (Klyshko) efficiencies h1 = C/(S2 − D2) (the chance that
+// photon 1 is detected when photon 2 was) and h2 = C/(S1 − D1), and the mean number of pairs per window R·τ.
+export function detectedCounts({ R, mu12, mu21, T1 = 1, T2 = 1, eta1 = 1, eta2 = 1, dark1 = 0, dark2 = 0, tauNs = 1 }) {
+  const tau = tauNs * 1e-9, e1 = T1 * eta1, e2 = T2 * eta2;
+  const S1 = (R / mu12) * e1 + dark1, S2 = (R / mu21) * e2 + dark2;
+  const C = R * e1 * e2, A = S1 * S2 * tau;
+  return { S1, S2, C, A, CAR: C / A, h1: C / (S2 - dark2), h2: C / (S1 - dark1), pairsPerWindow: R * tau };
+}
+
+// The pump powers (same unit as P) at which CAR = target, for counts that scale as above (C, signal singles ∝ P, dark
+// counts fixed), and the power of the highest CAR, P* = √(D1·D2/(b1·b2)) (b: singles per unit power). Below P* dark
+// counts limit the CAR, above it accidental pairs do. Returns { best: {P, CAR}, low, high } (null where unreachable).
+export function powerForCar(opts, P, target) {
+  const one = detectedCounts({ ...opts, R: opts.R / P }); // per unit power
+  const a = one.C, b1 = one.S1 - (opts.dark1 || 0), b2 = one.S2 - (opts.dark2 || 0), D1 = opts.dark1 || 0, D2 = opts.dark2 || 0;
+  const tau = (opts.tauNs ?? 1) * 1e-9;
+  const car = (p) => (a * p) / ((b1 * p + D1) * (b2 * p + D2) * tau);
+  const pBest = D1 > 0 && D2 > 0 ? Math.sqrt((D1 * D2) / (b1 * b2)) : 0;
+  // target·τ·b1b2 P² + (target·τ(b1D2 + b2D1) − a) P + target·τ·D1D2 = 0
+  const qa = target * tau * b1 * b2, qb = target * tau * (b1 * D2 + b2 * D1) - a, qc = target * tau * D1 * D2;
+  const disc = qb * qb - 4 * qa * qc;
+  const roots = disc < 0 ? [] : [(-qb - Math.sqrt(disc)) / (2 * qa), (-qb + Math.sqrt(disc)) / (2 * qa)].filter((x) => x > 0);
+  return { best: { P: pBest, CAR: pBest > 0 ? car(pBest) : Infinity }, low: roots.length === 2 ? roots[0] : null,
+    high: roots.length ? roots[roots.length - 1] : null };
+}
