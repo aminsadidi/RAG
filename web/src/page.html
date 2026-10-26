@@ -356,7 +356,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
     <div class="row">
       <label>بلور <select id="pmmat" style="max-width:300px"></select></label>
-      <label>منبع <select id="pmsrc" style="max-width:260px"></select></label>
+      <label>منبع <select id="pmsrc" style="max-width:260px"></select></label> <span class="hint" title="منشأ هر عدد: سبز از صفحه‌ی مقاله‌ی اصلی، زرد از کتاب مرجع، نارنجی از پایگاه داده‌ی باز، آبی محاسبه‌ی نظری.">🟢 تأییدشده · 🟡 کتاب مرجع · 🟠 پایگاه داده · 🔵 محاسباتی</span>
       <button id="pmgo">محاسبه</button>
       <button class="alt" id="pmall">مقایسه‌ی همه‌ی بلورها</button>
     </div>
@@ -658,7 +658,16 @@ const tempNote = (id, th) => { const v = +$(id).value;
   if ($(id).value.trim() !== "" && v < -273.15) return " — <span class=\"err\">زیر صفر مطلق است؛ در نظر گرفته نشد</span>";
   return th && $(id).value.trim() !== "" && Math.abs(v - th.t0_c) > 200 ? " — <span class=\"err\">بیش از ۲۰۰ °C دور از دمای فرمول: برون‌یابی است و ممکن است درست نباشد</span>" : ""; };
 // Data read from papers (paper_formulas.yml, thermo_optic.yml, nonlinear_coefficients.yml) is measured unless marked basis: calculated
-const basisName = (x) => (x?.basis === "calculated" ? "محاسباتی (نظری)" : "تجربی");
+// where a value comes from (src/matrag/references/provenance.py): a colored mark, a short name, and the whole sentence on hover
+const TIER = {
+  verified: ["🟢", "تأییدشده", "تأییدشده: از صفحه‌ی همان مقاله‌ای که آن را اندازه گرفته است."],
+  compiled: ["🟡", "کتاب مرجع", "از کتاب مرجع یا مقاله‌ی مروری: اندازه‌گیری کارهای دیگر، با صفحه‌ی کتاب بررسی شده است."],
+  database: ["🟠", "پایگاه داده", "از پایگاه داده‌ی باز، با ارجاع به مقاله‌ی اصلی؛ با صفحه‌ی مقاله بررسی نشده است."],
+  computed: ["🔵", "محاسباتی", "محاسباتی (نظری)، نه اندازه‌گیری."],
+};
+const tierMark = (x) => (TIER[x?.tier] ? TIER[x.tier][0] : "");
+const basisName = (x) => (TIER[x?.tier] ? `<span title="${TIER[x.tier][2]}">${TIER[x.tier][0]} ${TIER[x.tier][1]}</span>`
+  : x?.basis === "calculated" ? "محاسباتی (نظری)" : "تجربی");
 // a paper's kind of work (scripts/quality/basis.py, read by SubQ)
 const PAPER_BASIS = { experimental: "تجربی", theoretical: "نظری / محاسباتی", both: "تجربی و نظری", review: "مروری" };
 // a passage's own kind (scripts/quality/passage_basis.py) is shown in place of its paper's: an experimental paper's
@@ -1658,7 +1667,7 @@ function pick(mat, label, fit = true) {
   const cur = PM.crystal === c && !label ? c.sources[+$("pmsrc").value] : null;
   const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, +$("pma").value, +$("pmb").value).length;
   const best = (cur && has(cur) ? cur : null) || c.sources.find(has) || (cur && covers(cur, w) ? cur : null) || c.sources.find((s) => covers(s, w)) || c.sources[0];
-  $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · ${s.isotropic ? "همسان‌گرد" : s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
+  $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${tierMark(s)} ${esc(s.label)} · ${s.isotropic ? "همسان‌گرد" : s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
   $("pmsrc").value = String(c.sources.indexOf(label ? c.sources.find((s) => s.label === label) || best : best));
   PM.crystal = c; $("pmmat").value = mat;
   run();
@@ -1990,7 +1999,7 @@ $("svcfg").onchange = () => { svUnits(); svRun(); };
 // ---------- crystal advisor: the fixed conditions in, every crystal that meets them out (phasematch.js advise)
 const numOr = (id) => { const v = $(id).value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
 // one damage threshold a paper of the collection reports (crystal_properties.yml), with its paper a click away
-const damageNote = (d) => (d ? `<span title="${esc(d.what)}">آستانه‌ی آسیب: <bdi dir="ltr">${esc(d.threshold)}${d.pulse || d.lambda_um ? ` (${[d.pulse, d.lambda_um ? d.lambda_um + " µm" : ""].filter(Boolean).map(esc).join(", ")})` : ""}</bdi></span>` : "");
+const damageNote = (d) => (d ? `<span title="${esc(d.what)}">${tierMark(d)} آستانه‌ی آسیب: <bdi dir="ltr">${esc(d.threshold)}${d.pulse || d.lambda_um ? ` (${[d.pulse, d.lambda_um ? d.lambda_um + " µm" : ""].filter(Boolean).map(esc).join(", ")})` : ""}</bdi></span>` : "");
 const HYGRO = { none: "غیرجاذب رطوبت", slight: "کمی جاذب رطوبت", yes: "جاذب رطوبت", strong: "به‌شدت جاذب رطوبت: گرم یا دربسته نگه دارید" };
 // how established a crystal is: the chapters of Nikogosyan (2005), "newer" ones from later reviews, "research" for the rest
 const CLASS_FA = { basic: "پایه", "main-ir": "اصلی فروسرخ", often: "رایج", poled: "قطبیده / ویفر", new: "جدید", sfd: "خوددوبرابرساز",
@@ -2342,7 +2351,7 @@ const spStop = (out) => { const why = spBad(); if (why) $(out).innerHTML = `<spa
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
   $("spT").placeholder = s.thermo ? String(s.thermo.t0_c) : "—";
-  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")}` : "این منبع وابستگی دمایی ندارد؛ دما اثری ندارد.") + tempNote("spT", s.thermo);
+  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ دما اثری ندارد.") + tempNote("spT", s.thermo);
   $("spl2").innerHTML = spBad() ? `<span class="err">${spBad()}</span>` : `λ₂ = ${l2.toFixed(4)} µm`;
   const opts = [];
   try {

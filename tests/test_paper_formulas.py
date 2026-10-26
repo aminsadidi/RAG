@@ -22,7 +22,7 @@ def curve(material: str, page: str, direction: str):
     raise KeyError((material, page, direction))
 
 
-@pytest.mark.parametrize("paper", PAPERS, ids=lambda p: f"{p['material']}-{p.get('doc_id') or p['doi']}")
+@pytest.mark.parametrize("paper", PAPERS, ids=lambda p: f"{p['material']}-{p.get('doc_id') or p.get('doi') or p['entries'][0]['page']}")
 def test_reported_values(paper):
     """Every value in `checks` (the paper's calculated indices, reference indices) is reproduced."""
     formulas = {str(e["direction"]): e for e in paper["entries"] if e["type"] != "tab"}
@@ -34,7 +34,8 @@ def test_reported_values(paper):
 
 def test_entries_are_well_formed():
     for p in PAPERS:
-        assert (p.get("doc_id") or p.get("doi")) and p["reference"] and p["pdf_page"]  # in the collection, or its DOI
+        # in the collection, or its DOI; a copy from an open database (tier: database) names what it was copied from
+        assert p["reference"] and ((p.get("doc_id") or p.get("doi")) and p["pdf_page"] or p.get("tier") == "database")
         for e in p["entries"]:
             if e["type"] == "tab":
                 lams = [x for x, _ in e["points"]]
@@ -120,7 +121,8 @@ def test_catalog_for_the_site():
     items = paper_formulas.catalog(DATA)
     mats = {i["material"] for i in items}
     assert {"KTiOAsO4", "CsB3O5", "KBe2BO3F2", "CdSiP2", "YCa4O(BO3)3", "La2CaB10O19", "DAST"} <= mats
-    assert all(i["shelf"] == "papers" and (i["doc_id"] or i["doi"]) and i["range_um"][0] < i["range_um"][1] for i in items)
+    assert all(i["shelf"] == "papers" and (i["doc_id"] or i["doi"] or i.get("tier") == "database") and i["range_um"][0] < i["range_um"][1]
+               for i in items)
     assert paper_formulas.names(DATA)[("papers", "papers", "KBe2BO3F2")].endswith("(Potassium fluoroboratoberyllate, KBBF)")
 
 
