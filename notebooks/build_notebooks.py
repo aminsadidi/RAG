@@ -623,7 +623,7 @@ Google Drive را بدهید. با کارت گرافیک T4 (Runtime → Change 
 اگر قطع شد دوباره اجرا کنید؛ کارهای انجام‌شده تکرار نمی‌شوند.
 """),
         code("#@title ▶️ افزودن مقاله‌ها\n"
-             "DOWNLOADS = '/content/drive/MyDrive/proDownloads'  #@param {type:\"string\"}\n" + ENV + """
+             "DOWNLOADS = '/content/drive/MyDrive/MatRAG_Papers'  #@param {type:\"string\"}\n" + ENV + """
 WORK = '/content/drive/MyDrive/matrag_data'
 os.environ['MATRAG_DATA_DIR'] = f'{WORK}/data'
 os.environ['MATRAG_STORAGE_DIR'] = '/content/storage'
