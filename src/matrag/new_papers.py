@@ -23,6 +23,19 @@ def requested(path: Path) -> dict[str, dict]:
     return {doi_key(r["doi"]): r for r in json.loads(path.read_text(encoding="utf-8"))}
 
 
+def doi_in_pdf(pdf: Path, pages: int = 3) -> list[str]:
+    """DOIs printed on the first pages of ``pdf`` (as doi_key forms), in order of appearance."""
+    import pypdfium2 as pdfium
+
+    doc = pdfium.PdfDocument(str(pdf))
+    try:
+        text = " ".join(doc[i].get_textpage().get_text_range() for i in range(min(len(doc), pages)))
+    finally:
+        doc.close()
+    found = re.findall(r"\b(10\.\d{4,9}/[^\s\"<>,;]+)", text)
+    return list(dict.fromkeys(doi_key(d.rstrip(".)]")) for d in found))
+
+
 def auto_papers(downloads: Path, requested_path: Path, skip: set[str] = frozenset()) -> tuple[dict, list[str]]:
     """{file name: (doi, category, material, meta)} for the PDFs in ``downloads`` that are requested papers,
     in the form of the notebook's PAPERS table, and the names of the PDFs that match none (left as they are).
@@ -33,6 +46,11 @@ def auto_papers(downloads: Path, requested_path: Path, skip: set[str] = frozense
         if pdf.name in skip:
             continue
         r = rows.get(doi_key(pdf.stem))
+        if r is None:  # named after its author (zhou2003.pdf): the DOI printed on its first pages
+            try:
+                r = next((rows[d] for d in doi_in_pdf(pdf) if d in rows), None)
+            except Exception:
+                r = None
         if r is None:
             unmatched.append(pdf.name)
             continue
