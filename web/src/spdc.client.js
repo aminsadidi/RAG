@@ -198,9 +198,22 @@ export function pairRate(opts) {
   };
   // the frequency range: out from the centre until |Δk|·L passes 2π·60 (60 lobes of the sinc each side; their
   // tails hold under 1 % of the rate) or the photon reaches 1.6·λ1 on the long side and 0.6·λ1 on the short side
+  // A wave leaving the formula's range (Δk not a number) ends the range there: the rate is then a lower bound
+  // (clipped), as the spectrum beyond the formula is unknown.
+  let clipped = false;
   const reach = (sgn) => {
     let step = 1e-4, off = 0;
-    while (off < 0.4 * nu1c) { off = Math.min(0.4 * nu1c, off + step); if (Math.abs(dk(nu1c + sgn * off)) * L > 2 * Math.PI * 60) break; step *= 1.3; }
+    while (off < 0.4 * nu1c) {
+      const next = Math.min(0.4 * nu1c, off + step), d = dk(nu1c + sgn * next);
+      if (!Number.isFinite(d)) { // the edge of the formula, between off and next
+        let a = off, b = next;
+        for (let k = 0; k < 40; k++) { const m = (a + b) / 2; if (Number.isFinite(dk(nu1c + sgn * m))) a = m; else b = m; }
+        clipped = true; return a;
+      }
+      off = next;
+      if (Math.abs(d) * L > 2 * Math.PI * 60) break;
+      step *= 1.3;
+    }
     return off;
   };
   let lo = nu1c - reach(-1), hi = nu1c + reach(1);
@@ -219,6 +232,9 @@ export function pairRate(opts) {
   // spectrum of photon 1 against wavelength: pairs/s per nm
   const lam = Array.from(spec, (_, q) => C_UM_PS / (lo + q * h) * 1000);
   let pk = 0; for (let q = 1; q < nn; q++) if (spec[q] > spec[pk]) pk = q;
+  // a clip only matters while the spectrum at the formula's edge is still above 0.1 % of its peak (about the tenth
+  // sinc lobe); further out the tails hold well under 1 % of the rate
+  if (clipped && Math.max(spec[0], spec[nn - 1]) < 1e-3 * spec[pk]) clipped = false;
   const perNm = (q) => G0 * spec[q] * 1e12 * (lo + q * h) ** 2 / (C_UM_PS * 1000); // dν/dλ = ν²/c, c in nm·THz
   // FWHM of the photon's spectrum, between the outermost half-maximum crossings (a spectrum with two humps
   // counts as one band). Same-polarization pairs whose range stops at νp/2 hold only half of a spectrum that is
@@ -234,7 +250,7 @@ export function pairRate(opts) {
   if (nuA === null) nuA = nup - nuB; // mirror of the far edge
   if (nuB === null) nuB = nup - nuA;
   const fwhmNm = Math.abs(C_UM_PS / nuA - C_UM_PS / nuB) * 1000;
-  return { rate, perMw: rate / powerMw, fwhmNm, peakPerNm: perNm(pk), lam, spectrum: spec, l2, walkoffMrad: rho.map((r) => r * 1e3) };
+  return { rate, perMw: rate / powerMw, fwhmNm, peakPerNm: perNm(pk), lam, spectrum: spec, l2, walkoffMrad: rho.map((r) => r * 1e3), clipped };
 }
 
 // Purity of the heralded photon, P = Tr(ρ1²) with ρ1 = F F† / Tr(F F†) (no diagonalization needed), and the
