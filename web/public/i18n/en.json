@@ -654,5 +654,6 @@
  "» در مقاله‌ها": "”",
  "زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای بلورهایی که ضرایب غیرخطی‌شان (d": "Phase-matching angle, walk-off, and angular and spectral acceptance for second-harmonic generation (SHG), sum-frequency generation (SFG) and parametric oscillation (OPO/DFG) in the principal planes of the crystal. The refractive indices are the formulas of the “Refractive index” tab (refractiveindex.info and papers of this collection); every number links back to its source paper. For the crystals whose nonlinear coefficients (d",
  "· از مقاله‌ی همین مجموعه، صفحه‌ی": "· from a paper of this collection, page",
- "بازه‌ی طول موج درست نیست («از» باید کمتر از «تا» باشد، بر حسب µm).": "The wavelength range is not valid (“from” must be smaller than “to”, in µm)."
+ "بازه‌ی طول موج درست نیست («از» باید کمتر از «تا» باشد، بر حسب µm).": "The wavelength range is not valid (“from” must be smaller than “to”, in µm).",
+ "بلور بدون پوشش ضدبازتاب (اتلاف فرنل: پمپ در سطح ورودی، هر فوتون در سطح خروجی)": "Uncoated crystal (Fresnel loss: the pump at the input face, each photon at the output face)"
 }
