@@ -469,6 +469,12 @@ async function handle(request, env, ctx) {
     // Range requests (pdf.js reads a large PDF in parts): the PDF Worker's static assets always send the whole
     // file, so the range is cut here; only that part goes over the reader's connection.
     const response = await env.PDFS.fetch(new Request(`https://pdfs${path}`));
+    // a long book is stored in parts, listed in <file>.parts.json (qdrant_store.split_pdf)
+    if (path.endsWith(".parts.json")) {
+      return response.ok && (response.headers.get("content-type") || "").includes("json")
+        ? new Response(response.body, { headers: { "content-type": "application/json", "cache-control": "private, max-age=3600" } })
+        : json({ error: "no parts" }, 404);
+    }
     if (!response.ok || !(response.headers.get("content-type") || "").includes("pdf")) return json({ error: "no pdf" }, 404);
     const headers = { "content-type": "application/pdf", "cache-control": "private, max-age=86400", "x-robots-tag": "noindex",
       "accept-ranges": "bytes" };
