@@ -372,6 +372,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   <div class="card" style="margin-top:14px">
     <h2>جواب‌ها</h2>
     <div style="overflow-x:auto;direction:ltr"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
+    <div id="pmspread" class="hint" style="margin-top:10px"></div>
     <div id="pmoff" style="margin-top:10px"></div>
     <div id="pmqpm" class="hint" style="margin-top:10px"></div>
     <div id="pmncpm" style="margin-top:10px"></div>
@@ -597,6 +598,12 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   </div>
 </section>
 <section id="tab-eval" hidden class="viz-root">
+  <div class="card" id="valcard">
+    <h2>اعتبارسنجی ماشین‌حساب‌ها با عددهای مقاله‌ها</h2>
+    <p class="hint">هر ردیف یک عدد منتشرشده در مقاله‌ای است که سایت دوباره، با همان داده‌ها و کد ماشین‌حساب‌ها، حساب می‌کند: زاویه‌ی تطبیق فاز، d_eff، دمای تطبیق فاز غیربحرانی، دوره‌ی QPM و آهنگ و خلوص جفت فوتون. ✅ یعنی اختلاف در حد دقت گزارش‌شده است؛ ⚠️ اختلافی است که دلیلش کنار آن آمده. همین جدول در تست‌های خودکار سایت هم اجرا می‌شود، پس هر تغییری که عددی را خراب کند پیش از انتشار دیده می‌شود.</p>
+    <button id="valgo">محاسبه‌ی جدول</button> <span class="hint" id="valinfo"></span>
+    <div style="overflow-x:auto;direction:ltr"><table id="valtable" style="direction:ltr;min-width:640px;margin-top:10px"></table></div>
+  </div>
   <div class="card" id="evbig" hidden>
     <h2>ارزیابی بزرگ</h2>
     <p class="hint">برای هر سؤال مقاله‌ی درست (و اگر معلوم است صفحه‌ی درست) از پیش معلوم است. پنج گروه: سؤال‌هایی که مدل زبانی qwen3 روی کارت گرافیک کولب از روی یک بخش متن یا یک جدول از خود مقاله‌ها نوشت (سؤال‌های کپی‌شده از متن یا بدون نام ماده خودکار کنار گذاشته شدند)؛ هر ماده‌ی refractiveindex.info به سه شکل (فرمول، نام، نام کوتاه)؛ مقاله‌های ضرایب غیرخطی؛ و فرمول‌هایی که از خود مقاله‌ها خوانده شد. «سایت» جست‌وجوی Qdrant با یکسان‌سازی فرمول‌ها و جست‌وجوی جداگانه‌ی نام ماده است.</p>
@@ -1778,6 +1785,7 @@ function run() {
           : `<a class="chip" title="${esc(s.what)}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${esc(s.cite)}، ص ${fa(s.pdf_page)} · ${basisName(s)} (خارج از مجموعه)</a>`)).join(" ")
       : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
+    $("pmspread").innerHTML = "";
     const other = c.sources.findIndex((s) => covers(s, w));
     $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">طول موج‌های این فرایند (${[w.l1, w.l2, w.l3].map((x) => x.toFixed(4)).join("، ")} µm) همه باید در بازه‌ی فرمول این منبع (${src.range_um[0]}–${src.range_um[1]} µm) باشند و نیستند. `
       + (other >= 0 ? `<button id="pmother">رفتن به منبع ${esc(c.sources[other].label)} که این بازه را دارد</button>` : `<button id="pmfit">تنظیم خودکار طول موج برای این بلور</button>`)
@@ -1788,6 +1796,7 @@ function run() {
   } else {
     const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
     offCard(c, src, proc, a, b, rows);
+    spreadCard(c, src, proc, a, b, rows);
     $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th>GVM (fs/mm)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
       (rows.map((r) => `<tr><td>${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]}</td><td>${r.type === "I" ? "I" : "II"}</td>
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
@@ -1797,6 +1806,29 @@ function run() {
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
+}
+
+// Source spread: the angle of each solution with every source of the crystal that covers the waves, its largest
+// difference, and the source of the highest tier (measured on the paper's page first) as the suggestion.
+const TIER_RANK = { verified: 0, compiled: 1, database: 2, computed: 3 };
+function spreadCard(c, src, proc, a, b, rows) {
+  const box = $("pmspread"), w = waves(proc, a, b);
+  const others = c.sources.map((s, i) => ({ s, i })).filter(({ s }) => covers(s, w));
+  if (!rows.length) { box.innerHTML = ""; return; }
+  if (others.length < 2) { box.innerHTML = `<b>اختلاف منابع:</b> فقط یک منبع این طول موج‌ها را پوشش می‌دهد؛ مقایسه‌ای ممکن نیست.`; return; }
+  const sols = others.map(({ s, i }) => ({ s, i, r: solveAll(nAt(s), s.kind, proc, a, b) }));
+  const lines = rows.map((r) => {
+    const got = sols.map(({ s, i, r: rr }) => ({ s, i, x: rr.find((q) => q.plane === r.plane && q.type === r.type)?.angle })).filter((g) => g.x !== undefined);
+    if (got.length < 2) return "";
+    const xs = got.map((g) => g.x), d = Math.max(...xs) - Math.min(...xs);
+    return `<div style="direction:ltr;text-align:left">${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]} type ${r.type === "I" ? "I" : "II"}: `
+      + got.map((g) => `<button class="chip${g.s === src ? " coll" : ""}" style="border:0;cursor:pointer" data-src="${g.i}" title="${esc(g.s.label)}">${tierMark(g.s)} ${esc(g.s.label)} ${g.x.toFixed(2)}°</button>`).join(" ")
+      + ` — <b>اختلاف بیشینه ${d.toFixed(2)}°</b></div>`;
+  }).filter(Boolean);
+  const best = others.slice().sort((p, q) => (TIER_RANK[p.s.tier] ?? 9) - (TIER_RANK[q.s.tier] ?? 9) || (p.s === src ? -1 : q.s === src ? 1 : 0))[0];
+  box.innerHTML = lines.length ? `<b>اختلاف منابع</b> (${fa(others.length)} منبع): هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.${lines.join("")}`
+    + `<div>پیشنهاد: منبع <button class="chip coll" style="border:0;cursor:pointer" data-src="${best.i}">${tierMark(best.s)} ${esc(best.s.label)}</button> (بالاترین سطح اعتبار)</div>` : "";
+  for (const btn of box.querySelectorAll("[data-src]")) btn.onclick = () => { $("pmsrc").value = btn.dataset.src; run(); };
 }
 
 // Biaxial crystals: the best d_eff anywhere on the phase-matching cone, next to the principal planes' best.
@@ -2848,6 +2880,30 @@ $("xcards").onclick = (e) => {
   if (act === "filter") { $("material").value = b.dataset.facet; runSearch(); return; }
   ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
   showTab(act);
+};
+</script>
+<script type="module">
+// The validation table: published numbers recomputed with the site's own data and code (web/src/validation.client.js)
+import { entryIndex, thermoShift, refractiveIndex } from "/dispersion.js";
+import { effectiveD, ncpmTemperatures, solveAll, solveMixing } from "/phasematch.js";
+import { jointSpectrum, pairRate, purity } from "/spdc.js";
+import { runValidation } from "/validation.js";
+$("valgo").onclick = async () => {
+  $("valinfo").textContent = "در حال محاسبه…"; $("valgo").disabled = true;
+  try {
+    const [A, D] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json())]);
+    await new Promise((r) => setTimeout(r, 20));
+    const rows = runValidation({ A, D, entryIndex, thermoShift, refractiveIndex, solveAll, effectiveD, ncpmTemperatures, solveMixing, pairRate, jointSpectrum, purity });
+    const fmt = (v, ref) => (!Number.isFinite(v) ? "—" : Math.abs(ref) >= 1000 ? Math.round(v).toLocaleString("en-US") : v.toFixed(Math.abs(ref) < 1 ? 3 : 2));
+    const G = { angle: "phase-matching angle", deff: "d_eff", temp: "NCPM temperature", qpm: "QPM period", spdc: "photon pairs" };
+    $("valtable").innerHTML = "<tr><th></th><th>crystal</th><th>quantity</th><th>paper</th><th>calculator</th><th>difference</th><th>source</th></tr>"
+      + rows.map((r) => `<tr><td>${r.ok ? "✅" : "⚠️"}</td><td>${esc(r.crystal)}</td><td><span class="hint">${G[r.group]}:</span> ${esc(r.what)}</td>`
+        + `<td>${fmt(r.ref, r.ref)} ${esc(r.unit)}</td><td><b>${fmt(r.value, r.ref)}</b> ${esc(r.unit)}</td>`
+        + `<td>${Number.isFinite(r.value) ? (r.value - r.ref >= 0 ? "+" : "") + fmt(r.value - r.ref, r.ref) : "—"}${r.note ? `<br><span class="hint">${esc(r.note)}</span>` : ""}</td><td>${esc(r.cite)}</td></tr>`).join("");
+    const ok = rows.filter((r) => r.ok).length;
+    $("valinfo").textContent = `${fa(ok)} از ${fa(rows.length)} مورد در حد دقت گزارش‌شده`;
+  } catch (e) { $("valinfo").textContent = String(e.message || e); }
+  $("valgo").disabled = false;
 };
 </script>
 <script>

@@ -662,5 +662,16 @@
  "نمایش همه (تا ۸ منحنی)": "Show all (up to 8 curves)",
  "پنهان کردن همه": "Hide all",
  "🔗 کپی لینک این محاسبه": "🔗 Copy a link to this calculation",
- "لینک کپی شد": "Link copied"
+ "لینک کپی شد": "Link copied",
+ "اعتبارسنجی ماشین‌حساب‌ها با عددهای مقاله‌ها": "Validation of the calculators against the papers' numbers",
+ "هر ردیف یک عدد منتشرشده در مقاله‌ای است که سایت دوباره، با همان داده‌ها و کد ماشین‌حساب‌ها، حساب می‌کند: زاویه‌ی تطبیق فاز، d_eff، دمای تطبیق فاز غیربحرانی، دوره‌ی QPM و آهنگ و خلوص جفت فوتون. ✅ یعنی اختلاف در حد دقت گزارش‌شده است؛ ⚠️ اختلافی است که دلیلش کنار آن آمده. همین جدول در تست‌های خودکار سایت هم اجرا می‌شود، پس هر تغییری که عددی را خراب کند پیش از انتشار دیده می‌شود.": "Each row is a number published in a paper that the site recomputes with the same data and code as its calculators: phase-matching angle, d_eff, noncritical phase-matching temperature, QPM period, and the rate and purity of photon pairs. ✅ means the difference is within the reported accuracy; ⚠️ is a difference whose reason is given next to it. The same table runs in the site's automated tests, so any change that breaks a number is seen before it is published.",
+ "محاسبه‌ی جدول": "Compute the table",
+ "مورد در حد دقت گزارش‌شده": "cases within the reported accuracy",
+ "اختلاف منابع": "Spread between sources",
+ "پیشنهاد: منبع": "Suggested: source",
+ "(بالاترین سطح اعتبار)": "(the highest provenance tier)",
+ "فقط یک منبع این طول موج‌ها را پوشش می‌دهد؛ مقایسه‌ای ممکن نیست.": "only one source covers these wavelengths; no comparison is possible.",
+ "اختلاف بیشینه": "largest difference",
+ "منبع): هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.": "sources): Every other source of this crystal that covers these wavelengths gives its own angle; their difference shows how far the number above can be trusted. Click a source to compute with it.",
+ "اختلاف منابع:": "Spread between sources:"
 }
