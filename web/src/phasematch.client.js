@@ -519,3 +519,65 @@ export function advise(crystals, want) {
   return { ok, no, waves: w, range: [lo, hi] };
 }
 const byFomTop = (p, q) => (q.best.fom ?? -1) - (p.best.fom ?? -1) || Math.max(...p.best.walkoff_mrad) - Math.max(...q.best.walkoff_mrad);
+
+// Phase matching off the principal planes of a biaxial crystal: s = (sinθ cosφ, sinθ sinφ, cosθ). Δk depends on
+// s only through sx², sy², sz², so θ, φ in [0, 90°] cover every direction; for each type the phase-matching cone
+// is traced (θ roots at each φ) and, with the d tensor, |d_eff| is the best of the eight sign-equivalent
+// directions (they differ in monoclinic crystals). The direction of the largest |d_eff| is refined and described.
+const dir3 = (t, p) => [Math.sin(t) * Math.cos(p), Math.sin(t) * Math.sin(p), Math.cos(t)];
+function dk3(nAt, t, p, w, type) {
+  const [p1, p2] = TYPES[type], s = dir3(t, p);
+  const n = (lam, pol) => { const [sl, fa] = eigenIndices(nAt(lam), s); return pol === "s" ? sl : fa; };
+  return TWO_PI * (n(w.l3, "f") / w.l3 - n(w.l1, p1) / w.l1 - n(w.l2, p2) / w.l2);
+}
+function deff3(nAt, s, pol, w, D) {
+  const mode = (lam, pl, v) => fieldVectors(nAt(lam), v)[pl === "s" ? 0 : 1];
+  let best = 0;
+  for (const sx of [1, -1]) for (const sy of [1, -1]) for (const sz of [1, -1]) {
+    const v = [sx * s[0], sy * s[1], sz * s[2]];
+    best = Math.max(best, Math.abs(contract(D, mode(w.l3, pol[2], v), mode(w.l1, pol[0], v), mode(w.l2, pol[1], v))));
+  }
+  return best;
+}
+export function offAxis(nAt, process, p, q, d, { stepDeg = 1 } = {}) {
+  const w = waves(process, p, q), D = d ? dTensor(d) : null, R = Math.PI / 180, out = [];
+  // with two equal input waves (SHG) types IIa and IIb are the same solution
+  for (const type of Object.keys(TYPES).filter((t) => !(t === "IIb" && w.l1 === w.l2))) {
+    const [p1, p2] = TYPES[type], pol = [p1, p2, "f"], cone = [];
+    const at = (t, ph) => ({ theta: t / R, phi: ph / R, deff: D ? deff3(nAt, dir3(t, ph), pol, w, D) : null });
+    for (let k = 0; k * stepDeg <= 90 + 1e-9; k++) {
+      const ph = Math.min(90, k * stepDeg) * R;
+      for (const t of roots((x) => dk3(nAt, x, ph, w, type), 360)) cone.push(at(t, ph));
+    }
+    if (!cone.length) continue;
+    let best = cone.reduce((a, b) => ((b.deff ?? 0) > (a.deff ?? 0) ? b : a));
+    // refine around the best φ in steps of 0.05°
+    for (let x = -stepDeg; x <= stepDeg + 1e-9; x += 0.05) {
+      const ph = (best.phi + x) * R;
+      if (ph < 0 || ph > Math.PI / 2 + 1e-12) continue;
+      for (const t of roots((y) => dk3(nAt, y, ph, w, type), 360)) {
+        if (Math.abs(t / R - best.theta) > 5) continue;
+        const c = at(t, ph); if ((c.deff ?? 0) > (best.deff ?? 0)) best = c;
+      }
+    }
+    out.push({ type, pol, waves: w, cone, best: { ...best, ...describe3(nAt, best.theta * R, best.phi * R, process, p, q, type) } });
+  }
+  return out;
+}
+// Indices, walk-off and acceptances (1 cm) of one direction: walk-off from the gradient of n over the direction,
+// tan ρ = |∂n/∂θ, (1/sinθ)·∂n/∂φ| / n; the angular acceptances in θ and in φ separately.
+function describe3(nAt, t, p, process, a, b, type) {
+  const w = waves(process, a, b), [p1, p2] = TYPES[type], limit = HALF / L_UM, h = 1e-5;
+  const n = (lam, pol, tt = t, pp = p) => { const [sl, fa] = eigenIndices(nAt(lam), dir3(tt, pp)); return pol === "s" ? sl : fa; };
+  const rho = [[w.l1, p1], [w.l2, p2], [w.l3, "f"]].map(([lam, pol]) => {
+    const dt = (n(lam, pol, t + h) - n(lam, pol, t - h)) / (2 * h);
+    const dp = Math.sin(t) > 1e-6 ? (n(lam, pol, t, p + h) - n(lam, pol, t, p - h)) / (2 * h) / Math.sin(t) : 0;
+    return Math.atan(Math.hypot(dt, dp) / n(lam, pol)) * 1e3;
+  });
+  return {
+    n: [[w.l1, p1], [w.l2, p2], [w.l3, "f"]].map(([lam, pol]) => n(lam, pol)), walkoff_mrad: rho,
+    dtheta_mrad: width((x) => dk3(nAt, t + x, p, w, type), limit, 1e-6, 0.5) * 1e3,
+    dphi_mrad: width((x) => dk3(nAt, t, p + x, w, type), limit, 1e-6, 0.5) * 1e3,
+    spectral_nm: width((x) => dk3(nAt, t, p, shifted(process, a, b, x), type), limit, 1e-6, 0.5) * 1e3,
+  };
+}

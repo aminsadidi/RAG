@@ -655,5 +655,12 @@
  "زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای بلورهایی که ضرایب غیرخطی‌شان (d": "Phase-matching angle, walk-off, and angular and spectral acceptance for second-harmonic generation (SHG), sum-frequency generation (SFG) and parametric oscillation (OPO/DFG) in the principal planes of the crystal. The refractive indices are the formulas of the “Refractive index” tab (refractiveindex.info and papers of this collection); every number links back to its source paper. For the crystals whose nonlinear coefficients (d",
  "· از مقاله‌ی همین مجموعه، صفحه‌ی": "· from a paper of this collection, page",
  "بازه‌ی طول موج درست نیست («از» باید کمتر از «تا» باشد، بر حسب µm).": "The wavelength range is not valid (“from” must be smaller than “to”, in µm).",
- "بلور بدون پوشش ضدبازتاب (اتلاف فرنل: پمپ در سطح ورودی، هر فوتون در سطح خروجی)": "Uncoated crystal (Fresnel loss: the pump at the input face, each photon at the output face)"
+ "بلور بدون پوشش ضدبازتاب (اتلاف فرنل: پمپ در سطح ورودی، هر فوتون در سطح خروجی)": "Uncoated crystal (Fresnel loss: the pump at the input face, each photon at the output face)",
+ "جست‌وجو در همه‌ی جهت‌ها، بیرون از صفحه‌های اصلی (θ و φ)": "Search every direction, off the principal planes (θ and φ)",
+ "در بلور دومحوره، تطبیق فاز روی یک مخروط از جهت‌هاست و صفحه‌های اصلی فقط سه برش آن‌اند؛ گاهی d_eff بیشتر بیرون از آن‌هاست. برای هر نوع، بیشترین d_eff روی مخروط پیدا می‌شود (گام φ یک درجه، بعد ریزتر).": "In a biaxial crystal phase matching lies on a cone of directions and the principal planes are only three cuts of it; sometimes d_eff is larger off them. For each type the largest d_eff on the cone is found (φ in 1° steps, then finer).",
+ "در هیچ جهتی تطبیق فاز ممکن نیست.": "Phase matching is not possible in any direction.",
+ "نمایش همه (تا ۸ منحنی)": "Show all (up to 8 curves)",
+ "پنهان کردن همه": "Hide all",
+ "🔗 کپی لینک این محاسبه": "🔗 Copy a link to this calculation",
+ "لینک کپی شد": "Link copied"
 }

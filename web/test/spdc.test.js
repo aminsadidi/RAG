@@ -263,3 +263,13 @@ test("detected counts: Klyshko efficiency = μ·T·η, CAR = C/(S1·S2·τ), and
   assert.ok(car(r.best.P) > car(r.best.P * 1.05) && car(r.best.P) > car(r.best.P / 1.05));
   assert.equal(powerForCar(opts, P, 10 * r.best.CAR).high, null); // above the best CAR: unreachable
 });
+
+test("pair rate: a spectrum reaching past the formula's range is integrated up to its edge, not lost", async () => {
+  const { pairRate } = await import("../src/spdc.client.js");
+  // a toy uniaxial crystal valid 0.5–1.6 µm, type-0 like (all extraordinary), degenerate at 1.55: wide spectrum
+  const n = (l) => Math.sqrt(1 + 2.2 * l * l / (l * l - 0.04)) - 0.01 * l * l;
+  const nAt = (l) => (l < 0.5 || l > 1.6 ? [NaN, NaN, NaN] : [n(l), n(l), n(l) + 0.05]);
+  const r = pairRate({ nAt, plane: "xz", angle: 0, pols: ["s", "s", "s"], lp: 0.775, l1: 1.55, L_mm: 10, dEff: 10, wp: 30, w1: 30, w2: 30, kg: "auto" });
+  assert.ok(r && Number.isFinite(r.rate) && r.rate > 0);
+  assert.equal(typeof r.clipped, "boolean");
+});

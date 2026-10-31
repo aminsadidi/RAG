@@ -214,7 +214,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
 
 <main>
   <div id="sitebanner" class="card" hidden style="border:1px solid var(--accent);background:var(--soft)"></div>
-<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p></div>
+<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p><button class="alt" id="sharelink" hidden>🔗 کپی لینک این محاسبه</button></div>
 <section id="tab-search">
   <div class="card">
     <textarea id="q" placeholder="سؤال را به فارسی یا انگلیسی بنویسید، مثلاً: ضرایب سلمایر بلور LBO"></textarea>
@@ -268,6 +268,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   </div>
   <div class="card" style="margin-top:14px">
     <h2>منابع و مقدار n در طول موج انتخاب‌شده</h2>
+    <div class="chips"><span class="tools"><button data-act="all" id="riall">نمایش همه (تا ۸ منحنی)</button><button data-act="none" id="rinone">پنهان کردن همه</button></span></div>
     <div id="rientries"></div>
     <div id="rispread" class="hint" style="margin-top:8px"></div>
   </div>
@@ -371,6 +372,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   <div class="card" style="margin-top:14px">
     <h2>جواب‌ها</h2>
     <div style="overflow-x:auto;direction:ltr"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
+    <div id="pmoff" style="margin-top:10px"></div>
     <div id="pmqpm" class="hint" style="margin-top:10px"></div>
     <div id="pmncpm" style="margin-top:10px"></div>
     <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
@@ -697,6 +699,10 @@ const basisChip = (p) => (PASSAGE_BASIS[p.basis_p] ? `<span class="chip" title="
 const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده", metadata_only: "فقط عنوان" };
 
 // ---------- tabs
+// tabs whose inputs a link can carry, and the button that computes with them
+const SHARE_TABS = { index: "", pm: "pmgo", advisor: "advgo", spdc: "spgo" };
+// a select each tab fills once its data are loaded: the link's values wait for it
+const SHARE_READY = { pm: "pmmat", advisor: "cutmat", spdc: "spmat" };
 const TAB_GROUP = { library: ["library", "eval"], paper: ["paper"] };
 const TAB_TITLE = {
   search: ["جست‌وجو در مقاله‌ها", "پرسش به فارسی یا انگلیسی؛ پاسخ با ارجاع به صفحه‌ی مقاله"],
@@ -716,10 +722,11 @@ function showTab(name) {
   const [tt, st] = TAB_TITLE[name] || ["", ""];
   $("ptitle").textContent = tt; $("psub").textContent = st;
   if (name === "library") { loadFacets(); loadPapers(); loadEval(); }
-  if (name === "index") loadFormulas();
+  if (name === "index") window.loadFormulas?.();
   if (name === "pm") window.loadPM?.();
   if (name === "advisor") window.loadAdvisor?.();
   if (name === "spdc") window.loadSPDC?.();
+  $("sharelink").hidden = !SHARE_TABS[name];
   window.scrollTo(0, 0);
   document.querySelector("nav button.on")?.scrollIntoView({ block: "nearest", inline: "center" });
 }
@@ -1100,6 +1107,7 @@ import { entryIndex } from "/dispersion.js";
 // ---------- refractive index tab: n(λ) of every refractiveindex.info entry for a material, plus the user's own data
 // A curve has a key: "db:<i>" (entry i of the material) or "u:<id>" (a user entry, kept in this browser).
 const RI = { byMat: new Map(), inColl: {}, shown: new Set(), slots: new Map(), mat: null, unit: "um", user: [] };
+window.RI = RI; // for a shared link (the last script)
 const MAX_SERIES = 8; // categorical slots; more entries are listed but not all drawn at once
 const color = (slot) => `var(--series-${slot + 1})`;
 const dirName = (d) => (d ? { o: "ordinary (o)", e: "extraordinary (e)", x: "x", y: "y", z: "z", alpha: "α", beta: "β", gamma: "γ", 1: "n1 (x1)", 2: "n2 (x2)", 3: "n3 (x3)" }[d] || d : "");
@@ -1335,7 +1343,7 @@ function renderEntries(probe) {
 }
 
 function renderUser(probe) {
-  $("riuser").innerHTML = RI.user.map((u) => entryRow({ key: `u:${u.id}`, e: u }, probe, `
+  $("riuser").innerHTML = RI.user.filter(mine).map((u) => entryRow({ key: `u:${u.id}`, e: u }, probe, `
     <span class="hint"> ${u.kind === "points" ? `${u.points.length} نقطه‌ی اندازه‌گیری` : `فرمول ${u.label || u.type}`} · <bdi dir="ltr">${fmtL(u.range_um[0])}–${fmtL(u.range_um[1])} ${unitName()}</bdi></span>
     ${u.note ? `<br><span class="hint">${esc(u.note)}</span>` : ""}
     <div class="chips"><span class="tools"><button data-act="edit">ویرایش</button><button data-act="del">حذف</button></span></div>`)).join("") ||
@@ -1361,6 +1369,17 @@ for (const box of ["rientries", "riuser"]) $(box).addEventListener("click", (ev)
     render();
   }
 });
+
+// tick every curve of this material (the first eight: the chart's limit), or none
+function showAll(on) {
+  for (const c of curves()) {
+    if (on) show(c.key, true); else show(c.key, false);
+    if (c.e.user) c.e.visible = RI.shown.has(c.key);
+  }
+  saveUser(); render();
+}
+$("riall").onclick = () => showAll(true);
+$("rinone").onclick = () => showAll(false);
 
 // ---------- the entry form
 const HELP = {
@@ -1582,7 +1601,7 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 <script type="module">
 // ---------- phase-matching tab (web/src/phasematch.client.js does the physics)
 import { entryIndex, thermoShift } from "/dispersion.js";
-import { advise, contract, cutTemperatures, describe, dTensor, effectiveD, MIN_PERIOD, mixingWidths, ncpmTemperatures, ONE, PAIR, qpmSolutions, solveAll, solveMixing, temperatureAcceptance, waves } from "/phasematch.js";
+import { advise, contract, cutTemperatures, describe, dTensor, effectiveD, MIN_PERIOD, mixingWidths, ncpmTemperatures, offAxis, ONE, PAIR, qpmSolutions, solveAll, solveMixing, temperatureAcceptance, waves } from "/phasematch.js";
 
 const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
 const PROC = {
@@ -1768,6 +1787,7 @@ function run() {
     else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
   } else {
     const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
+    offCard(c, src, proc, a, b, rows);
     $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th>GVM (fs/mm)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
       (rows.map((r) => `<tr><td>${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]}</td><td>${r.type === "I" ? "I" : "II"}</td>
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
@@ -1777,6 +1797,25 @@ function run() {
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
+}
+
+// Biaxial crystals: the best d_eff anywhere on the phase-matching cone, next to the principal planes' best.
+function offCard(c, src, proc, a, b, rows) {
+  const box = $("pmoff");
+  if (src.kind !== "biaxial") { box.innerHTML = ""; return; }
+  box.innerHTML = `<button class="alt" id="pmoffgo">جست‌وجو در همه‌ی جهت‌ها، بیرون از صفحه‌های اصلی (θ و φ)</button> <span class="hint">در بلور دومحوره، تطبیق فاز روی یک مخروط از جهت‌هاست و صفحه‌های اصلی فقط سه برش آن‌اند؛ گاهی d_eff بیشتر بیرون از آن‌هاست. برای هر نوع، بیشترین d_eff روی مخروط پیدا می‌شود (گام φ یک درجه، بعد ریزتر).</span><div id="pmoffres"></div>`;
+  $("pmoffgo").onclick = () => {
+    $("pmoffres").innerHTML = '<p class="hint">در حال محاسبه…</p>';
+    setTimeout(() => {
+      const d = PM.dij[c.material]?.d, res = offAxis(nAt(src), proc, a, b, d);
+      const inPlane = (t) => Math.max(0, ...rows.filter((r) => r.type === t && r.deff != null).map((r) => r.deff));
+      $("pmoffres").innerHTML = res.length ? `<div style="overflow-x:auto;direction:ltr"><table style="direction:ltr;min-width:640px"><tr><th>type</th><th>θ</th><th>φ</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>best in a principal plane</th><th>walk-off (mrad)</th><th>Δθ·L, Δφ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th><th>cone points</th></tr>`
+        + res.map((r) => { const x = r.best; return `<tr><td>${r.type === "I" ? "I" : "II"}</td><td><b>${x.theta.toFixed(2)}°</b></td><td><b>${x.phi.toFixed(2)}°</b></td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
+          <td>${x.n.map((v) => v.toFixed(4)).join(", ")}</td><td><b>${x.deff == null ? "—" : x.deff.toFixed(2)}</b></td><td>${d ? inPlane(r.type).toFixed(2) : "—"}</td>
+          <td>${Math.max(...x.walkoff_mrad).toFixed(1)}</td><td>${x.dtheta_mrad.toFixed(2)}, ${x.dphi_mrad.toFixed(2)}</td><td>${x.spectral_nm.toFixed(2)}</td><td>${r.cone.length}</td></tr>`; }).join("") + "</table></div>"
+        : '<p class="hint">در هیچ جهتی تطبیق فاز ممکن نیست.</p>';
+    }, 20);
+  };
 }
 
 // The temperature line: the source's thermo-optic formula, or why the temperature has no effect.
@@ -2582,7 +2621,8 @@ function pairs() {
       + `<br>temporal walk-off of the two photons: |1/v<sub>g1</sub> − 1/v<sub>g2</sub>|·L = ${(Math.abs(groupIndex(nAt, o.plane, o.angle, l1, pols[1]) - groupIndex(nAt, o.plane, o.angle, l2, pols[2])) / 2.99792458e-4 * L_mm).toFixed(0)} fs`
       + (r.walkoffMrad.some((x) => Math.abs(x) > 1e-3)
         ? `<br>spatial walk-off ρ (pump, 1, 2) = ${r.walkoffMrad.map((x) => Math.abs(x).toFixed(1)).join(", ")} mrad, included; without it the rate would be ${f(pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw: P, walkoff: false }).rate)} pairs/s`
-        : "");
+        : "")
+      + (r.clipped ? `<br><span class="err">the pair spectrum reaches past this source's formula range (${s.range_um[0]}–${s.range_um[1]} µm): integrated up to its edge, so this rate (and the bandwidth) is a lower bound</span>` : "");
   }, 20);
 }
 // What the two detectors count (detectedCounts): the pair rate of the card above and the conditional couplings of the
@@ -2612,6 +2652,7 @@ function counts() {
     const pc = (v) => (v * 100).toFixed(1) + "%";
     const mw = (v) => v >= 1 ? v.toPrecision(3) + " mW" : v >= 1e-3 ? (v * 1e3).toPrecision(3) + " µW" : v >= 1e-6 ? (v * 1e6).toPrecision(3) + " nW" : (v * 1e9).toPrecision(3) + " pW";
     $("spcntres").innerHTML = `at ${P} mW: R = ${f(r.rate)} pairs/s in the modes; μ₂|₁ = ${pc(fc.muIgS)}, μ₁|₂ = ${pc(fc.muSgI)}<br>`
+      + (r.clipped ? `<span class="err">the pair spectrum reaches past this source's formula range (${s.range_um[0]}–${s.range_um[1]} µm): integrated up to its edge, so this rate is a lower bound</span>` : "") + (r.clipped ? "<br>" : "")
       + (loss[0] ? `uncoated crystal, Fresnel reflection: pump ${pc(loss[0])}, photon 1 ${pc(loss[1])}, photon 2 ${pc(loss[2])} (already in R and in the arm transmissions)<br>` : "")
       + `<b>singles S₁ = ${f(c.S1)}/s, S₂ = ${f(c.S2)}/s; coincidences C = ${f(c.C)}/s; accidentals A = ${f(c.A)}/s; CAR = ${f(c.CAR)}</b><br>`
       + `heralding (Klyshko) efficiency: photon 1 ${pc(c.h1)}, photon 2 ${pc(c.h2)}; mean pairs per window R·τ = ${c.pairsPerWindow.toPrecision(3)}`
@@ -2825,6 +2866,44 @@ api("/api/me").then((r) => r.json()).then((me) => {
   if (!me.search) document.documentElement.classList.add("nosearch");
   if (me.banner) { const b = document.getElementById("sitebanner"); b.textContent = "📢 " + me.banner; b.hidden = false; }
 }).catch(() => {});
+// A link to a calculation: the tab and the values of its boxes in the address (#tab=pm&pma=1.064&…). Opened,
+// the boxes are filled in the page's order (a crystal before its sources: each value waits up to 15 s for its
+// option to exist) and the tab's button is pressed.
+const shareFields = (tab, visible = true) => [...document.querySelectorAll(`#tab-${tab} input[id], #tab-${tab} select[id]`)]
+  .filter((el) => el.type !== "file" && el.id !== "rimat" && !(visible && el.closest("[hidden]")));
+$("sharelink").onclick = () => {
+  const tab = document.querySelector("main > section:not([hidden])")?.id.slice(4);
+  if (!(tab in SHARE_TABS)) return;
+  const q = new URLSearchParams({ tab });
+  if (tab === "index" && $("rimat").value) q.set("rimat", $("rimat").value);
+  for (const el of shareFields(tab)) {
+    const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value;
+    if (v !== "" && v !== el.defaultValue && !(el.type === "checkbox" && el.checked === el.defaultChecked)) q.set(el.id, v);
+  }
+  const url = `${location.origin}/#${q}`, b = $("sharelink");
+  navigator.clipboard?.writeText(url).then(() => { b.textContent = "لینک کپی شد"; setTimeout(() => { b.textContent = "🔗 کپی لینک این محاسبه"; }, 1500); }).catch(() => prompt("", url));
+};
+async function openShared() {
+  const q = new URLSearchParams(location.hash.slice(1)), tab = q.get("tab");
+  if (!(tab in SHARE_TABS)) return;
+  const until = async (ok) => { for (let k = 0; k < 150 && !ok(); k++) await new Promise((r) => setTimeout(r, 100)); return ok(); };
+  // the page's modules (they define the tabs' loaders) run after this script: wait for them too
+  if (!(await until(() => window.ME && window.loadFormulas && window.loadSPDC && window.loadAdvisor)) || !window.ME.tabs.includes(tab)) return;
+  showTab(tab);
+  if (SHARE_READY[tab] && !(await until(() => $(SHARE_READY[tab]).options.length))) return;
+  if (tab === "index" && q.get("rimat")) { await until(() => window.RI.byName); window.riSelectCrystal(q.get("rimat")); await until(() => window.RI.mat === q.get("rimat")); }
+  for (const el of shareFields(tab, false)) {
+    if (!q.has(el.id)) continue;
+    const v = q.get(el.id);
+    if (el.type === "checkbox") el.checked = v === "1";
+    else if (el.tagName === "SELECT") { if (!(await until(() => [...el.options].some((o) => o.value === v)))) continue; el.value = v; }
+    else el.value = v;
+    el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  if (SHARE_TABS[tab]) $(SHARE_TABS[tab])?.click();
+}
+openShared();
+window.addEventListener("hashchange", openShared); // a link pasted into an open page
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-xact]");
   if (b && window.ME && b.dataset.xact !== "filter" && !window.ME.tabs.includes(b.dataset.xact)) { e.stopImmediatePropagation(); e.preventDefault(); }

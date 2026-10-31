@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { entryIndex, thermoShift } from "../src/dispersion.client.js";
-import { advise, cutTemperatures, qpmSolutions, deltaK, eigenIndices, effectiveD, fieldVectors, ncpmAcceptance, ncpmTemperatures, solveAll, temperatureAcceptance, waves } from "../src/phasematch.client.js";
+import { advise, cutTemperatures, qpmSolutions, deltaK, eigenIndices, effectiveD, fieldVectors, ncpmAcceptance, ncpmTemperatures, offAxis, solveAll, temperatureAcceptance, waves } from "../src/phasematch.client.js";
 
 const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
 const D = JSON.parse(readFileSync(new URL("../public/ri/dij.json", import.meta.url)));
@@ -977,4 +977,20 @@ test("Ghosh (1994) G, H of LiIO3 give the dn/dT measured constant by Umegaki, an
   assert.ok(Math.abs(dndt("LiIO3", "Herbst", "o", 1.064) / -9.35e-5 - 1) < 0.03);
   assert.ok(Math.abs(dndt("LiIO3", "Herbst", "e", 1.064) / -8.25e-5 - 1) < 0.03);
   assert.ok(Math.abs(dndt("LiNbO3", "Zelmon", "e", 1.064) / dndt("LiNbO3", "Jundt-1997", "e", 1.064) - 1) < 0.05);
+});
+
+test("off the principal planes: the cone search finds the principal-plane optimum where it is the best", () => {
+  // KTP SHG 1064 type II: the best d_eff is in the xy plane (φ ≈ 24.9°, θ = 90°); LBO type I: xy, φ ≈ 11.8°
+  for (const [mat, type, plane] of [["KTiOPO4", "IIa", "xy"], ["LiB3O5", "I", "xy"]]) {
+    const s = source(mat), n = nAt(s);
+    const pp = solveAll(n, s.kind, "shg", 1.064).find((r) => r.plane === plane && r.type === type);
+    const best = offAxis(n, "shg", 1.064, undefined, D[mat].d).find((r) => r.type === type).best;
+    assert.ok(Math.abs(best.phi - pp.angle) < 0.2, `${mat}: φ ${best.phi} vs ${pp.angle}`);
+    assert.ok(best.theta > 88, `${mat}: θ ${best.theta}`);
+    assert.ok(Math.abs(best.deff - effectiveD(n, s.kind, pp, D[mat].d).deff) < 0.01);
+  }
+  // every point of the cone phase-matches; SHG gives one type II row only
+  const s = source("BiB3O6"), r = offAxis(nAt(s), "shg", 1.064, undefined, D.BiB3O6.d);
+  assert.deepEqual(r.map((x) => x.type), ["I", "IIa"]);
+  assert.ok(r.every((x) => x.best.deff >= 0 && x.cone.length > 10));
 });
