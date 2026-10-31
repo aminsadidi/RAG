@@ -205,12 +205,14 @@ def build_properties(out: Path, path: Path) -> int:
             e["notes"] = r["notes"]
         for k in ("min_pump_um", "thermal_conductivity", "thermal_expansion", "class"):
             if k in r:
-                if not {"value", "doc_id", "pdf_page", "what"} <= set(r[k]) or (k == "class" and r[k]["value"] not in CLASSES):
-                    raise ValueError(f"{r['material']}: {k} needs value, doc_id, pdf_page and what")
+                # doc_id: a paper of the collection; doi: one outside it (its page in the published version)
+                if not {"value", "pdf_page", "what"} <= set(r[k]) or not ({"doc_id", "doi"} & set(r[k])) \
+                        or (k == "class" and r[k]["value"] not in CLASSES):
+                    raise ValueError(f"{r['material']}: {k} needs value, doc_id (or doi), pdf_page and what")
                 e[k] = r[k]
         if "damage" in r:
-            if not {"threshold", "doc_id", "pdf_page"} <= set(r["damage"]):
-                raise ValueError(f"{r['material']}: damage needs threshold, doc_id and pdf_page")
+            if not {"threshold", "pdf_page"} <= set(r["damage"]) or not ({"doc_id", "doi"} & set(r["damage"])):
+                raise ValueError(f"{r['material']}: damage needs threshold, doc_id (or doi) and pdf_page")
             e["damage"] = r["damage"]
     for e in data.values():  # the tier of every value, from the document it was read from
         for item in [*e.get("sources", []), e.get("hygroscopic_source"), *e.get("notes", []),
