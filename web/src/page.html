@@ -731,7 +731,8 @@ document.addEventListener("input", (e) => {
   const el = e.target;
   if (!(el instanceof HTMLInputElement) || !(el.hasAttribute("data-num") || el.id === "ufcoef")) return;
   const v = ASCII_NUM(el.value);
-  if (v !== el.value) { const at = el.selectionStart; el.value = v; try { el.setSelectionRange(at, at); } catch { /* not a text field */ } }
+  // the caret stays after the same character: the removed thousands separators before it are taken off its position
+  if (v !== el.value) { const at = ASCII_NUM(el.value.slice(0, el.selectionStart)).length; el.value = v; try { el.setSelectionRange(at, at); } catch { /* not a text field */ } }
 }, true);
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => showTab(b.dataset.tab);
 showTab("search");
