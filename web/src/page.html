@@ -765,12 +765,13 @@ async function api(path, body) {
 
 const STOP = new Set("the and for with from that this are was were what which how does into over under between its their of in on to a an by is at as or be".split(" "));
 function terms(query) {
-  return [...new Set((query.match(/[A-Za-z0-9α-ωΑ-Ω]+/g) || []).filter((w) => w.length > 2 && !STOP.has(w.toLowerCase())))];
+  return [...new Set((query.match(/[A-Za-z0-9α-ωΑ-Ω]+/g) || []).filter((w) => w.length > 1 && !STOP.has(w.toLowerCase())))];
 }
+// a word is marked where it starts (BaB2O4 in β-BaB2O4); a short one (Si, IR) only as a whole word, not in "Sintered"
 function highlight(text, words) {
   let out = esc(text);
   if (!words.length) return out;
-  const re = new RegExp(`\\b(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + (w.length < 4 ? "(?![\\p{L}])" : "")).join("|")})`, "giu");
   return out.replace(re, "<mark>$1</mark>");
 }
 function boxesOf(hit) { try { return JSON.parse(hit.boxes || "[]"); } catch { return []; } }
@@ -820,7 +821,10 @@ function bindHits(container, hits) {
     if (act === "more") { const t = card.querySelector(".text"); t.classList.toggle("open"); e.target.textContent = t.classList.contains("open") ? "بستن" : "نمایش کامل"; }
     if (act === "view") openViewer(h);
     if (act === "paper") openPaper(h.doc_id, h.node_id);
-    if (act === "copy") navigator.clipboard?.writeText(`(${h.label})\n${h.text}`).then(() => { e.target.textContent = "کپی شد"; });
+    if (act === "copy") {
+      const b = e.target, was = b.textContent;
+      navigator.clipboard?.writeText(`(${h.label})\n${h.text}`).then(() => { b.textContent = "کپی شد"; setTimeout(() => { b.textContent = was; }, 1500); }).catch(() => {});
+    }
     if (act === "up" || act === "down") {
       sendFeedback({ verdict: act === "up" ? "useful" : "wrong", hit: { label: h.label, doc_id: h.doc_id } });
       e.target.parentElement.innerHTML = '<span class="hint">ممنون!</span>';
@@ -879,7 +883,16 @@ async function downloadPack() {
   setBusy(false);
 }
 $("go").onclick = runSearch; $("pack").onclick = downloadPack;
-$("q").addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) runSearch(); });
+$("q").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); runSearch(); } });
+// Enter in a calculator's box presses the first button after it in the same card
+const ENTER_GO = { "tab-pm": 1, "tab-advisor": 1, "tab-spdc": 1 };
+document.addEventListener("keydown", (e) => {
+  const el = e.target;
+  if (e.key !== "Enter" || el.tagName !== "INPUT" || el.type === "checkbox" || !ENTER_GO[el.closest("section")?.id]) return;
+  const card = el.closest(".card"); if (!card) return;
+  const go = [...card.querySelectorAll("button:not(.alt)")].find((b) => el.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING && !b.disabled);
+  if (go) { e.preventDefault(); go.click(); }
+});
 
 // ---------- paper view
 async function openPaper(docId, nodeId) {
@@ -1342,7 +1355,9 @@ for (const box of ["rientries", "riuser"]) $(box).addEventListener("click", (ev)
     ? { kind: "points", points: c.e.points } : { kind: "formula", type: String(c.e.type), coefficients: c.e.coefficients }), range_um: c.e.range_um, note: c.e.reference });
   if (act === "edit") fillForm(c.e);
   if (act === "del" && confirm(LANG === "en" ? `Delete “${c.e.name}”?` : `«${c.e.name}» حذف شود؟`)) {
-    show(key, false); RI.user = RI.user.filter((u) => `u:${u.id}` !== key); saveUser(); render();
+    show(key, false); RI.user = RI.user.filter((u) => `u:${u.id}` !== key); saveUser();
+    if (key === `u:${editing}`) clearForm();
+    render();
   }
 });
 
@@ -1432,7 +1447,13 @@ function fillForm(u) {
   msg(editing ? "در حال ویرایش؛ بعد از تغییر «ذخیره‌ی تغییرات» را بزنید." : "فرم پر شد؛ ضرایب را تغییر دهید و «افزودن به نمودار» را بزنید.");
   $("ufname").scrollIntoView({ block: "center", behavior: "smooth" });
 }
-$("ufclear").onclick = () => { editing = null; RI.note = ""; $("ufname").value = ""; $("ufcoef").value = ""; rows = []; drawRows(); $("ufsave").textContent = "افزودن به نمودار"; msg(""); };
+const UF_DEFAULTS = Object.fromEntries(["uftype", "uflo", "ufhi"].map((id) => [id, $(id).value]));
+function clearForm() {
+  editing = null; RI.note = ""; $("ufname").value = ""; $("ufcoef").value = ""; $("ufpaste").value = ""; rows = []; drawRows();
+  for (const [id, v] of Object.entries(UF_DEFAULTS)) $(id).value = v;
+  showHelp(); $("ufsave").textContent = "افزودن به نمودار"; msg("");
+}
+$("ufclear").onclick = clearForm;
 
 $("ufsave").onclick = () => {
   const name = $("ufname").value.trim() || (kind === "points" ? "داده‌ی اندازه‌گیری من" : "فرمول من");
@@ -1491,11 +1512,12 @@ $("ricsv").onclick = () => {
 };
 $("ricopy").onclick = () => {
   const tsv = tableData(...getRange()).map((r) => r.join("\t")).join("\n");
-  navigator.clipboard?.writeText(tsv).then(() => { $("ricopy").textContent = "کپی شد"; setTimeout(() => { $("ricopy").textContent = "کپی جدول"; }, 1500); });
+  navigator.clipboard?.writeText(tsv).then(() => { $("ricopy").textContent = "کپی شد"; setTimeout(() => { $("ricopy").textContent = "کپی جدول"; }, 1500); }).catch(() => {});
 };
 
 // ---------- chart
 function niceTicks(a, b, count) {
+  if (!(b - a > Math.abs(a) * 1e-12) || !Number.isFinite(b - a)) return Number.isFinite(a) ? [a] : [];
   const step0 = (b - a) / count, mag = 10 ** Math.floor(Math.log10(step0)), r = step0 / mag;
   const step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag;
   const out = []; for (let v = Math.ceil(a / step) * step; v <= b + step * 1e-9; v += step) out.push(+v.toPrecision(10));

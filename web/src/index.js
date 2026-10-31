@@ -436,7 +436,10 @@ async function handle(request, env, ctx) {
     return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
   }
   if (url.pathname === "/logout") {
-    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; Max-Age=0" } });
+    // what the page kept in this browser (last question, own formulas, the PDF folder handle) goes too: a shared
+    // lab computer shows the next person nothing of it
+    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; Max-Age=0",
+      "clear-site-data": '"cache", "storage"' } });
   }
   const acc = await signedIn(request, env);
   if (!acc) {

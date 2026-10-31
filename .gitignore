@@ -24,3 +24,6 @@ results/test_*
 
 # Outputs saved by the web app
 results/app/
+
+# Gradio's local share certificate
+.gradio/
