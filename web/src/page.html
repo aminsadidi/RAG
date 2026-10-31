@@ -543,6 +543,9 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h3 style="margin-top:16px">شمارش آشکارسازها و CAR (برنامه‌ریزی آزمایش)</h3>
     <p class="hint">آنچه دو آشکارساز تک‌فوتون از این چشمه‌ی پیوسته می‌شمارند: آهنگ جفت R (کارت بالا، با همان ξها) و احتمال‌های شرطی جفت‌شدن به فیبر μ (کارت فیبر)، ضرب در عبور هر بازو (اپتیک، فیلتر، فیبر) و بازده آشکارساز، به‌اضافه‌ی شمارش تاریک. هم‌فرودی تصادفی A = S₁·S₂·τ (دو شمارش بی‌ربط در یک پنجره) است و CAR = C/A. بازده اعلام (Klyshko) احتمال آشکار شدن یک فوتون است وقتی جفتش آشکار شده. چون C با توان پمپ خطی و A با مجذور آن بالا می‌رود، CAR بیشینه‌ای دارد که شمارش تاریک تعیین می‌کند؛ توان‌هایی که به CAR هدف می‌رسند هم داده می‌شوند.</p>
     <div class="row">
+      <label><input id="spUncoated" type="checkbox"> بلور بدون پوشش ضدبازتاب (اتلاف فرنل: پمپ در سطح ورودی، هر فوتون در سطح خروجی)</label>
+    </div>
+    <div class="row">
       <label>عبور بازوی ۱ <input id="spT1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
       <label>عبور بازوی ۲ <input id="spT2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
       <label>بازده آشکارساز ۱ <input id="spE1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.6" style="width:56px"></label>
@@ -1145,9 +1148,11 @@ function loadUser() { try { RI.user = JSON.parse(localStorage.getItem("ri_user")
 function saveUser() { try { localStorage.setItem("ri_user", JSON.stringify(RI.user)); } catch {} }
 loadUser();
 
+// a user curve belongs to the material it was entered for (older entries, saved without one, show everywhere)
+const mine = (u) => !u.mat || u.mat === RI.mat;
 function curves() {
   const list = RI.byMat.get(RI.mat) || [];
-  return [...list.map((e, i) => ({ key: `db:${i}`, e })), ...RI.user.map((u) => ({ key: `u:${u.id}`, e: u }))];
+  return [...list.map((e, i) => ({ key: `db:${i}`, e })), ...RI.user.filter(mine).map((u) => ({ key: `u:${u.id}`, e: u }))];
 }
 const curveOf = (key) => curves().find((c) => c.key === key);
 
@@ -1193,11 +1198,11 @@ async function selectMaterial(name) {
   RI.inColl = ids.length ? await api("/api/incollection", { ids }).then((r) => r.json()).catch(() => ({})) : {};
   if (RI.req !== name) return;
   RI.mat = name; RI.byMat.set(name, list);
-  // database curves of the previous material go; user curves stay as they were
-  for (const k of [...RI.shown]) if (k.startsWith("db:")) show(k, false);
-  RI.user.filter((u) => u.visible !== false).forEach((u) => show(`u:${u.id}`, true));
+  // the previous material's curves go; this material's user curves come first, then the database's
+  for (const k of [...RI.shown]) show(k, false);
+  RI.user.filter((u) => mine(u) && u.visible !== false).forEach((u) => show(`u:${u.id}`, true));
   list.forEach((_, i) => show(`db:${i}`, true));
-  const all = [...list, ...RI.user.filter((u) => RI.shown.has(`u:${u.id}`))];
+  const all = [...list, ...RI.user.filter((u) => mine(u) && RI.shown.has(`u:${u.id}`))];
   const lo = Math.min(...all.map((e) => e.range_um[0])), hi = Math.max(...all.map((e) => e.range_um[1]));
   const a = Math.max(lo, 0.2), b = Math.min(hi, Math.max(a * 1.01, a + 5));
   setRange(a, b);
@@ -1257,10 +1262,17 @@ const chartMode = () => (["ng", "gvd"].includes($("riref").value) ? $("riref").v
 function valueOf(e, lam, ref) {
   const mode = chartMode();
   if (mode) {
-    const h = 2e-3, a = nOf(e, lam - h), n = nOf(e, lam), b = nOf(e, lam + h);
-    if (mode === "ng") return n - lam * (b - a) / (2 * h);
+    // central differences; within h of an end of the curve's range, one-sided ones (second order) instead
+    const h = 2e-3, n = nOf(e, lam);
+    let a = nOf(e, lam - h), b = nOf(e, lam + h), d1, d2;
+    if (Number.isFinite(a) && Number.isFinite(b)) { d1 = (b - a) / (2 * h); d2 = (b - 2 * n + a) / (h * h); } else {
+      const s = Number.isFinite(b) ? 1 : -1;
+      b = nOf(e, lam + s * h); const b2 = nOf(e, lam + 2 * s * h), b3 = nOf(e, lam + 3 * s * h);
+      d1 = s * (-3 * n + 4 * b - b2) / (2 * h); d2 = (2 * n - 5 * b + 4 * b2 - b3) / (h * h);
+    }
+    if (mode === "ng") return n - lam * d1;
     const c = 0.299792458;
-    return 1e3 * lam ** 3 * (b - 2 * n + a) / (h * h) / (2 * Math.PI * c * c);
+    return 1e3 * lam ** 3 * d2 / (2 * Math.PI * c * c);
   }
   const n = nOf(e, lam);
   return ref ? n - nOf(ref.e, lam) : n;
@@ -1439,12 +1451,14 @@ $("ufsave").onclick = () => {
     const mid = nOf({ ...u, user: true }, (lo + hi) / 2);
     if (!Number.isFinite(mid)) return msg("فرمول در وسط بازه عدد معتبری نمی‌دهد؛ ضرایب یا نوع فرمول را بررسی کنید.", true);
   }
-  u = { ...u, user: true, name, note: RI.note || "", visible: true, id: editing || Date.now().toString(36) };
+  const old = RI.user.find((x) => x.id === editing);
+  u = { ...u, user: true, name, note: RI.note || "", visible: true, mat: old ? old.mat : RI.mat, id: old ? old.id : Date.now().toString(36) };
   const i = RI.user.findIndex((x) => x.id === u.id);
   if (i >= 0) RI.user[i] = u; else RI.user.push(u);
   saveUser();
   const key = `u:${u.id}`;
   if (!RI.shown.has(key) && RI.shown.size >= MAX_SERIES) {
+    u.visible = false; saveUser();  // not drawn now, so not drawn by itself on the next visit either
     msg("ذخیره شد، ولی نمودار حداکثر ۸ منحنی دارد؛ تیک یکی از منابع را بردارید تا این هم نمایش داده شود.", true);
   } else { show(key, true); msg(i >= 0 ? "تغییرات ذخیره شد." : "به نمودار اضافه شد."); }
   editing = u.id; $("ufsave").textContent = "ذخیره‌ی تغییرات";
@@ -1460,7 +1474,8 @@ function tableData(lo, hi) {
   const n = +$("rirows").value, ref = refCurve();
   const cs = curves().filter((c) => RI.shown.has(c.key) && c !== ref && c.key !== ref?.key);
   const xs = Array.from({ length: n }, (_, k) => lo + (hi - lo) * k / (n - 1));
-  const head = [`wavelength (${unitName()})`, ...cs.map((c) => (ref ? `Δn ${label(c.e)} − ${label(ref.e)}` : `n ${label(c.e)}`))];
+  const what = { ng: "n_g", gvd: "GVD (fs²/mm)" }[chartMode()] || "n";
+  const head = [`wavelength (${unitName()})`, ...cs.map((c) => (ref ? `Δn ${label(c.e)} − ${label(ref.e)}` : `${what} ${label(c.e)}`))];
   return [head, ...xs.map((x) => [fmtL(x), ...cs.map((c) => { const v = valueOf(c.e, x, ref); return Number.isFinite(v) ? +v.toFixed(6) : ""; })])];
 }
 function renderTable(lo, hi) {
@@ -2561,16 +2576,20 @@ function counts() {
   const w = (lam, pol, xi) => Math.sqrt(2 * L_mm * 1000 / (k(lam, pol) * xi));
   $("spcntres").textContent = "در حال محاسبه…";
   setTimeout(() => {
-    const r = pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp: w(lp, pols[0], xs[0]), w1: w(l1, pols[1], xs[1]), w2: w(l2, pols[2], xs[2]), powerMw: P });
+    // uncoated faces at normal incidence: R = ((n−1)/(n+1))² with each beam's own index (its polarization and direction)
+    const fres = (lam, pol) => { const [sl, fa] = eigenIndices(nAt(lam), dir), n = pol === "s" ? sl : fa; return ((n - 1) / (n + 1)) ** 2; };
+    const loss = $("spUncoated").checked ? [fres(lp, pols[0]), fres(l1, pols[1]), fres(l2, pols[2])] : [0, 0, 0];
+    const r = pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp: w(lp, pols[0], xs[0]), w1: w(l1, pols[1], xs[1]), w2: w(l2, pols[2], xs[2]), powerMw: P * (1 - loss[0]) });
     if (!r || !Number.isFinite(r.rate)) { $("spcntres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند.</span>`; return; }
     const fc = fiberCoupling({ kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]), L_mm, xiP: xs[0], xiS: xs[1], xiI: xs[2], n: 80 });
-    const opts = { R: r.rate, mu12: fc.muIgS, mu21: fc.muSgI, T1: +$("spT1").value, T2: +$("spT2").value, eta1: +$("spE1").value, eta2: +$("spE2").value,
+    const opts = { R: r.rate, mu12: fc.muIgS, mu21: fc.muSgI, T1: +$("spT1").value * (1 - loss[1]), T2: +$("spT2").value * (1 - loss[2]), eta1: +$("spE1").value, eta2: +$("spE2").value,
       dark1: +$("spD1").value, dark2: +$("spD2").value, tauNs: +$("spTau").value };
     const c = detectedCounts(opts), pw = powerForCar(opts, P, +$("spCarT").value);
     const f = (v) => v >= 1e6 ? (v / 1e6).toPrecision(3) + "·10⁶" : v >= 100 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3);
     const pc = (v) => (v * 100).toFixed(1) + "%";
     const mw = (v) => v >= 1 ? v.toPrecision(3) + " mW" : v >= 1e-3 ? (v * 1e3).toPrecision(3) + " µW" : v >= 1e-6 ? (v * 1e6).toPrecision(3) + " nW" : (v * 1e9).toPrecision(3) + " pW";
     $("spcntres").innerHTML = `at ${P} mW: R = ${f(r.rate)} pairs/s in the modes; μ₂|₁ = ${pc(fc.muIgS)}, μ₁|₂ = ${pc(fc.muSgI)}<br>`
+      + (loss[0] ? `uncoated crystal, Fresnel reflection: pump ${pc(loss[0])}, photon 1 ${pc(loss[1])}, photon 2 ${pc(loss[2])} (already in R and in the arm transmissions)<br>` : "")
       + `<b>singles S₁ = ${f(c.S1)}/s, S₂ = ${f(c.S2)}/s; coincidences C = ${f(c.C)}/s; accidentals A = ${f(c.A)}/s; CAR = ${f(c.CAR)}</b><br>`
       + `heralding (Klyshko) efficiency: photon 1 ${pc(c.h1)}, photon 2 ${pc(c.h2)}; mean pairs per window R·τ = ${c.pairsPerWindow.toPrecision(3)}`
       + (Math.max(c.S1, c.S2) > 2e6 ? `<br><span class="err">singles above 2·10⁶/s: most single-photon detectors saturate (dead time); lower the power</span>` : "")
