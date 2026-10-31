@@ -118,7 +118,7 @@ body{overflow-x:hidden}
 .prow .yr{flex:none;width:44px;color:var(--muted);font-size:13px}
 
 /* ===== redesign 2026-10 ===== */
-section>.card:first-child>h2:first-child{display:none}
+section:not(#tab-eval)>.card:first-child>h2:first-child{display:none}
 :root{--bg:#f6f7f9;--card:#fff;--ink:#0f1720;--muted:#5d6b7a;--line:#e3e7ec;--soft:#f1f3f6;--accent:#2f5bd3;--accent-ink:#fff;
 --accent-soft:#e9effc;--side:#0f1b2d;--side-ink:#c9d3e0;--side-on:#ffffff;--shadow:0 1px 2px rgba(16,24,40,.04),0 2px 8px rgba(16,24,40,.04);--r:12px}
 @media (prefers-color-scheme:dark){:root{--bg:#0c1117;--card:#141b23;--ink:#e7edf3;--muted:#93a1b0;--line:#25303c;--soft:#1a232d;--accent:#6b93ff;
@@ -152,6 +152,20 @@ button.alt{border-color:var(--line);color:var(--ink);background:var(--card)}butt
 .row{gap:12px 16px;margin-top:12px}.row label{font-size:13.5px}
 .hint{font-size:12.5px}
 details.about{margin:0 0 4px;color:var(--muted);font-size:13px}
+/* collapsible cards: the heading toggles the rest (state kept per card in this browser) */
+.card.fold > .foldhead{cursor:pointer;user-select:none}
+.card.fold h2[data-fold]::before{content:"▾";display:inline-block;margin-inline-end:6px;color:var(--muted);transition:transform .15s}
+.card.fold.closed h2[data-fold]::before{transform:rotate(90deg)}
+html[dir="rtl"] .card.fold.closed h2[data-fold]::before{transform:rotate(-90deg)}
+.card.fold.closed > :not(.foldhead), .card.fold.closed > .foldhead > :not(h2){display:none !important}
+[hidden]{display:none !important}
+.card.fold.closed > .foldhead h2{margin:0}
+/* long references: one or two lines until clicked */
+.clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;cursor:pointer}
+.clamp.c1{-webkit-line-clamp:1}
+.clamp.open{display:block;-webkit-line-clamp:unset}
+details.spread summary{cursor:pointer}
+@media (min-width:900px){#pagehead{position:relative;padding-inline-end:230px}#pagehead #sharelink{position:absolute;inset-inline-end:0;top:2px}}
 details.about summary{cursor:pointer;color:var(--accent);font-size:12.5px;list-style:none;display:inline-block}
 details.about summary::-webkit-details-marker{display:none}
 details.about summary::before{content:"ⓘ ";}
@@ -205,7 +219,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <button data-tab="advisor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 14.6 9H21l-5.2 4 2 6.5L12 15.6 6.2 19.5l2-6.5L3 9h6.4L12 2.5Zm0 4.2-1.5 3.8H6.9l3 2.3-1.1 3.6 3.2-2.2 3.2 2.2-1.1-3.6 3-2.3h-3.6L12 6.7Z"/></svg><span>پیشنهاد بلور</span></button>
     <button data-tab="spdc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a2.5 2.5 0 1 0 0 .01ZM19 6a2 2 0 1 0 0 .01ZM19 18a2 2 0 1 0 0 .01ZM7.3 11.3l9.6-4.6.6 1.3-9.6 4.6-.6-1.3Zm0 1.4.6-1.3 9.6 4.6-.6 1.3-9.6-4.6Z"/></svg><span>جفت فوتون</span></button>
     <div class="navsec">داده</div>
-    <button data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4V4Zm5.5 0h4v16h-4V4Zm6.2.6 3.8-1 4 15.5-3.8 1-4-15.5Z"/></svg><span>مجموعه و ارزیابی</span></button>
+    <button data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4V4Zm5.5 0h4v16h-4V4Zm6.2.6 3.8-1 4 15.5-3.8 1-4-15.5Z"/></svg><span>مجموعه‌ی مقاله‌ها</span></button>
+    <button data-tab="eval"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v1.5H4V19Zm1-2.5 4.2-5.6 3.3 2.7L17.4 6l1.2.9-5.7 8.6-3.4-2.7L6.2 17.4 5 16.5Z"/></svg><span>ارزیابی و اعتبارسنجی</span></button>
     <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
   <button id="langbtn" type="button" title="English / فارسی">English</button>
@@ -273,7 +288,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div id="rispread" class="hint" style="margin-top:8px"></div>
   </div>
   <div class="card" style="margin-top:14px">
-    <h2>داده‌ی خودتان</h2>
+    <h2 data-fold="riuser" data-closed>داده‌ی خودتان</h2>
     <p class="hint">یک فرمول پاشندگی یا نقاط اندازه‌گیری‌شده (λ، n) وارد کنید تا کنار داده‌های پایگاه روی نمودار بیاید. داده‌ها فقط در همین مرورگر ذخیره می‌شوند و برای همه‌ی ماده‌ها نمایش داده می‌شوند. برای شروع از یک فرمول پایگاه، کنار آن «کپی و ویرایش» را بزنید.</p>
     <div id="riuser"></div>
     <div class="card" style="margin-top:10px;background:var(--soft);box-shadow:none">
@@ -327,7 +342,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   </div>
   <div class="card" style="margin-top:14px">
     <div class="row" style="justify-content:space-between;margin-top:0">
-      <h2 style="margin:0">جدول مقادیر</h2>
+      <h2 style="margin:0" data-fold="ritable" data-closed>جدول مقادیر</h2>
       <div class="row" style="margin-top:0">
         <label>تعداد ردیف <select id="rirows"><option>11</option><option selected>21</option><option>51</option><option>101</option></select></label>
         <button class="alt" id="ricopy">کپی جدول</button>
@@ -367,7 +382,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <span class="hint" id="pmTinfo"></span>
     </div>
     <label class="hint"><input type="checkbox" id="pmmore"> مواد دوشکستیِ دیگر را هم نشان بده (فقط زاویه و walk-off؛ ضرایب غیرخطی‌شان در داده‌ها نیست)</label>
-    <p class="hint" id="pminfo"></p>
+    <p class="hint clamp" id="pminfo" title=""></p>
   </div>
   <div class="card" style="margin-top:14px">
     <h2>جواب‌ها</h2>
@@ -379,7 +394,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
   </div>
   <div class="card" style="margin-top:14px" id="solvecard">
-    <h2>حل‌کننده: هر مقداری را که نمی‌دانید خالی بگذارید</h2>
+    <h2 data-fold="solver" data-closed>حل‌کننده: هر مقداری را که نمی‌دانید خالی بگذارید</h2>
     <p class="hint">پمپ → سیگنال + آیدلر (برای SPDC، OPO و DFG؛ SHG و SFG همین فرایند از سمت دیگرند). از طول موج‌ها، دما و دوره‌ی QPM یا زاویه، دقیقاً یکی را خالی بگذارید تا حساب شود؛ اگر دو طول موج را بدهید سومی از پایستگی انرژی می‌آید. Δk غیرصفر نقطه‌ای کنار قله‌ی منحنی sinc² را می‌دهد. با طول بلور، پهنای طیفی سیگنال، پهنای پذیرش پمپ و پهنای دمایی هم حساب می‌شود. انبساط گرمایی توری QPM در منبع‌هایی که آن را دارند (Fradkin-König برای KTP، Jundt برای LiNbO3) در حساب هست.</p>
     <div class="row">
       <label>پیکربندی <select id="svcfg" style="max-width:340px"></select></label>
@@ -454,7 +469,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div id="advno" class="hint" style="margin-top:10px"></div>
   </div>
   <div class="card" style="margin-top:14px">
-    <h2>بلوری که بریده شده: در چه دمایی کار می‌کند؟</h2>
+    <h2 data-fold="cut" data-closed>بلوری که بریده شده: در چه دمایی کار می‌کند؟</h2>
     <p class="hint">بلور و زاویه‌ی برش آن را بدهید (همان که سازنده نوشته)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود. پیش از خرید ببینید آون شما (بازه‌ی دمای بالا) به آن دما می‌رسد یا نه. فقط بلورهایی که فرمول وابستگی دمایی دارند.</p>
     <div class="row">
       <label>بلور <select id="cutmat" style="max-width:260px"></select></label>
@@ -505,7 +520,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   <div class="card" style="margin-top:14px">
     <h2>نتیجه</h2>
     <div id="spres" style="direction:ltr"></div>
-    <div class="row" style="align-items:flex-start;gap:18px;margin-top:10px">
+    <p class="hint" id="spempty">برای دیدن طیف مشترک، خلوص و منحنی HOM، تنظیم‌های بالا را انتخاب و «محاسبه» را بزنید.</p>
+    <div class="row" id="spfigs" hidden style="align-items:flex-start;gap:18px;margin-top:10px">
       <figure style="margin:0"><canvas id="spjsi" width="360" height="360" style="max-width:100%;border:1px solid var(--line, #ccc)"></canvas>
         <figcaption class="hint">شدت طیفی مشترک |f|²؛ افقی: فوتون ۱، عمودی: فوتون ۲ (nm).</figcaption></figure>
       <figure style="margin:0;flex:1;min-width:260px"><svg id="sphom" role="img" style="display:block;width:100%;height:220px;direction:ltr"></svg>
@@ -513,7 +529,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
   </div>
   <div class="card" style="margin-top:14px">
-    <h2>زاویه‌ی گسیل (غیرهم‌خط)</h2>
+    <h2 data-fold="emission" data-closed>زاویه‌ی گسیل (غیرهم‌خط)</h2>
     <p class="hint">زاویه‌ی خروج هر فوتون نسبت به پمپ بر حسب طول موج فوتون ۱، در صفحه‌ی پیکربندی (همان صفحه‌ای که زاویه‌ی تطبیق فاز در آن است): k₁ sin θ₁ = k₂ sin θ₂ و k₁ cos θ₁ + k₂ cos θ₂ = k<sub>p</sub> − k<sub>g</sub>، با ضریب شکست هر فوتون در امتداد خودش. زاویه‌ی بیرونی برای وجه عمود بر پمپ است (sin θ<sub>ext</sub> = n sin θ). با چرخاندن بلور از زاویه‌ی هم‌خط (یا تغییر دما در QPM) مخروط گسیل باز می‌شود. پهنای پمپ و طول بلور در این حساب نیست (پمپ تک‌فام، تطبیق فاز دقیق).</p>
     <div class="row">
       <label>چرخش بلور از زاویه‌ی هم‌خط <input id="sptilt" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.4" style="width:64px"> درجه (درون بلور)</label>
@@ -524,7 +540,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div id="spangres" class="hint" style="direction:ltr"></div>
   </div>
   <div class="card" style="margin-top:14px">
-    <h2>جفت‌شدن به فیبر تک‌مُد</h2>
+    <h2 data-fold="fiber" data-closed>فیبر، آهنگ تولید جفت و شمارش آشکارسازها</h2>
+    <h3 style="margin-top:4px">جفت‌شدن به فیبر تک‌مُد</h3>
     <p class="hint">پمپ تک‌فام گاوسی و تطبیق فاز هم‌خط (Δk = 0 روی محور)، مُدهای هم‌خوان با فیبر گاوسی، کمر همه در وسط بلور (Ljunggren &amp; Tengner 2005). ξ = L/z<sub>R</sub> با z<sub>R</sub> = k w²/2 (k درون بلور). γ₁ و γ₂: سهم فوتون‌های هر بازو که در فیبر می‌افتند؛ γc: سهم جفت‌هایی که هر دو فوتونشان در فیبرند؛ μ: احتمال شرطی (نسبت اعلام). مقاله فقط بخش متقارن چرخشی (l = 0) حالت را نگه داشته و برای همین عددهایش بزرگ‌تر است؛ هر دو حساب نشان داده می‌شود. از پیکربندی و طول موج‌های بالا استفاده می‌کند.</p>
     <div class="row">
       <label>ξ پمپ <input id="spxp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.7" style="width:64px"></label>
@@ -576,7 +593,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="card viz-root"><h2>مقاله‌ها بر اساس سال انتشار</h2><div id="yrchart" style="position:relative;direction:ltr"><svg id="yrsvg" role="img" aria-label="papers per 5 years" style="display:block;width:100%"></svg><div class="tip" id="yrtip" style="position:absolute;display:none"></div></div>
       <div id="yrlegend" class="chips" style="direction:ltr"></div></div>
   </div>
-  <div class="card" style="margin-top:14px"><h2>دسته‌ها</h2><table id="cats" class="bars"></table></div>
+  <div class="card" style="margin-top:14px"><h2 data-fold="cats" data-closed>دسته‌ها</h2><table id="cats" class="bars"></table></div>
   <div class="card" style="margin-top:14px">
     <h2>فهرست مقاله‌ها</h2>
     <div class="row" style="margin-top:0">
@@ -588,9 +605,9 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div id="pllist"></div>
     <div class="row"><button class="alt" id="plmore" hidden>بیشتر</button></div>
   </div>
-  <div class="card" style="margin-top:14px"><h2>ماده‌ها (تعداد بخش)</h2><table id="materials" class="bars"></table></div>
+  <div class="card" style="margin-top:14px"><h2 data-fold="mats" data-closed>ماده‌ها (تعداد بخش)</h2><table id="materials" class="bars"></table></div>
   <div data-needpdf class="card" style="margin-top:14px">
-    <h2>(اختیاری) PDFها از روی این رایانه</h2>
+    <h2 data-fold="localpdf" data-closed>(اختیاری) PDFها از روی این رایانه</h2>
     <p class="hint">PDF مقاله‌ها روی خود سایت هست. فقط برای مقاله‌ای که آن‌جا نیست: برای دیدن صفحه‌ی اصلی مقاله با بخشِ پیداشده‌ی رنگی، پوشه‌ی <b>RAG-Optics</b> (یا <b>01_Papers_by_Category</b>) را انتخاب کنید. فایل‌ها فقط در مرورگر خودتان باز می‌شوند و به هیچ سروری فرستاده نمی‌شوند.</p>
     <div class="row"><button class="alt" id="pickdir">انتخاب پوشه</button><span id="dirstate" class="hint"></span></div>
     <input type="file" id="dirinput" webkitdirectory multiple hidden>
@@ -601,7 +618,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   <div class="card" id="valcard">
     <h2>اعتبارسنجی ماشین‌حساب‌ها با عددهای مقاله‌ها</h2>
     <p class="hint">هر ردیف یک عدد منتشرشده در مقاله‌ای است که سایت دوباره، با همان داده‌ها و کد ماشین‌حساب‌ها، حساب می‌کند: زاویه‌ی تطبیق فاز، d_eff، دمای تطبیق فاز غیربحرانی، دوره‌ی QPM و آهنگ و خلوص جفت فوتون. ✅ یعنی اختلاف در حد دقت گزارش‌شده است؛ ⚠️ اختلافی است که دلیلش کنار آن آمده. همین جدول در تست‌های خودکار سایت هم اجرا می‌شود، پس هر تغییری که عددی را خراب کند پیش از انتشار دیده می‌شود.</p>
-    <button id="valgo">محاسبه‌ی جدول</button> <span class="hint" id="valinfo"></span>
+    <div class="row"><button id="valgo">محاسبه‌ی جدول</button> <span class="hint" id="valinfo"></span></div>
     <div style="overflow-x:auto;direction:ltr"><table id="valtable" style="direction:ltr;min-width:640px;margin-top:10px"></table></div>
   </div>
   <div class="card" id="evbig" hidden>
@@ -710,7 +727,7 @@ const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده
 const SHARE_TABS = { index: "", pm: "pmgo", advisor: "advgo", spdc: "spgo" };
 // a select each tab fills once its data are loaded: the link's values wait for it
 const SHARE_READY = { pm: "pmmat", advisor: "cutmat", spdc: "spmat" };
-const TAB_GROUP = { library: ["library", "eval"], paper: ["paper"] };
+const TAB_GROUP = { paper: ["paper"] };
 const TAB_TITLE = {
   search: ["جست‌وجو در مقاله‌ها", "پرسش به فارسی یا انگلیسی؛ پاسخ با ارجاع به صفحه‌ی مقاله"],
   paper: ["مقاله", "همه‌ی بخش‌های یک مقاله"],
@@ -718,7 +735,8 @@ const TAB_TITLE = {
   pm: ["تطبیق فاز", "زاویه، walk-off، پهنای پذیرش، QPM و d_eff برای SHG، SFG و OPO"],
   advisor: ["پیشنهاد بلور", "شرط‌ها را ثابت کنید، بلورهایی که شدنی‌اند با دلیل؛ و دمای کار بلوری که بریده شده"],
   spdc: ["جفت فوتون (SPDC)", "طیف مشترک، خلوص، عدد اشمیت، HOM، قطبش‌دهی آپودایز، بهینه‌سازی خلوص، زاویه‌ی گسیل، دما، کانونی‌کردن و جفت‌شدن به فیبر"],
-  library: ["مجموعه و ارزیابی", "مقاله‌های مجموعه و کیفیت بازیابی"],
+  library: ["مجموعه‌ی مقاله‌ها", "مقاله‌های مجموعه بر اساس سال، دسته و ماده"],
+  eval: ["ارزیابی و اعتبارسنجی", "ماشین‌حساب‌ها در برابر عددهای مقاله‌ها، و کیفیت جست‌وجو"],
   about: ["راهنما", ""],
 };
 function showTab(name) {
@@ -728,7 +746,8 @@ function showTab(name) {
   for (const s of document.querySelectorAll("main > section")) s.hidden = !show.includes(s.id.slice(4));
   const [tt, st] = TAB_TITLE[name] || ["", ""];
   $("ptitle").textContent = tt; $("psub").textContent = st;
-  if (name === "library") { loadFacets(); loadPapers(); loadEval(); }
+  if (name === "library") { loadFacets(); loadPapers(); }
+  if (name === "eval") loadEval();
   if (name === "index") window.loadFormulas?.();
   if (name === "pm") window.loadPM?.();
   if (name === "advisor") window.loadAdvisor?.();
@@ -749,6 +768,22 @@ document.addEventListener("input", (e) => {
   if (v !== el.value) { const at = ASCII_NUM(el.value.slice(0, el.selectionStart)).length; el.value = v; try { el.setSelectionRange(at, at); } catch { /* not a text field */ } }
 }, true);
 for (const b of document.querySelectorAll("nav button")) b.onclick = () => showTab(b.dataset.tab);
+for (const h of document.querySelectorAll("h2[data-fold]")) {
+  const card = h.closest(".card"), head = [...card.children].find((x) => x.contains(h)), key = "fold:" + h.dataset.fold;
+  card.classList.add("fold"); head.classList.add("foldhead");
+  let closed = h.hasAttribute("data-closed");
+  try { const v = localStorage.getItem(key); if (v !== null) closed = v === "1"; } catch { /* no storage */ }
+  card.classList.toggle("closed", closed);
+  h.setAttribute("role", "button"); h.tabIndex = 0;
+  const flip = () => { const c = card.classList.toggle("closed"); try { localStorage.setItem(key, c ? "1" : "0"); } catch { /* no storage */ } };
+  h.addEventListener("click", flip);
+  h.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+}
+// a clamped reference opens on a click (links and buttons inside keep working)
+document.addEventListener("click", (e) => {
+  const c = e.target.closest(".clamp");
+  if (c && !e.target.closest("a, button")) c.classList.toggle("open");
+});
 showTab("search");
 // long introductory notes collapse behind an "about" toggle
 for (const p of document.querySelectorAll("main section > .card > p.hint")) {
@@ -1338,8 +1373,8 @@ function renderEntries(probe) {
     const coll = e.doc_id && RI.inColl[e.doc_id];
     return entryRow({ key: `db:${i}`, e }, probe, `
       <span class="hint"> ${esc(dirName(e.direction))} · ${e.type === "tab" ? "measured data" : "formula " + e.type} · <bdi dir="ltr">${fmtL(e.range_um[0])}–${fmtL(e.range_um[1])} ${unitName()}</bdi></span><br>
-      ${esc(e.reference)}
-      ${e.source === "paper" ? `<div class="hint" style="margin-top:4px"><b>${basisName(e)} · از مقاله‌ی همین مجموعه، صفحه‌ی ${fa(e.pdf_page)} PDF:</b> <bdi dir="ltr">${esc(e.where)}</bdi></div>` : ""}
+      <span class="clamp c1" title="">${esc(e.reference)}</span>
+      ${e.source === "paper" ? `<div class="hint clamp c1" style="margin-top:4px"><b>${basisName(e)} · از مقاله‌ی همین مجموعه، صفحه‌ی ${fa(e.pdf_page)} PDF:</b> <bdi dir="ltr">${esc(e.where)}</bdi></div>` : ""}
       <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
       ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}
       <span class="tools"><button data-act="copy">کپی و ویرایش</button></span></div>`);
@@ -1819,15 +1854,18 @@ function spreadCard(c, src, proc, a, b, rows) {
   const sols = others.map(({ s, i }) => ({ s, i, r: solveAll(nAt(s), s.kind, proc, a, b) }));
   const lines = rows.map((r) => {
     const got = sols.map(({ s, i, r: rr }) => ({ s, i, x: rr.find((q) => q.plane === r.plane && q.type === r.type)?.angle })).filter((g) => g.x !== undefined);
-    if (got.length < 2) return "";
-    const xs = got.map((g) => g.x), d = Math.max(...xs) - Math.min(...xs);
-    return `<div style="direction:ltr;text-align:left">${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]} type ${r.type === "I" ? "I" : "II"}: `
-      + got.map((g) => `<button class="chip${g.s === src ? " coll" : ""}" style="border:0;cursor:pointer" data-src="${g.i}" title="${esc(g.s.label)}">${tierMark(g.s)} ${esc(g.s.label)} ${g.x.toFixed(2)}°</button>`).join(" ")
-      + ` — <b>اختلاف بیشینه ${d.toFixed(2)}°</b></div>`;
+    if (got.length < 2) return null;
+    const xs = got.map((g) => g.x), name = `${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]} type ${r.type === "I" ? "I" : "II"}`;
+    return { name, d: Math.max(...xs) - Math.min(...xs), html: `<div style="direction:ltr;text-align:left">${name}: `
+      + got.map((g) => `<button class="chip${g.s === src ? " coll" : ""}" style="border:0;cursor:pointer" data-src="${g.i}" title="${esc(g.s.label)}">${tierMark(g.s)} ${esc(g.s.label)} ${g.x.toFixed(2)}°</button>`).join(" ") + "</div>" };
   }).filter(Boolean);
   const best = others.slice().sort((p, q) => (TIER_RANK[p.s.tier] ?? 9) - (TIER_RANK[q.s.tier] ?? 9) || (p.s === src ? -1 : q.s === src ? 1 : 0))[0];
-  box.innerHTML = lines.length ? `<b>اختلاف منابع</b> (${fa(others.length)} منبع): هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.${lines.join("")}`
-    + `<div>پیشنهاد: منبع <button class="chip coll" style="border:0;cursor:pointer" data-src="${best.i}">${tierMark(best.s)} ${esc(best.s.label)}</button> (بالاترین سطح اعتبار)</div>` : "";
+  // one line: the largest difference of each solution and the suggested source; the angles of every source on a click
+  box.innerHTML = lines.length ? `<details class="spread"><summary><b>اختلاف منابع</b> (${fa(others.length)} منبع): `
+    + `<bdi dir="ltr">${lines.map((l) => `${l.name} ±${(l.d / 2).toFixed(2)}°`).join(" · ")}</bdi>`
+    + ` — پیشنهاد: منبع ${tierMark(best.s)} ${esc(best.s.label)}${best.s === src ? " ✓" : ""}</summary>`
+    + `<p>هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.</p>${lines.map((l) => l.html).join("")}`
+    + `<div>پیشنهاد: منبع <button class="chip coll" style="border:0;cursor:pointer" data-src="${best.i}">${tierMark(best.s)} ${esc(best.s.label)}</button> (بالاترین سطح اعتبار)</div></details>` : "";
   for (const btn of box.querySelectorAll("[data-src]")) btn.onclick = () => { $("pmsrc").value = btn.dataset.src; run(); };
 }
 
@@ -2724,6 +2762,7 @@ function fiber(optimize) {
 const RAMP = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]];
 const color = (v) => { const x = Math.max(0, Math.min(1, v)) * 4, i = Math.min(3, Math.floor(x)), f = x - i; return RAMP[i].map((c, k) => Math.round(c + f * (RAMP[i + 1][k] - c))); };
 function drawJSI(jsi, n, lam1, lam2) {
+  $("spfigs").hidden = false; $("spempty").hidden = true;
   const cv = $("spjsi"), ctx = cv.getContext("2d"), W = cv.width, pad = 46, S = W - pad - 8;
   ctx.fillStyle = getComputedStyle(document.body).backgroundColor || "#fff"; ctx.fillRect(0, 0, W, W);
   let max = 0; for (const v of jsi) max = Math.max(max, v);
@@ -2911,7 +2950,9 @@ $("valgo").onclick = async () => {
 // and the site announcement (set from the admin bot) shown on top.
 api("/api/me").then((r) => r.json()).then((me) => {
   window.ME = me;
-  for (const b of document.querySelectorAll("nav button[data-tab]")) if (!me.tabs.includes(b.dataset.tab)) b.remove();
+  // the evaluation page came out of the library one: an account that sees the library sees it too
+  const may = (t) => me.tabs.includes(t) || (t === "eval" && me.tabs.includes("library"));
+  for (const b of document.querySelectorAll("nav button[data-tab]")) if (!may(b.dataset.tab)) b.remove();
   for (const s of document.querySelectorAll(".navsec")) {
     let n = s.nextElementSibling; while (n && n.tagName !== "BUTTON" && !n.classList.contains("navsec")) n = n.nextElementSibling;
     if (!n || n.classList.contains("navsec")) s.remove();

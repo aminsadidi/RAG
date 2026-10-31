@@ -326,7 +326,6 @@
  "مثلاً BBO، باریم بورات، LiB3O5، N-BK7": "e.g. BBO, barium borate, LiB3O5, N-BK7",
  "مثلاً نمونه‌ی آزمایشگاه": "e.g. lab sample",
  "مثلاً: ضریب d بلور … در کارت اشتباه است / مقاله‌ی … در مجموعه نیست": "e.g.: the d coefficient of crystal … on its card is wrong / the paper … is not in the collection",
- "مجموعه و ارزیابی": "Collection & evaluation",
  "مجموعه:": "Collection:",
  "مجموعه‌ی داده": "Data collection",
  "محاسبه": "Compute",
@@ -343,7 +342,6 @@
  "مقاله‌ها بر اساس سال انتشار": "Papers by year of publication",
  "مقاله‌ها بر اساس سال و دسته، و فهرست قابل‌جست‌وجوی همه‌ی مقاله‌ها.": "papers by year and category, and a searchable list of all papers.",
  "مقاله‌ها حق نشر دارند؛ این صفحه خصوصی و فقط برای پروژه است.": "The papers are copyrighted; this page is private and for the project only.",
- "مقاله‌های مجموعه و کیفیت بازیابی": "Papers of the collection and retrieval quality",
  "مقاله‌ی درست در ۱۰ نتیجه‌ی اول": "Right paper in the top 10",
  "مقایسه‌ی همه‌ی بلورها": "Compare all crystals",
  "مقدار n هر منحنیِ روی نمودار در طول موج‌های بازه‌ی انتخاب‌شده (برای Excel یا گزارش).": "n of every plotted curve at wavelengths across the selected range (for Excel or a report).",
@@ -671,7 +669,14 @@
  "پیشنهاد: منبع": "Suggested: source",
  "(بالاترین سطح اعتبار)": "(the highest provenance tier)",
  "فقط یک منبع این طول موج‌ها را پوشش می‌دهد؛ مقایسه‌ای ممکن نیست.": "only one source covers these wavelengths; no comparison is possible.",
- "اختلاف بیشینه": "largest difference",
- "منبع): هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.": "sources): Every other source of this crystal that covers these wavelengths gives its own angle; their difference shows how far the number above can be trusted. Click a source to compute with it.",
- "اختلاف منابع:": "Spread between sources:"
+ "اختلاف منابع:": "Spread between sources:",
+ "فیبر، آهنگ تولید جفت و شمارش آشکارسازها": "Fibre coupling, pair rate and detector counts",
+ "برای دیدن طیف مشترک، خلوص و منحنی HOM، تنظیم‌های بالا را انتخاب و «محاسبه» را بزنید.": "To see the joint spectrum, the purity and the HOM curve, choose the settings above and press “Compute”.",
+ "مجموعه‌ی مقاله‌ها": "Paper collection",
+ "مقاله‌های مجموعه بر اساس سال، دسته و ماده": "The collection's papers by year, category and material",
+ "ارزیابی و اعتبارسنجی": "Evaluation and validation",
+ "ماشین‌حساب‌ها در برابر عددهای مقاله‌ها، و کیفیت جست‌وجو": "The calculators against the papers' numbers, and the quality of the search",
+ "هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.": "Every other source of this crystal that covers these wavelengths gives its own angle; their difference shows how far the number above can be trusted. Click a source to compute with it.",
+ "منبع):": "sources):",
+ "— پیشنهاد: منبع": "— suggested: source"
 }
