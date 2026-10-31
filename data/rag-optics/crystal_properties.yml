@@ -564,3 +564,9 @@
   damage: {threshold: ">0.012 GW/cm² (surface)", lambda_um: 1.0642, pulse: "18 ns", doc_id: "10.1007_b138685", pdf_page: 383, what: "Proustite, laser-induced surface-damage threshold: 1.0642 µm, 18 ns, >0.012 GW/cm² [38]"}
 - material: "CdGeAs2"
   damage: {threshold: "0.033–0.04 GW/cm² (surface)", lambda_um: 10.6, pulse: "150 ns", doc_id: "10.1007_b138685", pdf_page: 392, what: "Laser-induced surface-damage threshold: 10.6 µm, 150 ns, 0.033–0.04 GW/cm² [26]; 9.55 µm, 30 ns, 0.16 [17]"}
+
+# ABF from the published Nature paper (sent by its authors, 31 Oct 2026; not in the collection, which holds the
+# preprint, so cited by DOI with the page of the published PDF). Read from the page images.
+- material: "NH4B4O6F"
+  thermal_expansion: {value: "79.8 ∥X (a), 12.1 ∥Y (c), −4.2 ∥Z (b)", doi: "10.1038/s41586-025-10007-z", pdf_page: 2, what: "Zhang et al., Nature 650, 97 (2026), p. 98: average thermal expansion coefficients αX = αa = 7.98×10⁻⁵ K⁻¹, αY = αc = 1.21×10⁻⁵ K⁻¹, αZ = αb = −0.42×10⁻⁵ K⁻¹ (Fig. 1f, about 70–250 °C), measured on a-, c- and b-oriented samples"}
+  damage: {threshold: "1.6 GW/cm²", lambda_um: 1.064, pulse: "8 ns, one-on-one", doi: "10.1038/s41586-025-10007-z", pdf_page: 3, what: "Zhang et al., Nature 650, 97 (2026), p. 99: ABF demonstrates a superior LIDT of 1.6 GW cm⁻², exceeding that of LBO of 1.2 GW cm⁻² (1,064 nm, 8 ns, one-on-one testing); Methods: 1.6 ± 0.2 GW cm⁻² (95% CI 1.2–2.0), ISO 21254-2"}
