@@ -208,7 +208,6 @@
  "در λ =": "At λ =",
  "در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.": "No phase matching (in the principal planes) is possible in this crystal for these wavelengths.",
  "در این مجموعه منبعی برای این سؤال پیدا نشد.": "No source for this question was found in this collection.",
- "در حال باز کردن…": "Opening…",
  "در حال جست‌وجو…": "Searching…",
  "در حال خواندن فهرست…": "Loading the list…",
  "در حال خواندن…": "Loading…",
@@ -678,5 +677,10 @@
  "ماشین‌حساب‌ها در برابر عددهای مقاله‌ها، و کیفیت جست‌وجو": "The calculators against the papers' numbers, and the quality of the search",
  "هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.": "Every other source of this crystal that covers these wavelengths gives its own angle; their difference shows how far the number above can be trusted. Click a source to compute with it.",
  "منبع):": "sources):",
- "— پیشنهاد: منبع": "— suggested: source"
+ "— پیشنهاد: منبع": "— suggested: source",
+ "در حال باز کردن صفحه‌ی مقاله…": "Opening the paper's page…",
+ "(اتصال کند است؛ متن همین بخش پایین آمده است)": "(slow connection; the text of this passage is below)",
+ "باز کردن همین مقاله در Google Drive": "open this paper in Google Drive",
+ "یا": "or",
+ "(صفحه‌ی": "(page"
 }

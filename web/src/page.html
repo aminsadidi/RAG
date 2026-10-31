@@ -864,6 +864,8 @@ function renderHit(h, words, i) {
   </div>`;
 }
 function bindHits(container, hits) {
+  // the PDF viewer's library comes while the reader looks at the results (cached for a year after)
+  if (window.ME?.pdf && hits.some((h) => h.source_file)) setTimeout(() => loadPdfjs().catch(() => {}), 1500);
   container.onclick = (e) => {
     const card = e.target.closest(".hit, .paperchunk"); if (!card) return;
     const h = hits[+card.dataset.i];
@@ -1030,6 +1032,7 @@ async function localPdf(hit) {
 // pdf.js (same files as cdnjs 3.11.174, in public/vendor) is loaded when the viewer is first opened
 const PDFJS = "/vendor/pdfjs-3.11.174/";
 let pdfjsReady = null;
+window.loadPdfjs = loadPdfjs;
 function loadPdfjs() {
   pdfjsReady ||= new Promise((resolve, reject) => {
     const s = Object.assign(document.createElement("script"), { src: PDFJS + "pdf.min.js" });
@@ -1051,10 +1054,14 @@ async function openViewer(hit) {
   V.hit = hit; V.doc = null; V.err = ""; V.page = boxesOf(hit)[0]?.[0] || hit.first_page || 1;
   $("vtitle").textContent = hit.label || hit.citation || hit.doc_id;
   $("viewer").classList.add("on");
-  $("vbody").innerHTML = '<p class="hint" id="vprog">در حال باز کردن…</p>';
+  $("vbody").innerHTML = '<p class="hint" id="vprog">در حال باز کردن صفحه‌ی مقاله…</p>'
+    + (hit.drive_id ? `<p class="hint">یا <a href="https://drive.google.com/file/d/${encodeURIComponent(hit.drive_id)}/view" target="_blank" rel="noopener">باز کردن همین مقاله در Google Drive</a> (صفحه‌ی ${fa(V.page)})</p>` : "")
+    + (hit.text ? `<div class="hint" style="white-space:pre-wrap;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;max-height:50vh;overflow:auto">${esc(hit.text)}</div>` : "");
+  const slow = setTimeout(() => { const el = $("vprog"); if (el && V.hit === hit) el.textContent += " (اتصال کند است؛ متن همین بخش پایین آمده است)"; }, 12000);
   $("vnote").textContent = "";
   try {
     const doc = await openDoc(hit);
+    clearTimeout(slow);
     if (V.hit !== hit) return; // another source was opened meanwhile
     if (doc) {
       V.doc = doc; await drawPage();
@@ -1062,12 +1069,29 @@ async function openViewer(hit) {
       return;
     }
   } catch (err) { V.err = err.message.startsWith("کتابخانه") ? err.message : "PDF باز نشد: " + err.message; }
+  clearTimeout(slow);
   if (V.hit !== hit) return;
   drawSchema();
   if (V.err) $("vnote").insertAdjacentHTML("afterbegin", `<div class="err">${esc(V.err)}</div>`);
 }
 // The site's copy by URL: pdf.js reads it in 64 KB ranges and only the parts the shown page needs, so a large
 // paper opens without downloading all of it. Else the copy in the reader's chosen folder. Documents stay cached.
+// The parts of a long book as one document: page p comes from the part that holds it (each part opened once).
+function partsDoc(lib, hit, m) {
+  const base = pdfUrl(hit).replace(/[^/]+$/, ""), docs = new Map();
+  const open = (f) => {
+    if (!docs.has(f)) docs.set(f, lib.getDocument({ url: base + encodeURIComponent(f), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true }).promise);
+    return docs.get(f);
+  };
+  return {
+    numPages: m.pages,
+    async getPage(p) {
+      const part = m.parts.find(([a, b]) => p >= a && p <= b);
+      if (!part) throw new Error("page " + p);
+      return (await open(part[2])).getPage(p - part[0] + 1);
+    },
+  };
+}
 async function openDoc(hit) {
   const key = hit.source_file ? baseName(hit.source_file) : null;
   if (!key) return null;
@@ -1081,6 +1105,10 @@ async function openDoc(hit) {
   const task = lib.getDocument({ url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
   task.onProgress = progress;
   doc = await task.promise.catch(() => null);
+  if (!doc) { // a long book is on the site in parts (qdrant_store.split_pdf): one part is read, not the whole book
+    const m = await fetch(pdfUrl(hit) + ".parts.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    if (m?.parts?.length) doc = partsDoc(lib, hit, m);
+  }
   if (!doc) {
     const file = await localPdf(hit).catch(() => null);
     if (file) doc = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
@@ -2961,6 +2989,8 @@ api("/api/me").then((r) => r.json()).then((me) => {
   if (!on) showTab(me.tabs[0]);
   if (!me.pdf) document.documentElement.classList.add("nopdf");
   if (!me.search) document.documentElement.classList.add("nosearch");
+  // the PDF viewer's library, fetched once the page is idle (cached for a year): the first page view waits less
+  if (me.pdf) setTimeout(() => window.loadPdfjs?.().then(() => fetch("/vendor/pdfjs-3.11.174/pdf.worker.min.js")).catch(() => {}), 4000);
   if (me.banner) { const b = document.getElementById("sitebanner"); b.textContent = "📢 " + me.banner; b.hidden = false; }
 }).catch(() => {});
 // A link to a calculation: the tab and the values of its boxes in the address (#tab=pm&pma=1.064&…). Opened,

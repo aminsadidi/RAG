@@ -246,9 +246,58 @@ def search(qc, name: str, query: str, query_vector: list[float], top_k: int = 8,
 MAX_ASSET_BYTES = 25 * 1024 * 1024  # Cloudflare's limit per static asset
 
 
+def split_pdf(src: str, dst: str, pages_per_part: int = 60) -> dict | None:
+    """A PDF too large for one static asset, written as parts of whole pages next to ``dst`` (book.pdf →
+    book.p0001-0060.pdf, …) with a manifest ``dst + ".parts.json"``: {"source_bytes", "pages", "parts": [[first,
+    last, file name], …]} (pages 1-based). A part still over the limit is halved. Kept as it is when the manifest
+    already describes the same source. None when a single page is over the limit."""
+    import json
+
+    import pypdfium2 as pdfium
+
+    manifest_path = dst + ".parts.json"
+    size = os.path.getsize(src)
+    if os.path.exists(manifest_path):
+        old = json.loads(open(manifest_path, encoding="utf-8").read())
+        folder = os.path.dirname(dst)
+        if old.get("source_bytes") == size and all(os.path.exists(os.path.join(folder, f)) for *_, f in old["parts"]):
+            return old
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    doc = pdfium.PdfDocument(src)
+    try:
+        n, stem, parts = len(doc), os.path.basename(dst)[:-4], []
+
+        def write(a: int, b: int) -> bool:  # pages a..b (1-based); False if one page alone is too large
+            name = f"{stem}.p{a:04d}-{b:04d}.pdf"
+            part = pdfium.PdfDocument.new()
+            part.import_pages(doc, list(range(a - 1, b)))
+            path = os.path.join(os.path.dirname(dst), name)
+            part.save(path)
+            part.close()
+            if os.path.getsize(path) <= MAX_ASSET_BYTES:
+                parts.append([a, b, name])
+                return True
+            os.remove(path)
+            if a == b:
+                return False
+            m = (a + b) // 2
+            return write(a, m) and write(m + 1, b)
+
+        for a in range(1, n + 1, pages_per_part):
+            if not write(a, min(a + pages_per_part - 1, n)):
+                return None
+    finally:
+        doc.close()
+    manifest = {"source_bytes": size, "pages": n, "parts": parts}
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f)
+    return manifest
+
+
 def copy_pdfs(kb, root: str, dest: str) -> tuple[int, list[str]]:
     """Copy the PDF of every full-text paper in ``kb`` from ``root`` to ``dest`` (same relative paths),
-    for the site's PDF Worker. Returns the number copied and the files skipped (missing or too large)."""
+    for the site's PDF Worker; a PDF over the asset limit goes in parts (split_pdf). Returns the number copied and
+    the files skipped (missing, or with a single page over the limit)."""
     import shutil
 
     files = sorted({n.metadata.get("source_file") for n in kb.nodes()
@@ -256,8 +305,14 @@ def copy_pdfs(kb, root: str, dest: str) -> tuple[int, list[str]]:
     copied, skipped = 0, []
     for rel in files:
         src, dst = os.path.join(root, rel), os.path.join(dest, rel)
-        if not os.path.isfile(src) or os.path.getsize(src) > MAX_ASSET_BYTES:
+        if not os.path.isfile(src):
             skipped.append(rel)
+            continue
+        if os.path.getsize(src) > MAX_ASSET_BYTES:  # a long book: served in parts the site's viewer joins
+            if split_pdf(src, dst) is None:
+                skipped.append(rel)
+            else:
+                copied += 1
             continue
         if not (os.path.exists(dst) and os.path.getsize(dst) == os.path.getsize(src)):
             os.makedirs(os.path.dirname(dst), exist_ok=True)

@@ -421,7 +421,7 @@ def export_pdfs(dest: Annotated[Path, typer.Argument(help="Folder to copy the PD
     if root is None:
         raise typer.BadParameter("no collection linked (matrag link)")
     copied, skipped = qdrant_store.copy_pdfs(ws.kb, str(root), str(dest))
-    typer.echo(f"{copied} PDFs in {dest}; skipped {len(skipped)} (missing or over 25 MB)")
+    typer.echo(f"{copied} PDFs in {dest} (books over 25 MB in parts); skipped {len(skipped)} (missing)")
     for rel in skipped[:20]:
         typer.echo(f"  skipped: {rel}")
 
