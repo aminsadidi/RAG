@@ -16,6 +16,16 @@ directory = "./public"
 binding = "AICACHE"
 id = "3ef1d04b9af6433f90e76bb70c4278b8"
 
+# Counters with a limit (daily quotas, failed logins): one SQLite Durable Object (src/counters.js), as KV's
+# 1000 writes a day on the free plan are too few for them.
+[[durable_objects.bindings]]
+name = "COUNTERS"
+class_name = "Counters"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Counters"]
+
 [[services]]
 binding = "PDFS"
 service = "matrag-pdfs"
