@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use MatRAG, please cite it as below."
+title: "MatRAG: retrieval over nonlinear-optics papers and optical constants of crystals"
+type: software
+authors:
+  - family-names: Sadidi
+    given-names: Amin Hossein
+    affiliation: "Faculty of Physics, University of Isfahan"
+version: 1.0.0
+repository-code: "https://github.com/aminsadidi/RAG"
+keywords:
+  - retrieval-augmented generation
+  - nonlinear optics
+  - refractive index
+  - phase matching
+  - SPDC
+  - Qdrant
