@@ -468,7 +468,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label id="advbwrap" style="display:none"><span id="advlb">طول موج دوم</span> <input id="advb" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.532" style="width:96px"> µm</label>
     </div>
     <div class="row">
-      <label>بازه‌ی دما <input id="advlo" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="20" style="width:64px"> تا <input id="advhi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="60" style="width:64px"> °C</label>
+      <label title="کمترین دما = دمای اتاق یا آزمایشگاه؛ بیشترین دما = بالاترین دمایی که آون بلور شما می‌رسد (بی‌آون: همان دمای اتاق)">دمای کار: از <input id="advlo" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="20" style="width:64px"> تا <input id="advhi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="60" style="width:64px"> °C</label>
       <label>نوع <select id="advtype"><option value="any">هر نوع</option><option value="I">نوع I</option><option value="II">نوع II</option><option value="0">نوع 0 (فقط QPM، هر سه موج هم‌قطبش)</option></select></label>
       <label>طول بلور <input id="advlen" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:56px"> mm</label>
     </div>
@@ -492,7 +492,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   </div>
   <div class="card" style="margin-top:14px">
     <h2 data-fold="cut" data-closed>بلوری که بریده شده: در چه دمایی کار می‌کند؟</h2>
-    <p class="hint">بلور و زاویه‌ی برش آن را بدهید (همان که سازنده نوشته)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود. پیش از خرید ببینید آون شما (بازه‌ی دمای بالا) به آن دما می‌رسد یا نه. فقط بلورهایی که فرمول وابستگی دمایی دارند.</p>
+    <p class="hint">بلوری را که سازنده با زاویه‌ی مشخص بریده است بدهید (صفحه، زاویه و نوع روی برگه‌ی بلور نوشته شده)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود، و این‌که در بازه‌ی دمای کار بالا هست یا نه. مثال: LBO بریده‌شده در صفحه‌ی xy با φ = 0° (نوع I) برای دوبرابرکردن 1064 nm حدود ۱۴۹ °C می‌خواهد؛ اگر آون شما تا این دما نمی‌رسد، این برش به کارتان نمی‌آید. فقط بلورهایی که فرمول وابستگی دمایی دارند.</p>
     <div class="row">
       <label>بلور <select id="cutmat" class="xsel"></select></label>
       <label>صفحه <select id="cutplane"><option value="xz">xz (θ)</option><option value="yz">yz (θ)</option><option value="xy">xy (φ)</option></select></label>
@@ -528,8 +528,9 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="row">
       <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
       <input id="spxi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.84" style="width:64px">
-      <label>دمای بلور <input id="spT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:76px" placeholder="—"> °C</label>
-      <span class="hint" id="spTinfo"></span>
+      <label title="دمای بلور در آزمایش (دمای اتاق یا آون)">دمای کار <input id="spT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" value="25"> °C</label>
+      <button type="button" class="alt" id="spsolve" title="برای بلوری که دوره‌ی QPM یا زاویه‌ی برشش ثابت است: دمایی که این طول موج‌ها را می‌دهد، در حل‌کننده‌ی زبانه‌ی تطبیق فاز">دمای لازم برای بلور آماده؟</button>
+      <span class="hint" id="spTinfo" style="flex-basis:100%"></span>
     </div>
     <div class="row">
       <label>پیکربندی <select id="spcfg" style="max-width:420px"></select></label>
@@ -2172,6 +2173,8 @@ function pmGo() {
   }
 }
 $("pmgo").onclick = pmGo;
+// for the other tabs (the SPDC tab hands a crystal to the solver)
+window.pmOpen = (mat, label, mode) => { $("pmmode").value = mode; pick(mat, label, false); pmGo(); };
 $("pmmode").onchange = pmGo;
 $("pmmat").onchange = (e) => { PM.extrapolate = false; pick(e.target.value); };
 $("pmmore").onchange = () => {
@@ -2583,7 +2586,14 @@ window.loadSPDC = async () => {
   $("spopt").onclick = optimize;
   $("spang").onclick = angles;
   $("sppm").onchange = () => { $("spapodl").hidden = $("sppm").value !== "apod"; };
-  $("spT").onchange = fillCfg;
+  $("spT").onchange = () => { if (!$("spT").value.trim()) $("spT").value = "25"; fillCfg(); };
+  // a crystal already made (fixed period or cut): the temperature that gives these wavelengths, in the solver
+  $("spsolve").onclick = async () => {
+    $("pmproc").value = "spdc"; $("pma").value = $("splp").value; $("pmb").value = $("spl1").value; $("pmT").value = $("spT").value.trim() || "25";
+    const mat = $("spmat").value, label = spSrc()?.label;
+    showTab("pm"); await window.loadPM();
+    window.pmOpen(mat, label, "tune");
+  };
   $("spfib").onclick = () => fiber(false);
   $("sprate").onclick = pairs;
   $("spcnt").onclick = counts;
@@ -2632,8 +2642,7 @@ const spStop = (out) => { const why = spBad(); if (why) $(out).innerHTML = `<spa
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
-  $("spT").placeholder = s.thermo ? String(s.thermo.t0_c) : "—";
-  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ دما اثری ندارد.") + tempNote("spT", s.thermo);
+  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + tempNote("spT", s.thermo);
   $("spl2").innerHTML = spBad() ? `<span class="err">${spBad()}</span>` : `λ₂ = ${l2.toFixed(4)} µm`;
   const opts = [];
   try {
