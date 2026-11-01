@@ -50,66 +50,668 @@
  },
  "SYNONYMS": {
   "BBO": "BaB2O4",
+  "β-BBO": "BaB2O4",
+  "beta-BBO": "BaB2O4",
+  "β-BaB2O4": "BaB2O4",
+  "beta-BaB2O4": "BaB2O4",
+  "beta barium borate": "BaB2O4",
+  "barium borate": "BaB2O4",
+  "barium metaborate": "BaB2O4",
+  "α-BBO": "alpha-BaB2O4",
+  "alpha-BBO": "alpha-BaB2O4",
+  "a-BBO": "alpha-BaB2O4",
+  "α-BaB2O4": "alpha-BaB2O4",
+  "alpha-BaB2O4": "alpha-BaB2O4",
+  "alpha barium borate": "alpha-BaB2O4",
   "LBO": "LiB3O5",
+  "lithium triborate": "LiB3O5",
+  "lithium borate": "LiB3O5",
+  "BiBO": "BiB3O6",
   "BIBO": "BiB3O6",
+  "bismuth triborate": "BiB3O6",
+  "bismuth borate": "BiB3O6",
   "CLBO": "CsLiB6O10",
+  "cesium lithium borate": "CsLiB6O10",
+  "caesium lithium borate": "CsLiB6O10",
   "CBO": "CsB3O5",
+  "cesium triborate": "CsB3O5",
+  "caesium triborate": "CsB3O5",
   "KBBF": "KBe2BO3F2",
-  "KTP": "KTiOPO4",
-  "KTA": "KTiOAsO4",
-  "RTP": "RbTiOPO4",
-  "KDP": "KH2PO4",
-  "DKDP": "KD2PO4",
-  "ADP": "NH4H2PO4",
-  "LN": "LiNbO3",
-  "PPLN": "LiNbO3",
-  "LT": "LiTaO3",
-  "PPLT": "LiTaO3",
-  "PPKTP": "KTiOPO4",
-  "PPRTP": "RbTiOPO4",
-  "PPKTA": "KTiOAsO4",
-  "PPSLT": "LiTaO3",
-  "PPMgLN": "LiNbO3",
-  "MgLN": "LiNbO3",
-  "ZGP": "ZnGeP2",
-  "CSP": "CdSiP2",
-  "AGS": "AgGaS2",
-  "AGSe": "AgGaSe2",
-  "BGS": "BaGa4S7",
-  "BGSe": "BaGa4Se7",
-  "LGS": "LiGaS2",
-  "LIS": "LiInS2",
+  "potassium fluoroboratoberyllate": "KBe2BO3F2",
+  "potassium beryllium fluoroborate": "KBe2BO3F2",
+  "RBBF": "RbBe2BO3F2",
+  "rubidium beryllium fluoroborate": "RbBe2BO3F2",
   "KABO": "K2Al2B2O7",
+  "potassium aluminum borate": "K2Al2B2O7",
+  "potassium aluminium borate": "K2Al2B2O7",
+  "YCOB": "YCa4O(BO3)3",
+  "yttrium calcium oxyborate": "YCa4O(BO3)3",
+  "Ca4YO(BO3)3": "YCa4O(BO3)3",
+  "GdCOB": "GdCa4O(BO3)3",
+  "GDCOB": "GdCa4O(BO3)3",
+  "gadolinium calcium oxyborate": "GdCa4O(BO3)3",
+  "Ca4GdO(BO3)3": "GdCa4O(BO3)3",
+  "TmCOB": "TmCa4O(BO3)3",
+  "LCB": "La2CaB10O19",
+  "lanthanum calcium borate": "La2CaB10O19",
   "YAB": "YAl3(BO3)4",
-  "CDA": "CsH2AsO4",
-  "YAG": "Y3Al5O12",
-  "YVO": "YVO4",
-  "SBN": "SrxBa1-xNb2O6",
-  "LGT": "La3Ga5.5Ta0.5O14",
-  "Langatate": "La3Ga5.5Ta0.5O14",
+  "yttrium aluminum borate": "YAl3(BO3)4",
+  "yttrium aluminium borate": "YAl3(BO3)4",
+  "LB4": "Li2B4O7",
+  "lithium tetraborate": "Li2B4O7",
+  "LRB4": "LiRbB4O7",
+  "lithium rubidium tetraborate": "LiRbB4O7",
+  "SBBO": "Sr2Be2B2O7",
+  "strontium beryllium borate": "Sr2Be2B2O7",
+  "NLBO": "Na3La9O3(BO3)8",
+  "ABF": "NH4B4O6F",
+  "ammonium fluorooxoborate": "NH4B4O6F",
+  "KB5": "KB5O8·4H2O",
+  "potassium pentaborate": "KB5O8·4H2O",
+  "KDP": "KH2PO4",
+  "potassium dihydrogen phosphate": "KH2PO4",
+  "DKDP": "KD2PO4",
+  "KD*P": "KD2PO4",
+  "deuterated KDP": "KD2PO4",
+  "potassium dideuterium phosphate": "KD2PO4",
+  "deuterated potassium dihydrogen phosphate": "KD2PO4",
+  "ADP": "NH4H2PO4",
+  "ammonium dihydrogen phosphate": "NH4H2PO4",
   "DADP": "NH4D2PO4",
+  "deuterated ADP": "NH4D2PO4",
   "RDP": "RbH2PO4",
+  "rubidium dihydrogen phosphate": "RbH2PO4",
   "DRDP": "RbD2PO4",
+  "deuterated RDP": "RbD2PO4",
   "KDA": "KH2AsO4",
+  "potassium dihydrogen arsenate": "KH2AsO4",
   "DKDA": "KD2AsO4",
   "ADA": "NH4H2AsO4",
+  "ammonium dihydrogen arsenate": "NH4H2AsO4",
   "DADA": "NH4D2AsO4",
   "RDA": "RbH2AsO4",
+  "rubidium dihydrogen arsenate": "RbH2AsO4",
   "DRDA": "RbD2AsO4",
-  "KB5": "KB5O8·4H2O",
-  "BeSO4": "BeSO4·4H2O",
-  "Iodic acid": "HIO3",
-  "Sodium formate": "NaCOOH",
-  "Barium formate": "Ba(COOH)2",
+  "CDA": "CsH2AsO4",
+  "cesium dihydrogen arsenate": "CsH2AsO4",
+  "KTP": "KTiOPO4",
+  "PPKTP": "KTiOPO4",
+  "potassium titanyl phosphate": "KTiOPO4",
+  "RTP": "RbTiOPO4",
+  "PPRTP": "RbTiOPO4",
+  "rubidium titanyl phosphate": "RbTiOPO4",
+  "KTA": "KTiOAsO4",
+  "PPKTA": "KTiOAsO4",
+  "potassium titanyl arsenate": "KTiOAsO4",
+  "RTA": "RbTiOAsO4",
+  "PPRTA": "RbTiOAsO4",
+  "rubidium titanyl arsenate": "RbTiOAsO4",
+  "CTA": "CsTiOAsO4",
+  "cesium titanyl arsenate": "CsTiOAsO4",
+  "LN": "LiNbO3",
+  "PPLN": "LiNbO3",
+  "CLN": "LiNbO3",
+  "lithium niobate": "LiNbO3",
+  "MgO:LN": "MgO-LiNbO3",
+  "MgO:PPLN": "MgO-LiNbO3",
+  "PPMgLN": "MgO-LiNbO3",
+  "MgLN": "MgO-LiNbO3",
+  "MgO:LiNbO3": "MgO-LiNbO3",
+  "MgO-LN": "MgO-LiNbO3",
+  "MgO-doped lithium niobate": "MgO-LiNbO3",
+  "magnesium-doped lithium niobate": "MgO-LiNbO3",
+  "LT": "LiTaO3",
+  "PPLT": "LiTaO3",
+  "SLT": "LiTaO3",
+  "PPSLT": "LiTaO3",
+  "lithium tantalate": "LiTaO3",
+  "MgO:SLT": "Mg-LiTaO3",
+  "MgSLT": "Mg-LiTaO3",
+  "MgO:LiTaO3": "Mg-LiTaO3",
+  "Mg:LiTaO3": "Mg-LiTaO3",
+  "MgO-doped lithium tantalate": "Mg-LiTaO3",
+  "KN": "KNbO3",
+  "potassium niobate": "KNbO3",
+  "lithium iodate": "LiIO3",
+  "iodic acid": "HIO3",
+  "alpha-HIO3": "HIO3",
+  "α-HIO3": "HIO3",
+  "BTO": "BaTiO3",
+  "barium titanate": "BaTiO3",
   "BNN": "Ba2NaNb5O15",
   "BSN": "Ba2NaNb5O15",
+  "barium sodium niobate": "Ba2NaNb5O15",
+  "SBN": "SrxBa1-xNb2O6",
+  "strontium barium niobate": "SrxBa1-xNb2O6",
+  "LGT": "La3Ga5.5Ta0.5O14",
+  "langatate": "La3Ga5.5Ta0.5O14",
+  "ZGP": "ZnGeP2",
+  "zinc germanium phosphide": "ZnGeP2",
+  "AGS": "AgGaS2",
+  "silver thiogallate": "AgGaS2",
+  "silver gallium sulfide": "AgGaS2",
+  "silver gallium sulphide": "AgGaS2",
+  "AGSe": "AgGaSe2",
+  "AGSE": "AgGaSe2",
+  "silver gallium selenide": "AgGaSe2",
+  "AGGS": "AgGaGeS4",
+  "silver gallium germanium sulfide": "AgGaGeS4",
+  "CSP": "CdSiP2",
+  "cadmium silicon phosphide": "CdSiP2",
+  "CGA": "CdGeAs2",
+  "cadmium germanium arsenide": "CdGeAs2",
+  "gallium selenide": "GaSe",
+  "gallium sulfide": "GaS",
+  "HGS": "HgGa2S4",
+  "mercury thiogallate": "HgGa2S4",
+  "cadmium thiogallate": "CdGa2S4",
+  "LGS": "LiGaS2",
+  "lithium thiogallate": "LiGaS2",
+  "LIS": "LiInS2",
+  "lithium thioindate": "LiInS2",
+  "LISe": "LiInSe2",
+  "lithium selenoindate": "LiInSe2",
+  "LGSe": "LiGaSe2",
+  "lithium selenogallate": "LiGaSe2",
+  "BGS": "BaGa4S7",
+  "BGSe": "BaGa4Se7",
+  "BGGSe": "BaGa2GeSe6",
+  "proustite": "Ag3AsS3",
+  "pyrargyrite": "Ag3SbS3",
+  "cinnabar": "HgS",
+  "TAS": "Tl3AsSe3",
+  "thallium arsenic selenide": "Tl3AsSe3",
+  "cadmium selenide": "CdSe",
+  "cadmium sulfide": "CdS",
+  "gallium arsenide": "GaAs",
+  "OP-GaAs": "GaAs",
+  "OPGaAs": "GaAs",
+  "gallium phosphide": "GaP",
+  "OP-GaP": "GaP",
+  "OPGaP": "GaP",
+  "zinc selenide": "ZnSe",
+  "zinc telluride": "ZnTe",
+  "cadmium telluride": "CdTe",
+  "gallium nitride": "GaN",
+  "aluminum nitride": "AlN",
+  "aluminium nitride": "AlN",
+  "silicon carbide": "SiC",
+  "zinc oxide": "ZnO",
+  "silicon": "Si",
+  "germanium": "Ge",
+  "diamond": "C",
+  "quartz": "SiO2",
+  "α-quartz": "SiO2",
+  "alpha-quartz": "SiO2",
+  "crystal quartz": "SiO2",
+  "crystalline quartz": "SiO2",
+  "fused silica": "SiO2",
+  "sapphire": "Al2O3",
+  "corundum": "Al2O3",
+  "calcite": "CaCO3",
+  "rutile": "TiO2",
+  "paratellurite": "TeO2",
+  "tellurium dioxide": "TeO2",
+  "YVO": "YVO4",
+  "yttrium vanadate": "YVO4",
+  "YAG": "Y3Al5O12",
+  "yttrium aluminum garnet": "Y3Al5O12",
+  "yttrium aluminium garnet": "Y3Al5O12",
+  "YLF": "YLiF4",
+  "LiYF4": "YLiF4",
+  "yttrium lithium fluoride": "YLiF4",
+  "BMF": "MgBaF4",
+  "BaMgF4": "MgBaF4",
+  "barium magnesium fluoride": "MgBaF4",
+  "fluorite": "CaF2",
+  "calcium fluoride": "CaF2",
+  "magnesium fluoride": "MgF2",
+  "barium fluoride": "BaF2",
+  "lithium fluoride": "LiF",
+  "alexandrite": "BeAl2O4",
+  "chrysoberyl": "BeAl2O4",
+  "urea": "CH4N2O - urea",
+  "BeSO4": "BeSO4·4H2O",
+  "sodium formate": "NaCOOH",
+  "barium formate": "Ba(COOH)2",
   "LFM": "LiCOOH",
-  "LRB4": "LiRbB4O7",
-  "LCB": "La2CaB10O19",
-  "NLBO": "Na3La9O3(BO3)8",
-  "Sapphire": "Al2O3",
-  "BTO": "BaTiO3",
-  "ABF": "NH4B4O6F"
+  "lithium formate": "LiCOOH"
+ },
+ "CRYSTAL_NAMES": {
+  "BaB2O4": [
+   "BBO",
+   "β-BBO",
+   "beta-BBO",
+   "β-BaB2O4",
+   "beta-BaB2O4",
+   "beta barium borate",
+   "barium borate",
+   "barium metaborate"
+  ],
+  "alpha-BaB2O4": [
+   "α-BBO",
+   "alpha-BBO",
+   "a-BBO",
+   "α-BaB2O4",
+   "alpha-BaB2O4",
+   "alpha barium borate"
+  ],
+  "LiB3O5": [
+   "LBO",
+   "lithium triborate",
+   "lithium borate"
+  ],
+  "BiB3O6": [
+   "BiBO",
+   "BIBO",
+   "bismuth triborate",
+   "bismuth borate"
+  ],
+  "CsLiB6O10": [
+   "CLBO",
+   "cesium lithium borate",
+   "caesium lithium borate"
+  ],
+  "CsB3O5": [
+   "CBO",
+   "cesium triborate",
+   "caesium triborate"
+  ],
+  "KBe2BO3F2": [
+   "KBBF",
+   "potassium fluoroboratoberyllate",
+   "potassium beryllium fluoroborate"
+  ],
+  "RbBe2BO3F2": [
+   "RBBF",
+   "rubidium beryllium fluoroborate"
+  ],
+  "K2Al2B2O7": [
+   "KABO",
+   "potassium aluminum borate",
+   "potassium aluminium borate"
+  ],
+  "YCa4O(BO3)3": [
+   "YCOB",
+   "yttrium calcium oxyborate",
+   "Ca4YO(BO3)3"
+  ],
+  "GdCa4O(BO3)3": [
+   "GdCOB",
+   "GDCOB",
+   "gadolinium calcium oxyborate",
+   "Ca4GdO(BO3)3"
+  ],
+  "TmCa4O(BO3)3": [
+   "TmCOB"
+  ],
+  "La2CaB10O19": [
+   "LCB",
+   "lanthanum calcium borate"
+  ],
+  "YAl3(BO3)4": [
+   "YAB",
+   "yttrium aluminum borate",
+   "yttrium aluminium borate"
+  ],
+  "Li2B4O7": [
+   "LB4",
+   "lithium tetraborate"
+  ],
+  "LiRbB4O7": [
+   "LRB4",
+   "lithium rubidium tetraborate"
+  ],
+  "Sr2Be2B2O7": [
+   "SBBO",
+   "strontium beryllium borate"
+  ],
+  "Na3La9O3(BO3)8": [
+   "NLBO"
+  ],
+  "NH4B4O6F": [
+   "ABF",
+   "ammonium fluorooxoborate"
+  ],
+  "KB5O8·4H2O": [
+   "KB5",
+   "potassium pentaborate"
+  ],
+  "KH2PO4": [
+   "KDP",
+   "potassium dihydrogen phosphate"
+  ],
+  "KD2PO4": [
+   "DKDP",
+   "KD*P",
+   "deuterated KDP",
+   "potassium dideuterium phosphate",
+   "deuterated potassium dihydrogen phosphate"
+  ],
+  "NH4H2PO4": [
+   "ADP",
+   "ammonium dihydrogen phosphate"
+  ],
+  "NH4D2PO4": [
+   "DADP",
+   "deuterated ADP"
+  ],
+  "RbH2PO4": [
+   "RDP",
+   "rubidium dihydrogen phosphate"
+  ],
+  "RbD2PO4": [
+   "DRDP",
+   "deuterated RDP"
+  ],
+  "KH2AsO4": [
+   "KDA",
+   "potassium dihydrogen arsenate"
+  ],
+  "KD2AsO4": [
+   "DKDA"
+  ],
+  "NH4H2AsO4": [
+   "ADA",
+   "ammonium dihydrogen arsenate"
+  ],
+  "NH4D2AsO4": [
+   "DADA"
+  ],
+  "RbH2AsO4": [
+   "RDA",
+   "rubidium dihydrogen arsenate"
+  ],
+  "RbD2AsO4": [
+   "DRDA"
+  ],
+  "CsH2AsO4": [
+   "CDA",
+   "cesium dihydrogen arsenate"
+  ],
+  "KTiOPO4": [
+   "KTP",
+   "PPKTP",
+   "potassium titanyl phosphate"
+  ],
+  "RbTiOPO4": [
+   "RTP",
+   "PPRTP",
+   "rubidium titanyl phosphate"
+  ],
+  "KTiOAsO4": [
+   "KTA",
+   "PPKTA",
+   "potassium titanyl arsenate"
+  ],
+  "RbTiOAsO4": [
+   "RTA",
+   "PPRTA",
+   "rubidium titanyl arsenate"
+  ],
+  "CsTiOAsO4": [
+   "CTA",
+   "cesium titanyl arsenate"
+  ],
+  "LiNbO3": [
+   "LN",
+   "PPLN",
+   "CLN",
+   "lithium niobate"
+  ],
+  "MgO-LiNbO3": [
+   "MgO:LN",
+   "MgO:PPLN",
+   "PPMgLN",
+   "MgLN",
+   "MgO:LiNbO3",
+   "MgO-LN",
+   "MgO-doped lithium niobate",
+   "magnesium-doped lithium niobate"
+  ],
+  "LiTaO3": [
+   "LT",
+   "PPLT",
+   "SLT",
+   "PPSLT",
+   "lithium tantalate"
+  ],
+  "Mg-LiTaO3": [
+   "MgO:SLT",
+   "MgSLT",
+   "MgO:LiTaO3",
+   "Mg:LiTaO3",
+   "MgO-doped lithium tantalate"
+  ],
+  "KNbO3": [
+   "KN",
+   "potassium niobate"
+  ],
+  "LiIO3": [
+   "lithium iodate"
+  ],
+  "HIO3": [
+   "iodic acid",
+   "alpha-HIO3",
+   "α-HIO3"
+  ],
+  "BaTiO3": [
+   "BTO",
+   "barium titanate"
+  ],
+  "Ba2NaNb5O15": [
+   "BNN",
+   "BSN",
+   "barium sodium niobate"
+  ],
+  "SrxBa1-xNb2O6": [
+   "SBN",
+   "strontium barium niobate"
+  ],
+  "La3Ga5.5Ta0.5O14": [
+   "LGT",
+   "langatate"
+  ],
+  "ZnGeP2": [
+   "ZGP",
+   "zinc germanium phosphide"
+  ],
+  "AgGaS2": [
+   "AGS",
+   "silver thiogallate",
+   "silver gallium sulfide",
+   "silver gallium sulphide"
+  ],
+  "AgGaSe2": [
+   "AGSe",
+   "AGSE",
+   "silver gallium selenide"
+  ],
+  "AgGaGeS4": [
+   "AGGS",
+   "silver gallium germanium sulfide"
+  ],
+  "CdSiP2": [
+   "CSP",
+   "cadmium silicon phosphide"
+  ],
+  "CdGeAs2": [
+   "CGA",
+   "cadmium germanium arsenide"
+  ],
+  "GaSe": [
+   "gallium selenide"
+  ],
+  "GaS": [
+   "gallium sulfide"
+  ],
+  "HgGa2S4": [
+   "HGS",
+   "mercury thiogallate"
+  ],
+  "CdGa2S4": [
+   "cadmium thiogallate"
+  ],
+  "LiGaS2": [
+   "LGS",
+   "lithium thiogallate"
+  ],
+  "LiInS2": [
+   "LIS",
+   "lithium thioindate"
+  ],
+  "LiInSe2": [
+   "LISe",
+   "lithium selenoindate"
+  ],
+  "LiGaSe2": [
+   "LGSe",
+   "lithium selenogallate"
+  ],
+  "BaGa4S7": [
+   "BGS"
+  ],
+  "BaGa4Se7": [
+   "BGSe"
+  ],
+  "BaGa2GeSe6": [
+   "BGGSe"
+  ],
+  "Ag3AsS3": [
+   "proustite"
+  ],
+  "Ag3SbS3": [
+   "pyrargyrite"
+  ],
+  "HgS": [
+   "cinnabar"
+  ],
+  "Tl3AsSe3": [
+   "TAS",
+   "thallium arsenic selenide"
+  ],
+  "CdSe": [
+   "cadmium selenide"
+  ],
+  "CdS": [
+   "cadmium sulfide"
+  ],
+  "GaAs": [
+   "gallium arsenide",
+   "OP-GaAs",
+   "OPGaAs"
+  ],
+  "GaP": [
+   "gallium phosphide",
+   "OP-GaP",
+   "OPGaP"
+  ],
+  "ZnSe": [
+   "zinc selenide"
+  ],
+  "ZnTe": [
+   "zinc telluride"
+  ],
+  "CdTe": [
+   "cadmium telluride"
+  ],
+  "GaN": [
+   "gallium nitride"
+  ],
+  "AlN": [
+   "aluminum nitride",
+   "aluminium nitride"
+  ],
+  "SiC": [
+   "silicon carbide"
+  ],
+  "ZnO": [
+   "zinc oxide"
+  ],
+  "Si": [
+   "silicon"
+  ],
+  "Ge": [
+   "germanium"
+  ],
+  "C": [
+   "diamond"
+  ],
+  "SiO2": [
+   "quartz",
+   "α-quartz",
+   "alpha-quartz",
+   "crystal quartz",
+   "crystalline quartz",
+   "fused silica"
+  ],
+  "Al2O3": [
+   "sapphire",
+   "corundum"
+  ],
+  "CaCO3": [
+   "calcite"
+  ],
+  "TiO2": [
+   "rutile"
+  ],
+  "TeO2": [
+   "paratellurite",
+   "tellurium dioxide"
+  ],
+  "YVO4": [
+   "YVO",
+   "yttrium vanadate"
+  ],
+  "Y3Al5O12": [
+   "YAG",
+   "yttrium aluminum garnet",
+   "yttrium aluminium garnet"
+  ],
+  "YLiF4": [
+   "YLF",
+   "LiYF4",
+   "yttrium lithium fluoride"
+  ],
+  "MgBaF4": [
+   "BMF",
+   "BaMgF4",
+   "barium magnesium fluoride"
+  ],
+  "CaF2": [
+   "fluorite",
+   "calcium fluoride"
+  ],
+  "MgF2": [
+   "magnesium fluoride"
+  ],
+  "BaF2": [
+   "barium fluoride"
+  ],
+  "LiF": [
+   "lithium fluoride"
+  ],
+  "BeAl2O4": [
+   "alexandrite",
+   "chrysoberyl"
+  ],
+  "CH4N2O - urea": [
+   "urea"
+  ],
+  "DAST": [],
+  "BeSO4·4H2O": [
+   "BeSO4"
+  ],
+  "NaCOOH": [
+   "sodium formate"
+  ],
+  "Ba(COOH)2": [
+   "barium formate"
+  ],
+  "LiCOOH": [
+   "LFM",
+   "lithium formate"
+  ]
  },
  "SPACED_FORMULA": "\\b(?:[A-Z][a-z]?)+(?:\\s+\\d{1,3}(?:\\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![\\w.])",
  "PAYLOAD_KEYS": [

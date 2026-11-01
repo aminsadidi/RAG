@@ -107,7 +107,6 @@
  "این سامانه چه می‌کند؟": "What does this system do?",
  "این فقط نقشه‌ی محل بخش روی صفحه است. برای دیدن خودِ صفحه با بخشِ رنگی، PDFها را یک بار به سایت نشان دهید": "This is only a map of where the passage is on the page. To see the page itself with the passage highlighted, show the PDFs to the site once",
  "این ماده در هیچ‌کدام از منابع پیدا شده نیامده:": "This material appears in none of the sources found:",
- "این ماده در پایگاه refractiveindex.info نیست (برای نمونه KTiOAsO4، CsB3O5، KBBF، CdSiP2 و YCOB آن‌جا داده ندارند، هرچند مقاله‌هایشان در مجموعه هست).": "This material is not in the refractiveindex.info database (for example KTiOAsO4, CsB3O5, KBBF, CdSiP2 and YCOB have no data there, although their papers are in the collection).",
  "این منبع به سؤال مربوط بود": "This source was relevant to the question",
  "این منبع به سؤال مربوط نبود": "This source was not relevant to the question",
  "این واژه‌ها در هیچ منبعی نیامده:": "These words appear in no source:",
@@ -682,5 +681,12 @@
  "(اتصال کند است؛ متن همین بخش پایین آمده است)": "(slow connection; the text of this passage is below)",
  "باز کردن همین مقاله در Google Drive": "open this paper in Google Drive",
  "یا": "or",
- "(صفحه‌ی": "(page"
+ "(صفحه‌ی": "(page",
+ "ثبت شده است.": ".",
+ "نام‌های دیگر:": "Other names:",
+ "نام بلور: BBO، lithium niobate، ZGP…": "Crystal name: BBO, lithium niobate, ZGP…",
+ "(در این سایت:": "(on this site:",
+ "این ماده نه در refractiveindex.info هست و نه فرمولی از مقاله‌های مجموعه برایش ثبت شده.": "This material is neither in refractiveindex.info nor has a formula from the collection's papers.",
+ "» در این سایت با نام": "» is kept on this site as",
+ "» در فهرست این ابزار نیست": "» is not in this tool's list"
 }

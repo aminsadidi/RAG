@@ -35,7 +35,7 @@ test("relevance check: says 'not found' instead of passing off the nearest passa
   const rel = new Function("S", `${src}; return { queryTerms, relevance };`)(S);
   const bbo = [{ text: "Sellmeier equations of β-BaB 2 O 4 at room temperature", citation: "Eimerl (1987)" }];
   assert.deepEqual(rel.queryTerms("Sellmeier coefficients of beta barium borate").materials, ["BaB2O4"]);
-  assert.deepEqual(rel.queryTerms("SHG in KTP and GaAs").materials, ["GaAs", "KTP"]);
+  assert.deepEqual(rel.queryTerms("SHG in KTP and GaAs").materials, ["GaAs", "KTiOPO4"]);
   assert.equal(rel.relevance("Sellmeier equation of BBO", bbo, 0.8).verdict, "ok");
   assert.equal(rel.relevance("Sellmeier equation of LiB3O5", bbo, 0.8).verdict, "none");
   assert.deepEqual(rel.relevance("Sellmeier equation of LiB3O5", bbo, 0.8).missingMaterials, ["LiB3O5"]);

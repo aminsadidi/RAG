@@ -371,7 +371,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <span id="pmderived" class="hint" style="direction:ltr"></span>
     </div>
     <div class="row">
-      <label>بلور <select id="pmmat" style="max-width:300px"></select></label>
+      <label>بلور <select id="pmmat" style="max-width:300px"></select></label> <input class="xfind" data-for="pmmat" list="xnamelist" placeholder="نام بلور: BBO، lithium niobate، ZGP…" style="width:210px" autocomplete="off"><span class="xfindnote hint" data-for="pmmat"></span>
       <label>منبع <select id="pmsrc" style="max-width:260px"></select></label> <span class="hint" title="منشأ هر عدد: سبز از صفحه‌ی مقاله‌ی اصلی، زرد از کتاب مرجع، نارنجی از پایگاه داده‌ی باز، آبی محاسبه‌ی نظری.">🟢 تأییدشده · 🟡 کتاب مرجع · 🟠 پایگاه داده · 🔵 محاسباتی</span>
       <button id="pmgo">محاسبه</button>
       <button class="alt" id="pmall">مقایسه‌ی همه‌ی بلورها</button>
@@ -472,7 +472,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2 data-fold="cut" data-closed>بلوری که بریده شده: در چه دمایی کار می‌کند؟</h2>
     <p class="hint">بلور و زاویه‌ی برش آن را بدهید (همان که سازنده نوشته)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود. پیش از خرید ببینید آون شما (بازه‌ی دمای بالا) به آن دما می‌رسد یا نه. فقط بلورهایی که فرمول وابستگی دمایی دارند.</p>
     <div class="row">
-      <label>بلور <select id="cutmat" style="max-width:260px"></select></label>
+      <label>بلور <select id="cutmat" style="max-width:260px"></select></label> <input class="xfind" data-for="cutmat" list="xnamelist" placeholder="نام بلور: BBO، lithium niobate، ZGP…" style="width:210px" autocomplete="off"><span class="xfindnote hint" data-for="cutmat"></span>
       <label>صفحه <select id="cutplane"><option value="xz">xz (θ)</option><option value="yz">yz (θ)</option><option value="xy">xy (φ)</option></select></label>
       <label>زاویه‌ی برش <input id="cutangle" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:72px" placeholder="—"> °</label>
       <label>نوع <select id="cuttype"><option value="I">نوع I</option><option value="IIa">نوع II (s+f)</option><option value="IIb">نوع II (f+s)</option></select></label>
@@ -487,7 +487,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
     <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است. قطبش‌دهی آپودایز گاوسی (Brańczyk و همکاران 2011) لوب‌های کناری sinc را حذف می‌کند؛ «بهینه‌سازی خلوص» پهنای پمپی را می‌یابد که خلوص را بیشینه می‌کند؛ با دمای بلور ضریب‌های شکست از فرمول وابستگی دمایی همان منبع حساب می‌شوند (اگر داشته باشد).</p>
     <div class="row">
-      <label>بلور <select id="spmat" style="max-width:300px"></select></label>
+      <label>بلور <select id="spmat" style="max-width:300px"></select></label> <input class="xfind" data-for="spmat" list="xnamelist" placeholder="نام بلور: BBO، lithium niobate، ZGP…" style="width:210px" autocomplete="off"><span class="xfindnote hint" data-for="spmat"></span>
       <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
     </div>
     <div class="row">
@@ -694,6 +694,33 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
 "use strict";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+// Every name of every crystal (src/matrag/crystal_names.py, filled in by the Worker): the site keeps a crystal under
+// its formula, and whatever name a reader types finds it. Same matching rules as text.js findCrystals.
+const CRYSTAL_NAMES = /*CRYSTAL_NAMES*/{};
+const XNAME = (() => {
+  const EL = new Set("H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu".split(" "));
+  const formulaLike = (n) => /^(?:[A-Z][a-z]?|\d+(?:\.\d+)?|[()·:\-x])+$/.test(n) && /[\da-z]/.test(n) && (n.match(/[A-Z][a-z]?/g) || []).every((e) => EL.has(e));
+  const fold = (n) => n.length >= 3 && !formulaLike(n);
+  const all = Object.entries(CRYSTAL_NAMES).flatMap(([f, ns]) => [f, ...ns].map((n) => [n, f])).filter(([n]) => n.length >= 2)
+    .sort((a, b) => b[0].length - a[0].length);
+  const same = (a, n) => (fold(n) ? a.toLowerCase() === n.toLowerCase() : a === n);
+  return {
+    // the formula of a whole name ("lithium niobate", "bbo", "MgO:LN"), or null
+    of: (q) => { q = String(q || "").trim().replace(/\s+/g, " "); return (all.find(([n]) => n === q) || all.find(([n]) => same(q, n)))?.[1] || null; },
+    // the longest name of formula f a text uses, or null
+    used: (text, f) => all.find(([n, g]) => g === f && new RegExp(`(?<![A-Za-z0-9])${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![A-Za-z0-9])`, fold(n) ? "i" : "").test(text || ""))?.[0] || null,
+    names: (f) => CRYSTAL_NAMES[f] || [],
+  };
+})();
+// "«lithium niobate» is kept here as LiNbO3 (also: LN, PPLN, …)": so a reader who typed another name sees why the
+// results speak of a formula. Empty when the reader typed the formula itself.
+function nameNote(typed, f) {
+  // nothing when the reader typed the name the site uses: there is nothing to explain
+  if (!typed || typed === f) return "";
+  const others = XNAME.names(f).filter((n) => n !== typed && n !== f);
+  return `<p class="hint" style="margin:4px 0 0">«<bdi dir="ltr">${esc(typed)}</bdi>» در این سایت با نام <b dir="ltr">${esc(f)}</b> ثبت شده است. `
+    + (others.length ? `نام‌های دیگر: <bdi dir="ltr">${others.map(esc).join("، ")}</bdi>` : "") + "</p>";
+}
 const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 const fa = (n) => Number(n).toLocaleString(LANG === "en" ? "en-US" : "fa-IR");
@@ -1208,6 +1235,11 @@ function findMaterials(query, limit = 8) {
   const words = query.toLowerCase().replace(/[،,()]/g, " ").replace(/aluminum/g, "aluminium").split(/\s+/)
     .map((w) => FA_MAT[w] || FA_MAT[w.replace(/ی$/, "")] || w).filter((w) => w && !MAT_SKIP.has(w));
   if (!words.length || !RI.index) return [];
+  const named = XNAME.of(query);
+  if (named) {
+    const m = RI.index.find((x) => x.material === named && (x.shelf === "main" || x.shelf === "papers")) || RI.index.find((x) => x.material === named);
+    if (m) return [m];
+  }
   const q = words.join(" ");
   const scored = [];
   for (const m of RI.index) {
@@ -1225,7 +1257,7 @@ function suggestMaterials(query) {
   const found = findMaterials(query);
   box.innerHTML = found.length
     ? "پیشنهاد: " + found.map((m) => `<button class="alt" data-mat="${esc(matName(m))}" style="margin:2px;direction:ltr">${esc(m.name || matName(m))}</button>`).join("")
-    : `<span class="err">این ماده در پایگاه refractiveindex.info نیست (برای نمونه KTiOAsO4، CsB3O5، KBBF، CdSiP2 و YCOB آن‌جا داده ندارند، هرچند مقاله‌هایشان در مجموعه هست).</span>
+    : `<span class="err">این ماده نه در refractiveindex.info هست و نه فرمولی از مقاله‌های مجموعه برایش ثبت شده.</span>
        نام انگلیسی یا فرمول شیمیایی را امتحان کنید، یا <button class="alt" id="rinomat">جست‌وجوی «${esc(query)}» در مقاله‌ها</button>
        و فرمول سلمایر مقاله را در «داده‌ی خودتان» (پایین صفحه) وارد کنید تا نمودارش رسم شود.`;
   return found;
@@ -1304,6 +1336,7 @@ async function selectMaterial(name) {
 }
 // A crystal chosen on another page (the crystal card of a search): shown now, or when this tab is first opened.
 window.riSelectCrystal = (mat) => {
+  mat = RI.byName?.has(mat) ? mat : XNAME.of(mat) || mat;
   if (!RI.byName) store.set("rimat2", mat);
   else if (RI.byName.has(mat)) selectMaterial(mat);
 };
@@ -1311,7 +1344,17 @@ $("risearch").onclick = () => {
   const m = RI.byName?.get(RI.mat); if (!m) return;
   $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
 };
-$("rimat").addEventListener("input", (e) => { if (RI.byName?.has(e.target.value)) selectMaterial(e.target.value); suggestMaterials(e.target.value); });
+$("rimat").addEventListener("input", (e) => {
+  const v = e.target.value, named = XNAME.of(v), m = named && RI.index ? findMaterials(v)[0] : null;
+  if (RI.byName?.has(v)) selectMaterial(v);
+  else if (m && m.material === named && RI.byName?.has(matName(m))) {
+    // the note goes in once the crystal is shown (selecting it clears the suggestions)
+    const key = matName(m);
+    Promise.resolve(selectMaterial(key)).then(() => { if ($("rimat").value === key) $("rimatsugg").innerHTML = nameNote(v.trim(), named); });
+    return;
+  }
+  suggestMaterials(v);
+});
 $("rimat").addEventListener("change", (e) => {
   if (RI.byName?.has(e.target.value)) return;
   // (no re-render here: a click on a suggestion blurs the input first and must still find its button)
@@ -2896,6 +2939,7 @@ function card(mat, D, synced) {
   const btn = (act, text) => `<button class="alt" data-xact="${act}" data-mat="${esc(mat)}">${text}</button>`;
   return `<div class="card xcard">
     <div class="xhead"><b dir="ltr">${esc(mat)}</b>${name ? `<span class="hint">${esc(name)}</span>` : ""}${kind ? `<span class="chip">${kind}</span>` : ""}</div>
+    ${cardText.includes(mat) ? "" : nameNote(XNAME.used(cardText, mat), mat)}
     <table class="xrows">${rows.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</table>
     <div class="actions">${ri ? btn("index", "نمودار ضریب شکست") : ""}${c ? btn("pm", "تطبیق فاز") : ""}${c && !src.isotropic ? btn("spdc", "جفت فوتون (SPDC)") : ""}${facet ? `<button class="alt" data-xact="filter" data-facet="${esc(facet.value)}">فقط مقاله‌های این بلور</button>` : ""}</div>
     ${synced ? '<p class="hint" style="margin:6px 0 0">این بلور در صفحه‌های ضریب شکست، تطبیق فاز و SPDC هم انتخاب شد.</p>' : ""}
@@ -2926,8 +2970,9 @@ function namedIn(text, D) {
   return found.sort((a, b) => at(a) - at(b));
 }
 
+let cardText = "";
 window.crystalCards = async (materials, text) => {
-  const box = $("xcards"), me = ++cardsFor; box.innerHTML = "";
+  const box = $("xcards"), me = ++cardsFor; box.innerHTML = ""; cardText = text || "";
   if (!materials.length && !text) return;
   let D; try { D = await loadData(); } catch { return; }
   if (me !== cardsFor) return;
@@ -2993,6 +3038,27 @@ api("/api/me").then((r) => r.json()).then((me) => {
   if (me.pdf) setTimeout(() => window.loadPdfjs?.().then(() => fetch("/vendor/pdfjs-3.11.174/pdf.worker.min.js")).catch(() => {}), 4000);
   if (me.banner) { const b = document.getElementById("sitebanner"); b.textContent = "📢 " + me.banner; b.hidden = false; }
 }).catch(() => {});
+// The calculators' crystal pickers take any name of a crystal (the same names as the search): typed in the box next to
+// the list, the crystal is picked and the note says under which name the site keeps it.
+(() => {
+  const list = document.createElement("datalist"); list.id = "xnamelist";
+  list.innerHTML = Object.entries(CRYSTAL_NAMES).flatMap(([f, ns]) => [f, ...ns]).map((n) => `<option value="${esc(n)}">`).join("");
+  document.body.appendChild(list);
+  for (const box of document.querySelectorAll("input.xfind")) {
+    const go = () => {
+      const v = box.value.trim(), sel = $(box.dataset.for), note = document.querySelector(`.xfindnote[data-for="${box.dataset.for}"]`);
+      if (!v) { note.innerHTML = ""; return; }
+      const f = XNAME.of(v) || v, opts = [...sel.options];
+      const o = opts.find((x) => x.value === f) || opts.find((x) => x.value.toLowerCase() === v.toLowerCase())
+        || opts.find((x) => x.textContent.toLowerCase().includes(v.toLowerCase()));
+      if (!o) { note.innerHTML = `<span class="err">«<bdi dir="ltr">${esc(v)}</bdi>» در فهرست این ابزار نیست${f !== v ? ` (در این سایت: <bdi dir="ltr">${esc(f)}</bdi>)` : ""}.</span>`; return; }
+      sel.value = o.value; sel.dispatchEvent(new Event("change", { bubbles: true }));
+      note.innerHTML = o.value !== v ? `«<bdi dir="ltr">${esc(v)}</bdi>» = <b dir="ltr">${esc(o.value)}</b>` : "";
+    };
+    box.addEventListener("change", go);
+    box.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); go(); } });
+  }
+})();
 // A link to a calculation: the tab and the values of its boxes in the address (#tab=pm&pma=1.064&…). Opened,
 // the boxes are filled in the page's order (a crystal before its sources: each value waits up to 15 s for its
 // option to exist) and the tab's button is pressed.
