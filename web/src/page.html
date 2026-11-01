@@ -402,16 +402,18 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
     <p class="hint" id="pmTinfo" style="margin:4px 0 0"></p>
     <label class="hint"><input type="checkbox" id="pmmore"> مواد دوشکستیِ دیگر را هم نشان بده (فقط زاویه و walk-off؛ ضرایب غیرخطی‌شان در داده‌ها نیست)</label>
-    <p class="hint clamp" id="pminfo" title=""></p>
+    <p id="pmwarn" style="margin:6px 0 0"></p>
   </div>
   <div class="card" style="margin-top:14px">
-    <h2>جواب‌ها</h2>
+    <h2>نتیجه‌ی محاسبه‌ی MatRAG</h2>
+    <p class="hint" id="pmhow" style="margin:0 0 8px"></p>
     <div style="overflow-x:auto;direction:ltr"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
     <div id="pmspread" class="hint" style="margin-top:10px"></div>
     <div id="pmoff" style="margin-top:10px"></div>
     <div id="pmqpm" class="hint" style="margin-top:10px"></div>
     <div id="pmncpm" style="margin-top:10px"></div>
-    <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). GVM بیشترین اختلاف وارون سرعت گروه بین سه موج است (واگردی زمانی): پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مؤثر بلور حدود τ/GVM است. پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
+    <details style="margin-top:10px"><summary class="hint">داده‌هایی که این محاسبه به کار برد (مقاله‌ی فرمول و ضرایب غیرخطی)</summary><p class="hint" id="pminfo" style="margin:6px 0 0"></p></details>
+    <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). جدایی پالس (GVM) بیشترین اختلاف وارون سرعت گروه بین سه موج است: پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مفید بلور حدود τ/GVM است (ستون بعدی برای پالس ۱۰۰ فمتوثانیه). پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
   </div>
   <div class="card" style="margin-top:14px" id="solvecard">
     <h2 data-fold="solver" data-closed>حل‌کننده: هر مقداری را که نمی‌دانید خالی بگذارید</h2>
@@ -1773,6 +1775,8 @@ function withD(c, src, r) {
   const e = effectiveD(nAt(src), src.kind, r, d.d);
   return { ...r, deff: e.deff, phi: e.phi, fom: e.deff ** 2 / (r.n[0] * r.n[1] * r.n[2]) };
 }
+// τ/GVM for a 100 fs pulse (mm): how long the crystal can be before the pulses of the three waves walk apart
+const usefulLen = (r) => { const g = Math.max(...r.gvm_fs_mm.map(Math.abs)); return g < 0.5 ? "> 200" : (100 / g).toFixed(g > 100 ? 2 : 1); };
 const fmtD = (r) => (r.deff == null ? "—" : r.deff < 0.005 ? "≈ 0" : r.deff.toFixed(2));
 const covers = (src, w) => [w.l1, w.l2, w.l3].every((l) => l >= src.range_um[0] - 1e-9 && l <= src.range_um[1] + 1e-9);
 function inputs() {
@@ -1877,7 +1881,9 @@ function pick(mat, label, fit = true) {
   }
   const cur = PM.crystal === c && !label ? c.sources[+$("pmsrc").value] : null;
   const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, +$("pma").value, +$("pmb").value).length;
-  const best = (cur && has(cur) ? cur : null) || c.sources.find(has) || (cur && covers(cur, w) ? cur : null) || c.sources.find((s) => covers(s, w)) || c.sources[0];
+  // the source kept, else the most trusted one that phase-matches (read from the measuring paper first)
+  const byTier = c.sources.slice().sort((p, q) => (TIER_RANK[p.tier] ?? 9) - (TIER_RANK[q.tier] ?? 9));
+  const best = (cur && has(cur) ? cur : null) || byTier.find(has) || (cur && covers(cur, w) ? cur : null) || byTier.find((s) => covers(s, w)) || c.sources[0];
   $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${tierMark(s)} ${esc(s.label)} · ${s.isotropic ? "همسان‌گرد" : s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
   $("pmsrc").value = String(c.sources.indexOf(label ? c.sources.find((s) => s.label === label) || best : best));
   PM.crystal = c; $("pmmat").value = mat;
@@ -1899,7 +1905,7 @@ function run() {
   // the solver card follows the crystal and source chosen here
   if (PM.svFor !== `${key(c)}|${$("pmsrc").value}`) { PM.svFor = `${key(c)}|${$("pmsrc").value}`; svFillCfg(); if (!pmBad()) svFill(); }
   const bad = pmBad();
-  if (bad) { $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">${bad}</td></tr>`; $("pmqpm").innerHTML = ""; $("pmncpm").innerHTML = ""; return; }
+  if (bad) { $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">${bad}</td></tr>`; for (const id of ["pmqpm", "pmncpm", "pmwarn", "pmhow"]) $(id).innerHTML = ""; return; }
   const src0 = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
   // a formula extrapolated by up to 10 % beyond its range, when asked (a row of the advisor that needed it, or the button)
   const src = PM.extrapolate && !covers(src0, w) && covers(stretch(src0), w) ? stretch(src0) : src0;
@@ -1907,8 +1913,11 @@ function run() {
   const ref = Object.values(src.axes)[0];
   const moved = PM.moved; PM.moved = "";
   showTemp(src); $("pmncpm").innerHTML = "";
-  $("pminfo").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "")
-    + (src !== src0 ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src0.range_um[0]}–${src0.range_um[1]} µm</bdi></span><br>` : "") + `${esc(c.name || c.material)} — ${src.isotropic ? "همسان‌گرد (مکعبی)" : src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
+  $("pmwarn").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "")
+    + (src !== src0 ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src0.range_um[0]}–${src0.range_um[1]} µm</bdi></span>` : "");
+  $("pmhow").innerHTML = `${esc(c.material)} · با فرمول ضریب شکست ${tierMark(src)} ${esc(src.label)}${src.thermo ? ` در <bdi dir="ltr">${tempC()} °C</bdi>` : " (در دمای اندازه‌گیری فرمول)"}`
+    + (PM.dij[c.material] ? ` · d<sub>eff</sub> از ضرایب غیرخطی ${PM.dij[c.material].sources.map((x) => `${tierMark(x)} ${esc(x.cite)}`).join("، ")}` : "") + ` · پهنای پذیرش برای بلور ۱ سانتی‌متری`;
+  $("pminfo").innerHTML = `${esc(c.name || c.material)} — ${src.isotropic ? "همسان‌گرد (مکعبی)" : src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
     + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
         + PM.dij[c.material].sources.map((s) => (s.doc_id
@@ -1928,12 +1937,12 @@ function run() {
     const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
     offCard(c, src, proc, a, b, rows);
     spreadCard(c, src, proc, a, b, rows);
-    $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th>GVM (fs/mm)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
+    $("pmtable").innerHTML = `<tr><th>plane</th><th>type</th><th>angle</th><th>pol. (1, 2 → 3)</th><th>n₁, n₂, n₃</th><th>d<sub>eff</sub> (pm/V)</th><th>walk-off (mrad)</th><th title="group-velocity mismatch: how far the pulses of the three waves separate per mm of crystal">pulse separation, GVM (fs/mm)</th><th title="τ/GVM for a 100 fs pulse">useful length, 100 fs (mm)</th><th>Δθ·L (mrad·cm)</th><th>Δλ·L (nm·cm)</th></tr>` +
       (rows.map((r) => `<tr><td>${src.kind === "uniaxial" ? "θ" : PLANE_FA[r.plane]}</td><td>${r.type === "I" ? "I" : "II"}</td>
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
         <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td><b>${fmtD(r)}</b>${r.phi !== undefined && r.deff > 0.005 ? ` <span class="hint">(φ = ${r.phi}°)</span>` : ""}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
-        <td title="1/v_g: wave 1 − 3, 2 − 3, 1 − 2">${Math.max(...r.gvm_fs_mm.map(Math.abs)).toFixed(0)}</td><td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
-       '<tr><td colspan="10" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
+        <td title="1/v_g: wave 1 − 3, 2 − 3, 1 − 2">${Math.max(...r.gvm_fs_mm.map(Math.abs)).toFixed(0)}</td><td>${usefulLen(r)}</td><td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
+       '<tr><td colspan="11" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
