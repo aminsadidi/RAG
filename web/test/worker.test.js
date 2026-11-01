@@ -201,3 +201,33 @@ test("the CI account's searches are neither logged nor sent to Telegram", async 
     assert.equal(sent.length, 1);  // anyone else's unanswered question still is
   } finally { q.restore(); }
 });
+
+test("opening papers is limited: per search of the daily quota, and per minute (no copying the collection)", async () => {
+  const { updateUser, PAPERS_PER_SEARCH, PAPERS_PER_MINUTE } = await import("../src/accounts.js");
+  const e = searchEnv({ COUNTERS: await countersNamespace() });
+  const pw = await createUser(e, "reader", 0, "");
+  await updateUser(e, "reader", { quota: 2 });
+  const c = cookieOf(await call(e, "/login", form({ username: "reader", password: pw })));
+  const q = fakeQdrant([point(0)]);
+  try {
+    const open = () => call(e, "/api/paper?doc_id=doc0", withCookie(c));
+    const got = [];
+    for (let i = 0; i < PAPERS_PER_SEARCH * 2 + 1; i++) got.push((await open()).status);
+    assert.deepEqual(got, [...Array(PAPERS_PER_SEARCH * 2).fill(200), 429]);
+    assert.match((await (await open()).json()).error, /papers/);
+    // an account without a daily quota still cannot open more than PAPERS_PER_MINUTE a minute
+    const pw2 = await createUser(e, "bulk", 0, "");
+    const c2 = cookieOf(await call(e, "/login", form({ username: "bulk", password: pw2 })));
+    const statuses = [], now = Date.now;
+    const t = Math.floor(now() / 60000) * 60000 + 1000;
+    Date.now = () => t;  // all in one minute
+    try {
+      for (let i = 0; i < PAPERS_PER_MINUTE + 1; i++) statuses.push((await call(e, "/api/paper?doc_id=doc0", withCookie(c2))).status);
+    } finally { Date.now = now; }
+    assert.equal(statuses.filter((s) => s === 200).length, PAPERS_PER_MINUTE);
+    assert.equal(statuses.at(-1), 429);
+    // the owner is not counted
+    const owner = await ownerCookie(e);
+    for (let i = 0; i < PAPERS_PER_MINUTE + 1; i++) assert.equal((await call(e, "/api/paper?doc_id=doc0", withCookie(owner))).status, 200);
+  } finally { q.restore(); }
+});
