@@ -6,6 +6,7 @@ context pack for chat assistants, property extraction and HITRAN spectra.
 Run with ``matrag app`` (local) or from the Colab notebook.
 """
 
+import os
 import re
 from datetime import datetime
 from pathlib import Path
@@ -596,6 +597,12 @@ def launch(port: int = 7860, share: bool = False, **kwargs) -> int:
     results.mkdir(parents=True, exist_ok=True)
     # Gradio only serves files from the working and temp folders unless told otherwise;
     # in Colab the results live on Google Drive.
+    # a public share link (share=True) lets anyone in the world use the app and its LLM keys: it needs a login
+    if share and "auth" not in kwargs:
+        user, password = os.environ.get("MATRAG_APP_USER"), os.environ.get("MATRAG_APP_PASSWORD")
+        if not (user and password):
+            raise SystemExit("share=True needs a login: set MATRAG_APP_USER and MATRAG_APP_PASSWORD")
+        kwargs["auth"] = (user, password)
     build_app().queue().launch(server_port=port, share=share, theme=gr.themes.Soft(), css=CSS,
                                allowed_paths=[str(results)], **kwargs)
     return port

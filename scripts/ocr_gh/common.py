@@ -60,3 +60,26 @@ def full_text_points(qc, doc_id: str) -> list:
     points, _ = qc.scroll(NAME, limit=10000, with_payload=True, with_vectors=False, scroll_filter={"must": [
         {"key": "doc_id", "match": {"value": doc_id}}, {"key": "source_type", "match": {"value": "full_text_pdf"}}]})
     return points
+
+
+# fields of a paper's old points that its new text keeps (they describe the paper, not one passage)
+CARRY = ("basis_p", "pdf_mismatch")  # not "conversion": the new text is a new conversion
+
+
+def swap_points(qc, old: list, points: list, batch: int = 64) -> None:
+    """Put a paper's new full-text points in place of the old ones without a moment with no text: the new points
+    are upserted first, then only the old ids that are not among the new ones are deleted. A failure while
+    upserting leaves the old text on the site (the new points already written share or replace ids)."""
+    from qdrant_client import models
+
+    ref = old[0].payload if old else {}
+    for p in points:
+        for k in CARRY:
+            if k in ref and k not in p.payload:
+                p.payload[k] = ref[k]
+    for i in range(0, len(points), batch):
+        qc.upsert(NAME, points=points[i:i + batch], wait=True)
+    keep = {str(p.id) for p in points}
+    stale = [o.id for o in old if str(o.id) not in keep]
+    if stale:
+        qc.delete(NAME, points_selector=models.PointIdsList(points=stale), wait=True)

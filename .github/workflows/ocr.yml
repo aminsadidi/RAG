@@ -57,9 +57,13 @@ jobs:
           pip install -q -e ".[ocr]"
       - name: Arguments
         id: args
+        env:
+          EVENT: ${{ github.event_name }}
+          IN_ONLY: ${{ inputs.only }}
+          IN_DRY: ${{ inputs.dry }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            ONLY="${{ inputs.only }}"; DRY="${{ inputs.dry }}"
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            ONLY="$IN_ONLY"; DRY="$IN_DRY"  # inputs through the environment, never pasted into the script
           else
             ONLY=$(jq -r '.only // ""' scripts/ocr_gh/run.json); DRY=$(jq -r '.dry // false' scripts/ocr_gh/run.json)
           fi
@@ -138,9 +142,12 @@ jobs:
           python scripts/ocr_gh/replace.py ${{ (needs.scan.outputs.dry == 'true' || inputs.dry) && '--dry' || '' }} 2>&1 | grep -vE "Warning|warn\(" || true
           test -f report.json
       - name: Save the report and the list of replaced papers
+        env:
+          RUN: ${{ inputs.from_run || github.run_id }}
         run: |
-          mkdir -p scripts/ocr_gh/reports && cp report.json "scripts/ocr_gh/reports/${{ inputs.from_run || github.run_id }}.json"
+          case "$RUN" in *[!0-9]*|"") echo "not a run id: $RUN"; exit 1;; esac
+          mkdir -p scripts/ocr_gh/reports && cp report.json "scripts/ocr_gh/reports/$RUN.json"
           git config user.name "ocr workflow"; git config user.email "actions@users.noreply.github.com"
           git add scripts/ocr_gh/reports data/rag-optics/external_points.txt
-          git commit -qm "OCR workflow: report of run ${{ inputs.from_run || github.run_id }}" || exit 0
+          git commit -qm "OCR workflow: report of run $RUN" || exit 0
           for i in 1 2 3; do git pull -q --rebase && git push -q && break; sleep 5; done

@@ -141,7 +141,10 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
     parts_dir = cache_dir / "parts" / name
     # A book whose parts were converted on purpose (convert-book) is joined whole: max_pages is for theses
     # that come along with the papers, and the parts left out would be lost when the folder is removed.
-    book = parts_dir.is_dir() and any(parts_dir.glob("*.json.gz"))
+    # convert_parts marks a book with a BOOK file; parts left by a thesis cut at max_pages are not a book (they
+    # made every later run convert the whole thesis). Older book caches without the mark have parts beyond max_pages.
+    book = (parts_dir / BOOK_MARK).exists() or bool(max_pages) and any(
+        int(p.name[:5]) > max_pages for p in parts_dir.glob("*.json.gz") if p.name[:5].isdigit())
     doc = None if book else cached_document(cache_dir, name)
     if doc is not None:
         return doc
@@ -164,6 +167,7 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
 # disconnect (an OCR'd book takes hours) carries on from the last finished part instead of page 1; small parts
 # lose little when a session drops, and let several sessions share one book (convert_parts).
 PART_PAGES = 10
+BOOK_MARK = "BOOK"  # in parts/<name>/: the parts are a book's, converted on purpose (convert_parts)
 
 
 def _part(path: Path, converter: DocumentConverter, parts_dir: Path, start: int, end: int, pages: int) -> DoclingDocument:
@@ -197,6 +201,8 @@ def convert_parts(path: Path, converter: DocumentConverter, cache_dir: Path, nam
     finds every part done. Returns (parts of this share, parts converted now)."""
     pages = page_count(path)
     extend_timeout(converter, path)
+    (cache_dir / "parts" / name).mkdir(parents=True, exist_ok=True)
+    (cache_dir / "parts" / name / BOOK_MARK).touch()
     starts = list(range(1, pages + 1, PART_PAGES))[shard::shards]
     done = 0
     for k, start in enumerate(starts, 1):

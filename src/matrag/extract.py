@@ -11,6 +11,7 @@ the requested properties) or from every chunk of the selected papers
 
 import csv
 import json
+import math
 import re
 import unicodedata
 from collections.abc import Iterable
@@ -56,6 +57,50 @@ def normalize(text: str) -> str:
     return re.sub(r"\s+", "", text)
 
 
+_NUMBER = re.compile(
+    r"([+-]?\d+(?:\.\d+)?)(?:\(\d+\))?"  # 0.0712, with its uncertainty in brackets dropped: 0.0712(3)
+    r"(?:(?:x|×|·|\*|\\times|\\cdot)10\^?\{?([+-]?\d+)\}?|e([+-]?\d+))?"  # × 10^-22, ·10⁻²², e-22
+)
+
+
+def parse_number(value_text: str) -> float | None:
+    """The number a value is written as ("0.0712(3)", "1.23 × 10^-22", "1.23·10⁻²²"), or None."""
+    m = _NUMBER.match(normalize(value_text))
+    if not m:
+        return None
+    exponent = m.group(2) or m.group(3)
+    return float(m.group(1)) * 10 ** int(exponent) if exponent else float(m.group(1))
+
+
+def number_in(value_text: str, source_text: str) -> bool:
+    """Whether the value, as written, stands in the (normalized) source on its own: not part of a longer number
+    ("0.07" is not in "0.0712", "2.3" not in "12.35", "96 K" not in "296 K"). Text without a digit never is."""
+    needle = normalize(value_text)
+    if not re.search(r"\d", needle):
+        return False
+    for m in re.finditer(re.escape(needle), source_text):
+        before = source_text[m.start() - 1] if m.start() else ""
+        after = source_text[m.end():m.end() + 2]
+        if before and (before.isdigit() or before == "."):
+            continue
+        if needle[-1].isdigit() and (after[:1].isdigit() or (after[:1] == "." and after[1:2].isdigit())):
+            continue
+        return True
+    return False
+
+
+def value_checked(value: float, value_text: str, source_text: str) -> bool:
+    """The value as written is in the source on its own, and the number recorded is that one."""
+    parsed = parse_number(value_text)
+    return number_in(value_text, source_text) and parsed is not None and math.isclose(parsed, value, rel_tol=1e-6, abs_tol=1e-12)
+
+
+def evidence_checked(evidence: str, source_text: str) -> bool:
+    """A quote long enough to mean something (20 characters) that is in the source."""
+    quote = normalize(evidence)
+    return len(quote) >= 20 and quote in source_text
+
+
 def extract_from_node(node: BaseNode, properties: list[str], llm: LLM) -> list[ExtractedRecord]:
     meta = node.metadata
     result = llm.structured_predict(
@@ -72,8 +117,8 @@ def extract_from_node(node: BaseNode, properties: list[str], llm: LLM) -> list[E
             doc_id=meta.get("doc_id", ""),
             node_id=node.node_id,
             pages=meta.get("pages", ""),
-            evidence_verified=normalize(record.evidence) in source_text,
-            value_in_source=normalize(record.value_text) in source_text,
+            evidence_verified=evidence_checked(record.evidence, source_text),
+            value_in_source=value_checked(record.value, record.value_text, source_text),
         )
         for record in result.records
     ]

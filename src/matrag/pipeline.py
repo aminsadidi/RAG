@@ -124,7 +124,11 @@ class Workspace:
 
     def download_arxiv(self, arxiv_id: str) -> Path:
         arxiv_id = arxiv_id.strip().removeprefix("arXiv:").removeprefix("arxiv:")
-        target = self.settings.raw_pdf_dir / f"arxiv_{arxiv_id}.pdf"
+        # a new id (2111.01212v2) or an old one (hep-th/9901001); nothing else reaches the URL or the file name,
+        # and the old ids' "/" does not make a folder ("../" could have left raw_pdf_dir)
+        if not re.fullmatch(r"\d{4}\.\d{4,5}(v\d+)?|[a-z-]+(\.[A-Z]{2})?/\d{7}(v\d+)?", arxiv_id):
+            raise ValueError(f"not an arXiv id: {arxiv_id!r}")
+        target = self.settings.raw_pdf_dir / f"arxiv_{arxiv_id.replace('/', '_')}.pdf"
         if not target.exists():
             request = urllib.request.Request(f"https://arxiv.org/pdf/{arxiv_id}", headers={"User-Agent": "Mozilla/5.0"})
             with urllib.request.urlopen(request, timeout=120) as response:

@@ -17,6 +17,7 @@ Qdrant, so a search is a single request.
 """
 
 import hashlib
+import json
 import os
 import re
 import uuid
@@ -30,7 +31,7 @@ BM25_MODEL = "qdrant/bm25"
 # Chemical formulas extracted from PDFs often come out with subscripts spaced
 # out ("LiB 3 O 5"); BM25 then misses "LiB3O5". Both the indexed text and the
 # query are normalized the same way (web/src/text.js has the same rule).
-_SPACED_FORMULA = re.compile(r"\b(?:[A-Z][a-z]?)+(?:\s+\d{1,3}(?:\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![\w.])")
+_SPACED_FORMULA = re.compile(r"\b(?:[A-Z][a-z]?)+(?:\s+\d{1,3}(?:\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![\w.])", re.ASCII)  # as the JS (ASCII \w, \b)
 
 # Every name of every crystal (crystal_names.py) -> its formula; scripts/quality and the site read it from shared.json.
 SYNONYMS = {name: formula for formula, names in CRYSTAL_NAMES.items() for name in names}
@@ -115,7 +116,8 @@ def create_collection(qc, name: str, dim: int, recreate: bool = False) -> None:
         on_disk_payload=True,  # chunk texts stay on disk: the free cluster has 1 GB of RAM
     )
     for key, kind in (("doc_id", models.PayloadSchemaType.KEYWORD), ("source_type", models.PayloadSchemaType.KEYWORD),
-                      ("material", models.PayloadSchemaType.KEYWORD), ("category", models.PayloadSchemaType.KEYWORD)):
+                      ("material", models.PayloadSchemaType.KEYWORD), ("category", models.PayloadSchemaType.KEYWORD),
+                      ("crystals", models.PayloadSchemaType.KEYWORD)):
         qc.create_payload_index(name, key, field_schema=kind)
 
 
@@ -127,22 +129,43 @@ def drive_id(path: str) -> str | None:
         return None
 
 
-def iter_points(nodes, embeddings: dict[str, list[float]], root: str | None = None):
+# Fields other steps add to the points on the site (scripts/quality/enrich.py: the crystals of a passage, its junk
+# score, the paper's basis; the Drive link): an upload from the pipeline keeps them.
+ENRICHMENT = ("crystals", "junk", "basis_p", "drive_id")
+
+
+def meta_hash(payload: dict) -> str:
+    """Hash of a point's payload apart from its text and the hashes: a metadata fix (a year, a DOI) changes it."""
+    rest = {k: v for k, v in payload.items() if k not in ("text", "text_hash", "meta_hash") and k not in ENRICHMENT}
+    return text_hash(json.dumps(rest, sort_keys=True, ensure_ascii=False, default=str))
+
+
+def point_payload(node, root: str | None = None) -> dict:
+    meta = node.metadata
+    payload = {k: meta[k] for k in PAYLOAD_KEYS if k in meta and meta[k] not in (None, "")}
+    payload["node_id"] = node.node_id
+    payload["text"] = node.get_content()
+    payload["text_hash"] = text_hash(payload["text"])
+    if root and payload.get("source_file"):
+        file_id = drive_id(os.path.join(root, payload["source_file"]))
+        if file_id:
+            payload["drive_id"] = file_id  # the site links the PDF on Drive
+    payload["meta_hash"] = meta_hash(payload)
+    return payload
+
+
+def iter_points(nodes, embeddings: dict[str, list[float]], root: str | None = None, keep: dict | None = None):
+    """Points of the nodes with their stored embeddings; ``keep`` (point id -> fields) adds back the enrichment
+    fields a point had on the site, which an upsert would otherwise wipe."""
     from qdrant_client import models
 
     for node in nodes:
         vector = embeddings.get(node.node_id)
         if vector is None:
             continue
-        meta = node.metadata
-        payload = {k: meta[k] for k in PAYLOAD_KEYS if k in meta and meta[k] not in (None, "")}
-        payload["node_id"] = node.node_id
-        payload["text"] = node.get_content()
-        payload["text_hash"] = text_hash(payload["text"])
-        if root and payload.get("source_file"):
-            file_id = drive_id(os.path.join(root, payload["source_file"]))
-            if file_id:
-                payload["drive_id"] = file_id  # the site links the PDF on Drive
+        payload = point_payload(node, root)
+        for k, v in ((keep or {}).get(point_id(node.node_id)) or {}).items():
+            payload.setdefault(k, v)
         yield models.PointStruct(
             id=point_id(node.node_id),
             vector={DENSE: list(vector),
@@ -174,14 +197,13 @@ def export(kb, qc, name: str, recreate: bool = False, batch: int = 64, skip_exis
         return 0
     first = chroma_embeddings(kb, [nodes[0].node_id])
     create_collection(qc, name, len(next(iter(first.values()))), recreate)
-    existing: dict[str, str | None] = {}  # point id -> text hash
-    if skip_existing and not recreate:
+    existing: dict[str, dict] = {}  # point id -> its hashes and enrichment fields
+    if not recreate:
         offset = None
         while True:
-            points, offset = qc.scroll(name, limit=1000, offset=offset, with_payload=["text_hash", "doc_id"],
-                                       with_vectors=False)
-            existing |= {str(p.id): (p.payload or {}).get("text_hash") for p in points
-                         if (p.payload or {}).get("doc_id") not in keep}
+            points, offset = qc.scroll(name, limit=1000, offset=offset, with_vectors=False,
+                                       with_payload=["text_hash", "meta_hash", "doc_id", *ENRICHMENT])
+            existing |= {str(p.id): (p.payload or {}) for p in points if (p.payload or {}).get("doc_id") not in keep}
             if offset is None:
                 break
     wanted = {point_id(n.node_id) for n in nodes}
@@ -191,12 +213,31 @@ def export(kb, qc, name: str, recreate: bool = False, batch: int = 64, skip_exis
 
         for start in range(0, len(stale), 1000):
             qc.delete(name, points_selector=models.PointIdsList(points=stale[start:start + 1000]), wait=True)
-    todo = [n for n in nodes if existing.get(point_id(n.node_id)) != text_hash(n.get_content())]
+    old = lambda n: existing.get(point_id(n.node_id)) or {}  # noqa: E731
+    # a changed text needs a new point (new vectors); the same text with other metadata only a payload update,
+    # which keeps the enrichment fields; with skip_existing off everything is sent again
+    todo = [n for n in nodes if not skip_existing or old(n).get("text_hash") != text_hash(n.get_content())]
+    sent_ids = {n.node_id for n in todo}
+    updates = []
+    for n in nodes:
+        if n.node_id in sent_ids or not old(n):
+            continue
+        payload = point_payload(n, root)
+        if old(n).get("meta_hash") != payload["meta_hash"]:
+            updates.append((point_id(n.node_id), {k: v for k, v in payload.items() if k != "text"}))
+    if updates:
+        from qdrant_client import models
+
+        for start in range(0, len(updates), 256):  # many payload updates per request
+            qc.batch_update_points(name, update_operations=[
+                models.SetPayloadOperation(set_payload=models.SetPayload(payload=pl, points=[pid]))
+                for pid, pl in updates[start:start + 256]], wait=True)
+    enrichment = {pid: {k: v for k, v in p.items() if k in ENRICHMENT} for pid, p in existing.items()}
     sent = 0
     for start in range(0, len(todo), batch):
         part = todo[start:start + batch]
         embeddings = chroma_embeddings(kb, [n.node_id for n in part])
-        qc.upsert(name, points=list(iter_points(part, embeddings, root)), wait=True)
+        qc.upsert(name, points=list(iter_points(part, embeddings, root, enrichment)), wait=True)
         sent += len(part)
         if on_progress:
             on_progress(sent, len(todo))

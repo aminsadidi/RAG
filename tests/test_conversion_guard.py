@@ -156,3 +156,37 @@ def test_a_book_converted_in_parts_is_joined_whole_despite_max_pages(monkeypatch
     assert sorted(doc.pages) == list(range(1, 8))
     assert not (cache / "parts" / "book").exists()  # removed once every page is joined
     assert sorted(ingest.convert(pdf, FakeConverter(), cache, "book", max_pages=4).pages) == list(range(1, 8))
+
+
+def test_a_thesis_cut_at_max_pages_is_not_reconverted_whole(monkeypatch, tmp_path):
+    """Parts left by a thesis converted with max_pages (60 of 400) are not a book: the next run uses the cache
+    instead of converting all 400 pages. A book converted with convert_parts is joined whole."""
+    pdf = tmp_path / "thesis.pdf"
+    pdf.write_bytes(b"%PDF")
+    cache = tmp_path / "cache"
+    calls = []
+    monkeypatch.setattr(ingest, "page_count", lambda p: 400)
+    monkeypatch.setattr(ingest, "extend_timeout", lambda *a, **k: None)
+
+    def parts(path, conv, parts_dir, pages):
+        calls.append(pages)
+        parts_dir.mkdir(parents=True, exist_ok=True)
+        for start in range(1, pages + 1, ingest.PART_PAGES):
+            (parts_dir / f"{start:05d}-{start + ingest.PART_PAGES - 1:05d}.json.gz").write_bytes(b"x")
+        return "DOC"
+
+    monkeypatch.setattr(ingest, "_convert_in_parts", parts)
+    monkeypatch.setattr(ingest, "_write", lambda doc, target: target.write_bytes(b"x"))
+    monkeypatch.setattr(ingest, "cached_document", lambda d, n: "DOC" if (d / f"{n}.json.gz").exists() else None)
+
+    assert ingest.convert(pdf, None, cache, "thesis", max_pages=60) == "DOC"
+    assert calls == [60] and (cache / "parts" / "thesis").is_dir()  # parts 1-60 stay behind
+    assert ingest.convert(pdf, None, cache, "thesis", max_pages=60) == "DOC"
+    assert calls == [60]  # the cached 60 pages, not a 400-page conversion
+
+    # a book: convert_parts marks it, and convert() then joins every page whatever max_pages says
+    monkeypatch.setattr(ingest, "_part", lambda *a, **k: None)
+    ingest.convert_parts(pdf, None, cache, "book")
+    assert (cache / "parts" / "book" / ingest.BOOK_MARK).exists()
+    ingest.convert(pdf, None, cache, "book", max_pages=60)
+    assert calls == [60, 400]

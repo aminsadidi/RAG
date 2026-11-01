@@ -64,3 +64,36 @@ def test_save_records(tmp_path):
 
 def test_empty_result_is_valid():
     assert ExtractionResult.model_validate({"records": []}).records == []
+
+
+def test_value_must_stand_alone_in_the_source():
+    from matrag.extract import number_in, value_checked
+
+    src = normalize("values 0.0712 and 12.35 measured at 296 K, n = 2 .5")
+    assert not number_in("0.07", src)       # a prefix of 0.0712
+    assert not number_in("2.3", src)        # inside 12.35
+    assert not number_in("96 K", src)       # inside 296 K
+    assert not number_in("", src) and not number_in("K", src)  # no digit: never verified
+    assert number_in("0.0712", src) and number_in("12.35", src) and number_in("296 K", src)
+    # the recorded float must be the number written
+    assert value_checked(0.0712, "0.0712", src)
+    assert not value_checked(0.08, "0.0712", src)
+
+
+def test_value_text_is_parsed():
+    from matrag.extract import parse_number, value_checked
+
+    assert parse_number("0.0712(3)") == 0.0712
+    assert abs(parse_number("1.23 × 10^-22") - 1.23e-22) < 1e-30
+    assert abs(parse_number("1.23·10⁻²²") - 1.23e-22) < 1e-30
+    assert abs(parse_number("4.5e-3") - 4.5e-3) < 1e-12
+    assert parse_number("about") is None
+    assert value_checked(1.23e-22, "1.23 × 10^-22", normalize("S = 1.23 × 10^-22 cm/molecule"))
+
+
+def test_evidence_needs_twenty_characters():
+    from matrag.extract import evidence_checked
+
+    src = normalize(TEXT)
+    assert not evidence_checked("", src) and not evidence_checked("0.0712", src)
+    assert evidence_checked("is 0.0712(3) cm-1 atm-1 at 296 K", src)

@@ -32,9 +32,12 @@ jobs:
         run: KEYS="SITE_KEY SUBQ_KEYS" bash scripts/ocr_gh/keys.sh
       - name: What to run
         id: what
+        env:
+          IN_SEARCH: ${{ inputs.search }}
+          IN_QRELS: ${{ inputs.qrels }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "search=${{ inputs.search }}" >> "$GITHUB_OUTPUT"; echo "qrels=${{ inputs.qrels }}" >> "$GITHUB_OUTPUT"
+            echo "search=$IN_SEARCH" >> "$GITHUB_OUTPUT"; echo "qrels=$IN_QRELS" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event_name }}" = "push" ]; then
             echo "search=$(jq -r .search scripts/quality/run.json)" >> "$GITHUB_OUTPUT"; echo "qrels=$(jq -r .qrels scripts/quality/run.json)" >> "$GITHUB_OUTPUT"
           else

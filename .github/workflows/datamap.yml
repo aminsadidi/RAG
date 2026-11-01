@@ -43,5 +43,6 @@ jobs:
         run: |
           git config user.name "matrag-quality"; git config user.email "quality@users.noreply.github.com"
           git add data/rag-optics/datamap.json.gz scripts/quality/reports
+          git diff --cached --quiet && exit 0  # nothing changed this week
           git commit -q -m "Data map $(date -u +%F)"
           for i in 1 2 3; do git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done
