@@ -122,6 +122,25 @@ export function relevance(query, hits, bestCosine) {
   return { verdict, missingMaterials, missingWords, bestCosine: bestCosine ?? null, offTopic };
 }
 
+// The scope check (Workers AI, the translation model): is the question one the papers can answer, only a textbook
+// definition or a whole topic ("what is a laser", "crystals"), or not about optics at all? On the test set
+// (data/rag-optics/gold/scope.csv: 50 off-topic, 50 general) and 200 gold questions: 50/50, 50/50 and 198/200
+// specific (the two others, on resins and electrolytes, are saved by the cosine condition in search()).
+export const SCOPE_PROMPT = `You sort questions sent to a search engine over research papers and handbooks on optical crystals: nonlinear and laser crystals, refractive index and Sellmeier equations, nonlinear coefficients, phase matching, frequency conversion (SHG, OPO, SPDC), thermal, damage and transparency properties of optical materials.
+Answer with one word:
+SPECIFIC - a question the papers can answer: it names a crystal or material, a property, a value, a wavelength, a process with details, a method, a measurement or a comparison (even short, e.g. "BBO d22", "LBO thermal expansion").
+GENERAL - inside optics but only asks for a textbook definition or a whole broad topic, with nothing specific to look up (e.g. "what is a laser", "explain nonlinear optics", "crystals").
+OFFTOPIC - not about optics or optical materials.
+The question may be in Persian or English.`;
+// The model's answer as "specific", "general" or "offtopic"; anything else is read as specific (never reject by doubt).
+export function scopeWord(answer) {
+  const w = String(answer || "").trim().split(/\s+/)[0]?.replace(/[^A-Za-z]/g, "").toUpperCase();
+  return w === "GENERAL" ? "general" : w === "OFFTOPIC" ? "offtopic" : "specific";
+}
+// An off-topic answer of the model rejects the question only while no passage is this close (cosine): the two gold
+// questions it calls off-topic have their paper near.
+export const SCOPE_MAX_COSINE = 0.72;
+
 export function translatePrompt(question) {
   const glossary = Object.entries(S.PERSIAN_GLOSSARY).map(([fa, en]) => `  ${fa} = ${en}`).join("\n");
   return S.TRANSLATE_PROMPT.replace("{glossary}", glossary).replace("{question}", question);

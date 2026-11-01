@@ -8,7 +8,7 @@ const cases = JSON.parse(readFileSync(new URL("./cases.json", import.meta.url)))
 // text.js imports shared.json the way wrangler bundles it; rebuild the functions here from its source.
 const src = readFileSync(new URL("../src/text.js", import.meta.url), "utf8")
   .replace(/^import S from .*$/m, "").replace(/^export \{ S as shared \};$/m, "").replace(/^export /gm, "");
-const mod = new Function("S", `${src}; return { normalizeFormulas, expandQuery, sourceLabel, contextPack, cleanTranslation };`)(S);
+const mod = new Function("S", `${src}; return { normalizeFormulas, expandQuery, sourceLabel, contextPack, cleanTranslation, scopeWord };`)(S);
 
 test("formula normalization and query expansion match Python", () => {
   for (const c of cases) {
@@ -64,4 +64,13 @@ test("crystals named in a query, as formulas (crystal cards of the search page)"
   assert.deepEqual(crystalsIn("ZnGeP2 OPO pumped at 2 µm"), ["ZnGeP2"]);
   assert.deepEqual(crystalsIn("refractive index of zirconate glass"), []);
   assert.deepEqual(crystalsIn("SHG efficiency in the UV with an OPO"), []);
+});
+
+test("the scope check reads the model's word and lets doubt through", () => {
+  const { scopeWord } = mod;
+  assert.equal(scopeWord("GENERAL"), "general");
+  assert.equal(scopeWord(" offtopic."), "offtopic");
+  assert.equal(scopeWord("SPECIFIC"), "specific");
+  assert.equal(scopeWord("D22"), "specific");
+  assert.equal(scopeWord(""), "specific");
 });

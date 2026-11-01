@@ -926,7 +926,8 @@ async function runSearch() {
     const list = data.hits.map((h, i) => renderHit(h, words, i)).join("");
     const r = data.relevance || { verdict: "ok" };
     const why = [
-      r.offTopic ? "سؤال به هیچ بخشی از مقاله‌های مجموعه نزدیک نیست" : "",
+      r.scope === "offtopic" ? "این سؤال درباره‌ی اپتیک و مواد اپتیکی نیست؛ این سامانه فقط مقاله‌ها و کتاب‌های این حوزه را می‌گردد"
+        : r.offTopic ? "سؤال به هیچ بخشی از مقاله‌های مجموعه نزدیک نیست" : "",
       r.missingMaterials?.length ? `این ماده در هیچ‌کدام از منابع پیدا شده نیامده: <bdi dir="ltr">${esc(r.missingMaterials.join(", "))}</bdi>` : "",
       r.missingWords?.length ? `این واژه‌ها در هیچ منبعی نیامده: <bdi dir="ltr">${esc(r.missingWords.join(", "))}</bdi>` : "",
     ].filter(Boolean).map((x) => `<li>${x}</li>`).join("");
@@ -936,6 +937,10 @@ async function runSearch() {
         ? `<div class="card" style="border:1px solid var(--err)"><b>در این مجموعه منبعی برای این سؤال پیدا نشد.</b><ul>${why}</ul>
             <p class="hint">سامانه همیشه نزدیک‌ترین بخش‌ها را برمی‌گرداند؛ این بار هیچ‌کدام جواب سؤال نیست. سؤال را دقیق‌تر بنویسید (مثلاً با فرمول شیمیایی ماده) یا فیلترها را بردارید.</p></div>
            <details><summary class="hint">نزدیک‌ترین بخش‌ها را نشان بده (احتمالاً نامرتبط)</summary>${list}</details>`
+        : r.verdict === "general"
+        ? `<div class="card" style="border:1px solid var(--warn)"><b>این سؤال خیلی کلی است.</b>
+            <p class="hint">این سامانه برای پیدا کردن عدد، فرمول یا روش مشخص در مقاله‌هاست، نه تعریف کتاب درسی. دقیق‌تر بپرسید؛ مثلاً: «ضریب d<sub>22</sub> بلور BBO»، «زاویه‌ی تطبیق فاز LBO برای SHG در <bdi dir="ltr">1064 nm</bdi>»، «آستانه‌ی آسیب KTP».</p></div>
+           <details><summary class="hint">نزدیک‌ترین بخش‌ها را نشان بده</summary>${list}</details>`
         : (r.verdict === "weak" ? `<div class="card hint" style="border:1px solid var(--warn)">منابع فقط بخشی از سؤال را پوشش می‌دهند.<ul>${why}</ul></div>` : "") + list;
     if (data.hits.length) $("hits").insertAdjacentHTML("beforeend", `<div class="card fbbar"><b>جواب سؤالتان را پیدا کردید؟</b>
       <button data-fb="found">بله</button><button data-fb="notfound">نه</button>
