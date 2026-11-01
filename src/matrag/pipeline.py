@@ -26,6 +26,9 @@ from matrag.qa import Answer, answer_with_rag, answer_without_rag, build_context
 from matrag.retrieve import RetrievalMode, make_retriever
 from matrag.schema import ExtractedRecord
 
+# an arXiv id: new (2101.01234) or old (hep-th/9901001, cond-mat.mtrl-sci/0101001), with an optional version
+_ARXIV_ID = re.compile(r"(?:\d{4}\.\d{4,5}|[a-z][a-z-]*(?:\.[A-Za-z-]+)?/\d{7})(?:v\d+)?")
+
 
 # Below this many papers, chunking runs in this process (starting workers costs seconds).
 PARALLEL_MIN_PAPERS = 8
@@ -124,7 +127,12 @@ class Workspace:
 
     def download_arxiv(self, arxiv_id: str) -> Path:
         arxiv_id = arxiv_id.strip().removeprefix("arXiv:").removeprefix("arxiv:")
-        target = self.settings.raw_pdf_dir / f"arxiv_{arxiv_id}.pdf"
+        # new ids (2101.01234, v2) and old ones (hep-th/9901001, cond-mat.mtrl-sci/0101001); anything else
+        # ("../x") could leave the folder or reach another URL
+        if not _ARXIV_ID.fullmatch(arxiv_id):
+            raise ValueError(f"not an arXiv id: {arxiv_id!r}")
+        # an old id's "/" would make a sub-folder: the file name uses "_"
+        target = self.settings.raw_pdf_dir / f"arxiv_{arxiv_id.replace('/', '_')}.pdf"
         if not target.exists():
             request = urllib.request.Request(f"https://arxiv.org/pdf/{arxiv_id}", headers={"User-Agent": "Mozilla/5.0"})
             with urllib.request.urlopen(request, timeout=120) as response:
