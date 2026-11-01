@@ -33,6 +33,7 @@ textarea{width:100%;min-height:74px;resize:vertical}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .row label{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
 .row label[hidden]{display:none}
+select{max-width:100%} /* a long option never widens the page on a phone */
 .xsel{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
 .xcombo{position:relative;display:inline-flex;align-items:stretch;vertical-align:middle}
 .xcombo input{width:260px;max-width:62vw}
@@ -535,7 +536,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <span class="hint" id="spTinfo" style="flex-basis:100%"></span>
     </div>
     <div class="row">
-      <label>پیکربندی <select id="spcfg" style="max-width:420px"></select></label>
+      <label>پیکربندی <select id="spcfg" style="max-width:min(420px, 100%)"></select></label>
       <button id="spgo">محاسبه</button>
       <button class="alt" id="spopt" title="پهنای طیف پمپی که خلوص را بیشینه می‌کند">بهینه‌سازی خلوص</button>
       <a id="spcsv" class="hint" hidden download="jsi.csv">دریافت داده‌ی طیف (CSV)</a>
@@ -2890,7 +2891,9 @@ function fillCfg() {
     }
   }
   SP.cfg = opts;
-  $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("") || `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول این منبع است (${s.range_um[0]}–${s.range_um[1]} µm)</option>`;
+  const outside = [lp, l1, l2].some((l) => !(l >= s.range_um[0] - 1e-9 && l <= s.range_um[1] + 1e-9));
+  $("spcfg").innerHTML = opts.map((o, i) => `<option value="${i}">${esc(o.label)}</option>`).join("")
+    || (outside ? `<option value="">طول موج‌ها بیرون از گستره‌ی فرمول این منبع است (${s.range_um[0]}–${s.range_um[1]} µm)</option>` : `<option value="">برای این طول موج‌ها پیکربندی تطبیق فازی نیست</option>`);
   // keep the configuration chosen before (its angle may have moved with the wavelengths or the temperature),
   // else type-II QPM along x (the usual PPKTP-type source), else the first option
   const key = (o) => o.qpm ? `q|${o.plane}|${o.angle}|${o.pols}` : `a|${o.plane}|${o.type}`;
