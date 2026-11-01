@@ -364,6 +364,13 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
 </section>
 
 <section id="tab-pm" hidden class="viz-root">
+  <template id="tierhelp"><div class="tierhelp hint" style="flex-basis:100%;margin:6px 0;padding:8px 12px;border:1px solid var(--line,#ddd);border-radius:8px">
+    <b>رنگ کنار هر عدد یعنی آن عدد از کجا آمده:</b><br>
+    🟢 <b>خوانده‌شده از مقاله‌ی اندازه‌گیری</b>: از صفحه‌ی همان مقاله‌ای که آن را اندازه گرفته، و صفحه را دیده‌ایم.<br>
+    🟡 <b>نقل از کتاب مرجع</b>: کتاب یا مقاله‌ی مروری اندازه‌گیری دیگران را نقل کرده؛ صفحه‌ی کتاب را دیده‌ایم.<br>
+    🟠 <b>پایگاه داده‌ی بازبینی‌نشده</b>: از پایگاه داده‌ی باز (مثل refractiveindex.info) با ارجاع به مقاله‌ی اصلی؛ صفحه‌ی مقاله را هنوز ندیده‌ایم.<br>
+    🔵 <b>محاسبه‌ی نظری</b>: از محاسبه (مثلاً DFT)، نه اندازه‌گیری.
+  </div></template>
   <div class="card">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
     <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای بلورهایی که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
@@ -381,7 +388,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
     <div class="row">
       <label>بلور <select id="pmmat" class="xsel"></select></label>
-      <label>منبع <select id="pmsrc" style="max-width:260px"></select></label> <span class="hint" title="منشأ هر عدد: سبز از صفحه‌ی مقاله‌ی اصلی، زرد از کتاب مرجع، نارنجی از پایگاه داده‌ی باز، آبی محاسبه‌ی نظری.">🟢 تأییدشده · 🟡 کتاب مرجع · 🟠 پایگاه داده · 🔵 محاسباتی</span>
+      <label title="فرمول ضریب شکست (Sellmeier) که محاسبه با آن انجام می‌شود؛ برای مقایسه منبع دیگری را انتخاب کنید">منبع ضریب شکست <select id="pmsrc" style="max-width:260px"></select></label> <button type="button" class="alt tierbtn" title="رنگ‌ها یعنی چه؟">ⓘ</button>
     </div>
     <div class="row">
       <label>چه می‌خواهید؟ <select id="pmmode">
@@ -475,7 +482,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>بلورها <select id="advclass"><option value="est">رایج و جدید (بدون کمیاب و پژوهشی)</option><option value="core">فقط پایه و رایج</option><option value="all">همه، با کمیاب و پژوهشی</option></select></label>
       <label>QPM <select id="advqpm"><option value="with">با بلورهای قطبیده (PPLN، PPKTP، OP-GaAs…)</option><option value="no">بدون QPM</option><option value="only">فقط QPM</option></select></label>
       <label>مرتب‌سازی <select id="advsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³</option><option value="walk">کمترین walk-off</option><option value="spec">بیشترین پهنای طیفی</option><option value="temp">بیشترین پهنای دمایی</option></select></label>
-      <button id="advgo">پیشنهاد بلور</button>
+      <button id="advgo">پیشنهاد بلور</button> <button type="button" class="alt tierbtn" title="رنگ‌ها یعنی چه؟">ⓘ</button>
     </div>
     <p class="hint" id="advinfo"></p>
     <div style="overflow-x:auto;direction:ltr"><table id="advtable" style="direction:ltr;min-width:640px"></table></div>
@@ -745,10 +752,10 @@ const tempNote = (id, th) => { const v = +$(id).value;
 // Data read from papers (paper_formulas.yml, thermo_optic.yml, nonlinear_coefficients.yml) is measured unless marked basis: calculated
 // where a value comes from (src/matrag/references/provenance.py): a colored mark, a short name, and the whole sentence on hover
 const TIER = {
-  verified: ["🟢", "تأییدشده", "تأییدشده: از صفحه‌ی همان مقاله‌ای که آن را اندازه گرفته است."],
+  verified: ["🟢", "از مقاله‌ی اندازه‌گیری", "خوانده‌شده از صفحه‌ی همان مقاله‌ای که آن را اندازه گرفته است."],
   compiled: ["🟡", "کتاب مرجع", "از کتاب مرجع یا مقاله‌ی مروری: اندازه‌گیری کارهای دیگر، با صفحه‌ی کتاب بررسی شده است."],
-  database: ["🟠", "پایگاه داده", "از پایگاه داده‌ی باز، با ارجاع به مقاله‌ی اصلی؛ با صفحه‌ی مقاله بررسی نشده است."],
-  computed: ["🔵", "محاسباتی", "محاسباتی (نظری)، نه اندازه‌گیری."],
+  database: ["🟠", "پایگاه داده (بازبینی‌نشده)", "از پایگاه داده‌ی باز، با ارجاع به مقاله‌ی اصلی؛ با صفحه‌ی مقاله بررسی نشده است."],
+  computed: ["🔵", "محاسبه‌ی نظری", "محاسبه‌ی نظری، نه اندازه‌گیری."],
 };
 const tierMark = (x) => (TIER[x?.tier] ? TIER[x.tier][0] : "");
 const basisName = (x) => (TIER[x?.tier] ? `<span title="${TIER[x.tier][2]}">${TIER[x.tier][0]} ${TIER[x.tier][1]}</span>`
@@ -3068,6 +3075,13 @@ api("/api/me").then((r) => r.json()).then((me) => {
   if (me.pdf) setTimeout(() => window.loadPdfjs?.().then(() => fetch("/vendor/pdfjs-3.11.174/pdf.worker.min.js")).catch(() => {}), 4000);
   if (me.banner) { const b = document.getElementById("sitebanner"); b.textContent = "📢 " + me.banner; b.hidden = false; }
 }).catch(() => {});
+// ⓘ beside a source: what the colored marks mean, opened under the button's row
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".tierbtn"); if (!btn) return;
+  const row = btn.closest(".row") || btn.parentElement, next = row.nextElementSibling;
+  if (next?.classList.contains("tierhelp")) { next.remove(); return; }
+  row.after($("tierhelp").content.firstElementChild.cloneNode(true));
+});
 // One crystal picker per calculator: type any name of a crystal (the same names as the search: BBO, lithium niobate,
 // ZGP, PPKTP …) for suggestions, or press ▾ for the whole list in its groups. The picker drives the tab's <select>
 // (kept, hidden: the calculators and the share links read it), and follows it when the code changes it.
