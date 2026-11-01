@@ -58,6 +58,11 @@ test("daily quota is kept in the Counters object when KV writes are spent", asyn
   assert.deepEqual(got, [true, true, true, false, false]);
   assert.ok(await takeQuota(e, { ...acc, name: "ali" }));  // per user
   assert.ok(await takeQuota(e, { ...acc, quota: 1 }, "feedback"));  // per kind
+  // a search that failed on the server gives its unit back, in the Counters object too
+  const { giveQuota } = await import("../src/accounts.js");
+  await giveQuota(e, acc);
+  assert.ok(await takeQuota(e, acc));
+  assert.ok(!(await takeQuota(e, acc)));
 });
 
 import { fakeAI, fakeCaches, fakeQdrant, ownerCookie, point } from "./support/worker.js";

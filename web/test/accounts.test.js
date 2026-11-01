@@ -130,3 +130,24 @@ test("the site's address is set in one place for the Worker and one for the scri
   assert.equal(file, toml);
   assert.ok(!readFileSync(new URL("../src/admin.js", import.meta.url), "utf8").includes("workers.dev"));
 });
+
+test("accounts: an ended or stopped account is told so, an endless one is not shortened, a failed search gives its unit back", async () => {
+  const { loginState, giveQuota } = await import("../src/accounts.js");
+  const e = env();
+  const pw = await createUser(e, "sara", 0, "");
+  assert.equal(await loginState(e, "sara", pw), "ok");
+  assert.equal(await loginState(e, "sara", "wrong"), null);
+  assert.equal(await loginState(e, "nobody", pw), null);
+  const { user } = await updateUser(e, "sara", { extendDays: 30 });
+  assert.equal(user.expires, 0); // endless stays endless
+  await updateUser(e, "sara", { active: false });
+  assert.equal(await loginState(e, "sara", pw), "inactive");
+  assert.equal(await loginState(e, "sara", "wrong"), null); // only the right password learns it
+  await updateUser(e, "sara", { active: true });
+  const u = await e.AICACHE.get("user:sara", "json"); u.expires = Date.now() - 1000; await e.AICACHE.put("user:sara", JSON.stringify(u));
+  assert.equal(await loginState(e, "sara", pw), "expired");
+  const acc = { name: "sara", quota: 2, role: "full" };
+  assert.ok(await takeQuota(e, acc)); assert.ok(await takeQuota(e, acc)); assert.ok(!(await takeQuota(e, acc)));
+  await giveQuota(e, acc);
+  assert.ok(await takeQuota(e, acc));
+});

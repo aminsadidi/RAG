@@ -73,11 +73,15 @@ async function putUser(env, name, u) {
     metadata: { active: u.active, expires: u.expires || 0, created: u.created, note: (u.note || "").slice(0, 120), role: u.role || "full", quota: u.quota || 0 } });
 }
 
-export async function checkLogin(env, name, password) {
-  if (!NAME.test(name)) return false;  // never a KV key of any length or shape (over 512 bytes it throws)
+// "ok", "expired" or "inactive" for the right password (the last two only to someone who knows it, so they tell an
+// attacker nothing), null otherwise
+export async function loginState(env, name, password) {
+  if (!NAME.test(name)) return null;  // never a KV key of any length or shape (over 512 bytes it throws)
   const u = await getUser(env, name);
-  return Boolean(u && usable(u) && (await sameText(await hash(u.salt, password), u.hash)));
+  if (!u || !(await sameText(await hash(u.salt, password), u.hash))) return null;
+  return usable(u) ? "ok" : !u.active ? "inactive" : "expired";
 }
+export async function checkLogin(env, name, password) { return (await loginState(env, name, password)) === "ok"; }
 
 export async function createUser(env, name, days, note, role = "full") {
   if (!NAME.test(name) || name === "owner") throw new Error("نام کاربری: ۳ تا ۳۲ حرف کوچک انگلیسی، عدد، _ . -");
@@ -94,7 +98,8 @@ export async function updateUser(env, name, change) {
   let password;
   if (change.resetPassword) { password = newPassword(); u.salt = newPassword(16); u.hash = await hash(u.salt, password); }
   if ("active" in change) u.active = change.active;
-  if (change.extendDays) u.expires = Math.max(u.expires || Date.now(), Date.now()) + change.extendDays * DAY * 1000;
+  // an account without an end stays so: extending it would give it one
+  if (change.extendDays && u.expires) u.expires = Math.max(u.expires, Date.now()) + change.extendDays * DAY * 1000;
   if (change.noExpiry) u.expires = 0;
   if (change.role && ROLES[change.role]) {
     // a quota still at the old level's default follows the new level; one set by hand stays
@@ -145,6 +150,15 @@ export async function takeCount(env, key, limit, ttl) {
   if (used >= limit) return false;
   await env.AICACHE.put(key, String(used + 1), { expirationTtl: Math.max(60, ttl) }).catch((e) => console.log("quota put", String(e)));
   return true;
+}
+// a search that failed on the server's side does not count: its unit goes back
+export async function giveQuota(env, acc, kind = "quota") {
+  if (!acc.quota || acc.role === "owner") return;
+  const key = `${kind}:${acc.name}:${new Date().toISOString().slice(0, 10)}`;
+  if (env.COUNTERS) return counter(env, "give", { key }).then(() => {}, (e) => console.log("quota give", String(e)));
+  if (!env.AICACHE) return;
+  const used = Number(await env.AICACHE.get(key).catch(() => 0)) || 0;
+  if (used > 0) await env.AICACHE.put(key, String(used - 1), { expirationTtl: 2 * DAY }).catch(() => {});
 }
 
 // Opening a paper's full text (/api/paper): reading, not copying the collection. PAPERS_PER_SEARCH papers per

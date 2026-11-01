@@ -62,3 +62,12 @@ test("no timer runs forever: the crystal pickers follow their select by its sett
   assert.ok(!/setInterval\(/.test(html));
   assert.match(html, /getOwnPropertyDescriptor\(HTMLSelectElement\.prototype, prop\)/);
 });
+
+test("every inline script of every HTML page carries the CSP nonce, and no element has an inline handler", async () => {
+  const { readdirSync } = await import("node:fs");
+  for (const f of readdirSync(new URL("../src/", import.meta.url)).filter((n) => n.endsWith(".html"))) {
+    const html = readFileSync(new URL(`../src/${f}`, import.meta.url), "utf8");
+    for (const tag of html.match(/<script\b[^>]*>/g) || []) assert.match(tag, /nonce="__CSP_NONCE__"|\bsrc=/, `${f}: ${tag}`);
+    assert.doesNotMatch(html, /<[a-z][^>]*\son[a-z]+="/i, f);
+  }
+});

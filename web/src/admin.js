@@ -114,8 +114,10 @@ async function online(env) {
   const last = {};
   for (const e of logs) last[e.user] = e;
   const rows = Object.values(last).sort((a, b) => (a.time < b.time ? 1 : -1));
+  // buttons only for accounts that still exist (a deleted one keeps its log lines)
+  const live = new Set((await listUsers(env)).map((u) => u.name));
   return { text: `🟢 فعال در یک ساعت اخیر\n\n${rows.map((e) => `• ${e.user} — ${when(e.time)}${e.q ? ` · ${e.q}` : ""}`).join("\n") || "کسی نیست."}`,
-    keyboard: [...rows.filter((e) => e.user !== "owner" && e.user !== "?").slice(0, 6).map((e) => [btn(`👤 ${e.user}`, `u:${e.user}`)]), [btn("🔄 تازه‌سازی", "online"), ...BACK]] };
+    keyboard: [...rows.filter((e) => live.has(e.user)).slice(0, 6).map((e) => [btn(`👤 ${e.user}`, `u:${e.user}`)]), [btn("🔄 تازه‌سازی", "online"), ...BACK]] };
 }
 
 // For the owner: the account as set up. For the user: a separate message to forward as it is, with nothing
@@ -160,7 +162,12 @@ async function onButton(env, data) {
     case "urs": await updateUser(env, a, { role: b }); return userCard(env, a, `🎚 سطح دسترسی: ${ROLES[b].label}`);
     case "uq": return { text: `📈 سهمیه‌ی روزانه‌ی جست‌وجوی ${a}`, keyboard: [[10, 50, 100, 300].map((q) => btn(`${q} در روز`, `uqs:${a}:${q}`)), [btn("نامحدود", `uqs:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
     case "uqs": await updateUser(env, a, { quota: Number(b) }); return userCard(env, a, `📈 سهمیه: ${Number(b) ? `${b} در روز` : "نامحدود"}`);
-    case "ue": return { text: `⏳ تمدید اعتبار ${a}`, keyboard: [[7, 30, 90].map((d) => btn(`+${d} روز`, `ues:${a}:${d}`)), [btn("بی‌پایان", `ues:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
+    case "ue": {
+      // an account without an end has nothing to extend
+      const u = await getUser(env, a);
+      if (u && !u.expires) return userCard(env, a, "⏳ اعتبار این حساب بی‌پایان است؛ تمدید لازم ندارد.");
+      return { text: `⏳ تمدید اعتبار ${a}`, keyboard: [[7, 30, 90].map((d) => btn(`+${d} روز`, `ues:${a}:${d}`)), [btn("بی‌پایان", `ues:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
+    }
     case "ues": {
       const { user } = await updateUser(env, a, Number(b) ? { extendDays: Number(b) } : { noExpiry: true });
       return userCard(env, a, `⏳ اعتبار: ${user.expires ? `تا ${when(user.expires)}` : "بی‌پایان"}`);
@@ -234,15 +241,18 @@ export async function telegramWebhook(request, env) {
     if (String(cb.from?.id) !== owner || cb.message?.chat?.type !== "private") return new Response("ok");
     let screen;
     try { screen = await onButton(env, cb.data || "m"); } catch (e) { screen = { text: `⚠️ ${e.message || e}`, keyboard: [BACK] }; }
-    await tg(env, "answerCallbackQuery", { callback_query_id: cb.id });
-    await tg(env, "editMessageText", { chat_id: cb.message.chat.id, message_id: cb.message.message_id, text: fit(screen.text),
+    // always 200: Telegram resends an update answered otherwise, and a button (a new password) would run twice
+    const say = (method, body) => tg(env, method, body).catch((e) => console.log("tg", method, String(e)));
+    await say("answerCallbackQuery", { callback_query_id: cb.id });
+    await say("editMessageText", { chat_id: cb.message.chat.id, message_id: cb.message.message_id, text: fit(screen.text),
       reply_markup: { inline_keyboard: screen.keyboard }, disable_web_page_preview: true });
-    if (screen.forward) await tg(env, "sendMessage", { chat_id: cb.message.chat.id, text: screen.forward, disable_web_page_preview: true });
+    if (screen.forward) await say("sendMessage", { chat_id: cb.message.chat.id, text: screen.forward, disable_web_page_preview: true });
     return new Response("ok");
   }
   if (!msg?.text || String(msg.from?.id) !== owner || msg.chat?.type !== "private") return new Response("ok");
   let screen;
   try { screen = await onText(env, msg.text); } catch (e) { screen = { text: `⚠️ ${e.message || e}`, keyboard: [BACK] }; }
-  await tg(env, "sendMessage", { chat_id: msg.chat.id, text: fit(screen.text), reply_markup: { inline_keyboard: screen.keyboard }, disable_web_page_preview: true });
+  await tg(env, "sendMessage", { chat_id: msg.chat.id, text: fit(screen.text), reply_markup: { inline_keyboard: screen.keyboard }, disable_web_page_preview: true })
+    .catch((e) => console.log("tg sendMessage", String(e)));
   return new Response("ok");
 }
