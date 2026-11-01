@@ -82,7 +82,10 @@ with ThreadPoolExecutor(3) as ex:
 H = [rank(range(len(x["docs"])), x) for x in res]
 ok = [x for x in res if all(s is not None for s in x["subq"])]
 Q = [rank(sorted(range(len(x["docs"])), key=lambda i: -x["subq"][i]), x) for x in ok]
+# SubQ is compared with the site's order on the same questions (those SubQ scored completely), not on all of them
+Hok = [rank(range(len(x["docs"])), x) for x in ok]
 mh, mq = metrics(H), metrics(Q) if ok else None
+mhok = metrics(Hok) if ok else None
 groups = sorted({x["group"] for x in res})
 
 base = json.loads((Path(__file__).parent / "baseline.json").read_text())
@@ -91,18 +94,19 @@ lines = [f"# Search quality {day}", "", f"{len(res)} gold questions against {BAS
          f"({subq.tokens[0]:,} input tokens).", "", "| | R@1 | R@3 | R@10 | MRR@10 |", "|---|---|---|---|---|",
          f"| site order (hybrid) | {mh['R@1']:.3f} | {mh['R@3']:.3f} | {mh['R@10']:.3f} | **{mh['MRR@10']:.3f}** |"]
 if mq:
-    lines.append(f"| SubQ rerank of the top 30 | {mq['R@1']:.3f} | {mq['R@3']:.3f} | {mq['R@10']:.3f} | **{mq['MRR@10']:.3f}** |")
+    if len(ok) < len(res):
+        lines.append(f"| site order, the {len(ok)} SubQ scored | {mhok['R@1']:.3f} | {mhok['R@3']:.3f} | {mhok['R@10']:.3f} | {mhok['MRR@10']:.3f} |")
+    lines.append(f"| SubQ rerank of the top 30 (same {len(ok)}) | {mq['R@1']:.3f} | {mq['R@3']:.3f} | {mq['R@10']:.3f} | **{mq['MRR@10']:.3f}** |")
 lines += ["", f"Baseline (hybrid MRR@10): {base['hybrid_mrr10']:.3f}.", "", "| group | n | hybrid | SubQ |", "|---|---|---|---|"]
 for g in groups:
-    ih = [i for i, x in enumerate(res) if x["group"] == g]
-    iq = [i for i, x in enumerate(ok) if x["group"] == g]
-    lines.append(f"| {g} | {len(ih)} | {metrics([H[i] for i in ih])['MRR@10']:.3f} | "
-                 f"{metrics([Q[i] for i in iq])['MRR@10']:.3f} |" if iq else f"| {g} | {len(ih)} | {metrics([H[i] for i in ih])['MRR@10']:.3f} | — |")
+    iq = [i for i, x in enumerate(ok) if x["group"] == g]  # both columns on the questions SubQ scored
+    lines.append(f"| {g} | {len(iq)} | {metrics([Hok[i] for i in iq])['MRR@10']:.3f} | {metrics([Q[i] for i in iq])['MRR@10']:.3f} |"
+                 if iq else f"| {g} | 0 | — | — |")
 missed = [x["id"] for x, r in zip(res, H) if not r or r > 10]
 lines += ["", f"Gold paper not in the top 10 ({len(missed)}): " + ", ".join(missed[:60])]
 OUT.mkdir(exist_ok=True)
 (OUT / f"search-{day}.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-(OUT / f"search-{day}.json").write_text(json.dumps({"hybrid": mh, "subq": mq, "rows": res}), encoding="utf-8")
+(OUT / f"search-{day}.json").write_text(json.dumps({"hybrid": mh, "hybrid_same_as_subq": mhok, "subq": mq, "rows": res}), encoding="utf-8")
 print("\n".join(lines))
 if mh["MRR@10"] < base["hybrid_mrr10"] - 0.03:
     print(f"::error::search MRR@10 {mh['MRR@10']:.3f} is below the baseline {base['hybrid_mrr10']:.3f}")
