@@ -14,6 +14,19 @@ def test_spaced_formulas_are_joined():
     assert normalize_formulas("BaB 2 O 4") == "BaB2O4"
 
 
+def test_spaced_formulas_are_read_as_ascii_like_the_web_app():
+    # Python's \w and \b are Unicode, JavaScript's ASCII: a Greek or micro sign after the number must not stop the join
+    assert normalize_formulas("LiNbO 3λ=1") == "LiNbO3λ=1"
+    assert normalize_formulas("BaB 2 O 4µm") == "BaB2O4µm"
+
+
+def test_web_cases_match_python():
+    # web/test/text.test.js runs the same cases through text.js
+    cases = json.loads((web_shared.SHARED_JSON.parents[1] / "test" / "cases.json").read_text(encoding="utf-8"))
+    for c in cases:
+        assert (normalize_formulas(c["in"]), expand_query(c["in"])) == (c["norm"], c["expand"]), c["in"]
+
+
 def test_common_names_are_expanded():
     assert expand_query("Sellmeier BBO") == "Sellmeier BBO BaB2O4"
     assert expand_query("PPLN and LiNbO3") == "PPLN and LiNbO3"  # formula already there
@@ -114,3 +127,28 @@ def test_collection_indexes_crystals(monkeypatch):
     monkeypatch.setattr(qc, "create_payload_index", lambda name, key, field_schema: created.append(key))
     qs.create_collection(qc, "c", 3)
     assert "crystals" in created and "crystals" in qs.INDEXED_KEYS
+
+
+def test_rebuild_bm25_rewrites_only_passages_whose_normalization_changed(monkeypatch):
+    import sys
+    from pathlib import Path
+
+    qs, qc = _memory_collection(monkeypatch)
+    from qdrant_client import models
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "quality"))
+    import rebuild_bm25
+
+    qs.create_collection(qc, "c", 3)
+    texts = {"a": "LiNbO 3λ=1 at 1064 nm", "b": "BaB 2 O 4 crystal", "c": "BaB 2 O 4µm thick"}
+    qc.upsert("c", points=[models.PointStruct(id=qs.point_id(k), payload={"text": t, "crystals": ["X"]},
+                                              vector={qs.DENSE: [0.1, 0.2, 0.3], qs.SPARSE: models.SparseVector(indices=[1], values=[1.0])})
+                           for k, t in texts.items()], wait=True)
+    rewritten = []
+    monkeypatch.setattr(qs, "sparse_vector", lambda text: rewritten.append(text) or models.SparseVector(indices=[2], values=[1.0]))
+    assert rebuild_bm25.rebuild(qc, "c", dry=True) == (3, 2) and rewritten == []
+    assert rebuild_bm25.rebuild(qc, "c") == (3, 2)
+    assert sorted(rewritten) == sorted([texts["a"], texts["c"]])  # "BaB 2 O 4 crystal" was already joined the same way
+    points, _ = qc.scroll("c", with_payload=True, with_vectors=True)
+    assert all(p.payload["crystals"] == ["X"] for p in points)
+    assert {p.payload["text"]: p.vector[qs.SPARSE].indices for p in points}[texts["a"]] == [2]

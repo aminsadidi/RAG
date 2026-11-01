@@ -30,8 +30,11 @@ DENSE, SPARSE = "dense", "bm25"
 BM25_MODEL = "qdrant/bm25"
 # Chemical formulas extracted from PDFs often come out with subscripts spaced
 # out ("LiB 3 O 5"); BM25 then misses "LiB3O5". Both the indexed text and the
-# query are normalized the same way (web/src/text.js has the same rule).
-_SPACED_FORMULA = re.compile(r"\b(?:[A-Z][a-z]?)+(?:\s+\d{1,3}(?:\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![\w.])")
+# query are normalized the same way (web/src/text.js runs this same pattern from shared.json). Word characters
+# and digits are spelled out ASCII: Python's \w, \d and \b are Unicode, JavaScript's ASCII, so "LiNbO 3λ=1"
+# was joined by one and not the other.
+_SPACED_FORMULA = re.compile(
+    r"(?<![A-Za-z0-9_])(?:[A-Z][a-z]?)+(?:\s+[0-9]{1,3}(?:\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![A-Za-z0-9_.])")
 
 # Every name of every crystal (crystal_names.py) -> its formula; scripts/quality and the site read it from shared.json.
 SYNONYMS = {name: formula for formula, names in CRYSTAL_NAMES.items() for name in names}
