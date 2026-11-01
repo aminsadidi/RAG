@@ -5,6 +5,8 @@
 # hygroscopic: none, slight, yes or strong (used heated or sealed), only where a source says so, with its sentence;
 # sources sometimes disagree (LBO), and the sentence says so.
 # notes: what a user must know before buying (the warning in Persian and English for the site, the paper's sentence).
+# keep_c: the temperatures (°C) the crystal must be kept at for the note not to apply; instead: the crystal to take otherwise
+# (the advisor puts the crystal last, with the warning, when the user's working temperatures miss keep_c).
 # damage: one representative laser-damage threshold with its wavelength and pulse, and the sentence; thresholds
 # depend strongly on pulse length, beam size, surface and crystal quality, so read it as an order of magnitude.
 # min_pump_um: the shortest wavelength the crystal tolerates (two-photon or residual absorption), with its sentence.
@@ -37,7 +39,7 @@
   transparency_level: "0"
   sources: [{doc_id: "10.1007_b138685", cite: "Nikogosyan (2005)", pdf_page: 47, what: "\"0\" transmittance level: 0.4-5.5 µm"}]
   damage: {threshold: "0.3 GW/cm² (surface, congruent)", lambda_um: 1.064, pulse: "10 ns", doc_id: "10.1063_1.1828211", pdf_page: 4, what: "about two times higher than the one in congruent lithium niobate (CLN), 0.3 GW/cm2, for the same pulse width"}
-  notes: [{fa: "اثر نوری‌شکستی (photorefractive): LiNbO3 بدون آلایش را در ۱۴۰ تا ۲۳۰ °C نگه دارید یا MgO:LiNbO3 بگیرید", en: "photorefractive: keep undoped LiNbO3 at 140-230 °C, or take MgO:LiNbO3", doc_id: "10.1007_b138685", pdf_page: 58, what: "To avoid the photorefractive effects, LN (or PPLN) elements should be kept at elevated temperatures, typically between 140 and 230 °C. Another way is doping by MgO"}]
+  notes: [{fa: "اثر نوری‌شکستی (photorefractive): LiNbO3 بدون آلایش را در ۱۴۰ تا ۲۳۰ °C نگه دارید یا MgO:LiNbO3 بگیرید", en: "photorefractive: keep undoped LiNbO3 at 140-230 °C, or take MgO:LiNbO3", keep_c: [140, 230], instead: "MgO-LiNbO3", doc_id: "10.1007_b138685", pdf_page: 58, what: "To avoid the photorefractive effects, LN (or PPLN) elements should be kept at elevated temperatures, typically between 140 and 230 °C. Another way is doping by MgO"}]
 
 - material: "KTiOPO4"
   class: {value: "basic", doc_id: "10.1007_b138685", pdf_page: 8, what: "Contents, chapter 2: Basic Nonlinear Optical Crystals (BBO, LBO, LN, KTP)"}

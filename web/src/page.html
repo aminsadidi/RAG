@@ -810,6 +810,20 @@ function showTab(name) {
 // was left empty. Persian and Arabic digits, the Persian decimal sign and the minus sign become ASCII as typed.
 const ASCII_NUM = (t) => t.replace(/[۰-۹]/g, (c) => c.charCodeAt(0) - 0x06f0).replace(/[٠-٩]/g, (c) => c.charCodeAt(0) - 0x0660)
   .replace(/[٫]/g, ".").replace(/[٬]/g, "").replace(/[−–]/g, "-");
+// A wavelength in µm boxes typed in nm (1064 for 1.064): a one-click fix beside the box
+const UM_BOXES = new Set(["pma", "pmb", "adva", "advb", "splp", "spl1", "svlp", "svls", "svli", "riprobe", "rilo", "rihi"]);
+document.addEventListener("change", (e) => {
+  const el = e.target; if (!(el instanceof HTMLInputElement) || !UM_BOXES.has(el.id)) return;
+  const old = el.parentElement.querySelector(".nmfix");
+  if (old && old.dataset.v === el.value) return; // the same value (the box loses focus to the fix button itself)
+  old?.remove();
+  const v = +el.value, riNm = el.id.startsWith("ri") && document.querySelector('#riunits [data-u="nm"]')?.classList.contains("on");
+  if (!(v > 100) || riNm) return;
+  const fix = document.createElement("button"); fix.type = "button"; fix.className = "alt nmfix"; fix.dataset.v = el.value;
+  fix.textContent = LANG === "en" ? `Did you mean ${v} nm = ${+(v / 1000).toPrecision(6)} µm? Fix` : `منظورتان ${v} nm = ${+(v / 1000).toPrecision(6)} µm بود؟ اصلاح`;
+  fix.onclick = () => { el.value = String(+(v / 1000).toPrecision(6)); fix.remove(); el.dispatchEvent(new Event("change", { bubbles: true })); };
+  el.after(fix);
+}, true);
 document.addEventListener("input", (e) => {
   const el = e.target;
   if (!(el instanceof HTMLInputElement) || !(el.hasAttribute("data-num") || el.id === "ufcoef")) return;
@@ -1284,6 +1298,8 @@ const FA_MAT = { باریم: "barium", باریوم: "barium", بورات: "bora
 const MAT_SKIP = new Set(["beta", "alpha", "β", "α", "بتا", "آلفا", "crystal", "بلور", "کریستال", "ماده", "the", "of", "-"]);
 const matText = (m) => `${m.material} ${m.name || ""} ${m.group}`.toLowerCase().replace(/aluminum/g, "aluminium");
 function findMaterials(query, limit = 8) {
+  // a dopant written after the host (LiNbO3:MgO) as the list writes it (MgO:LiNbO3)
+  query = query.trim().replace(/^([^:\s]+):(MgO|Mg|ZnO|Zn|Fe|Er|Nd|Yb)$/i, "$2:$1");
   const words = query.toLowerCase().replace(/[،,()]/g, " ").replace(/aluminum/g, "aluminium").split(/\s+/)
     .map((w) => FA_MAT[w] || FA_MAT[w.replace(/ی$/, "")] || w).filter((w) => w && !MAT_SKIP.has(w));
   if (!words.length || !RI.index) return [];
@@ -1308,7 +1324,7 @@ function suggestMaterials(query) {
   if (!query.trim() || RI.byName?.has(query)) { box.innerHTML = ""; return []; }
   const found = findMaterials(query);
   box.innerHTML = found.length
-    ? "پیشنهاد: " + found.map((m) => `<button class="alt" data-mat="${esc(matName(m))}" style="margin:2px;direction:ltr">${esc(m.name || matName(m))}</button>`).join("")
+    ? `<span class="hint">«<bdi dir="ltr">${esc(query)}</bdi>» هنوز انتخاب نشده (نمودار و جدول پایین مال ماده‌ی قبلی است). Enter یا یکی از این‌ها:</span> ` + found.map((m) => `<button class="alt" data-mat="${esc(matName(m))}" style="margin:2px;direction:ltr">${esc(m.name || matName(m))}</button>`).join("")
     : `<span class="err">این ماده نه در refractiveindex.info هست و نه فرمولی از مقاله‌های مجموعه برایش ثبت شده.</span>
        نام انگلیسی یا فرمول شیمیایی را امتحان کنید، یا <button class="alt" id="rinomat">جست‌وجوی «${esc(query)}» در مقاله‌ها</button>
        و فرمول سلمایر مقاله را در «داده‌ی خودتان» (پایین صفحه) وارد کنید تا نمودارش رسم شود.`;
@@ -1407,11 +1423,19 @@ $("rimat").addEventListener("input", (e) => {
   }
   suggestMaterials(v);
 });
+// the best match of the box: the material written exactly (any case), else the first suggestion
+const bestMaterial = (v) => { const found = findMaterials(v); return found.find((m) => m.material.toLowerCase() === v.trim().toLowerCase()) || found[0]; };
 $("rimat").addEventListener("change", (e) => {
   if (RI.byName?.has(e.target.value)) return;
   // (no re-render here: a click on a suggestion blurs the input first and must still find its button)
-  const found = findMaterials(e.target.value);
-  if (found.length === 1) { selectMaterial(matName(found[0])); $("rimatsugg").innerHTML = ""; }
+  const found = findMaterials(e.target.value), exact = found.find((m) => m.material.toLowerCase() === e.target.value.trim().toLowerCase());
+  if (found.length === 1 || exact) { selectMaterial(matName(exact || found[0])); $("rimatsugg").innerHTML = ""; }
+});
+// Enter takes the best match
+$("rimat").addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" || RI.byName?.has(e.target.value)) return;
+  const m = bestMaterial(e.target.value); if (!m) return;
+  e.preventDefault(); selectMaterial(matName(m)); $("rimatsugg").innerHTML = "";
 });
 $("rimatsugg").onclick = (e) => { const b = e.target.closest("[data-mat]"); if (b) { selectMaterial(b.dataset.mat); $("rimatsugg").innerHTML = ""; } };
 for (const id of ["rilo", "rihi", "riprobe", "riref", "rirows"]) $(id).addEventListener("change", render);
@@ -1420,6 +1444,7 @@ for (const id of ["rilo", "rihi", "riprobe", "riref", "rirows"]) $(id).addEventL
 const getRange = () => { // in µm; a wavelength cannot be zero or negative
   let lo = Math.max(+$("rilo").value / U(), 1e-3), hi = +$("rihi").value / U();
   if (!(hi > lo)) [lo, hi] = [Math.min(lo, hi) || 0.3, Math.max(lo, hi) || 2];
+  if (hi - lo < 1e-6 * lo) hi = lo * 1.5; // "from" = "to": a range with no width would draw nothing
   return [lo, hi]; };
 const setRange = (lo, hi) => { $("rilo").value = fmtL(lo); $("rihi").value = fmtL(hi); };
 const getProbe = () => +$("riprobe").value / U();
@@ -1708,10 +1733,13 @@ $("ufsave").onclick = () => {
   if (i >= 0) RI.user[i] = u; else RI.user.push(u);
   saveUser();
   const key = `u:${u.id}`;
+  // the chart holds 8 curves: the user's new one is always drawn, the last database curve shown makes room
+  const drop = !RI.shown.has(key) && RI.shown.size >= MAX_SERIES ? [...RI.shown].reverse().find((k) => k.startsWith("db:")) : null;
+  if (drop) show(drop, false);
   if (!RI.shown.has(key) && RI.shown.size >= MAX_SERIES) {
     u.visible = false; saveUser();  // not drawn now, so not drawn by itself on the next visit either
     msg("ذخیره شد، ولی نمودار حداکثر ۸ منحنی دارد؛ تیک یکی از منابع را بردارید تا این هم نمایش داده شود.", true);
-  } else { show(key, true); msg(i >= 0 ? "تغییرات ذخیره شد." : "به نمودار اضافه شد."); }
+  } else { show(key, true); msg((i >= 0 ? "تغییرات ذخیره شد." : "به نمودار اضافه شد.") + (drop ? " برای جا باز کردن، یکی از منحنی‌های پایگاه از نمودار برداشته شد (تیکش را دوباره بزنید تا برگردد)." : "")); }
   editing = u.id; $("ufsave").textContent = "ذخیره‌ی تغییرات";
   // widen the plotted range if the new curve lies outside it
   const [lo, hi] = getRange();
@@ -1950,10 +1978,18 @@ function pick(mat, label, fit = true) {
     }
   }
   const cur = PM.crystal === c && !label ? c.sources[+$("pmsrc").value] : null;
+  // the source the user chose (or a link or the advisor named) is returned to as soon as it works again
+  if (label) PM.want = label; else if (PM.crystal !== c) PM.want = null;
+  const wanted = c.sources.find((s) => s.label === PM.want);
   const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, +$("pma").value, +$("pmb").value).length;
-  // the source kept, else the most trusted one that phase-matches (read from the measuring paper first)
+  // the source kept, else the most trusted one that phase-matches (read from the measuring paper first); when none
+  // covers the wavelengths (a typing slip, nm for µm) the source stays
   const byTier = c.sources.slice().sort((p, q) => (TIER_RANK[p.tier] ?? 9) - (TIER_RANK[q.tier] ?? 9));
-  const best = (cur && has(cur) ? cur : null) || byTier.find(has) || (cur && covers(cur, w) ? cur : null) || byTier.find((s) => covers(s, w)) || c.sources[0];
+  const best = (wanted && has(wanted) ? wanted : null) || (cur && has(cur) ? cur : null) || byTier.find(has)
+    || (cur && covers(cur, w) ? cur : null) || byTier.find((s) => covers(s, w)) || cur || c.sources[0];
+  const was = wanted || cur;
+  if (was && best !== was && !label) PM.moved = (PM.moved ? PM.moved + " " : "")
+    + `منبع ضریب شکست از ${tierMark(was)} ${esc(was.label)} به ${tierMark(best)} ${esc(best.label)} عوض شد: ${esc(was.label)} برای این طول موج‌ها جواب نمی‌دهد. وقتی دوباره جواب بدهد، به آن برمی‌گردیم.`;
   $("pmsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${tierMark(s)} ${esc(s.label)} · ${s.isotropic ? "همسان‌گرد" : s.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"} · ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
   $("pmsrc").value = String(c.sources.indexOf(label ? c.sources.find((s) => s.label === label) || best : best));
   PM.crystal = c; $("pmmat").value = mat;
@@ -2001,7 +2037,7 @@ function run() {
       + (other >= 0 ? `<button id="pmother">رفتن به منبع ${esc(c.sources[other].label)} که این بازه را دارد</button>` : `<button id="pmfit">تنظیم خودکار طول موج برای این بلور</button>`)
       + (other < 0 && covers(stretch(src), w) ? ` <button class="alt" id="pmextra">محاسبه با برون‌یابی فرمول (تا ۱۰٪ بیرون از بازه)</button>` : "") + `</td></tr>`;
     if ($("pmextra")) $("pmextra").onclick = () => { PM.extrapolate = true; run(); };
-    if (other >= 0) $("pmother").onclick = () => { $("pmsrc").value = String(other); run(); };
+    if (other >= 0) $("pmother").onclick = () => { $("pmsrc").value = String(other); $("pmsrc").onchange(); };
     else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
   } else {
     const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
@@ -2012,7 +2048,8 @@ function run() {
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
         <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td><b>${fmtD(r)}</b>${r.phi !== undefined && r.deff > 0.005 ? ` <span class="hint">(φ = ${r.phi}°)</span>` : ""}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
         <td title="1/v_g: wave 1 − 3, 2 − 3, 1 − 2">${Math.max(...r.gvm_fs_mm.map(Math.abs)).toFixed(0)}</td><td>${usefulLen(r)}</td><td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
-       '<tr><td colspan="11" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>');
+       (POLED.has(c.material) || OP.has(c.material) ? '<tr><td colspan="11" style="text-align:start">این بلور برای این طول موج‌ها تطبیق فاز زاویه‌ای ندارد؛ جواب QPM (بلور قطبیده) پایین‌تر آمده است.</td></tr>'
+        : '<tr><td colspan="11" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>'));
   }
   qpm(c, src, w);
   drawTuning(src, proc, a, b);
@@ -2041,7 +2078,7 @@ function spreadCard(c, src, proc, a, b, rows) {
     + ` — پیشنهاد: منبع ${tierMark(best.s)} ${esc(best.s.label)}${best.s === src ? " ✓" : ""}</summary>`
     + `<p>هر منبعِ دیگرِ این بلور که این طول موج‌ها را پوشش می‌دهد، زاویه‌ی خودش را می‌دهد؛ اختلاف آن‌ها نشان می‌دهد عدد بالا چقدر قابل اعتماد است. روی هر منبع بزنید تا محاسبه با آن انجام شود.</p>${lines.map((l) => l.html).join("")}`
     + `<div>پیشنهاد: منبع <button class="chip coll" style="border:0;cursor:pointer" data-src="${best.i}">${tierMark(best.s)} ${esc(best.s.label)}</button> (بالاترین سطح اعتبار)</div></details>` : "";
-  for (const btn of box.querySelectorAll("[data-src]")) btn.onclick = () => { $("pmsrc").value = btn.dataset.src; run(); };
+  for (const btn of box.querySelectorAll("[data-src]")) btn.onclick = () => { $("pmsrc").value = btn.dataset.src; $("pmsrc").onchange(); };
 }
 
 // Biaxial crystals: the best d_eff anywhere on the phase-matching cone, next to the principal planes' best.
@@ -2073,14 +2110,14 @@ function showTemp(src) {
     : "برای این منبع فرمول وابستگی دمایی در مجموعه نیست" + (other >= 0
       ? `؛ <button class="chip coll" style="border:0;cursor:pointer" id="pmTalt">رفتن به منبع ${esc(PM.crystal.sources[other].label)} که دارد</button>`
       : "؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + (th ? "" : tempNote("pmT", null));
-  if (!th && other >= 0) $("pmTalt").onclick = () => { $("pmsrc").value = String(other); run(); };
+  if (!th && other >= 0) $("pmTalt").onclick = () => { $("pmsrc").value = String(other); $("pmsrc").onchange(); };
 }
 
 // NCPM: propagation along a principal axis, tuned by temperature only (-50 to 300 °C).
 function ncpmRun() {
   const c = PM.crystal;
   if (pmBad()) return run(); // run() shows what is wrong
-  if (!c.sources[+$("pmsrc").value].thermo) { $("pmsrc").value = String(c.sources.findIndex((s) => s.thermo)); run(); }
+  if (!c.sources[+$("pmsrc").value].thermo) { $("pmsrc").value = String(c.sources.findIndex((s) => s.thermo)); $("pmsrc").onchange(); }
   const src = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
   if (!src?.thermo) return;
   const rows = ncpmTemperatures((T) => nAtT(src, T), src.kind, proc, a, b, PM.dij[c.material]?.d, [-50, 300]);
@@ -2227,7 +2264,7 @@ $("pmproc").onchange = () => {
   pick(kept ? key(PM.crystal) : $("pmmat").options[0].value);
 };
 for (const id of ["pma", "pmb"]) $(id).addEventListener("change", () => pick(key(PM.crystal), undefined, false));
-$("pmsrc").onchange = run;
+$("pmsrc").onchange = () => { PM.want = PM.crystal?.sources[+$("pmsrc").value]?.label || null; run(); };
 $("pmT").addEventListener("change", run);
 // what the user wants decides what the compute button does: the angle table (always), the temperature of 90°
 // phase matching, or the solver (fixed angle or period: the wavelengths or the temperature)
@@ -2421,12 +2458,16 @@ function adviseRun() {
       needThermo: $("advthermo").checked, dry: $("advdry").checked, classes: ADV_CLASSES[$("advclass").value], qpm: $("advqpm").value !== "no", qpmOnly: $("advqpm").value === "only", maxWalkoff: numOr("advwo"), minSpectral: numOr("advspec"), minTemp: numOr("advtemp"), length: L });
     const key = { walk: (x) => Math.max(...x.best.walkoff_mrad), spec: (x) => -(x.best.spectral_nm ?? 0), temp: (x) => -(x.best.temp_C ?? 0) }[$("advsort").value];
     if (key) r.ok.sort((p, q) => key(p) - key(q));
+    // a crystal whose note asks for temperatures the user's range misses (undoped LiNbO3: 140-230 °C, else
+    // photorefractive damage) goes last, with the warning in its row
+    const unfit = (m) => (PM.props[m]?.notes || []).find((n) => n.keep_c && (hi < n.keep_c[0] || lo > n.keep_c[1]));
+    r.ok.sort((p, q) => Boolean(unfit(p.material)) - Boolean(unfit(q.material)));
     const lam = [w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ") + " → " + w.l3.toFixed(4) + " µm";
     $("advinfo").innerHTML = `${fa(r.ok.length)} بلور شرط‌ها را برمی‌آورد (<bdi dir="ltr">${lam}</bdi>، ${fa(lo)} تا ${fa(hi)} °C)؛ پهنای پذیرش برای بلور ${fa(L * 10)} میلی‌متری است. روی هر ردیف بزنید تا در زبانه‌ی تطبیق فاز همه‌ی جواب‌هایش را ببینید.`;
     const how = (s) => (s.how === "qpm" ? `QPM${s.qpm === "op" ? " (OP)" : ` along ${s.axis}, ${s.pol.join("")}`} · Λ = ${s.period_um.toFixed(2)} µm` : s.how === "ncpm-temp" ? `90° along ${s.axis}, ${s.pol.join("")} at ${s.T.toFixed(1)} °C` : `${s.plane} ${s.type === "I" ? "I" : "II"} · ${s.angle.toFixed(2)}°${s.noncritical ? " (NCPM)" : ""}`);
     const f1 = (v, k = 1) => (v == null || !Number.isFinite(v) ? "—" : v.toFixed(k));
     $("advtable").innerHTML = r.ok.length ? `<tr><th>#</th><th>crystal</th><th>how</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>walk-off (mrad)</th><th>Δλ (nm)</th><th>ΔT (°C)</th><th>angle drift over the range</th><th>note</th></tr>`
-      + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" data-extra="${extra[x.material] ? 1 : 0}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b><br><span class="hint" title="${esc(PM.props[x.material]?.class?.what || "")}">${CLASS_FA[PM.props[x.material]?.class?.value || "research"]}</span></td><td>${how(s)}</td>
+      + r.ok.map((x, i) => { const s = x.best; return `<tr data-mat="${esc(x.material)}" data-src="${esc(srcOf[x.material])}" data-extra="${extra[x.material] ? 1 : 0}" style="cursor:pointer"><td>${i + 1}</td><td><b>${esc(x.material)}</b><br><span class="hint" title="${esc(PM.props[x.material]?.class?.what || "")}">${CLASS_FA[PM.props[x.material]?.class?.value || "research"]}</span></td><td>${how(s)}${unfit(x.material) ? `<br><span class="err">در دمای ${fa(lo)} تا ${fa(hi)} °C شما خطر آسیب نوری‌شکستی دارد${unfit(x.material).instead ? `؛ به‌جایش <bdi dir="ltr">${esc(unfit(x.material).instead)}</bdi>` : ""}</span>` : ""}</td>
         <td><b>${f1(s.deff, 2)}</b></td><td>${f1(s.fom, 2)}</td><td>${f1(Math.max(...s.walkoff_mrad))}</td><td>${f1(s.spectral_nm != null ? s.spectral_nm / L : null, 2)}</td>
         <td>${s.temp_C == null ? "—" : s.temp_C >= 999 ? "> 500" : f1(s.temp_C / L)}</td><td>${s.drift_deg != null ? s.drift_deg.toFixed(3) + "°" : s.lostInRange ? '<span class="err">در بخشی از بازه تطبیق فاز ندارد</span>' : "—"}</td>
         <td>${[x.thermo ? "" : '<span class="err">رفتار دمایی نامعلوم</span>', x.edge ? '<span class="err">نزدیک لبه‌ی جذب</span>' : "",
