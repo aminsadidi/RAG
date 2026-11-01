@@ -2,11 +2,10 @@
 top-30 pool reranked by SubQ. Writes reports/search-<date>.md and .json, and fails (exit 1) when the
 hybrid MRR@10 falls more than 0.03 below baseline.json, so a change that hurts search is seen at once.
 
-    python scripts/quality/search_eval.py [N]      (SITE_KEY and SUBQ_KEYS in the environment)
+    python scripts/quality/search_eval.py [N]      (SITE_USER, SITE_PASS and SUBQ_KEYS in the environment)
 """
 import csv
 import datetime as dt
-import http.cookiejar
 import json
 import os
 import random
@@ -18,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
+import site_login  # noqa: E402
 import subq  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -30,10 +30,7 @@ rows = [r for f in ("questions.csv", "generated.csv")
 random.Random(0).shuffle(rows)
 rows = rows[:N]
 
-jar = http.cookiejar.CookieJar()
-op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
-op.addheaders = [("User-Agent", "matrag-quality/1")]
-op.open(f"{BASE}/?key={os.environ['SITE_KEY']}").read()
+op = site_login.login(BASE)
 
 
 def search(q):

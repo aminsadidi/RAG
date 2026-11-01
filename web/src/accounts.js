@@ -1,6 +1,6 @@
 // Accounts of the site's users (KV user:<name>), made and managed from the owner's Telegram (admin.js).
 // Passwords are generated here (random, 10 characters), so a salted SHA-256 is enough; sessions are signed
-// cookies "<user>.<expiry>.<hmac>". The owner keeps the old shared password (the /?key= link) as "owner".
+// cookies "<user>.<expiry>.<hmac>". The owner logs in as "owner" with the site's password (SITE_PASSWORD).
 const enc = new TextEncoder();
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 export const NAME = /^[a-z0-9][a-z0-9_.-]{2,31}$/;
@@ -16,10 +16,21 @@ export const ROLES = {
 export const OWNER = { name: "owner", role: "owner", quota: 0, tabs: ROLES.full.tabs, search: true, pdf: true };
 const account = (name, u) => ({ name, role: u.role || "full", quota: u.quota || 0, ...(ROLES[u.role] || ROLES.full) });
 
-async function hmac(env, text) {
-  const key = await crypto.subtle.importKey("raw", enc.encode(`matrag-users:${env.SITE_PASSWORD}`),
+// Sessions are signed with SESSION_SECRET (a random secret of its own). Until it is set, and while SESSION_LEGACY
+// is "1" after it is set (so the sessions signed before still work while users migrate), the old key derived from
+// the owner's password is used / accepted.
+const sessionKey = (env, legacy) => (legacy ? `matrag-users:${env.SITE_PASSWORD}` : `matrag-session:${env.SESSION_SECRET}`);
+async function hmac(env, text, legacy = !env.SESSION_SECRET) {
+  const key = await crypto.subtle.importKey("raw", enc.encode(sessionKey(env, legacy)),
     { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   return hex(await crypto.subtle.sign("HMAC", key, enc.encode(text)));
+}
+// Equal texts, in time that does not depend on where they differ (both are hashed first, so not on length either).
+export async function sameText(a, b) {
+  const [x, y] = await Promise.all([a, b].map(async (t) => new Uint8Array(await crypto.subtle.digest("SHA-256", enc.encode(String(t))))));
+  let d = 0;
+  for (let i = 0; i < x.length; i++) d |= x[i] ^ y[i];
+  return d === 0;
 }
 const hash = async (salt, password) => hex(await crypto.subtle.digest("SHA-256", enc.encode(`${salt}:${password}`)));
 
@@ -41,7 +52,9 @@ export async function sessionUser(env, token) {
   const m = /^([a-z0-9][a-z0-9_.-]{2,31})\.(\d+)\.([0-9a-f]{64})$/.exec(token || "");
   if (!m || Number(m[2]) < Date.now() / 1000) return null;
   const u = m[1] === "owner" ? null : await getUser(env, m[1]);
-  if ((await hmac(env, `${m[1]}.${m[2]}.${u?.salt || ""}`)) !== m[3]) return null;
+  const signed = `${m[1]}.${m[2]}.${u?.salt || ""}`;
+  if (!(await sameText(await hmac(env, signed), m[3]))
+    && !(env.SESSION_SECRET && env.SESSION_LEGACY === "1" && (await sameText(await hmac(env, signed, true), m[3])))) return null;
   if (m[1] === "owner") return OWNER;
   return u && usable(u) ? account(m[1], u) : null;
 }
@@ -55,7 +68,7 @@ async function putUser(env, name, u) {
 
 export async function checkLogin(env, name, password) {
   const u = await getUser(env, name);
-  return Boolean(u && usable(u) && (await hash(u.salt, password)) === u.hash);
+  return Boolean(u && usable(u) && (await sameText(await hash(u.salt, password), u.hash)));
 }
 
 export async function createUser(env, name, days, note, role = "full") {

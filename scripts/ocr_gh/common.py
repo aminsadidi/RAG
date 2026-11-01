@@ -24,8 +24,10 @@ def quality(texts) -> tuple[int, float]:
 
 def site() -> requests.Session:
     s = requests.Session()
-    r = s.get(f"{SITE}/?key={os.environ['SITE_KEY']}", allow_redirects=False, timeout=60)
-    if r.status_code != 303:
+    # the CI account (SITE_USER/SITE_PASS from the site, web/src/oidc.js), by the login form: no password in a URL
+    r = s.post(f"{SITE}/login", data={"username": os.environ.get("SITE_USER", ""), "password": os.environ["SITE_PASS"]},
+               allow_redirects=False, timeout=60)
+    if r.status_code != 303 or "session" not in s.cookies:
         raise SystemExit(f"site login failed ({r.status_code})")
     return s
 
