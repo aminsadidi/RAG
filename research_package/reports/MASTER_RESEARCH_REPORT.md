@@ -2,7 +2,7 @@
 ## گزارش جامع، اعتبارسنجی و مستندات فنی مستقل (Standalone Research Package)
 
 - **مؤلف / دستیار پژوهشی:** سیستم هوشمند پژوهش اپتیک و فوتونیک (Antigravity Research Framework)
-- **مخزن گیت‌هاب:** [aminsadidi/RAG (Branch: `claude/festive-bardeen-nnw123`)](https://github.com/aminsadidi/RAG/tree/claude/festive-bardeen-nnw123/research_package)
+- **مخزن گیت‌هاب:** [aminsadidi/RAG (Branch: `claude/festive-bardeen-nnw123`)](https://github.com/aminsadidi/RAG/tree/main/research_package)
 - **مسیر پکیج در مخزن:** `research_package/`
 - **تاریخ ایجاد و بروزرسانی نهایی:** اکتبر ۲۰۲۶
 

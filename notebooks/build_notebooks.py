@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 HERE = Path(__file__).parent
-BRANCH = "claude/festive-bardeen-nnw123"
+BRANCH = "main"
 VERSION = 23
 WORKERS = 4
 

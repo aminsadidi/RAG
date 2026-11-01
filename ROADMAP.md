@@ -164,7 +164,7 @@ RAG/
 ### اجرا در Google Colab
 
 نوت‌بوک [`notebooks/colab_demo.ipynb`](notebooks/colab_demo.ipynb) کل سیستم را روی کارت گرافیک رایگان کولب اجرا می‌کند
-([باز کردن در کولب](https://colab.research.google.com/github/aminsadidi/RAG/blob/claude/festive-bardeen-nnw123/notebooks/colab_demo.ipynb)).
+([باز کردن در کولب](https://colab.research.google.com/github/aminsadidi/RAG/blob/main/notebooks/colab_demo.ipynb)).
 مقاله‌ها و پایگاه داده در Google Drive (پوشه‌ی `matrag_data`) نگه داشته می‌شوند.
 
 ### مدل‌های زبانی

@@ -46,5 +46,5 @@
 ### ۳. پایداری داده‌ها و تضمین دسترسی:
 
 تمام فایل‌های این پکیج هم‌اکنون به مخزن گیت‌هاب شما در شاخه `claude/festive-bardeen-nnw123` ارسال (Push) شده‌اند:
-🔗 [مشاهده بسته پژوهشی در گیت‌هاب](https://github.com/aminsadidi/RAG/tree/claude/festive-bardeen-nnw123/research_package)
+🔗 [مشاهده بسته پژوهشی در گیت‌هاب](https://github.com/aminsadidi/RAG/tree/main/research_package)
 همچنین نسخه‌های محلی روی سرور در مسیر `/home/aminsadidi11584/RAG/research_package/` دائماً در دسترس هستند.
