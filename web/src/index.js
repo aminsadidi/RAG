@@ -1,7 +1,7 @@
 // The web app: searches the knowledge base in Qdrant and gives the sources, never an AI-written answer.
 // A question in Persian is translated to English (the papers are in English); the query is embedded with
 // the same model and pooling as the Python pipeline, and Qdrant fuses dense and BM25 results with RRF.
-import { cleanTranslation, contextPack, crystalsIn, expandQuery, foldDigits, isPersian, queryTerms, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
+import { cleanTranslation, contextPack, crystalsIn, expandQuery, foldDigits, isPersian, queryTerms, relevance, SCOPE_MAX_COSINE, SCOPE_PROMPT, scopeWord, shared, sourceLabel, translatePrompt } from "./text.js";
 import PAGE from "./page.html";
 // (the page gets the crystal names below; PAGE_OUT is built once per Worker instance)
 import LOGIN from "./login.html";
@@ -90,6 +90,15 @@ async function translate(env, question) {
       messages: [{ role: "user", content: prompt }], max_tokens: 120, temperature: 0,
     });
     return cleanTranslation(out.response, question);
+  });
+}
+
+async function scopeOf(env, question) {
+  return cached(env, env.TRANSLATE_MODEL, `scope\n${question}`, async () => {
+    const out = await env.AI.run(env.TRANSLATE_MODEL, {
+      messages: [{ role: "system", content: SCOPE_PROMPT }, { role: "user", content: question }], max_tokens: 4, temperature: 0,
+    });
+    return scopeWord(out.response);
   });
 }
 
@@ -247,6 +256,9 @@ async function search(env, opts) {
   // Workers AI out of quota or down: the search goes on with less (the original question; keywords only)
   // and says so, rather than failing.
   const degraded = [];
+  // in parallel with the search: a failure or a slow answer lets the question through
+  const scopeP = opts.scope === false ? Promise.resolve("specific")
+    : within(6000, scopeOf(env, question)).catch((e) => { console.log("scope", String(e)); degraded.push("scope"); return "specific"; });
   const searchQuery = isPersian(question)
     ? await translate(env, question).catch(() => { degraded.push("translation"); return null; }) : null;
   const query = searchQuery || question;
@@ -316,7 +328,13 @@ async function search(env, opts) {
   if (opts.stitch !== false) await stitchTables(env, hits, neighbours).catch((e) => { console.log("stitch", String(e)); degraded.push("stitch"); });
   lap("stitch");
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
-  return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: crystalsIn(searchQuery ? `${question} ${searchQuery}` : question), hits, relevance: check, ms: Date.now() - started, timing };
+  const materialsFound = crystalsIn(searchQuery ? `${question} ${searchQuery}` : question);
+  check.scope = await scopeP;
+  lap("scope");
+  if (check.scope === "offtopic" && (check.bestCosine ?? 0) < SCOPE_MAX_COSINE) Object.assign(check, { verdict: "none", offTopic: true });
+  else if (check.scope === "general" && !materialsFound.length) check.verdict = "general";
+  else check.scope = "specific";
+  return { question, searchQuery, mode, degraded, topK, perPaper: Boolean(opts.perPaper), reranked, materials: materialsFound, hits, relevance: check, ms: Date.now() - started, timing };
 }
 
 async function facets(env) {
@@ -367,6 +385,8 @@ async function paper(env, docId) {
 function relevanceNote(r) {
   if (!r || r.verdict === "ok") return "ok: the question's materials and words occur in the sources";
   const parts = [];
+  if (r.verdict === "general") return "too general: a textbook definition or a whole topic, nothing specific to look up";
+  if (r.scope === "offtopic") parts.push("the question is not about optics or optical materials");
   if (r.offTopic) parts.push(`the question is far from every passage (best cosine ${r.bestCosine.toFixed(2)})`);
   if (r.missingMaterials.length) parts.push(`not in any source: ${r.missingMaterials.join(", ")}`);
   if (r.missingWords.length) parts.push(`words in no source: ${r.missingWords.join(", ")}`);
@@ -501,9 +521,11 @@ async function handle(request, env, ctx) {
       const found = await search(env, await request.json().catch(() => ({})));
       // every question is kept (log:), the ones the collection cannot answer also go to Telegram
       const none = !found.hits.length || found.relevance?.verdict === "none";
+      // off-topic and too general questions are logged, not sent to Telegram as a gap of the collection
+      const gap = none && !["offtopic", "general"].includes(found.relevance?.scope);
       const log = logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
         verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id }, user);
-      ctx?.waitUntil(none ? Promise.all([log, unanswered(env, found, user)]) : log);
+      ctx?.waitUntil(gap ? Promise.all([log, unanswered(env, found, user)]) : log);
       return json({ ...found, hits: noPdf(found.hits) });
     }
     if (url.pathname === "/api/feedback" && request.method === "POST") {
