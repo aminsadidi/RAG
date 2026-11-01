@@ -2933,8 +2933,8 @@ function card(mat, D, synced) {
       : ri ? ["ضریب شکست", `${fa(ri.n)} منبع در پایگاه (${fa(ri.formulas)} فرمول) · بازه‌ی <bdi dir="ltr">${+ri.range_um[0].toPrecision(3)}–${+ri.range_um[1].toPrecision(3)} µm</bdi>`] : null,
     ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)} · ${basisName(d.sources[0])}</span>` : ""}`
       + (d.partial ? `<div class="hint">ناقص: فقط بعضی عنصرها اندازه‌گیری شده‌اند${d.frame ? ` و در دستگاه <bdi dir="ltr">${esc(d.frame)}</bdi>` : ""}؛ در محاسبه‌ی d<sub>eff</sub> تطبیق فاز به کار نمی‌روند.</div>` : "")
-      : '<span class="hint">ثبت نشده</span>'],
-    ["گرمانوری (dn/dT)", thermo.length ? `فرمول وابسته به دما: ${thermo.map(esc).join("، ")}` : '<span class="hint">ثبت نشده</span>'],
+      : '<span class="hint">در مقاله‌ها و کتاب‌های این مجموعه پیدا نشد</span>'],
+    ["گرمانوری (dn/dT)", thermo.length ? `فرمول وابسته به دما: ${thermo.map(esc).join("، ")}` : '<span class="hint">در مقاله‌ها و کتاب‌های این مجموعه پیدا نشد</span>'],
   ].filter(Boolean);
   const btn = (act, text) => `<button class="alt" data-xact="${act}" data-mat="${esc(mat)}">${text}</button>`;
   return `<div class="card xcard">

@@ -575,3 +575,75 @@
   thermal_expansion: {value: "−16.9 ∥c, 21.2 ∥a (RT–500 °C)", doc_id: "10.1143_jjap.39.1256", pdf_page: 2, what: "Yamada, Morimoto, Miyazawa (2000), abstract: the obtained expansion coefficients for tetragonal c- and a-axes were −1.69 ± 0.01 × 10⁻⁵ /K and 2.12 ± 0.01 × 10⁻⁵ /K (bulk samples, dilatometer, room temperature to 500 °C)"}
 - material: "BiB3O6"
   thermal_conductivity: {value: "7.81 ∥x, 6.95 ∥y, 17.32 ∥z", doc_id: "10.1364_oe.22.017607", pdf_page: 5, what: "Riedel et al. (2014), Table 2: κ293K of BiBO from thermal diffusivity (temperature-wave analysis), 7.81±0.3 ∥x, 6.95±0.46 ∥y, 17.32±0.92 ∥z W m⁻¹ K⁻¹, measured for the first time; 10.54±0.42 in the phase-matching direction"}
+
+# Read from the collection for the gaps of the well-known crystals (1 Nov 2026), page images checked
+- material: "CdSiP2"
+  transparency_um: [1.0, 6.5]
+  transparency_level: "clear transparency"
+  sources: [{doc_id: "10.1117_1.oe.53.12.122511", cite: "Hildenbrand et al. (2014)", pdf_page: 3, what: "The clear transparency range of CSP extends from 1 to 6.5 μm. The bandgap value obtained from the slope of the fundamental absorption edge is 2.2 eV"}]
+  damage: {threshold: "1.77 J/cm² (uncoated; 0.33 J/cm² at 1.064 µm, 8 ns)", lambda_um: 2.09, pulse: "21 ns, 1 kHz, R-on-1", doc_id: "10.1117_1.oe.53.12.122511", pdf_page: 6, what: "Hildenbrand et al. (2014), Table 1: average damage threshold of uncoated CSP in peak on-axis fluence, Dm = 0.328 J/cm² at 1.064 µm (100 Hz, 8 ns) and Dm = 1.77 J/cm² at 2.09 µm (1 kHz, 21 ns); ZGP about 2 and 3 times higher"}
+- material: "RbTiOPO4"
+  damage: {threshold: "0.9 GW/cm² (input surface, AR-coated; 1.8 × KTP)", lambda_um: 1.064, pulse: "15 ns, 10 Hz", doc_id: "10.1016_0925_3467_94_90035_3", pdf_page: 4, what: "Oseledchik et al. (1994): a damage of the input surface was observed when the incident power density reached 900 MW/cm² (Q-switched Nd:YAG, 15 ns, 10 Hz); measured under the same conditions, I(RTP)/I(KTP) = 1.8 ± 0.2"}
+- material: "LiGaS2"
+  damage: {threshold: "> 3 J/cm² (> 200 MW/cm²)", lambda_um: 1.064, pulse: "14 ns", doc_id: "10.1016_j.pquantelec.2015.04.001", pdf_page: 43, what: "Petrov (2015), as quoted in the review from its refs [191, 192]: LGS and BGS possess much higher damage threshold than LISe, AGS or HGS, exceeding 3 J/cm² in terms of axial fluence at 1.064 µm for 14 ns long pulses, i.e. peak intensity >200 MW/cm²"}
+- material: "Tl3AsSe3"
+  damage: {threshold: "16 ± 2 MW/cm²", lambda_um: 10.6, pulse: "200–300 ns, Q-switched CO2", doc_id: "10.1364_ao.11.000993", pdf_page: 5, what: "Feichtner & Roland (1972): surface damage threshold power densities for Q-switched CO2 laser pulses of 200–300 ns, PD(Tl3AsSe3) = (16 ± 2) MW/cm², PD(Ag3AsS3) = (10 ± 2), PD(Ag3SbS3) = (7 ± 2) MW/cm²"}
+- material: "Ag3SbS3"
+  damage: {threshold: "25 MW/cm² (1 and 10 pulses); > 9 MW/cm² (1000 pulses)", lambda_um: 1.06, pulse: "Q-switched, 2 pps", doc_id: "10.1109_jqe.1972.1076963", pdf_page: 4, what: "Hanna et al. (1972), Table II, pyrargyrite at 1.06 µm: 1 pulse = 25 MW/cm², 10 pulses = 25 MW/cm², 1000 pulses > 9 MW/cm² (input and output surfaces within 1 MW/cm²); at 10.6 µm 1 pulse < 76, 300 pulses = 53 MW/cm². Feichtner & Roland (1972) give (7 ± 2) MW/cm² at 10.6 µm, 200–300 ns"}
+- material: "HgS"
+  transparency_um: [0.63, 13.5]
+  transparency_level: "strong absorption outside"
+  sources: [{doc_id: "10.1063_1.1709079", cite: "Bond et al. (1967)", pdf_page: 3, what: "Transmission measurements show a strong absorption at wavelengths less than 0.63 µ or greater than 13.5 µ. A strong absorption peak occurs at 15.0 µ"}]
+  damage: {threshold: "≈ 40 MW/cm² (10 pulses)", lambda_um: 1.06, pulse: "Q-switched, 2 pps", doc_id: "10.1109_jqe.1972.1076963", pdf_page: 4, what: "Hanna et al. (1972), Table II, cinnabar at 1.06 µm: 10 pulses ~40 MW/cm²"}
+- material: "alpha-BaB2O4"
+  transparency_um: [0.28, 2.8]
+  transparency_level: "unstated"
+  sources: [{doc_id: "10.1080_10584580490458801", cite: "Martynyuk-Lototska et al. (2004)", pdf_page: 5, what: "Table II: range of transparency α-BaB2O4 280–2800 nm (β-BaB2O4 280–3220, Li2B4O7 250–3200, CsLiB6O10 250–2800 nm)"}]
+  damage: {threshold: "14.5 GW/cm² (focused, 90 µm spot)", lambda_um: 1.06, pulse: "6 ns", doc_id: "10.1080_10584580490458801", pdf_page: 5, what: "Martynyuk-Lototska et al. (2004), Table II: optical damage threshold α-BaB2O4 14.5 GW/cm² (β-BaB2O4 30.9, Li2B4O7 32.2, CsLiB6O10 7.5), Nd laser 1.06 µm, 6 ns, 60 mJ; the minimum damage diameter observed, 90 µm, taken as the threshold"}
+- material: "Li2B4O7"
+  transparency_um: [0.17, 3.3]
+  transparency_level: "clear transmittance"
+  sources: [{doc_id: "10.1063_1.368904", cite: "Petrov et al. (1998)", pdf_page: 2, what: "The clear transmittance spans from 170 to 3300 nm"}]
+- material: "GdCa4O(BO3)3"
+  transparency_um: [0.32, 2.6]
+  transparency_level: "unstated"
+  sources: [{doc_id: "10.1364_josab.14.002238", cite: "Aka et al. (1997)", pdf_page: 3, what: "In the IR range the transmission extends to 2600 nm ... the 320–2600-nm transparency window is suitable for frequency conversion (Gd³⁺ absorption lines below 320 nm, edge near 200 nm)"}]
+- material: "AgGaGeS4"
+  transparency_um: [0.5, 11.5]
+  transparency_level: "roughly"
+  sources: [{doc_id: "10.1016_j.optmat.2004.04.007", cite: "Petrov et al. (2004)", pdf_page: 2, what: "The optical transmission of AGGS extends roughly from 0.5 to 11.5 µm, the energy band-gap (2.78 eV) corresponds to a fundamental absorption edge of 446 nm"}]
+- material: "BaGa4S7"
+  transparency_um: [0.35, 13.7]
+  transparency_level: "0"
+  sources: [{doc_id: "10.1021_cg8010579", cite: "Lin et al. (2008)", pdf_page: 1, what: "UV and IR optical absorption edges were found to be at 350 nm and 13.7 µm, respectively"}]
+  thermal_conductivity: {value: "1.68 ∥x, 1.58 ∥y, 1.45 ∥z", doc_id: "10.1016_j.pquantelec.2015.04.001", pdf_page: 30, what: "Petrov (2015), Table 2: thermal conductivity of BaGa4S7 1.68 //x, 1.58 //y, 1.45 //z W/mK"}
+- material: "BaGa4Se7"
+  transparency_um: [0.465, 22.0]
+  transparency_level: "0"
+  sources: [{doc_id: "10.1016_j.optmat.2019.109564", cite: "Yèlisseyev et al. (2019)", pdf_page: 1, what: "The crystals are transparent in the range 0.465 ÷ 22 μm (1.5 mm plate, zero transmittance level)"}]
+  thermal_conductivity: {value: "0.56–0.74", doc_id: "10.1016_j.pquantelec.2015.04.001", pdf_page: 30, what: "Petrov (2015), Table 2: thermal conductivity of BaGa4Se7 0.56-0.74 W/mK"}
+  damage: {threshold: "557 MW/cm²", lambda_um: 2.79, pulse: "21 ns, 10 Hz (pump of the cited OPO; the cited paper itself is not in the collection, only its abstract)", doc_id: "10.1364_ol.403759", pdf_page: 1, what: "Yang et al. (2020), as quoted in its ref. [5] (Hu et al., Opt. Lett. 44, 2201 (2019)): due to its large bandgap energy, BGSe crystal possesses a much higher damage threshold (557 MW/cm²) than any other selenide"}
+- material: "ZnSe"
+  damage: {threshold: "25 J/cm²", lambda_um: 10.6, pulse: "100 ns", doc_id: "10.1016_0030_4018_77_90027_x", pdf_page: 1, what: "Piltch et al. (1977), as quoted from its ref. [3]: CVD zinc selenide has excellent resistance to optical damage, being characterized by a damage threshold for 100 ns 10.6 µm pulses of 25 J/cm²; the range of transparency extends from 0.5 to 20 µm"}
+- material: "SiC"
+  transparency_um: [0.37, 6.0]
+  transparency_level: "4H-SiC, 400 µm sample"
+  sources: [{doc_id: "10.1364_ol.42.002687", cite: "Fischer et al. (2017)", pdf_page: 2, what: "Fig. 2: transmission spectrum of a 400 μm thick 4H-SiC sample; a broad transparency from 370 nm to 6 μm followed by reststrahlen and multi-phonon absorption bands"}]
+# Weber (2003), Handbook of Optical Materials, section 1.3 tables: transmission range = the wavelengths between which
+# a 1-mm-thick sample at 300 K transmits ≥ 10%
+- material: "CdTe"
+  transparency_um: [0.9, 30.0]
+  transparency_level: "≥ 10%, 1 mm"
+  sources: [{doc_id: "10.1201_9781420050196", cite: "Weber (2003)", pdf_page: 85, what: "Optical Properties of Isotropic Crystalline Materials: CdTe, transmission 0.9-30 µm, band gap 1.56 (D) eV, n 2.817"}]
+- material: "ZnTe"
+  transparency_um: [0.55, 25.0]
+  transparency_level: "≥ 10%, 1 mm"
+  sources: [{doc_id: "10.1201_9781420050196", cite: "Weber (2003)", pdf_page: 87, what: "Optical Properties of Isotropic Crystalline Materials: ZnTe, transmission 0.55-25 µm, band gap 2.30 (D) eV, n 2.962"}]
+- material: "Ag3SbS3"
+  transparency_um: [0.7, 14.0]
+  transparency_level: "≥ 10%, 1 mm"
+  sources: [{doc_id: "10.1201_9781420050196", cite: "Weber (2003)", pdf_page: 88, what: "Optical Properties of Uniaxial Crystalline Materials: Ag3SbS3, transmission 0.7-14 µm, ne 2.67, no 2.86"}]
+- material: "HIO3"
+  transparency_um: [0.3, 1.8]
+  transparency_level: "≥ 10%, 1 mm"
+  sources: [{doc_id: "10.1201_9781420050196", cite: "Weber (2003)", pdf_page: 94, what: "Optical Properties of Biaxial Crystalline Materials: HIO3, transmission 0.3-1.8 µm"}]
