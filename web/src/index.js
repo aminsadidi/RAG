@@ -96,7 +96,8 @@ async function translate(env, question) {
 }
 
 async function scopeOf(env, question) {
-  return cached(env, env.TRANSLATE_MODEL, `scope\n${question}`, async () => {
+  // the prompt is part of the key: an edited SCOPE_PROMPT must not be served the old verdicts for 90 days
+  return cached(env, env.TRANSLATE_MODEL, `scope\n${SCOPE_PROMPT}\n${question}`, async () => {
     const out = await env.AI.run(env.TRANSLATE_MODEL, {
       messages: [{ role: "system", content: SCOPE_PROMPT }, { role: "user", content: question }], max_tokens: 4, temperature: 0,
     });

@@ -78,3 +78,19 @@ test("the query embedding and the scope check are cached in the Cache API, not i
     assert.equal(e.AI.calls.length, before);  // the second time both come from the cache
   } finally { q.restore(); delete globalThis.caches; }
 });
+
+test("the scope verdict's cache key holds the scope prompt (an edited prompt is not served old verdicts)", async () => {
+  const { SCOPE_PROMPT: prompt } = await import("../src/text.js");  // loaded through the test's module hooks
+  const model = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+  const e = env({ AI: fakeAI(), TRANSLATE_MODEL: model, EMBED_MODEL: "@cf/baai/bge-base-en-v1.5" });
+  const cacheApi = fakeCaches();
+  const q = fakeQdrant([point(0)]);
+  try {
+    const c = await ownerCookie(e);
+    await call(e, "/api/search", withCookie(c, { method: "POST", body: JSON.stringify({ q: "BBO cut angle" }), headers: { "content-type": "application/json" } }));
+  } finally { q.restore(); delete globalThis.caches; }
+  const { createHash } = await import("node:crypto");
+  const key = (input) => `https://matrag-cache.invalid/${createHash("sha256").update(`${model}\n${input}`).digest("hex")}`;
+  assert.ok(cacheApi.has(key(`scope\n${prompt}\nBBO cut angle`)));
+  assert.ok(!cacheApi.has(key("scope\nBBO cut angle")));
+});
