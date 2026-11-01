@@ -153,3 +153,16 @@ test("SubQ: a missing answer scores -1, never NaN, and an incomplete answer is n
     assert.equal(subqCalls, 2);  // asked again
   } finally { q.restore(); }
 });
+
+test("an account without search gets no collection lists (facets, papers, in-collection)", async () => {
+  const e = searchEnv();
+  const pw = await createUser(e, "toolsonly", 0, "", "tools");
+  const c = cookieOf(await call(e, "/login", form({ username: "toolsonly", password: pw })));
+  const q = fakeQdrant([point(0)]);
+  try {
+    for (const [path, init] of [["/api/facets", {}], ["/api/papers", {}], ["/api/incollection", { method: "POST", body: JSON.stringify({ ids: ["doc0"] }) }], ["/api/paper?doc_id=doc0", {}]])
+      assert.equal((await call(e, path, withCookie(c, init))).status, 403, path);
+    const owner = await ownerCookie(e);
+    assert.equal((await call(e, "/api/papers", withCookie(owner))).status, 200);
+  } finally { q.restore(); }
+});

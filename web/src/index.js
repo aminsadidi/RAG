@@ -557,6 +557,8 @@ async function handle(request, env, ctx) {
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
     if (url.pathname === "/api/me") return json({ user, role: acc.role, tabs: acc.tabs, pdf: acc.pdf, search: acc.search, quota: acc.quota, banner: settings.banner || "" });
+    // the collection's lists are part of search: an account without it (tools only) does not get them
+    if (["/api/facets", "/api/papers", "/api/incollection"].includes(url.pathname) && !acc.search) return denied("search is not available on this account");
     if (url.pathname === "/api/facets") return json(await facets(env));
     if (url.pathname === "/api/papers") return json(PAPERS);
     if (url.pathname === "/api/incollection" && request.method === "POST") {
