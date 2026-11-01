@@ -78,7 +78,8 @@ async function qdrant(env, path, body) {
 // the free plan are kept for what needs them (Cache API puts are free and unlimited; on *.workers.dev it does not
 // keep anything, so those are computed again there until the site is on its own domain).
 const CACHE_TTL = 90 * 86400;
-async function cached(env, model, input, compute, store = "kv") {
+// keep(value): false leaves a value out of the cache (an incomplete answer, served this once only).
+async function cached(env, model, input, compute, store = "kv", keep = () => true) {
   const cache = store === "cache" ? globalThis.caches?.default : null;
   if (store === "kv" ? !env.AICACHE : !cache) return compute();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${model}\n${input}`));
@@ -88,7 +89,7 @@ async function cached(env, model, input, compute, store = "kv") {
     : await cache.match(url).then((r) => (r ? r.json() : null)).catch(() => null);
   if (hit !== null) return hit;
   const value = await compute();
-  if (value === null || value === undefined) return value; // nothing worth keeping (and "null" would read as a miss)
+  if (value === null || value === undefined || !keep(value)) return value; // nothing worth keeping (and "null" would read as a miss)
   if (store === "kv") await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: CACHE_TTL }).catch((e) => console.log("AICACHE put", String(e)));
   else await cache.put(url, new Response(JSON.stringify(value), { headers: { "content-type": "application/json", "cache-control": `max-age=${CACHE_TTL}` } }))
     .catch((e) => console.log("cache put", String(e)));
@@ -163,8 +164,9 @@ async function subqBatch(env, q, texts) {
       headers: { "content-type": "application/json", authorization: `Bearer ${key}` } });
     if (r.status === 401 || r.status === 402) continue; // this key is spent or refused: the next one
     if (!r.ok) throw new Error(`SubQ ${r.status} ${(await r.text()).slice(0, 200)}`);
-    const answers = (await r.json()).answers;
-    return texts.map((_, i) => answers[`p${i}`].noul);
+    const answers = (await r.json()).answers || {};
+    // a passage SubQ did not answer for scores -1 (NaN would sort anywhere and be cached for 90 days)
+    return texts.map((_, i) => { const v = Number(answers[`p${i}`]?.noul); return Number.isFinite(v) ? v : null; });
   }
   throw new Error("no SubQ key left");
 }
@@ -175,8 +177,8 @@ async function subqRerank(env, query, points, topK) {
     const parts = [];
     for (let i = 0; i < texts.length; i += SUBQ_BATCH) parts.push(subqBatch(env, query, texts.slice(i, i + SUBQ_BATCH)));
     return (await Promise.all(parts)).flat();
-  });
-  return points.map((p, i) => ({ ...p, score: scores[i] + SUBQ_RANK_WEIGHT / (i + 1) }))
+  }, "kv", (all) => all.length === texts.length && all.every((v) => v !== null));  // only a complete answer is kept
+  return points.map((p, i) => ({ ...p, score: (scores[i] ?? -1) + SUBQ_RANK_WEIGHT / (i + 1) }))
     .sort((a, b) => b.score - a.score).slice(0, topK);
 }
 const within = (ms, promise) => Promise.race([promise, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
@@ -302,7 +304,9 @@ async function search(env, opts) {
   const cosine = { query: vector, using: shared.DENSE, filter, limit: 1 };
   const together = !opts.perPaper && mode !== "vector" && Boolean(vector);
   let bestCosine = mode === "vector" || !vector || together ? null
-    : qdrant(env, `/collections/${env.COLLECTION}/points/query`, cosine).then((r) => r.points[0]?.score ?? 0);
+    : qdrant(env, `/collections/${env.COLLECTION}/points/query`, cosine).then((r) => r.points[0]?.score ?? 0)
+      // one signal of the relevance check: a failure leaves it out rather than failing the whole search
+      .catch((e) => { console.log("cosine", String(e)); degraded.push("cosine"); return null; });
   if (mode === "bm25") {
     body = named.length
       ? { prefetch: [{ query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named], query: { fusion: "rrf" }, limit }
