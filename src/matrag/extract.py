@@ -11,6 +11,7 @@ the requested properties) or from every chunk of the selected papers
 
 import csv
 import json
+import math
 import re
 import unicodedata
 from collections.abc import Iterable
@@ -56,6 +57,56 @@ def normalize(text: str) -> str:
     return re.sub(r"\s+", "", text)
 
 
+# A number in normalized text (whitespace removed) only counts where it stands alone: no digit, "." or "<digit>,"
+# just before it, and no digit or ".<digit>" / ",<digit>" just after. So "0.07" is not found in "0.0712", "2.3"
+# not in "12.35", "96k" not in "296k".
+_BEFORE = re.compile(r"(?:\d|\.|\d,)$")
+_AFTER = re.compile(r"^(?:\d|[.,]\d)")
+_SUPERSCRIPT = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺", "0123456789-+")
+MIN_EVIDENCE = 20  # characters: a few words or a lone number "verify" against almost any passage
+
+
+def value_in_text(value_text: str, source_text: str) -> bool:
+    """``value_text`` (as written in the paper) occurs in the normalized ``source_text`` as a whole number, not inside
+    a longer one; a value without a digit never does."""
+    needle = normalize(value_text)
+    if not re.search(r"\d", needle):
+        return False
+    start = source_text.find(needle)
+    while start != -1:
+        end = start + len(needle)
+        if not _BEFORE.search(source_text[:start]) and not _AFTER.match(source_text[end:]):
+            return True
+        start = source_text.find(needle, start + 1)
+    return False
+
+
+def parse_value(value_text: str) -> float | None:
+    """The number a value is written as: "0.0712(3)" -> 0.0712, "1.23 × 10^-22" -> 1.23e-22, "2.5·10⁻³" -> 0.0025,
+    "1.5e-4", "−3.2" -> -3.2; None when no number can be read."""
+    t = unicodedata.normalize("NFKC", value_text).translate(_DASHES).replace("−", "-").translate(_SUPERSCRIPT)
+    t = re.sub(r"\s+", "", t).replace("−", "-")
+    m = re.match(r"([-+]?)(\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:(?:[x×*·]|\\times)10\^?\{?([-+]?\d+)\}?|[eE]([-+]?\d+))?", t)
+    if not m:
+        return None
+    number = float(m.group(1) + m.group(2))
+    exponent = m.group(3) or m.group(4)
+    return number * 10 ** int(exponent) if exponent else number
+
+
+def value_checks(record, source_text: str) -> tuple[bool, bool]:
+    """(evidence_verified, value_in_source) of an extracted record against the normalized text of its chunk.
+
+    evidence_verified: the evidence, at least MIN_EVIDENCE characters, is in the text verbatim.
+    value_in_source: value_text stands alone in the text (value_in_text) and says the same number as ``value``.
+    """
+    evidence = (record.evidence or "").strip()
+    evidence_ok = len(evidence) >= MIN_EVIDENCE and normalize(evidence) in source_text
+    parsed = parse_value(record.value_text or "")
+    same = parsed is not None and math.isclose(parsed, record.value, rel_tol=1e-6, abs_tol=1e-300)
+    return evidence_ok, same and value_in_text(record.value_text or "", source_text)
+
+
 def extract_from_node(node: BaseNode, properties: list[str], llm: LLM) -> list[ExtractedRecord]:
     meta = node.metadata
     result = llm.structured_predict(
@@ -66,17 +117,12 @@ def extract_from_node(node: BaseNode, properties: list[str], llm: LLM) -> list[E
         text=node.get_content(),
     )
     source_text = normalize(node.get_content())
-    return [
-        ExtractedRecord(
-            **record.model_dump(),
-            doc_id=meta.get("doc_id", ""),
-            node_id=node.node_id,
-            pages=meta.get("pages", ""),
-            evidence_verified=normalize(record.evidence) in source_text,
-            value_in_source=normalize(record.value_text) in source_text,
-        )
-        for record in result.records
-    ]
+    out = []
+    for record in result.records:
+        evidence_ok, value_ok = value_checks(record, source_text)
+        out.append(ExtractedRecord(**record.model_dump(), doc_id=meta.get("doc_id", ""), node_id=node.node_id,
+                                   pages=meta.get("pages", ""), evidence_verified=evidence_ok, value_in_source=value_ok))
+    return out
 
 
 def candidate_nodes(
