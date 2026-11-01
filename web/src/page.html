@@ -813,7 +813,9 @@ const ASCII_NUM = (t) => t.replace(/[۰-۹]/g, (c) => c.charCodeAt(0) - 0x06f0).
 document.addEventListener("input", (e) => {
   const el = e.target;
   if (!(el instanceof HTMLInputElement) || !(el.hasAttribute("data-num") || el.id === "ufcoef")) return;
-  const v = ASCII_NUM(el.value);
+  let v = ASCII_NUM(el.value);
+  // a decimal comma or slash ("1,064", "1/064": European keypads, Persian habit) in a number box is its point
+  if (el.hasAttribute("data-num") && !v.includes(".") && /^-?\d+[,/]\d*$/.test(v.trim())) v = v.replace(/[,/]/, ".");
   // the caret stays after the same character: the removed thousands separators before it are taken off its position
   if (v !== el.value) { const at = ASCII_NUM(el.value.slice(0, el.selectionStart)).length; el.value = v; try { el.setSelectionRange(at, at); } catch { /* not a text field */ } }
 }, true);
@@ -856,11 +858,27 @@ function options() {
 function setBusy(busy) { for (const id of ["go", "pack"]) $(id).disabled = busy; }
 function status(text, error) { $("status").textContent = text; $("status").className = error ? "err" : ""; }
 
-async function api(path, body) {
-  const r = await fetch(path, body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {});
+// errors in words a reader can act on: no connection (network or VPN down), a server error with its code
+async function api(path, body, signal) {
+  let r;
+  try {
+    r = await fetch(path, { ...(body ? { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) } : {}), signal });
+  } catch (e) {
+    if (e.name === "AbortError") throw e;
+    throw new Error(LANG === "en" ? "No connection; check the internet or your VPN." : "اتصال برقرار نشد؛ اینترنت یا فیلترشکن را بررسی کنید.");
+  }
   if (r.status === 401) { location.reload(); throw new Error("login"); }
-  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.statusText);
+  if (!r.ok) {
+    const msg = (await r.json().catch(() => ({}))).error;
+    throw new Error(msg || (LANG === "en" ? `Server error (code ${r.status}); try again in a moment.` : `خطای سرور (کد ${r.status})؛ چند لحظه بعد دوباره امتحان کنید.`));
+  }
   return r;
+}
+// one request of a kind at a time: a newer one aborts the older, whose late answer is never shown
+const latest = {};
+function fresh(kind) {
+  latest[kind]?.abort(); const ctl = new AbortController(); latest[kind] = ctl;
+  return { signal: ctl.signal, stale: () => latest[kind] !== ctl };
 }
 
 const STOP = new Set("the and for with from that this are was were what which how does into over under between its their of in on to a an by is at as or be".split(" "));
@@ -937,9 +955,11 @@ function bindHits(container, hits) {
 async function runSearch() {
   const opts = options(); if (!opts.q.trim()) return $("q").focus();
   store.set("opts", { ...opts, q: opts.q, precise: opts.rerank });
+  const req = fresh("search");
   setBusy(true); status("در حال جست‌وجو…"); $("hits").innerHTML = ""; window.crystalCards?.([]);
   try {
-    const data = await (await api("/api/search", opts)).json();
+    const data = await (await api("/api/search", opts, req.signal)).json();
+    if (req.stale()) return;
     lastHits = data.hits; lastSearch = data;
     const words = terms(data.searchQuery || data.question);
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
@@ -972,21 +992,23 @@ async function runSearch() {
     window.crystalCards?.(data.materials || [], `${data.question} ${data.searchQuery || ""}`);
     // pdf.js and its worker into the browser cache while the reader looks at the results
     if (data.hits.some((h) => h.source_file)) (window.requestIdleCallback || setTimeout)(() => loadPdfjs().then(() => fetch(PDFJS + "pdf.worker.min.js")).catch(() => {}));
-  } catch (err) { status("خطا: " + err.message, true); }
+  } catch (err) { if (req.stale()) return; status("خطا: " + err.message, true); }
   setBusy(false);
 }
 
 async function downloadPack() {
   const opts = options(); if (!opts.q.trim()) return $("q").focus();
+  const req = fresh("search");
   setBusy(true); status("در حال ساخت فایل…");
   try {
-    const r = await api("/api/pack", opts);
+    const r = await api("/api/pack", opts, req.signal);
+    if (req.stale()) return;
     const name = (r.headers.get("content-disposition") || "").match(/filename="([^"]+)"/)?.[1] || "matrag-sources.md";
     const url = URL.createObjectURL(await r.blob());
     const a = Object.assign(document.createElement("a"), { href: url, download: name }); a.click();
     setTimeout(() => URL.revokeObjectURL(url), 5000);
     status("فایل دانلود شد. آن را در یک چت‌بات بارگذاری کنید و بنویسید: «به سؤال داخل فایل پاسخ بده».");
-  } catch (err) { status("خطا: " + err.message, true); }
+  } catch (err) { if (req.stale()) return; status("خطا: " + err.message, true); }
   setBusy(false);
 }
 $("go").onclick = runSearch; $("pack").onclick = downloadPack;
@@ -1005,8 +1027,10 @@ document.addEventListener("keydown", (e) => {
 async function openPaper(docId, nodeId) {
   showTab("paper");
   $("paperhead").innerHTML = '<p class="hint">در حال خواندن…</p>'; $("paperbody").innerHTML = "";
+  const req = fresh("paper");
   try {
-    const data = await (await api("/api/paper?doc_id=" + encodeURIComponent(docId))).json();
+    const data = await (await api("/api/paper?doc_id=" + encodeURIComponent(docId), null, req.signal)).json();
+    if (req.stale()) return;
     const c = data.chunks; if (!c.length) throw new Error("not found");
     const first = c[0];
     $("paperhead").innerHTML = `<div class="label" style="font-size:16px">${esc(first.reference || first.citation)}</div>
@@ -1020,7 +1044,7 @@ async function openPaper(docId, nodeId) {
       <div class="actions">${boxesOf(h).length ? '<button data-act="view">نمایش روی صفحه</button>' : ""}</div></div>`).join("") + "</div>";
     bindHits($("paperbody"), hits);
     document.querySelector(".paperchunk.sel")?.scrollIntoView({ block: "center" });
-  } catch (err) { $("paperhead").innerHTML = `<p class="err">خطا: ${esc(err.message)}</p>`; }
+  } catch (err) { if (!req.stale()) $("paperhead").innerHTML = `<p class="err">خطا: ${esc(err.message)}</p>`; }
 }
 
 // ---------- local PDF folder (files never leave the browser)
@@ -1597,27 +1621,36 @@ $("uftable").addEventListener("click", (e) => { if (e.target.dataset.act === "rm
 $("ufaddrow").onclick = () => { rows.push([NaN, NaN]); drawRows(); $("uftable").querySelector("tr:last-child input")?.focus(); };
 $("ufpu").onchange = drawRows;
 
-// Lines of "λ n" (comma, tab, semicolon or spaces; decimal comma accepted when separated by tab/semicolon)
+// Lines of "λ n" (comma, tab, semicolon or spaces; decimal comma accepted when separated by tab/semicolon; Persian
+// digits; a unit written in the lines). The unit of λ is nm when the header or the lines say nm, or when every λ is
+// above 50 (no optical material is measured beyond 50 µm in such a file): the unit box is set and the message says so.
 function parsePoints(text) {
-  const pu = $("ufpu").value === "nm" ? 1000 : 1, out = [];
-  for (const line of text.split(/\r?\n/)) {
+  text = ASCII_NUM(text);
+  const lines = text.split(/\r?\n/), says = (u) => lines.some((l) => new RegExp(`(^|[^a-zµμ])(?:${u})([^a-z]|$)`, "i").test(l));
+  const raw = [];
+  for (let line of lines) {
+    line = line.replace(/\s*(nm|µm|μm|um)\b/gi, " ");
     if (!line.trim()) continue;
     const parts = (/[\t;]/.test(line) ? line.split(/[\t;]+/).map((x) => x.replace(",", ".")) : line.split(/[\s,]+/)).filter(Boolean);
     const [l, n] = parts.map(Number);
-    if (Number.isFinite(l) && Number.isFinite(n)) out.push([l / pu, n]);
+    if (Number.isFinite(l) && Number.isFinite(n)) raw.push([l, n]);
   }
-  return out;
+  let switched = false;
+  if (raw.length && $("ufpu").value === "um" && !says("µm|μm|um") && (says("nm") || raw.every(([l]) => l > 50))) { $("ufpu").value = "nm"; switched = true; }
+  const pu = $("ufpu").value === "nm" ? 1000 : 1;
+  return { pts: raw.map(([l, n]) => [l / pu, n]), switched };
 }
+const UNIT_NOTE = () => (LANG === "en" ? " Wavelengths read in nm (unit box set to nm)." : " واحد طول موج nm تشخیص داده شد (واحد روی nm گذاشته شد).");
 $("ufparse").onclick = () => {
-  const pts = parsePoints($("ufpaste").value);
-  msg(pts.length ? `${fa(pts.length)} نقطه خوانده شد.` : "هیچ سطر عددی پیدا نشد (هر خط: λ و n).", !pts.length);
-  if (pts.length) { rows = pts; drawRows(); }
+  const { pts, switched } = parsePoints($("ufpaste").value);
+  msg(pts.length ? `${fa(pts.length)} نقطه خوانده شد.${switched ? UNIT_NOTE() : ""}` : "هیچ سطر عددی پیدا نشد (هر خط: λ و n).", !pts.length);
+  rows = pts; drawRows();
 };
 $("ufcsv").onchange = async (e) => {
   const f = e.target.files[0]; if (!f) return;
-  const pts = parsePoints(await f.text()); e.target.value = "";
-  msg(pts.length ? `${fa(pts.length)} نقطه از ${f.name} خوانده شد.` : "در فایل سطر عددی (λ، n) پیدا نشد.", !pts.length);
-  if (pts.length) { rows = pts; drawRows(); }
+  const { pts, switched } = parsePoints(await f.text()); e.target.value = "";
+  msg(pts.length ? `${fa(pts.length)} نقطه از ${f.name} خوانده شد.${switched ? UNIT_NOTE() : ""}` : "در فایل سطر عددی (λ، n) پیدا نشد.", !pts.length);
+  rows = pts; drawRows();
 };
 
 function msg(text, error) { $("ufmsg").textContent = text; $("ufmsg").style.color = error ? "var(--err)" : ""; }
@@ -1657,6 +1690,7 @@ $("ufsave").onclick = () => {
   if (kind === "points") {
     const pts = rows.filter(([l, n]) => Number.isFinite(l) && Number.isFinite(n) && l > 0).sort((a, b) => a[0] - b[0]);
     if (pts.length < 2) return msg("دست‌کم دو نقطه با λ و n عددی لازم است.", true);
+    if (pts[pts.length - 1][0] > 50 && !confirm(LANG === "en" ? `The wavelengths reach ${pts[pts.length - 1][0]} µm. Are they really in µm (not nm)?` : `طول موج‌ها تا ${pts[pts.length - 1][0]} µm می‌رسند. واقعاً بر حسب µm هستند (نه nm)؟`)) return;
     u = { kind: "points", points: pts, range_um: [pts[0][0], pts[pts.length - 1][0]] };
   } else {
     const raw = $("ufcoef").value.trim().split(/[\s,;]+/).filter(Boolean).map(Number);
@@ -1929,7 +1963,7 @@ function pick(mat, label, fit = true) {
 // What is wrong with the PM tab's inputs, or "" (the advisor and SPDC tabs check theirs the same way)
 function pmBad() {
   const { proc, a, b } = inputs(), T = $("pmT").value.trim();
-  if (!(a > 0) || (!ONE.has(proc) && !(b > 0))) return "طول موج‌ها باید عدد مثبت باشند.";
+  if (!(a > 0) || (!ONE.has(proc) && !(b > 0))) return "طول موج‌ها باید عدد مثبت باشند (عدد را با نقطه بنویسید، مثل 1.064).";
   if (PAIR.has(proc) && !(b > a)) return "طول موج سیگنال باید بلندتر از طول موج پمپ باشد (1/λp = 1/λs + 1/λi).";
   if (T !== "" && !Number.isFinite(+T)) return "دمای بلور باید عدد باشد (یا خالی، برای دمای فرمول).";
   if (T !== "" && +T < -273.15) return "دما نمی‌تواند پایین‌تر از صفر مطلق (۲۷۳٫۱۵− °C) باشد.";
@@ -2366,7 +2400,7 @@ window.loadAdvisor = async () => {
 // What is wrong with the advisor's inputs, or "" (the PM and SPDC tabs check theirs the same way)
 function advBad() {
   const { proc, a, b, w } = advInputs(), lo = numOr("advlo"), hi = numOr("advhi"), L = numOr("advlen");
-  if (!(a > 0) || (!ONE.has(proc) && !(b > 0))) return "طول موج‌ها باید عدد مثبت باشند.";
+  if (!(a > 0) || (!ONE.has(proc) && !(b > 0))) return "طول موج‌ها باید عدد مثبت باشند (عدد را با نقطه بنویسید، مثل 1.064).";
   if (PAIR.has(proc) && !(b > a)) return "طول موج سیگنال باید بلندتر از طول موج پمپ باشد (1/λp = 1/λs + 1/λi).";
   if (![w.l1, w.l2, w.l3].every((x) => x > 0 && x < 1000)) return "طول موج‌ها بیرون از گستره‌ی معقول‌اند.";
   if ((lo !== null && lo < -273.15) || (hi !== null && hi < -273.15)) return "دما نمی‌تواند پایین‌تر از صفر مطلق (۲۷۳٫۱۵− °C) باشد.";
@@ -2596,7 +2630,15 @@ import { eigenIndices, direction, solveAll, effectiveD, fieldVectors, dTensor, c
 import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, pairRate, detectedCounts, powerForCar, C_UM_PS } from "/spdc.js";
 
 const SP = { list: null };
-const spSrc = () => SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
+// the chosen source; extrapolated by up to 10 % beyond its range when the user asked for it (SP.extra, reset with the
+// crystal or the source)
+const SP_EXTRA = 0.1;
+const spSrc = () => {
+  const s = SP.list.find((c) => c.material === $("spmat").value)?.sources[+$("spsrc").value];
+  if (!s || !SP.extra) return s;
+  const wide = (r) => [r[0] / (1 + SP_EXTRA), r[1] * (1 + SP_EXTRA)];
+  return { ...s, range_um: wide(s.range_um), extrapolated: s.range_um, axes: Object.fromEntries(Object.entries(s.axes).map(([k, e]) => [k, { ...e, range_um: wide(e.range_um) }])) };
+};
 // Principal indices of a source, at the crystal temperature of the tab when one is set and the source has
 // thermo-optic data (else at the temperature of its formula)
 const spTemp = () => tempOf("spT");
@@ -2616,7 +2658,7 @@ window.loadSPDC = async () => {
   $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
   $("spmat").value = [SP.want, "KTiOPO4"].find((m) => SP.list.some((c) => c.material === m)) || SP.list[0].material;
   $("spmat").onchange = () => { SP.cfgKey = null; fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || ""; };
-  $("spsrc").onchange = fillCfg;
+  $("spsrc").onchange = () => { SP.extra = false; fillCfg(); };
   for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
   $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(+$("splp").value, t).toFixed(4); };
   $("spgo").onclick = run;
@@ -2664,18 +2706,40 @@ function fitWl() {
   }
 }
 function fillSrc() {
-  const c = SP.list.find((x) => x.material === $("spmat").value);
+  const c = SP.list.find((x) => x.material === $("spmat").value); SP.extra = false;
   $("spsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · معتبر در ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
 }
 // Inputs every SPDC computation needs, or why they are wrong ("" when fine); stop(out) shows it and says to stop.
 function spBad() {
   const lp = +$("splp").value, l1 = +$("spl1").value, L = +$("spL").value;
-  if (!(lp > 0) || !(l1 > 0)) return "طول موج‌ها باید مثبت باشند.";
+  const blankOr = (id) => !$(id).value.trim() || +$(id).value > 0;
+  if (!(lp > 0) || !(l1 > 0)) return "طول موج‌ها باید مثبت باشند (عدد را با نقطه بنویسید، مثل 1.064).";
   if (!(l1 > lp)) return "طول موج فوتون ۱ باید بلندتر از طول موج پمپ باشد (1/λp = 1/λ₁ + 1/λ₂).";
   if (!(L > 0)) return "طول بلور باید بیشتر از صفر باشد.";
+  if (!(+$("spdp").value > 0)) return "پهنای طیف پمپ باید عددی بیشتر از صفر باشد (nm).";
+  if (!blankOr("sptau")) return "طول پالس باید عددی بیشتر از صفر باشد، یا خالی.";
+  if (!blankOr("spfil")) return "پهنای فیلتر باید عددی بیشتر از صفر باشد، یا خالی (بدون فیلتر).";
+  if ($("spfoc").checked && !(+$("spxi").value > 0)) return "ξ کانونی‌کردن باید بیشتر از صفر باشد.";
+  if ($("sppm").value === "apod" && !(+$("spapod").value > 0)) return "σ/L آپودایز باید بیشتر از صفر باشد.";
   return "";
 }
-const spStop = (out) => { const why = spBad(); if (why) $(out).innerHTML = `<span class="err">${why}</span>`; return Boolean(why); };
+// what a result shown below would be wrong for: cleared when the inputs are wrong or nothing can be computed
+function spClear() {
+  $("spres").innerHTML = ""; $("spfigs").hidden = true; $("spempty").hidden = false; $("spcsv").hidden = true;
+}
+const spStop = (out) => { const why = spBad(); if (why) { $(out).innerHTML = `<span class="err">${why}</span>`; if (out === "spinfo") spClear(); } return Boolean(why); };
+// no configuration: say why (a wavelength outside the formula's range) and offer the 10 % extrapolation when it reaches
+function spNoCfg() {
+  spClear();
+  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), [lo, hi] = s.range_um;
+  const out = [lp, l1, l2].filter((l) => l < lo - 1e-9 || l > hi + 1e-9);
+  const reach = out.every((l) => l >= lo / (1 + SP_EXTRA) && l <= hi * (1 + SP_EXTRA));
+  $("spinfo").innerHTML = out.length
+    ? `<span class="err">${out.map((l) => `<bdi dir="ltr">${+l.toFixed(4)} µm</bdi>`).join("، ")} بیرون از بازه‌ی فرمول این منبع (<bdi dir="ltr">${lo}–${hi} µm</bdi>) است.</span>`
+      + (!SP.extra && reach ? ` <button class="alt" id="spextra">محاسبه با برون‌یابی فرمول (تا ۱۰٪ بیرون از بازه)</button>` : "")
+    : `<span class="err">برای این طول موج‌ها در این بلور هیچ پیکربندی تطبیق فازی پیدا نشد.</span>`;
+  if ($("spextra")) $("spextra").onclick = () => { SP.extra = true; fillCfg(); run(); };
+}
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
@@ -2712,7 +2776,7 @@ function fillCfg() {
 }
 function run() {
   if (spStop("spinfo")) return;
-  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return spNoCfg();
   const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
   $("spinfo").textContent = "در حال محاسبه…";
   setTimeout(() => { try { compute(); } catch (err) { $("spres").textContent = ""; $("spinfo").textContent = "خطا در محاسبه: " + err.message; } }, 20);
@@ -2756,13 +2820,14 @@ function run() {
     for (let a = 0; a < j.n; a++) for (let b = 0; b < j.n; b++) rows.push(`${lam1[a].toFixed(5)},${lam2[b].toFixed(5)},${(I.jsi[a * j.n + b] / mx).toExponential(4)}`);
     const link = $("spcsv"); if (link.href.startsWith("blob:")) URL.revokeObjectURL(link.href);
     link.href = URL.createObjectURL(new Blob([rows.join("\n")], { type: "text/csv" })); link.hidden = false;
-    $("spinfo").textContent = `شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`;
+    $("spinfo").innerHTML = (s.extrapolated ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${s.extrapolated[0]}–${s.extrapolated[1]} µm</bdi></span><br>` : "")
+      + esc(`شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`);
   }
 }
 // The pump bandwidth of the highest purity for the configuration, written into the pump field, then the spectrum
 function optimize() {
   if (spStop("spinfo")) return;
-  const o = SP.cfg[+$("spcfg").value]; if (!o) return;
+  const o = SP.cfg[+$("spcfg").value]; if (!o) return spNoCfg();
   const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
   $("spinfo").textContent = "در حال جست‌وجوی پهنای پمپ بهینه…";
   setTimeout(() => {
@@ -3211,12 +3276,15 @@ $("sharelink").onclick = () => {
   const q = new URLSearchParams({ tab });
   if (tab === "index" && $("rimat").value) q.set("rimat", $("rimat").value);
   for (const el of shareFields(tab)) {
-    const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : el.value;
+    const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : SRC_SEL.has(el.id) ? srcName(el.selectedOptions[0]) : el.value;
     if (v !== "" && v !== el.defaultValue && !(el.type === "checkbox" && el.checked === el.defaultChecked)) q.set(el.id, v);
   }
   const url = `${location.origin}/#${q}`, b = $("sharelink");
   navigator.clipboard?.writeText(url).then(() => { b.textContent = "لینک کپی شد"; setTimeout(() => { b.textContent = "🔗 کپی لینک این محاسبه"; }, 1500); }).catch(() => prompt("", url));
 };
+// the index-source lists are shared by the source's name, not its place in the list (which changes as data is added)
+const SRC_SEL = new Set(["pmsrc", "spsrc"]);
+const srcName = (o) => (o ? o.textContent.replace(/^[^A-Za-z0-9(]+/, "").split(" · ")[0].trim() : "");
 async function openShared() {
   const q = new URLSearchParams(location.hash.slice(1)), tab = q.get("tab");
   if (!(tab in SHARE_TABS)) return;
@@ -3230,12 +3298,18 @@ async function openShared() {
     if (!q.has(el.id)) continue;
     const v = q.get(el.id);
     if (el.type === "checkbox") el.checked = v === "1";
-    else if (el.tagName === "SELECT") { if (!(await until(() => [...el.options].some((o) => o.value === v)))) continue; el.value = v; }
+    else if (el.tagName === "SELECT") {
+      const match = (o) => o.value === v || (SRC_SEL.has(el.id) && !/^\d+$/.test(v) && srcName(o) === v);
+      if (!(await until(() => [...el.options].some(match)))) continue;
+      el.value = [...el.options].find(match).value;
+    }
     else el.value = v;
     el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true }));
   }
   if (SHARE_TABS[tab]) $(SHARE_TABS[tab])?.click();
 }
+// a shared link opened before signing in: the login page kept its #tab=… for after the login
+try { const h = sessionStorage.getItem("afterLogin"); sessionStorage.removeItem("afterLogin"); if (h && location.hash.length < 2) history.replaceState(null, "", "/" + h); } catch { /* no storage */ }
 openShared();
 window.addEventListener("hashchange", openShared); // a link pasted into an open page
 document.addEventListener("click", (e) => {
