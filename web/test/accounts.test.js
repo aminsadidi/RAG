@@ -98,3 +98,24 @@ test("quota: counts per kind, and a KV that refuses writes does not block the re
   e.AICACHE.put = async () => { throw new Error("KV put() limit exceeded for the day"); };
   assert.ok(await takeQuota(e, { name: "ali", quota: 5 }));
 });
+
+test("sessions are signed with SESSION_SECRET; the old key only while SESSION_LEGACY is 1", async () => {
+  const old = env();  // no SESSION_SECRET yet: the key derived from the owner's password
+  await createUser(old, "sara", 0, "");
+  const legacyCookie = await makeSession(old, "sara");
+  const now = { ...old, SESSION_SECRET: "a-new-random-secret" };
+  assert.equal(await sessionUser(now, legacyCookie), null);  // the old cookie no longer works
+  assert.equal((await sessionUser({ ...now, SESSION_LEGACY: "1" }, legacyCookie)).name, "sara");  // migration window
+  const fresh = await makeSession(now, "sara");
+  assert.notEqual(fresh.split(".")[2], legacyCookie.split(".")[2]);
+  assert.equal((await sessionUser(now, fresh)).name, "sara");
+  // a new owner password does not sign anyone out any more, and does not let anyone forge a session
+  assert.equal((await sessionUser({ ...now, SITE_PASSWORD: "changed" }, fresh)).name, "sara");
+  assert.equal(await sessionUser({ ...now, SESSION_SECRET: "other" }, fresh), null);
+});
+
+test("sameText compares in constant time and is exact", async () => {
+  const { sameText } = await import("../src/accounts.js");
+  assert.ok(await sameText("abc", "abc"));
+  assert.ok(!(await sameText("abc", "abd")) && !(await sameText("abc", "abcd")) && !(await sameText("", "a")));
+});

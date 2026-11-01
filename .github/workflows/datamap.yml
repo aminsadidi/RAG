@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Keys from the site
-        run: KEYS="QDRANT_URL QDRANT_API_KEY SUBQ_KEYS" bash scripts/ocr_gh/keys.sh
+        run: bash scripts/ocr_gh/keys.sh
       - name: Score the passages
         run: python3 scripts/quality/datamap.py shard ${{ matrix.k }} 20 "shard-${{ matrix.k }}.jsonl"
       - uses: actions/upload-artifact@v4

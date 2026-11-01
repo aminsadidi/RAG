@@ -16,7 +16,7 @@ import BASIS from "../../data/rag-optics/paper_basis.json";
 // experimental / theoretical / both / review label of each paper (scripts/quality/basis.py)
 const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.label : undefined);
 const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
-import { verifyOidc } from "./oidc.js";
+import { CI_REF, ciKeysFor, verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
 import { OWNER, checkLogin, getSettings, makeSession, sessionUser, takeQuota } from "./accounts.js";
 import { telegramWebhook } from "./admin.js";
@@ -407,15 +407,14 @@ function packFile(found) {
   return contextPack(found.question, found.hits, about, language, found.searchQuery);
 }
 
-// ---------- keys for the OCR workflow (.github/workflows/ocr.yml) on GitHub's runners
-// A runner proves which workflow it runs with GitHub's signed OIDC token; only this repository's OCR workflow
-// gets the keys, so none has to be stored in the (public) repository.
+// ---------- keys for the CI workflows (.github/workflows) on GitHub's runners
+// A runner proves which workflow and branch it runs with GitHub's signed OIDC token (oidc.js); only this
+// repository's workflows on the default branch get keys, each only the ones it needs, so none has to be stored
+// in the (public) repository. The owner's password is never among them.
 async function ciKeys(request, env) {
-  const claims = await verifyOidc((request.headers.get("authorization") || "").replace(/^Bearer /i, ""));
-  if (!claims) return json({ error: "not this repository's OCR or quality workflow" }, 403);
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`ocr-artifacts:${env.QDRANT_API_KEY}`));
-  return json({ SITE_KEY: env.SITE_PASSWORD, QDRANT_URL: env.QDRANT_URL, QDRANT_API_KEY: env.QDRANT_API_KEY, SUBQ_KEYS: env.SUBQ_KEYS || "",
-    ARTIFACT_KEY: [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") });
+  const claims = await verifyOidc((request.headers.get("authorization") || "").replace(/^Bearer /i, ""), undefined, undefined, env.CI_REF || CI_REF);
+  if (!claims) return json({ error: "not one of this repository's CI workflows on its default branch" }, 403);
+  return json(await ciKeysFor(claims, env));
 }
 
 // A short hash of a text (FNV-1a), for the ETag of the modules served from the Worker's bundle

@@ -29,7 +29,7 @@ jobs:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
       - name: Keys from the site
-        run: KEYS="SITE_KEY SUBQ_KEYS" bash scripts/ocr_gh/keys.sh
+        run: bash scripts/ocr_gh/keys.sh
       - name: What to run
         id: what
         run: |
