@@ -3,6 +3,7 @@
 // the same model and pooling as the Python pipeline, and Qdrant fuses dense and BM25 results with RRF.
 import { cleanTranslation, contextPack, crystalsIn, expandQuery, foldDigits, isPersian, queryTerms, relevance, shared, sourceLabel, translatePrompt } from "./text.js";
 import PAGE from "./page.html";
+// (the page gets the crystal names below; PAGE_OUT is built once per Worker instance)
 import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
 import PHASEMATCH_JS from "./phasematch.client.js";
@@ -19,6 +20,7 @@ import { verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
 import { OWNER, checkLogin, getSettings, makeSession, sessionUser, takeQuota } from "./accounts.js";
 import { telegramWebhook } from "./admin.js";
+const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
 
 const FEEDBACK_PER_DAY = 30; // each one is a Telegram message and a KV write
 const LOGIN_TRIES = 10; // failed logins per address and name per 15 minutes
@@ -455,7 +457,7 @@ async function handle(request, env, ctx) {
   // Accounts without the papers' PDFs get no trace of them: no file path, Drive link or place on the page.
   const PDF_FIELDS = ["source_file", "drive_id", "boxes", "pdf_mismatch"];
   const noPdf = (rows) => (acc.pdf ? rows : rows.map((r) => Object.fromEntries(Object.entries(r).filter(([k]) => !PDF_FIELDS.includes(k)))));
-  if (url.pathname === "/") return html(PAGE);
+  if (url.pathname === "/") return html(PAGE_OUT);
   const SCRIPT = { "/phasematch.js": PHASEMATCH_JS, "/spdc.js": SPDC_BROWSER_JS, "/dispersion.js": DISPERSION_JS, "/validation.js": VALIDATION_JS }[url.pathname];
   if (SCRIPT) {
     // checked on every load (no-cache), but an unchanged module is answered 304 by its ETag, not sent again

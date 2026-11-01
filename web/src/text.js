@@ -22,11 +22,37 @@ export function normalizeFormulas(text) {
 
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+// Every name of every crystal (src/matrag/crystal_names.py), the longest first, with the same rules as the Python
+// find_crystals: a formula (GaP, BiBO) only in its own case, so "gap" or "gas" in a sentence is no crystal; other
+// names of three letters or more in any case ("bbo", "lithium niobate"); one-letter names (C) never.
+const FORMULA_LIKE = /^(?:[A-Z][a-z]?|\d+(?:\.\d+)?|[()·:\-x])+$/;
+const formulaLike = (n) => FORMULA_LIKE.test(n) && /[\da-z]/.test(n) && (n.match(/[A-Z][a-z]?/g) || []).every((e) => ELEMENTS.has(e));
+let ALIASES_;
+const aliases = () => (ALIASES_ ||= [...new Map(Object.entries(S.CRYSTAL_NAMES).flatMap(([f, names]) => [f, ...names].map((n) => [n, f]))).entries()]
+  .filter(([n]) => n.length >= 2).sort((a, b) => b[0].length - a[0].length)
+  .map(([n, f]) => [n, f, new RegExp(`(?<![A-Za-z0-9])${escape(n)}(?![A-Za-z0-9])`, n.length >= 3 && !formulaLike(n) ? "gi" : "g")]));
+export const CRYSTAL_NAMES = S.CRYSTAL_NAMES;
+// The crystals a text names (formulas, in order) and the text with those names blanked out.
+export function findCrystals(text) {
+  const found = [];
+  text = String(text || "");
+  // names in their own case first (HgS is cinnabar, not HGS = HgGa2S4 read in any case), then in any case
+  for (const pass of [false, true]) for (const [n, f, re] of aliases()) {
+    const cs = pass ? re : new RegExp(re.source, "g");
+    cs.lastIndex = 0;
+    if (cs.test(text)) { cs.lastIndex = 0; text = text.replace(cs, " , "); if (!found.includes(f)) found.push(f); }
+  }
+  return { found, text };
+}
+// Whether a text mentions a crystal under any of its names.
+const mentions = (text, formula) => aliases().some(([, f, re]) => f === formula && (re.lastIndex = 0, re.test(text)));
+
 export function expandQuery(query) {
   query = normalizeFormulas(query);
-  const extra = Object.entries(S.SYNONYMS)
-    .filter(([name, formula]) => new RegExp(`\\b${escape(name)}\\b`).test(query) && !query.includes(formula))
-    .map(([, formula]) => formula);
+  const extra = [];
+  // every crystal named, as its formula ("beta barium borate" -> + BaB2O4). Adding the abbreviation too (LiNbO3 -> + LN)
+  // lowered the MRR@10 on 200 gold questions (0.421 -> 0.414: LN, RTA, YLF are also other words), so it is not done.
+  for (const f of findCrystals(query).found) if (!query.includes(f) && !extra.includes(f)) extra.push(f);
   return [query, ...extra].join(" ");
 }
 
@@ -49,27 +75,11 @@ const ELEMENTS = new Set(("H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc
 const hasFormulaShape = (w) => (w.match(/[A-Z][a-z]?/g) || []).every((e) => ELEMENTS.has(e)) && /[\da-z]/.test(w);
 const stem = (w) => w.replace(/(?:ies|es|s)$/, (m) => (w.length > 4 ? (m === "ies" ? "y" : "") : m));
 
-// Common names of crystals, read as their formula (the translation of «بتا باریم بورات» is "beta barium borate").
-const NAMES = { "barium borate": "BaB2O4", "lithium triborate": "LiB3O5", "lithium borate": "LiB3O5", "bismuth triborate": "BiB3O6",
-  "bismuth borate": "BiB3O6", "lithium niobate": "LiNbO3", "lithium tantalate": "LiTaO3", "potassium titanyl phosphate": "KTiOPO4",
-  "potassium titanyl arsenate": "KTiOAsO4", "rubidium titanyl phosphate": "RbTiOPO4", "potassium dihydrogen phosphate": "KH2PO4",
-  "ammonium dihydrogen phosphate": "NH4H2PO4", "zinc germanium phosphide": "ZnGeP2", "silver gallium sulfide": "AgGaS2",
-  "silver gallium selenide": "AgGaSe2", "yttrium aluminum garnet": "Y3Al5O12", "yttrium aluminium garnet": "Y3Al5O12",
-  "yttrium vanadate": "YVO4", "cesium lithium borate": "CsLiB6O10", "cesium triborate": "CsB3O5", "calcium fluoride": "CaF2",
-  "magnesium fluoride": "MgF2", "barium fluoride": "BaF2", "lithium fluoride": "LiF", "zinc selenide": "ZnSe", "zinc sulfide": "ZnS",
-  "gallium arsenide": "GaAs", "gallium nitride": "GaN", "gallium phosphide": "GaP", "fused silica": "SiO2", "sapphire": "Al2O3" };
-
 // Materials (formulas such as LiB3O5, abbreviations such as BBO, common names) and content words of a query.
 export function queryTerms(query) {
-  let text = normalizeFormulas(query || "");
-  const named = [];
-  for (const [name, formula] of Object.entries(NAMES)) {
-    const re = new RegExp(`\\b${name}\\b`, "i");
-    if (re.test(text)) { named.push(formula); text = text.replace(re, " "); }
-  }
+  const { found: named, text } = findCrystals(normalizeFormulas(query || ""));
   const formulas = (text.match(FORMULA) || []).filter(hasFormulaShape);
-  const abbrs = Object.keys(S.SYNONYMS).filter((n) => new RegExp(`\\b${escape(n)}\\b`).test(text));
-  const isWord = (w) => w.length >= 3 && !STOP.has(w) && !/^\d+$/.test(w) && !abbrs.some((n) => n.toLowerCase() === w);
+  const isWord = (w) => w.length >= 3 && !STOP.has(w) && !/^\d+$/.test(w);
   // A word named like an element or compound ("unobtainium", "zirconate") is a material too.
   const chemical = (w) => /(?:ium|ide|ate|ite)$/.test(w) && w.length >= 6 && !CHEM_WORDS.has(w);
   const tokens = text.replace(FORMULA, (w) => (hasFormulaShape(w) ? " , " : w)).toLowerCase()
@@ -79,14 +89,13 @@ export function queryTerms(query) {
   // Two content words in a row ("black holes", "water vapor") must occur together, not in different passages.
   const phrases = [];
   for (let i = 1; i < tokens.length; i++) if (isWord(tokens[i - 1]) && isWord(tokens[i])) phrases.push(`${tokens[i - 1]} ${tokens[i]}`);
-  return { materials: [...new Set([...formulas, ...abbrs, ...named, ...all.filter(chemical)])], words, phrases: [...new Set(phrases)] };
+  return { materials: [...new Set([...named, ...formulas, ...all.filter(chemical)])], words, phrases: [...new Set(phrases)] };
 }
 // The crystals a query names, as formulas (BBO -> BaB2O4, "lithium niobate" -> LiNbO3), for the crystal cards of the
 // search page; words that only look chemical ("zirconate") are left out.
 // Abbreviations are also read in lower case ("bbo", "ktp"), except the two-letter ones ("ln", "lt" are words).
 export function crystalsIn(query) {
-  const lower = Object.keys(S.SYNONYMS).filter((n) => n.length >= 3 && new RegExp(`\\b${escape(n.toLowerCase())}\\b`).test(query || ""));
-  return [...new Set([...queryTerms(query).materials, ...lower].map((m) => S.SYNONYMS[m] || m).filter((m) => /[A-Z]/.test(m)))];
+  return queryTerms(query).materials.filter((m) => /[A-Z]/.test(m));
 }
 const CHEM_WORDS = new Set(["estimate", "accurate", "separate", "moderate", "appropriate", "approximate", "intermediate",
   "substrate", "aggregate", "elaborate", "calculate", "evaluate", "indicate", "investigate", "demonstrate", "integrate",
@@ -101,9 +110,7 @@ export function relevance(query, hits, bestCosine) {
   // two words of a phrase within three words of each other, in either order
   const near = (a, b) => [[a, b], [b, a]].some(([x, y]) =>
     new RegExp(`(?:^|[^a-z0-9])${escape(stem(x))}[a-z0-9]*(?:[^a-z0-9]+[a-z0-9]+){0,3}?[^a-z0-9]+${escape(stem(y))}`).test(low));
-  const missingMaterials = materials.filter((m) => (/[A-Z]/.test(m) ? !hay.includes(m) : !has(m))
-    && !(S.SYNONYMS[m] && hay.includes(S.SYNONYMS[m]))
-    && !Object.entries(S.SYNONYMS).some(([n, f]) => f === m && new RegExp(`\\b${escape(n)}\\b`).test(hay)));
+  const missingMaterials = materials.filter((m) => (/[A-Z]/.test(m) ? !hay.includes(m) : !has(m)) && !mentions(hay, m));
   const missingWords = [...words.filter((w) => !has(w)),
     ...phrases.filter((p) => p.split(" ").every((w) => has(w)) && !near(...p.split(" ")))];
   const offTopic = typeof bestCosine === "number" && bestCosine < MIN_COSINE;

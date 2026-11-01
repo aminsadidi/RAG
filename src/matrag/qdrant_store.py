@@ -23,6 +23,7 @@ import uuid
 from collections.abc import Callable, Iterable
 
 from matrag.config import Settings
+from matrag.crystal_names import CRYSTAL_NAMES
 
 DENSE, SPARSE = "dense", "bm25"
 BM25_MODEL = "qdrant/bm25"
@@ -31,21 +32,8 @@ BM25_MODEL = "qdrant/bm25"
 # query are normalized the same way (web/src/text.js has the same rule).
 _SPACED_FORMULA = re.compile(r"\b(?:[A-Z][a-z]?)+(?:\s+\d{1,3}(?:\s+(?:[A-Z][a-z]?)+(?![a-z]))?)+(?![\w.])")
 
-# Common names of optical crystals, added to a query that uses one of them.
-SYNONYMS = {
-    "BBO": "BaB2O4", "LBO": "LiB3O5", "BIBO": "BiB3O6", "CLBO": "CsLiB6O10", "CBO": "CsB3O5",
-    "KBBF": "KBe2BO3F2", "KTP": "KTiOPO4", "KTA": "KTiOAsO4", "RTP": "RbTiOPO4", "KDP": "KH2PO4",
-    "DKDP": "KD2PO4", "ADP": "NH4H2PO4", "LN": "LiNbO3", "PPLN": "LiNbO3", "LT": "LiTaO3", "PPLT": "LiTaO3",
-    "PPKTP": "KTiOPO4", "PPRTP": "RbTiOPO4", "PPKTA": "KTiOAsO4", "PPSLT": "LiTaO3", "PPMgLN": "LiNbO3", "MgLN": "LiNbO3",
-    "ZGP": "ZnGeP2", "CSP": "CdSiP2", "AGS": "AgGaS2", "AGSe": "AgGaSe2", "BGS": "BaGa4S7", "BGSe": "BaGa4Se7",
-    "LGS": "LiGaS2", "LIS": "LiInS2", "KABO": "K2Al2B2O7", "YAB": "YAl3(BO3)4", "CDA": "CsH2AsO4", "YAG": "Y3Al5O12", "YVO": "YVO4", "SBN": "SrxBa1-xNb2O6",
-    "LGT": "La3Ga5.5Ta0.5O14", "Langatate": "La3Ga5.5Ta0.5O14",
-    "DADP": "NH4D2PO4", "RDP": "RbH2PO4", "DRDP": "RbD2PO4", "KDA": "KH2AsO4", "DKDA": "KD2AsO4", "ADA": "NH4H2AsO4",
-    "DADA": "NH4D2AsO4", "RDA": "RbH2AsO4", "DRDA": "RbD2AsO4", "KB5": "KB5O8·4H2O", "BeSO4": "BeSO4·4H2O",
-    "Iodic acid": "HIO3", "Sodium formate": "NaCOOH", "Barium formate": "Ba(COOH)2",
-    "BNN": "Ba2NaNb5O15", "BSN": "Ba2NaNb5O15", "LFM": "LiCOOH", "LRB4": "LiRbB4O7",
-    "LCB": "La2CaB10O19", "NLBO": "Na3La9O3(BO3)8", "Sapphire": "Al2O3", "BTO": "BaTiO3", "ABF": "NH4B4O6F",
-}
+# Every name of every crystal (crystal_names.py) -> its formula; scripts/quality and the site read it from shared.json.
+SYNONYMS = {name: formula for formula, names in CRYSTAL_NAMES.items() for name in names}
 
 
 # Subscript (LiNbO₃), Persian (LiNbO۳), Arabic-Indic and full-width digits, read as ASCII digits.
@@ -66,11 +54,14 @@ def normalize_formulas(text: str) -> str:
 
 
 def expand_query(query: str) -> str:
-    """The query with chemical formulas normalized and common crystal names spelled out."""
+    """The query with chemical formulas normalized and every crystal it names, under any of its names, spelled out
+    as its formula ('beta barium borate' -> + BaB2O4). Adding the abbreviation too (LiNbO3 -> + LN) lowered the
+    MRR@10 on 200 gold questions, so it is not done."""
+    from matrag.crystal_names import find_crystals
+
     query = normalize_formulas(query)
-    extra = [formula for name, formula in SYNONYMS.items()
-             if re.search(rf"\b{re.escape(name)}\b", query) and formula not in query]
-    return " ".join([query, *extra])
+    extra = [f for f in find_crystals(query)[0] if f not in query]
+    return " ".join([query, *dict.fromkeys(extra)])
 
 
 _FORMULA = re.compile(r"\b(?:[A-Z][a-z]?\d*(?:\.\d+)?){2,}\b")
@@ -81,11 +72,12 @@ Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu""".split())
 
 def query_materials(query: str) -> list[str]:
     """Chemical formulas and crystal abbreviations of a query (the formula part of text.js queryTerms)."""
-    text = normalize_formulas(query)
+    from matrag.crystal_names import find_crystals
+
+    named, text = find_crystals(normalize_formulas(query))
     formulas = [w for w in _FORMULA.findall(text)
                 if all(e in _ELEMENTS for e in re.findall(r"[A-Z][a-z]?", w)) and re.search(r"[\da-z]", w)]
-    abbrs = [n for n in SYNONYMS if re.search(rf"\b{re.escape(n)}\b", text)]
-    return list(dict.fromkeys(formulas + abbrs))
+    return list(dict.fromkeys(named + formulas))
 
 
 def point_id(node_id: str) -> str:

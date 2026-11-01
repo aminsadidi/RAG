@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 
 from matrag import qa, qdrant_store
+from matrag.crystal_names import CRYSTAL_NAMES
 from matrag.config import Settings
 
 SHARED_JSON = Path(__file__).resolve().parents[2] / "web" / "src" / "shared.json"
@@ -22,6 +23,7 @@ def shared() -> dict:
         "TRANSLATE_PROMPT": qa.TRANSLATE_PROMPT,
         "PERSIAN_GLOSSARY": qa.PERSIAN_GLOSSARY,
         "SYNONYMS": qdrant_store.SYNONYMS,
+        "CRYSTAL_NAMES": CRYSTAL_NAMES,
         "SPACED_FORMULA": qdrant_store._SPACED_FORMULA.pattern,
         "PAYLOAD_KEYS": list(qdrant_store.PAYLOAD_KEYS),
         "BM25_MODEL": qdrant_store.BM25_MODEL,
