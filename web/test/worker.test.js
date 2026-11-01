@@ -185,3 +185,19 @@ test("the page logs out with a POST form and offers the reader's own formulas fi
   assert.match(page, /<form method="post" action="\/logout"[^>]*id="logoutf"/);
   assert.match(page, /localStorage\.getItem\("ri_user"/); assert.match(page, /matrag-my-formulas\.json/);
 });
+
+test("the CI account's searches are neither logged nor sent to Telegram", async () => {
+  const e = searchEnv({ CI_USER: "ci-bot", TELEGRAM_TOKEN: "t", TELEGRAM_CHAT_ID: "1" });
+  const pw = await createUser(e, "ci-bot", 0, "", "search");
+  const ci = cookieOf(await call(e, "/login", form({ username: "ci-bot", password: pw })));
+  const sent = [];
+  const q = fakeQdrant([], (u) => (u.startsWith("https://api.telegram.org") ? (sent.push(u), Response.json({ ok: true })) : null));
+  try {
+    const logsBefore = [...e.AICACHE.map.keys()].filter((k) => k.startsWith("log:")).length;  // the login itself
+    assert.equal((await search(e, ci, { q: "zzqx unknown crystal" })).status, 200);  // no hits: unanswered
+    assert.equal([...e.AICACHE.map.keys()].filter((k) => k.startsWith("log:")).length, logsBefore);
+    assert.equal(sent.length, 0);
+    assert.equal((await search(e, await ownerCookie(e), { q: "zzqx unknown crystal" })).status, 200);
+    assert.equal(sent.length, 1);  // anyone else's unanswered question still is
+  } finally { q.restore(); }
+});
