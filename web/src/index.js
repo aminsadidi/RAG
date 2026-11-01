@@ -550,9 +550,11 @@ async function handle(request, env, ctx) {
       const none = !found.hits.length || found.relevance?.verdict === "none";
       // off-topic and too general questions are logged, not sent to Telegram as a gap of the collection
       const gap = none && !["offtopic", "general"].includes(found.relevance?.scope);
-      const log = logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
+      // the CI account's searches (the weekly quality run, hundreds of gold questions) are neither logged nor sent
+      const ci = Boolean(env.CI_USER) && user === env.CI_USER;
+      const log = ci ? null : logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
         verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id }, user);
-      ctx?.waitUntil(gap ? Promise.all([log, unanswered(env, found, user)]) : log);
+      if (!ci) ctx?.waitUntil(gap ? Promise.all([log, unanswered(env, found, user)]) : log);
       return json({ ...found, hits: noPdf(found.hits) });
     }
     if (url.pathname === "/api/feedback" && request.method === "POST") {
