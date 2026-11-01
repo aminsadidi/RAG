@@ -18,7 +18,10 @@ Two gold files per corpus, in ``data/<corpus>/gold/``:
 
 Metrics
     Retrieval:  Recall@k (a gold page of the gold paper is among the top k
-                chunks) and MRR (mean reciprocal rank of the first such chunk).
+                chunks) and "chunk MRR": the mean reciprocal rank of the first such
+                chunk, at chunk level, page-checked and not cut at 10. It is not the
+                paper-level MRR@10 of scripts/quality/search_eval.py (a paper counts
+                once, any page, 0 past rank 10); the two are not comparable.
     Answers:    share of answers containing every expected string; share of
                 "not found" replies.
     Extraction: a record matches a gold value when doc, property name and
@@ -124,7 +127,7 @@ class RetrievalReport:
 
     def summary(self) -> dict[str, float | str]:
         return {"mode": self.mode, **{f"recall@{k}": round(self.recall_at(k), 3) for k in self.ks},
-                "MRR": round(self.mrr, 3)}
+                "chunk MRR": round(self.mrr, 3)}
 
 
 def group_summaries(report: RetrievalReport, items: list[GoldQuestion]) -> list[dict]:
