@@ -57,3 +57,8 @@ test("every pdf.js getDocument turns eval off (CVE-2024-4367)", () => {
   assert.ok(calls.length >= 3);
   for (const c of calls) assert.match(c, /isEvalSupported: false/, c);
 });
+
+test("no timer runs forever: the crystal pickers follow their select by its setters, not by polling", () => {
+  assert.ok(!/setInterval\(/.test(html));
+  assert.match(html, /getOwnPropertyDescriptor\(HTMLSelectElement\.prototype, prop\)/);
+});

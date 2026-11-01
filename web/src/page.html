@@ -3210,8 +3210,15 @@ document.addEventListener("click", (e) => {
     pop.addEventListener("mousedown", (ev) => { const d = ev.target.closest(".i"); if (d) { ev.preventDefault(); pick(items[+d.dataset.i]); } });
     inp.addEventListener("blur", () => setTimeout(() => { if (!box.contains(document.activeElement)) { pop.hidden = true; show(); } }, 150));
     sel.addEventListener("change", show);
-    // the code sets the select without an event (a row of the advisor, a share link, a card's button)
-    setInterval(() => { if (sel.value !== shown && document.activeElement !== inp) show(); }, 400);
+    // the code sets the select without an event (a row of the advisor, a share link, a card's button): its value and
+    // selectedIndex setters and changes of its options are watched on this element (a 400 ms timer per picker,
+    // forever, did it before)
+    const sync = () => queueMicrotask(() => { if (sel.value !== shown && document.activeElement !== inp) show(); });
+    for (const prop of ["value", "selectedIndex"]) {
+      const d = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, prop);
+      Object.defineProperty(sel, prop, { configurable: true, get() { return d.get.call(this); }, set(v) { d.set.call(this, v); sync(); } });
+    }
+    new MutationObserver(sync).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ["selected"] });
     show();
   }
 })();
