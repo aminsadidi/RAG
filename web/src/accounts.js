@@ -15,6 +15,9 @@ export const ROLES = {
   search: { label: "فقط جست‌وجو", tabs: ["search", "about"], search: true, pdf: false },
   tools: { label: "فقط ابزارها", tabs: ["index", "pm", "advisor", "spdc", "about"], search: false, pdf: false },
 };
+// Daily searches of a new account, by access level (the panel can change it; 0 = unlimited). A full account is
+// someone the owner knows: many more.
+export const DEFAULT_QUOTA = { full: 300, guest: 50, search: 50, tools: 50 };
 export const OWNER = { name: "owner", role: "owner", quota: 0, tabs: ROLES.full.tabs, search: true, pdf: true };
 const account = (name, u) => ({ name, role: u.role || "full", quota: u.quota || 0, ...(ROLES[u.role] || ROLES.full) });
 
@@ -78,7 +81,7 @@ export async function createUser(env, name, days, note, role = "full") {
   if (await getUser(env, name)) throw new Error(`«${name}» از قبل هست`);
   const password = newPassword(), salt = newPassword(16);
   await putUser(env, name, { salt, hash: await hash(salt, password), active: true, created: Date.now(),
-    expires: days ? Date.now() + days * DAY * 1000 : 0, note: note || "", role: ROLES[role] ? role : "full", quota: 0 });
+    expires: days ? Date.now() + days * DAY * 1000 : 0, note: note || "", role: ROLES[role] ? role : "full", quota: DEFAULT_QUOTA[ROLES[role] ? role : "full"] });
   return password;
 }
 
@@ -90,7 +93,11 @@ export async function updateUser(env, name, change) {
   if ("active" in change) u.active = change.active;
   if (change.extendDays) u.expires = Math.max(u.expires || Date.now(), Date.now()) + change.extendDays * DAY * 1000;
   if (change.noExpiry) u.expires = 0;
-  if (change.role && ROLES[change.role]) u.role = change.role;
+  if (change.role && ROLES[change.role]) {
+    // a quota still at the old level's default follows the new level; one set by hand stays
+    if (!("quota" in change) && u.quota === DEFAULT_QUOTA[u.role || "full"]) u.quota = DEFAULT_QUOTA[change.role];
+    u.role = change.role;
+  }
   if ("quota" in change) u.quota = Math.max(0, change.quota | 0);
   await putUser(env, name, u);
   return { user: u, password };

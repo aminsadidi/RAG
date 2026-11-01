@@ -1,5 +1,6 @@
 // Feedback from the site and questions it could not answer: kept in the D1 database LOGS (migrations/; in KV,
-// log:<time>, while that binding is missing), 180 days, and sent to the owner's Telegram (bot TELEGRAM_TOKEN, chat TELEGRAM_CHAT_ID; both optional secrets), with a daily summary.
+// log:<time>, while that binding is missing), 180 days, and sent to the owner's Telegram (bot TELEGRAM_TOKEN, chat TELEGRAM_CHAT_ID; both optional secrets): feedback at once,
+// unanswered questions once an hour, and a daily summary.
 const DAY = 86400;
 const clip = (s, n) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
 
@@ -65,11 +66,20 @@ export async function feedback(env, body, user = "?") {
   return { ok: true };
 }
 
-// A search the collection could not answer, sent right away.
-export async function unanswered(env, found, user = "?") {
-  await telegram(env, ["❓ سؤال بی‌جواب — MatRAG", `کاربر: ${user}`, `سؤال: ${clip(found.question, 500)}`,
-    found.searchQuery && found.searchQuery !== found.question && `ترجمه: ${clip(found.searchQuery, 300)}`,
-    found.relevance?.missingMaterials?.length && `ماده‌ی پیدا نشده: ${found.relevance.missingMaterials.join(", ")}`].filter(Boolean).join("\n"));
+// The questions the collection could not answer (logged as unanswered with verdict "gap"), one Telegram message an
+// hour (the worker's hourly cron) instead of one per search: those of the previous full hour, so a late or
+// repeated run reports each once. Returns how many there were.
+export const GAPS_LISTED = 30;
+export async function hourlyGaps(env, now = Date.now()) {
+  if (!env.LOGS && !env.AICACHE) return 0;
+  const hour = Math.floor(now / 3600000) * 3600000;
+  const start = new Date(hour - 3600000).toISOString(), end = new Date(hour).toISOString();
+  const gaps = (await listLogs(env, start)).filter((e) => e.kind === "unanswered" && e.v === "gap" && e.time < end);
+  if (gaps.length) {
+    await telegram(env, [`❓ ${gaps.length} سؤال بی‌جواب در ساعت گذشته — MatRAG`, ...gaps.slice(0, GAPS_LISTED).map((e) => `• ${e.user}: ${e.q}`),
+      gaps.length > GAPS_LISTED && `… و ${gaps.length - GAPS_LISTED} سؤال دیگر (پنل: سؤال‌های بی‌جواب)`].filter(Boolean).join("\n"));
+  }
+  return gaps.length;
 }
 
 // The last day's searches and feedback, once a day (the worker's cron); in D1 the rows past 180 days go too.

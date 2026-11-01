@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { fakeD1, kv } from "./support/worker.js";
-import { dailySummary, listLogs, logEvent } from "../src/feedback.js";
+import { dailySummary, GAPS_LISTED, hourlyGaps, listLogs, logEvent } from "../src/feedback.js";
 
 test("events go to D1 (no KV write) and are listed oldest first, by user", async () => {
   const e = { LOGS: await fakeD1(), AICACHE: kv() };
@@ -37,4 +37,26 @@ test("without D1 the log stays in KV, as before", async () => {
   await logEvent(e, "search", { question: "q1" }, "sara");
   await logEvent(e, "search", { question: "q2" }, "ali");
   assert.deepEqual((await listLogs(e, "", { user: "ali" })).map((r) => r.q), ["q2"]);
+});
+
+test("unanswered questions go to Telegram once an hour, each once, in one message", async () => {
+  for (const make of [async () => ({ LOGS: await fakeD1(), AICACHE: kv() }), async () => ({ AICACHE: kv() })]) {
+    const e = { ...(await make()), TELEGRAM_TOKEN: "t", TELEGRAM_CHAT_ID: "1" };
+    const sent = [], real = globalThis.fetch;
+    globalThis.fetch = async (url, init) => { sent.push(JSON.parse(init.body).text); return Response.json({ ok: true }); };
+    try {
+      await logEvent(e, "unanswered", { question: "KTP damage at 2 um", verdict: "gap" }, "sara");
+      await logEvent(e, "unanswered", { question: "what is a laser", verdict: "none" }, "ali");  // too general: not a gap
+      await logEvent(e, "search", { question: "BBO", verdict: "ok" }, "ali");
+      const next = Date.now() + 3600000;
+      assert.equal(await hourlyGaps(e, Date.now()), 0);  // the hour is not over yet
+      assert.equal(await hourlyGaps(e, next), 1);
+      assert.equal(sent.length, 1);
+      assert.match(sent[0], /سؤال بی‌جواب/); assert.match(sent[0], /sara: KTP damage at 2 um/); assert.doesNotMatch(sent[0], /laser/);
+      assert.equal(await hourlyGaps(e, next + 3600000), 0);  // the next hour does not send it again
+      for (let i = 0; i < GAPS_LISTED + 5; i++) await logEvent(e, "unanswered", { question: `q${i}`, verdict: "gap" }, "u");
+      assert.equal(await hourlyGaps(e, next), GAPS_LISTED + 6);
+      assert.match(sent.at(-1), /و 6 سؤال دیگر/);
+    } finally { globalThis.fetch = real; }
+  }
 });

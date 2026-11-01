@@ -44,14 +44,17 @@ service = "matrag-pdfs"
 SITE_URL = "https://matrag.ethanjamescarter1995.workers.dev"
 COLLECTION = "rag-optics"
 TRANSLATE_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+# the one-word scope check of each question (src/index.js scopeOf); unset, TRANSLATE_MODEL does it
+SCOPE_MODEL = "@cf/meta/llama-3.1-8b-instruct"
 EMBED_MODEL = "@cf/baai/bge-base-en-v1.5"
 RERANK_MODEL = "@cf/baai/bge-reranker-base"
 
 # Secrets (npx wrangler secret put NAME): QDRANT_URL, QDRANT_API_KEY, SITE_PASSWORD
 
-# Qdrant Cloud suspends a free cluster after a week without requests: one request a day keeps it up.
+# Daily: Qdrant Cloud suspends a free cluster after a week without requests (one request a day keeps it up), and the
+# day's summary. Hourly (HOURLY in src/index.js): the last hour's unanswered questions in one Telegram message.
 [triggers]
-crons = ["17 6 * * *"]
+crons = ["17 6 * * *", "5 * * * *"]
 
 [[rules]]
 type = "Text"
