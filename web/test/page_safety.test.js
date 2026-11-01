@@ -51,3 +51,9 @@ test("highlight marks words of the raw text and never breaks an entity", () => {
 test("the search marks the formulas of the materials the API found (LBO -> LiB3O5)", () => {
   assert.match(html, /\.\.\.\(data\.materials \|\| \[\]\)/);
 });
+
+test("every pdf.js getDocument turns eval off (CVE-2024-4367)", () => {
+  const calls = html.match(/getDocument\(\{[^}]*\}/g);
+  assert.ok(calls.length >= 3);
+  for (const c of calls) assert.match(c, /isEvalSupported: false/, c);
+});
