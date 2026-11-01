@@ -261,3 +261,30 @@ test("opening papers is limited: per search of the daily quota, and per minute (
     for (let i = 0; i < PAPERS_PER_MINUTE + 1; i++) assert.equal((await call(e, "/api/paper?doc_id=doc0", withCookie(owner))).status, 200);
   } finally { q.restore(); }
 });
+
+test("odd login requests get the login page, not an exception: no form body, a huge or odd name, KV down", async () => {
+  const e = env();
+  const notForm = await call(e, "/login", { method: "POST", headers: { "content-type": "application/json" }, body: "{}" });
+  assert.equal(notForm.status, 400); assert.match(await notForm.text(), /type="password"/);
+  let gets = 0; const get = e.AICACHE.get.bind(e.AICACHE);
+  e.AICACHE.get = async (k, ...rest) => { if (k.startsWith("user:")) gets++; return get(k, ...rest); };
+  for (const username of ["x".repeat(600), "Sara!", "../user:owner"])
+    assert.equal((await call(e, "/login", form({ username, password: "p" }))).status, 401, username.slice(0, 20));
+  assert.equal(gets, 0);  // never looked up
+  e.AICACHE.get = async () => { throw new Error("KV down"); };
+  const down = await call(e, "/login", form({ username: "sara", password: "p" }));
+  assert.equal(down.status, 503); assert.match(await down.text(), /type="password"/);
+});
+
+test("the owner can be signed out everywhere (ownerEpoch); users' sessions are untouched", async () => {
+  const { setSettings } = await import("../src/accounts.js");
+  const e = env();
+  const owner = await ownerCookie(e);
+  const pw = await createUser(e, "sara", 0, "");
+  const sara = cookieOf(await call(e, "/login", form({ username: "sara", password: pw })));
+  assert.equal((await call(e, "/api/me", withCookie(owner))).status, 200);
+  await setSettings(e, { ownerEpoch: 1 });
+  assert.equal((await call(e, "/api/me", withCookie(owner))).status, 401);
+  assert.equal((await call(e, "/api/me", withCookie(sara))).status, 200);
+  assert.equal((await call(e, "/api/me", withCookie(await ownerCookie(e)))).status, 200);  // a new login works
+});

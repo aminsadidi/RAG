@@ -45,9 +45,11 @@ export function newPassword(n = 10) {
 }
 
 // The user's salt is signed too (it changes with every new password), so a new password signs out old sessions.
+// The owner has no salt: the panel's "sign the owner out everywhere" raises ownerEpoch in the site settings instead.
+const ownerSalt = async (env) => { const n = (await getSettings(env)).ownerEpoch; return n ? `epoch:${n}` : ""; };
 export async function makeSession(env, user, days = 30) {
   const payload = `${user}.${Math.floor(Date.now() / 1000) + days * DAY}`;
-  const salt = user === "owner" ? "" : (await getUser(env, user))?.salt || "";
+  const salt = user === "owner" ? await ownerSalt(env) : (await getUser(env, user))?.salt || "";
   return `${payload}.${await hmac(env, `${payload}.${salt}`)}`;
 }
 
@@ -57,7 +59,7 @@ export async function sessionUser(env, token) {
   const m = /^([a-z0-9][a-z0-9_.-]{2,31})\.(\d+)\.([0-9a-f]{64})$/.exec(token || "");
   if (!m || Number(m[2]) < Date.now() / 1000) return null;
   const u = m[1] === "owner" ? null : await getUser(env, m[1]);
-  const signed = `${m[1]}.${m[2]}.${u?.salt || ""}`;
+  const signed = `${m[1]}.${m[2]}.${m[1] === "owner" ? await ownerSalt(env) : u?.salt || ""}`;
   if (!(await sameText(await hmac(env, signed), m[3]))
     && !(env.SESSION_SECRET && env.SESSION_LEGACY === "1" && (await sameText(await hmac(env, signed, true), m[3])))) return null;
   if (m[1] === "owner") return OWNER;
@@ -72,6 +74,7 @@ async function putUser(env, name, u) {
 }
 
 export async function checkLogin(env, name, password) {
+  if (!NAME.test(name)) return false;  // never a KV key of any length or shape (over 512 bytes it throws)
   const u = await getUser(env, name);
   return Boolean(u && usable(u) && (await sameText(await hash(u.salt, password), u.hash)));
 }
