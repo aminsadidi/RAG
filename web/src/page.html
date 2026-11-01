@@ -495,7 +495,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <p class="hint">بلوری را که سازنده با زاویه‌ی مشخص بریده است بدهید (صفحه، زاویه و نوع روی برگه‌ی بلور نوشته شده)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود، و این‌که در بازه‌ی دمای کار بالا هست یا نه. مثال: LBO بریده‌شده در صفحه‌ی xy با φ = 0° (نوع I) برای دوبرابرکردن 1064 nm حدود ۱۴۹ °C می‌خواهد؛ اگر آون شما تا این دما نمی‌رسد، این برش به کارتان نمی‌آید. فقط بلورهایی که فرمول وابستگی دمایی دارند.</p>
     <div class="row">
       <label>بلور <select id="cutmat" class="xsel"></select></label>
-      <label>صفحه <select id="cutplane"><option value="xz">xz (θ)</option><option value="yz">yz (θ)</option><option value="xy">xy (φ)</option></select></label>
+      <label title="فرمول ضریب شکست و وابستگی دمایی که دما با آن حساب می‌شود">منبع <select id="cutsrc" style="max-width:220px"></select></label>
+      <label id="cutplanel">صفحه <select id="cutplane"><option value="xz">xz (θ)</option><option value="yz">yz (θ)</option><option value="xy">xy (φ)</option></select></label>
       <label>زاویه‌ی برش <input id="cutangle" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:72px" placeholder="—"> °</label>
       <label>نوع <select id="cuttype"><option value="I">نوع I</option><option value="IIa">نوع II (s+f)</option><option value="IIb">نوع II (f+s)</option></select></label>
       <button class="alt" id="cutgo">دمای کار این برش</button>
@@ -589,10 +590,10 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label><input id="spUncoated" type="checkbox"> بلور بدون پوشش ضدبازتاب (اتلاف فرنل: پمپ در سطح ورودی، هر فوتون در سطح خروجی)</label>
     </div>
     <div class="row">
-      <label>عبور بازوی ۱ <input id="spT1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
-      <label>عبور بازوی ۲ <input id="spT2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
-      <label>بازده آشکارساز ۱ <input id="spE1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.6" style="width:56px"></label>
-      <label>بازده آشکارساز ۲ <input id="spE2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.6" style="width:56px"></label>
+      <label title="کسری از ۱ (0.6) یا درصد (60)">عبور بازوی ۱ <input id="spT1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
+      <label title="کسری از ۱ (0.6) یا درصد (60)">عبور بازوی ۲ <input id="spT2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.8" style="width:56px"></label>
+      <label title="کسری از ۱ (0.6) یا درصد (60)">بازده آشکارساز ۱ <input id="spE1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.6" style="width:56px"></label>
+      <label title="کسری از ۱ (0.6) یا درصد (60)">بازده آشکارساز ۲ <input id="spE2" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.6" style="width:56px"></label>
     </div>
     <div class="row">
       <label>شمارش تاریک ۱ <input id="spD1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="100" style="width:64px"> /s</label>
@@ -916,16 +917,21 @@ function pageMap(hit) {
 
 let lastHits = [], lastSearch = null;
 // Feedback goes to the site owner (Telegram); the name is optional and remembered in this browser.
+// true when the feedback arrived; the last search goes with it only from the search tab (it is not about the others)
 function sendFeedback(extra) {
-  const nav = document.querySelector("nav button.on");
-  return api("/api/feedback", { question: lastSearch?.question, searchQuery: lastSearch?.searchQuery, who: store.get("fbwho") || "",
-    tab: nav?.dataset.tab || "", ...extra }).catch(() => {});
+  const nav = document.querySelector("nav button.on"), tab = nav?.dataset.tab || "";
+  const about = tab === "search" || !tab ? { question: lastSearch?.question, searchQuery: lastSearch?.searchQuery } : {};
+  return api("/api/feedback", { ...about, who: store.get("fbwho") || "", tab, ...extra }).then(() => true, () => false);
 }
+const FB_FAIL = () => (LANG === "en" ? "Not sent; check the connection and send again." : "نرسید؛ اتصال را بررسی کنید و دوباره بفرستید.");
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-fb]"); if (!b) return;
   const bar = b.closest(".fbbar");
-  sendFeedback({ verdict: b.dataset.fb, comment: bar.querySelector("#fbnote").value });
-  bar.innerHTML = '<span class="hint">ممنون! بازخوردتان رسید.</span>';
+  b.disabled = true;
+  sendFeedback({ verdict: b.dataset.fb, comment: bar.querySelector("#fbnote").value }).then((ok) => {
+    if (ok) { bar.innerHTML = '<span class="hint">ممنون! بازخوردتان رسید.</span>'; return; }
+    b.disabled = false; bar.querySelector(".fberr")?.remove(); bar.insertAdjacentHTML("beforeend", `<span class="err fberr">${FB_FAIL()}</span>`);
+  });
 });
 function renderHit(h, words, i) {
   const type = h.source_type || "";
@@ -960,8 +966,11 @@ function bindHits(container, hits) {
       navigator.clipboard?.writeText(`(${h.label})\n${h.text}`).then(() => { b.textContent = "کپی شد"; setTimeout(() => { b.textContent = was; }, 1500); }).catch(() => {});
     }
     if (act === "up" || act === "down") {
-      sendFeedback({ verdict: act === "up" ? "useful" : "wrong", hit: { label: h.label, doc_id: h.doc_id } });
-      e.target.parentElement.innerHTML = '<span class="hint">ممنون!</span>';
+      const box = e.target.parentElement; e.target.disabled = true;
+      sendFeedback({ verdict: act === "up" ? "useful" : "wrong", hit: { label: h.label, doc_id: h.doc_id } }).then((ok) => {
+        if (ok) box.innerHTML = '<span class="hint">ممنون!</span>';
+        else { e.target.disabled = false; e.target.title = FB_FAIL(); box.querySelector(".fberr")?.remove(); box.insertAdjacentHTML("beforeend", `<span class="err fberr">${FB_FAIL()}</span>`); }
+      });
     }
   };
 }
@@ -2432,8 +2441,17 @@ window.loadAdvisor = async () => {
   if ($("cutmat").options.length) return;
   $("cutmat").innerHTML = PM.list.filter((c) => c.sources.some((x) => x.thermo))
     .map((c) => `<option value="${esc(c.material)}">${esc(c.material)}${short(c) ? " — " + esc(short(c)) : ""}</option>`).join("");
-  $("cutmat").value = "LiB3O5";
+  $("cutmat").value = "LiB3O5"; fillCutSrc();
 };
+// the cut tool's sources: those with a temperature-dependent formula, the most trusted first (as in the PM tab);
+// a uniaxial crystal has no φ plane to choose
+function fillCutSrc() {
+  const c = PM.list?.find((x) => x.material === $("cutmat").value); if (!c) return;
+  const th = c.sources.map((x, i) => ({ x, i })).filter(({ x }) => x.thermo).sort((p, q) => (TIER_RANK[p.x.tier] ?? 9) - (TIER_RANK[q.x.tier] ?? 9));
+  $("cutsrc").innerHTML = th.map(({ x, i }) => `<option value="${i}">${tierMark(x)} ${esc(x.label)}</option>`).join("");
+  $("cutplanel").hidden = c.sources[0].kind === "uniaxial";
+}
+$("cutmat").addEventListener("change", fillCutSrc);
 // What is wrong with the advisor's inputs, or "" (the PM and SPDC tabs check theirs the same way)
 function advBad() {
   const { proc, a, b, w } = advInputs(), lo = numOr("advlo"), hi = numOr("advhi"), L = numOr("advlen");
@@ -2490,19 +2508,37 @@ function cutRun() {
   const why = advBad(); if (why) { $("cutinfo").innerHTML = `<span class="err">${why}</span>`; return; }
   // a source with a temperature-dependent formula that covers the three waves, else one extrapolated by up to 10 %
   const thermo = c ? c.sources.filter((x) => x.thermo) : [];
-  const src = thermo.find((x) => covers(x, w)) || thermo.map(stretch).find((x) => covers(x, w)) || thermo[0];
+  // the chosen source (or stretched by 10 % when the waves are just outside it)
+  const chosen = c?.sources[+$("cutsrc").value]?.thermo ? c.sources[+$("cutsrc").value] : thermo[0];
+  const src = chosen && (covers(chosen, w) ? chosen : covers(stretch(chosen), w) ? stretch(chosen) : chosen);
   if (!src || ang == null) { $("cutinfo").innerHTML = '<span class="err">بلور و زاویه‌ی برش را بدهید</span>'; return; }
   if (!covers(src, w)) { $("cutinfo").innerHTML = `<span class="err">طول موج‌ها بیرون از بازه‌ی فرمول وابستگی دمایی این بلور: <bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi></span>`; return; }
   const plane = src.kind === "uniaxial" ? "xz" : $("cutplane").value, type = $("cuttype").value, lo = numOr("advlo") ?? 20, hi = numOr("advhi") ?? 60;
   if (!src.thermo) { $("cutinfo").innerHTML = `<span class="err">برای منبع ${esc(src.label)} فرمول وابستگی دمایی نداریم: دمای کار این برش را نمی‌شود حساب کرد.</span>`; return; }
   const nT = (T) => nAtT(src, T), Ts = cutTemperatures(nT, plane, ang * Math.PI / 180, proc, a, b, type, [-50, 300]);
-  const folded = raw !== ang ? `زاویه به بازه‌ی ۰ تا ۹۰ درجه برده شد: <bdi dir="ltr">${raw}° → ${+ang.toFixed(4)}°</bdi><br>` : "";
+  const folded = Math.abs(raw - ang) > 1e-9 ? `زاویه به بازه‌ی ۰ تا ۹۰ درجه برده شد: <bdi dir="ltr">${raw}° → ${+ang.toFixed(4)}°</bdi><br>` : "";
   if (!Ts.length) { $("cutinfo").innerHTML = folded + '<span class="err">این برش بین ۵۰− و ۳۰۰ °C تطبیق فاز نمی‌دهد.</span>'; return; }
   $("cutinfo").innerHTML = folded
     + (src.extrapolated ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src.extrapolated[0]}–${src.extrapolated[1]} µm</bdi></span><br>` : "")
-    + `با فرمول وابستگی دمایی منبع ${esc(src.label)}:<br>` + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / ((numOr("advlen") || 10) / 10);
+    + `با فرمول وابستگی دمایی منبع ${tierMark(src)} ${esc(src.label)}:<br>` + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / ((numOr("advlen") || 10) / 10);
     const inside = T >= lo && T <= hi;
-    return `دمای تطبیق فاز: <b><bdi dir="ltr">${T.toFixed(1)} °C</bdi></b> (پهنای دمایی <bdi dir="ltr">${acc.toFixed(1)} °C</bdi>) — ${inside ? '<b>درون بازه‌ی دمای شما</b>' : `<span class="err">بیرون از بازه‌ی ${fa(lo)} تا ${fa(hi)} °C شما</span>`}`; }).join("<br>");
+    return `دمای تطبیق فاز: <b><bdi dir="ltr">${T.toFixed(1)} °C</bdi></b> (پهنای دمایی <bdi dir="ltr">${acc.toFixed(1)} °C</bdi>) — ${inside ? '<b>درون بازه‌ی دمای شما</b>' : `<span class="err">بیرون از بازه‌ی ${fa(lo)} تا ${fa(hi)} °C شما</span>`}`; }).join("<br>")
+    + cutNotes(c, src, plane, type, ang, proc, a, b, w, Ts, lo, hi);
+}
+// A cut whose angle hardly depends on temperature (BBO): the temperature is decided by a tenth of a degree, so it is
+// given as the small rotation that phase-matches in the user's range; and the temperature with the crystal's other
+// sources, which shows how much the number can be trusted
+function cutNotes(c, src, plane, type, ang, proc, a, b, w, Ts, lo, hi) {
+  const out = [], Tw = (lo + hi) / 2, L = (numOr("advlen") || 10) / 10;
+  const accs = Ts.map((T) => temperatureAcceptance((t) => nAtT(src, t), plane, ang * Math.PI / 180, proc, a, b, type, T) / L);
+  if (accs.some((x) => x > 20)) {
+    const sol = solveAll(nAtT(src, Tw), src.kind, proc, a, b).find((r) => (src.kind === "uniaxial" || r.plane === plane) && r.type === type);
+    if (sol) out.push(`این برش به دما کم‌حساس است (پهنای دمایی بیش از ۲۰ °C): اختلاف بسیار کوچکی در زاویه (حتی بین منابع) دمای بالا را خیلی جابه‌جا می‌کند. در عمل در <bdi dir="ltr">${fa(Tw)} °C</bdi> با چرخاندن بلور به اندازه‌ی <bdi dir="ltr">Δθ = ${(sol.angle - ang).toFixed(3)}°</bdi> تطبیق فاز می‌دهد.`);
+  }
+  const others = c.sources.filter((x) => x.thermo && x.label !== src.label && covers(x, w));
+  const got = others.map((x) => ({ x, T: cutTemperatures((t) => nAtT(x, t), plane, ang * Math.PI / 180, proc, a, b, type, [-50, 300])[0] })).filter((g) => g.T !== undefined);
+  if (got.length) out.push(`با منبع‌های دیگر: ${got.map((g) => `${tierMark(g.x)} ${esc(g.x.label)} <bdi dir="ltr">${g.T.toFixed(1)} °C</bdi>`).join("، ")}`);
+  return out.length ? `<p class="hint" style="margin:6px 0 0">${out.join("<br>")}</p>` : "";
 }
 $("advgo").onclick = adviseRun;
 $("advsort").onchange = () => { if ($("advtable").innerHTML) adviseRun(); };
@@ -2973,6 +3009,16 @@ function counts() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
   const dEff = +$("spdeff").value, P = +$("sppow").value;
   if (!(dEff > 0) || !(P > 0)) { $("spcntres").textContent = "d_eff و توان پمپ را وارد کنید."; return; }
+  // transmissions and efficiencies: a fraction (0.6) or a percentage (60, as data sheets write it)
+  const frac = {}, asPct = [];
+  for (const id of ["spT1", "spT2", "spE1", "spE2"]) {
+    const v = +$(id).value;
+    if (!(v >= 0 && v <= 100) || !$(id).value.trim()) { $("spcntres").innerHTML = `<span class="err">عبور و بازده باید بین ۰ و ۱ (یا ۰ تا ۱۰۰ درصد) باشند.</span>`; return; }
+    frac[id] = v > 1 ? v / 100 : v; if (v > 1) asPct.push(v);
+  }
+  if (!(+$("spD1").value >= 0) || !(+$("spD2").value >= 0) || !$("spD1").value.trim() || !$("spD2").value.trim()) { $("spcntres").innerHTML = '<span class="err">شمارش تاریک باید صفر یا بیشتر باشد.</span>'; return; }
+  if (!(+$("spTau").value > 0)) { $("spcntres").innerHTML = '<span class="err">پنجره‌ی هم‌فرودی باید بیشتر از صفر باشد (ns).</span>'; return; }
+  if (!(+$("spCarT").value > 0)) { $("spcntres").innerHTML = '<span class="err">CAR هدف باید بیشتر از صفر باشد.</span>'; return; }
   const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
   const dir = direction(o.plane, o.angle), k = (lam, pol) => { const [sl, fa] = eigenIndices(nAt(lam), dir); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
   const xs = [+$("spxp").value, +$("spxs").value, +$("spxf2").value];
@@ -2985,13 +3031,13 @@ function counts() {
     const r = pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp: w(lp, pols[0], xs[0]), w1: w(l1, pols[1], xs[1]), w2: w(l2, pols[2], xs[2]), powerMw: P * (1 - loss[0]) });
     if (!r || !Number.isFinite(r.rate)) { $("spcntres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند.</span>`; return; }
     const fc = fiberCoupling({ kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]), L_mm, xiP: xs[0], xiS: xs[1], xiI: xs[2], n: 80 });
-    const opts = { R: r.rate, mu12: fc.muIgS, mu21: fc.muSgI, T1: +$("spT1").value * (1 - loss[1]), T2: +$("spT2").value * (1 - loss[2]), eta1: +$("spE1").value, eta2: +$("spE2").value,
+    const opts = { R: r.rate, mu12: fc.muIgS, mu21: fc.muSgI, T1: frac.spT1 * (1 - loss[1]), T2: frac.spT2 * (1 - loss[2]), eta1: frac.spE1, eta2: frac.spE2,
       dark1: +$("spD1").value, dark2: +$("spD2").value, tauNs: +$("spTau").value };
     const c = detectedCounts(opts), pw = powerForCar(opts, P, +$("spCarT").value);
     const f = (v) => v >= 1e6 ? (v / 1e6).toPrecision(3) + "·10⁶" : v >= 100 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3);
     const pc = (v) => (v * 100).toFixed(1) + "%";
     const mw = (v) => v >= 1 ? v.toPrecision(3) + " mW" : v >= 1e-3 ? (v * 1e3).toPrecision(3) + " µW" : v >= 1e-6 ? (v * 1e6).toPrecision(3) + " nW" : (v * 1e9).toPrecision(3) + " pW";
-    $("spcntres").innerHTML = `at ${P} mW: R = ${f(r.rate)} pairs/s in the modes; μ₂|₁ = ${pc(fc.muIgS)}, μ₁|₂ = ${pc(fc.muSgI)}<br>`
+    $("spcntres").innerHTML = (asPct.length ? `<span class="hint">${asPct.join("، ")} به‌صورت درصد خوانده شد.</span><br>` : "") + `at ${P} mW: R = ${f(r.rate)} pairs/s in the modes; μ₂|₁ = ${pc(fc.muIgS)}, μ₁|₂ = ${pc(fc.muSgI)}<br>`
       + (r.clipped ? `<span class="err">the pair spectrum reaches past this source's formula range (${s.range_um[0]}–${s.range_um[1]} µm): integrated up to its edge, so this rate is a lower bound</span>` : "") + (r.clipped ? "<br>" : "")
       + (loss[0] ? `uncoated crystal, Fresnel reflection: pump ${pc(loss[0])}, photon 1 ${pc(loss[1])}, photon 2 ${pc(loss[2])} (already in R and in the arm transmissions)<br>` : "")
       + `<b>singles S₁ = ${f(c.S1)}/s, S₂ = ${f(c.S2)}/s; coincidences C = ${f(c.C)}/s; accidentals A = ${f(c.A)}/s; CAR = ${f(c.CAR)}</b><br>`
@@ -3364,6 +3410,7 @@ document.addEventListener("click", (e) => {
   <p class="hint">مشکل، اشتباه در داده‌ها، بلور یا مقاله‌ای که کم است، یا هر پیشنهادی. مستقیم به سازنده‌ی سایت می‌رسد.</p>
   <textarea id="fbtext" rows="5" required placeholder="مثلاً: ضریب d بلور … در کارت اشتباه است / مقاله‌ی … در مجموعه نیست"></textarea>
   <input id="fbwho" placeholder="نام یا آیدی تلگرام (اختیاری، برای پاسخ)">
+  <p class="err" id="fberr" hidden style="margin:6px 0 0"></p>
   <div class="actions"><button value="send" class="primary">ارسال</button><button value="cancel" formnovalidate>انصراف</button></div>
 </form></dialog>
 <script>
@@ -3374,8 +3421,9 @@ document.addEventListener("click", (e) => {
     if (dlg.returnValue !== "send") return;
     const text = document.getElementById("fbtext");
     store.set("fbwho", who.value.trim());
-    await sendFeedback({ verdict: "comment", comment: text.value });
-    text.value = ""; status("ممنون! بازخوردتان رسید.");
+    const err = document.getElementById("fberr");
+    if (!(await sendFeedback({ verdict: "comment", comment: text.value }))) { err.textContent = FB_FAIL(); err.hidden = false; dlg.showModal(); return; }
+    err.hidden = true; text.value = ""; status("ممنون! بازخوردتان رسید.");
   });
 })();
 </script>
