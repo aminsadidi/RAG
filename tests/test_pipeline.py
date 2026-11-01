@@ -78,3 +78,37 @@ def test_chunk_boxes_are_normalized(settings, tokenizer):
         page_no=1, charspan=(0, 5),
         bbox=BoundingBox(l=60, t=720, r=300, b=640, coord_origin=CoordOrigin.BOTTOMLEFT)))
     assert chunk_boxes(doc, [item]) == [[1, 0.1, 0.1, 0.5, 0.2]]
+
+
+def test_arxiv_ids_are_checked_and_stay_in_the_folder(tmp_path, monkeypatch):
+    import types
+    import urllib.request
+
+    from matrag.pipeline import Workspace
+
+    fake = types.SimpleNamespace(settings=types.SimpleNamespace(raw_pdf_dir=tmp_path))
+    asked = []
+
+    class Response:
+        def __init__(self, url):
+            asked.append(url)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return b"%PDF-1.4 test"
+
+    monkeypatch.setattr(urllib.request, "urlopen", lambda req, timeout: Response(req.full_url))
+    for bad in ["../../etc/passwd", "2101.01234/../../x", "hep-th/../../x", "", "http://evil/x", "2101.01234 x"]:
+        with pytest.raises(ValueError):
+            Workspace.download_arxiv(fake, bad)
+    assert asked == []
+    old = Workspace.download_arxiv(fake, "arXiv:hep-th/9901001v2")
+    assert old == tmp_path / "arxiv_hep-th_9901001v2.pdf" and old.parent == tmp_path
+    assert Workspace.download_arxiv(fake, "2101.01234").name == "arxiv_2101.01234.pdf"
+    assert Workspace.download_arxiv(fake, "cond-mat.mtrl-sci/0101001").exists()
+    assert asked[0] == "https://arxiv.org/pdf/hep-th/9901001v2"
