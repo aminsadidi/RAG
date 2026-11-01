@@ -22,7 +22,7 @@ import subq  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).parent / "reports"
-BASE = os.environ.get("SITE_URL", "https://matrag.ethanjamescarter1995.workers.dev")
+BASE = os.environ.get("SITE_URL") or (ROOT / "web" / "site_url.txt").read_text().strip()
 N = int(sys.argv[1]) if len(sys.argv) > 1 else 200
 
 rows = [r for f in ("questions.csv", "generated.csv")
