@@ -362,7 +362,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>فرایند <select id="pmproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
         <option value="sfg">SFG — جمع بسامد</option>
-        <option value="opo">OPO / DFG — پمپ و سیگنال</option>
+        <option value="opo">OPO / OPA / DFG — پمپ و سیگنال (زاویه و d_eff در هر سه یکی است)</option>
         <option value="spdc">SPDC — تولید جفت فوتون (پمپ → سیگنال + آیدلر)</option>
         <option value="thg">THG — سه‌برابرکردن بسامد (λ + λ/2 → λ/3)</option>
       </select></label>
@@ -438,7 +438,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>فرایند <select id="advproc">
         <option value="shg">SHG — دوبرابرکردن بسامد</option>
         <option value="sfg">SFG — جمع بسامد</option>
-        <option value="opo">OPO / DFG — پمپ و سیگنال</option>
+        <option value="opo">OPO / OPA / DFG — پمپ و سیگنال (زاویه و d_eff در هر سه یکی است)</option>
         <option value="spdc">SPDC — تولید جفت فوتون (پمپ → سیگنال + آیدلر)</option>
         <option value="thg">THG — سه‌برابرکردن بسامد (λ + λ/2 → λ/3)</option>
       </select></label>
@@ -448,7 +448,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="row">
       <label>بازه‌ی دما <input id="advlo" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="20" style="width:64px"> تا <input id="advhi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="60" style="width:64px"> °C</label>
       <label>نوع <select id="advtype"><option value="any">هر نوع</option><option value="I">نوع I</option><option value="II">نوع II</option><option value="0">نوع 0 (فقط QPM، هر سه موج هم‌قطبش)</option></select></label>
-      <label>طول بلور <input id="advlen" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:56px"> cm</label>
+      <label>طول بلور <input id="advlen" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:56px"> mm</label>
     </div>
     <div class="row">
       <label>بیشترین walk-off <input id="advwo" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" placeholder="—"> mrad</label>
@@ -488,7 +488,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است. قطبش‌دهی آپودایز گاوسی (Brańczyk و همکاران 2011) لوب‌های کناری sinc را حذف می‌کند؛ «بهینه‌سازی خلوص» پهنای پمپی را می‌یابد که خلوص را بیشینه می‌کند؛ با دمای بلور ضریب‌های شکست از فرمول وابستگی دمایی همان منبع حساب می‌شوند (اگر داشته باشد).</p>
     <div class="row">
       <label>بلور <select id="spmat" style="max-width:300px"></select></label> <input class="xfind" data-for="spmat" list="xnamelist" placeholder="نام بلور: BBO، lithium niobate، ZGP…" style="width:210px" autocomplete="off"><span class="xfindnote hint" data-for="spmat"></span>
-      <label>منبع <select id="spsrc" style="max-width:240px"></select></label>
+      <label title="فرمول ضریب شکست (Sellmeier) و بازه‌ی طول موجی که فرمول در آن معتبر است">منبع ضریب شکست <select id="spsrc" style="max-width:240px"></select></label>
     </div>
     <div class="row">
       <label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> µm</label>
@@ -2292,7 +2292,7 @@ function advBad() {
 function adviseRun() {
   const why = advBad();
   if (why) { $("advinfo").innerHTML = `<span class="err">${why}</span>`; $("advtable").innerHTML = ""; $("advno").innerHTML = ""; return; }
-  const { proc, a, b, w } = advInputs(), lo = numOr("advlo") ?? 25, hi = numOr("advhi") ?? lo, L = numOr("advlen") || 1;
+  const { proc, a, b, w } = advInputs(), lo = numOr("advlo") ?? 25, hi = numOr("advhi") ?? lo, L = (numOr("advlen") || 10) / 10; // mm → cm
   $("advinfo").textContent = "در حال آزمودن همه‌ی بلورها…";
   setTimeout(() => {
     const list = advCrystals(w), srcOf = Object.fromEntries(list.map((c) => [c.material, c.src.label]));
@@ -2302,7 +2302,7 @@ function adviseRun() {
     const key = { walk: (x) => Math.max(...x.best.walkoff_mrad), spec: (x) => -(x.best.spectral_nm ?? 0), temp: (x) => -(x.best.temp_C ?? 0) }[$("advsort").value];
     if (key) r.ok.sort((p, q) => key(p) - key(q));
     const lam = [w.l1, w.l2].map((x) => x.toFixed(4)).join(" + ") + " → " + w.l3.toFixed(4) + " µm";
-    $("advinfo").innerHTML = `${fa(r.ok.length)} بلور شرط‌ها را برمی‌آورد (<bdi dir="ltr">${lam}</bdi>، ${fa(lo)} تا ${fa(hi)} °C)؛ پهنای پذیرش برای بلور ${fa(L)} سانتی‌متری است. روی هر ردیف بزنید تا در زبانه‌ی تطبیق فاز همه‌ی جواب‌هایش را ببینید.`;
+    $("advinfo").innerHTML = `${fa(r.ok.length)} بلور شرط‌ها را برمی‌آورد (<bdi dir="ltr">${lam}</bdi>، ${fa(lo)} تا ${fa(hi)} °C)؛ پهنای پذیرش برای بلور ${fa(L * 10)} میلی‌متری است. روی هر ردیف بزنید تا در زبانه‌ی تطبیق فاز همه‌ی جواب‌هایش را ببینید.`;
     const how = (s) => (s.how === "qpm" ? `QPM${s.qpm === "op" ? " (OP)" : ` along ${s.axis}, ${s.pol.join("")}`} · Λ = ${s.period_um.toFixed(2)} µm` : s.how === "ncpm-temp" ? `90° along ${s.axis}, ${s.pol.join("")} at ${s.T.toFixed(1)} °C` : `${s.plane} ${s.type === "I" ? "I" : "II"} · ${s.angle.toFixed(2)}°${s.noncritical ? " (NCPM)" : ""}`);
     const f1 = (v, k = 1) => (v == null || !Number.isFinite(v) ? "—" : v.toFixed(k));
     $("advtable").innerHTML = r.ok.length ? `<tr><th>#</th><th>crystal</th><th>how</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>walk-off (mrad)</th><th>Δλ (nm)</th><th>ΔT (°C)</th><th>angle drift over the range</th><th>note</th></tr>`
@@ -2339,7 +2339,7 @@ function cutRun() {
   if (!Ts.length) { $("cutinfo").innerHTML = folded + '<span class="err">این برش بین ۵۰− و ۳۰۰ °C تطبیق فاز نمی‌دهد.</span>'; return; }
   $("cutinfo").innerHTML = folded
     + (src.extrapolated ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src.extrapolated[0]}–${src.extrapolated[1]} µm</bdi></span><br>` : "")
-    + `با فرمول وابستگی دمایی منبع ${esc(src.label)}:<br>` + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / (numOr("advlen") || 1);
+    + `با فرمول وابستگی دمایی منبع ${esc(src.label)}:<br>` + Ts.map((T) => { const acc = temperatureAcceptance(nT, plane, ang * Math.PI / 180, proc, a, b, type, T) / ((numOr("advlen") || 10) / 10);
     const inside = T >= lo && T <= hi;
     return `دمای تطبیق فاز: <b><bdi dir="ltr">${T.toFixed(1)} °C</bdi></b> (پهنای دمایی <bdi dir="ltr">${acc.toFixed(1)} °C</bdi>) — ${inside ? '<b>درون بازه‌ی دمای شما</b>' : `<span class="err">بیرون از بازه‌ی ${fa(lo)} تا ${fa(hi)} °C شما</span>`}`; }).join("<br>");
 }
@@ -2572,7 +2572,7 @@ function fitWl() {
 }
 function fillSrc() {
   const c = SP.list.find((x) => x.material === $("spmat").value);
-  $("spsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} (${s.range_um[0]}–${s.range_um[1]} µm)</option>`).join("");
+  $("spsrc").innerHTML = c.sources.map((s, i) => `<option value="${i}">${esc(s.label)} · معتبر در ${s.range_um[0]}–${s.range_um[1]} µm</option>`).join("");
 }
 // Inputs every SPDC computation needs, or why they are wrong ("" when fine); stop(out) shows it and says to stop.
 function spBad() {
