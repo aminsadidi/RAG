@@ -299,7 +299,8 @@ def formulas(
         _print_table([{"#": i, "paper": r.doc_id, "material": r.formula.material, "axis": r.formula.axis,
                        "range_um": "%s-%s" % r.formula.valid_range_um(), "T_K": r.formula.temperature_K or "",
                        "in_source": r.numbers_in_source, "problems": "; ".join(r.problems) or "-",
-                       "max_dn_vs_ref": r.reference_max_dn if r.reference_max_dn is not None else "-"}
+                       "max_dn_vs_ref": "-" if r.reference_max_dn is None
+                       else f"{r.reference_max_dn} (other axis)" if r.reference_any_axis else r.reference_max_dn}
                       for i, r in enumerate(records)])
     typer.echo(f"{len(records)} formulas saved to {out}")
 

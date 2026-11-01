@@ -66,9 +66,16 @@ def retrieval_questions(references: dict[str, list[EntryData]]) -> list[GoldQues
 
 
 def paper_row(doc_id: str, citation: str, entries: list[EntryData], records) -> dict:
-    """Benchmark result of one paper: how close the best extracted formula comes to the database."""
+    """Benchmark result of one paper: how close the best extracted formula comes to the database, and whether
+    every reference entry (each axis of each material) has an extracted formula that matches it."""
     diffs = [r.reference_max_dn for r in records if r.reference_max_dn is not None]
     best = min(diffs) if diffs else None
+    # per entry, the closest formula compared with it on its own axis (not by the any-axis fallback)
+    per_entry: dict[str, float] = {}
+    for r in records:
+        if r.reference_max_dn is not None and getattr(r, "reference_entry", "") and not getattr(r, "reference_any_axis", False):
+            per_entry[r.reference_entry] = min(per_entry.get(r.reference_entry, float("inf")), r.reference_max_dn)
+    worst = max((per_entry.get(e.entry.path, float("inf")) for e in entries), default=float("inf"))
     return {
         "doc_id": doc_id,
         "citation": citation,
@@ -78,6 +85,8 @@ def paper_row(doc_id: str, citation: str, entries: list[EntryData], records) -> 
         "formulas_compared": len(diffs),
         "best_max_dn": best,
         **{f"within_{tol:g}": best is not None and best <= tol for tol in TOLERANCES},
+        "entries_matched": sum(e.entry.path in per_entry for e in entries),
+        **{f"all_within_{tol:g}": worst <= tol for tol in TOLERANCES},
     }
 
 
@@ -86,11 +95,13 @@ def summarize(rows: list[dict]) -> dict:
     n = len(rows)
     if not n:
         return {"papers": 0}
-    share = lambda k: round(sum(bool(r[k]) for r in rows) / n, 3)  # noqa: E731
+    share = lambda k: round(sum(bool(r.get(k)) for r in rows) / n, 3)  # noqa: E731  (.get: rows of older runs)
     best = [r["best_max_dn"] for r in rows if r["best_max_dn"] is not None]
     return {
         "papers": n,
         "formula extracted": round(sum(r["formulas_extracted"] > 0 for r in rows) / n, 3),
         **{f"|Δn| ≤ {tol:g}": share(f"within_{tol:g}") for tol in TOLERANCES},
+        # a paper counts as correct above if any one formula matches; here only if every axis does
+        **{f"all axes |Δn| ≤ {tol:g}": share(f"all_within_{tol:g}") for tol in TOLERANCES},
         "median best |Δn|": round(median(best), 6) if best else "",
     }
