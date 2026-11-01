@@ -8,7 +8,7 @@ const cases = JSON.parse(readFileSync(new URL("./cases.json", import.meta.url)))
 // text.js imports shared.json the way wrangler bundles it; rebuild the functions here from its source.
 const src = readFileSync(new URL("../src/text.js", import.meta.url), "utf8")
   .replace(/^import S from .*$/m, "").replace(/^export \{ S as shared \};$/m, "").replace(/^export /gm, "");
-const mod = new Function("S", `${src}; return { normalizeFormulas, expandQuery, sourceLabel, contextPack, cleanTranslation, scopeWord };`)(S);
+const mod = new Function("S", `${src}; return { normalizeFormulas, expandQuery, sourceLabel, contextPack, cleanTranslation, scopeWord, translatePrompt };`)(S);
 
 test("formula normalization and query expansion match Python", () => {
   for (const c of cases) {
@@ -73,4 +73,16 @@ test("the scope check reads the model's word and lets doubt through", () => {
   assert.equal(scopeWord("SPECIFIC"), "specific");
   assert.equal(scopeWord("D22"), "specific");
   assert.equal(scopeWord(""), "specific");
+});
+
+test("paper text with $$, $& and $' and a question with {context} go into the prompts unchanged", () => {
+  const text = "the index $$n_o$$ and $n_e$ at $& 1064 nm, $' and $` too";
+  const pack = mod.contextPack("what is {context} and $&?", [{ citation: "A", pages: "2", text }], {}, null, null);
+  assert.ok(pack.includes(`[1] (A, p. 2)\n${text}`), pack);
+  assert.ok(pack.includes("Question: what is {context} and $&?"));
+  assert.equal(pack.split(text).length, 2);  // the context is put in once
+  assert.match(pack, /\(Source 2, p\. 5\)/);  // the citation style of the site
+  assert.ok(!/e\.g\. \[2\]/.test(pack));
+  const tr = mod.translatePrompt("ضریب شکست $& و $$x$$ {glossary}");
+  assert.ok(tr.includes("Question: ضریب شکست $& و $$x$$ {glossary}\n"));
 });
