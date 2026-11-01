@@ -33,6 +33,15 @@ textarea{width:100%;min-height:74px;resize:vertical}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .row label{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
 .row label[hidden]{display:none}
+.xsel{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.xcombo{position:relative;display:inline-flex;align-items:stretch;vertical-align:middle}
+.xcombo input{width:260px;max-width:62vw}
+.xcombo button{padding:0 10px;margin-inline-start:2px}
+.xcpop{position:absolute;top:100%;inset-inline-start:0;z-index:30;width:min(420px,88vw);max-height:340px;overflow:auto;background:var(--card,#fff);border:1px solid var(--line,#ccc);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:4px 0}
+.xcpop .g{font-size:12px;opacity:.7;padding:6px 10px 2px}
+.xcpop .i{padding:5px 10px;cursor:pointer;direction:ltr;text-align:left}
+.xcpop .i small{opacity:.7}
+.xcpop .i.on,.xcpop .i:hover{background:var(--hl,rgba(80,120,255,.14))}
 button.main,button.alt{font:inherit;border-radius:9px;padding:8px 16px;cursor:pointer;border:1px solid var(--accent)}
 button.main{background:var(--accent);color:var(--accent-ink);font-weight:600}
 button.alt{background:transparent;color:var(--accent)}
@@ -371,7 +380,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <span id="pmderived" class="hint" style="direction:ltr"></span>
     </div>
     <div class="row">
-      <label>بلور <select id="pmmat" style="max-width:300px"></select></label> <input class="xfind" data-for="pmmat" list="xnamelist" placeholder="نام بلور: BBO، lithium niobate، ZGP…" style="width:210px" autocomplete="off"><span class="xfindnote hint" data-for="pmmat"></span>
+      <label>بلور <select id="pmmat" class="xsel"></select></label>
       <label>منبع <select id="pmsrc" style="max-width:260px"></select></label> <span class="hint" title="منشأ هر عدد: سبز از صفحه‌ی مقاله‌ی اصلی، زرد از کتاب مرجع، نارنجی از پایگاه داده‌ی باز، آبی محاسبه‌ی نظری.">🟢 تأییدشده · 🟡 کتاب مرجع · 🟠 پایگاه داده · 🔵 محاسباتی</span>
       <button id="pmgo">محاسبه</button>
       <button class="alt" id="pmall">مقایسه‌ی همه‌ی بلورها</button>
@@ -472,7 +481,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2 data-fold="cut" data-closed>بلوری که بریده شده: در چه دمایی کار می‌کند؟</h2>
     <p class="hint">بلور و زاویه‌ی برش آن را بدهید (همان که سازنده نوشته)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود. پیش از خرید ببینید آون شما (بازه‌ی دمای بالا) به آن دما می‌رسد یا نه. فقط بلورهایی که فرمول وابستگی دمایی دارند.</p>
     <div class="row">
-      <label>بلور <select id="cutmat" style="max-width:260px"></select></label> <input class="xfind" data-for="cutmat" list="xnamelist" placeholder="نام بلور: BBO، lithium niobate، ZGP…" style="width:210px" autocomplete="off"><span class="xfindnote hint" data-for="cutmat"></span>
+      <label>بلور <select id="cutmat" class="xsel"></select></label>
       <label>صفحه <select id="cutplane"><option value="xz">xz (θ)</option><option value="yz">yz (θ)</option><option value="xy">xy (φ)</option></select></label>
       <label>زاویه‌ی برش <input id="cutangle" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:72px" placeholder="—"> °</label>
       <label>نوع <select id="cuttype"><option value="I">نوع I</option><option value="IIa">نوع II (s+f)</option><option value="IIb">نوع II (f+s)</option></select></label>
@@ -487,7 +496,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
     <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است. قطبش‌دهی آپودایز گاوسی (Brańczyk و همکاران 2011) لوب‌های کناری sinc را حذف می‌کند؛ «بهینه‌سازی خلوص» پهنای پمپی را می‌یابد که خلوص را بیشینه می‌کند؛ با دمای بلور ضریب‌های شکست از فرمول وابستگی دمایی همان منبع حساب می‌شوند (اگر داشته باشد).</p>
     <div class="row">
-      <label>بلور <select id="spmat" style="max-width:300px"></select></label> <input class="xfind" data-for="spmat" list="xnamelist" placeholder="نام بلور: BBO، lithium niobate، ZGP…" style="width:210px" autocomplete="off"><span class="xfindnote hint" data-for="spmat"></span>
+      <label>بلور <select id="spmat" class="xsel"></select></label>
       <label title="فرمول ضریب شکست (Sellmeier) و بازه‌ی طول موجی که فرمول در آن معتبر است">منبع ضریب شکست <select id="spsrc" style="max-width:240px"></select></label>
     </div>
     <div class="row">
@@ -3043,25 +3052,66 @@ api("/api/me").then((r) => r.json()).then((me) => {
   if (me.pdf) setTimeout(() => window.loadPdfjs?.().then(() => fetch("/vendor/pdfjs-3.11.174/pdf.worker.min.js")).catch(() => {}), 4000);
   if (me.banner) { const b = document.getElementById("sitebanner"); b.textContent = "📢 " + me.banner; b.hidden = false; }
 }).catch(() => {});
-// The calculators' crystal pickers take any name of a crystal (the same names as the search): typed in the box next to
-// the list, the crystal is picked and the note says under which name the site keeps it.
+// One crystal picker per calculator: type any name of a crystal (the same names as the search: BBO, lithium niobate,
+// ZGP, PPKTP …) for suggestions, or press ▾ for the whole list in its groups. The picker drives the tab's <select>
+// (kept, hidden: the calculators and the share links read it), and follows it when the code changes it.
 (() => {
-  const list = document.createElement("datalist"); list.id = "xnamelist";
-  list.innerHTML = Object.entries(CRYSTAL_NAMES).flatMap(([f, ns]) => [f, ...ns]).map((n) => `<option value="${esc(n)}">`).join("");
-  document.body.appendChild(list);
-  for (const box of document.querySelectorAll("input.xfind")) {
-    const go = () => {
-      const v = box.value.trim(), sel = $(box.dataset.for), note = document.querySelector(`.xfindnote[data-for="${box.dataset.for}"]`);
-      if (!v) { note.innerHTML = ""; return; }
-      const f = XNAME.of(v) || v, opts = [...sel.options];
-      const o = opts.find((x) => x.value === f) || opts.find((x) => x.value.toLowerCase() === v.toLowerCase())
-        || opts.find((x) => x.textContent.toLowerCase().includes(v.toLowerCase()));
-      if (!o) { note.innerHTML = `<span class="err">«<bdi dir="ltr">${esc(v)}</bdi>» در فهرست این ابزار نیست${f !== v ? ` (در این سایت: <bdi dir="ltr">${esc(f)}</bdi>)` : ""}.</span>`; return; }
-      sel.value = o.value; sel.dispatchEvent(new Event("change", { bubbles: true }));
-      note.innerHTML = o.value !== v ? `«<bdi dir="ltr">${esc(v)}</bdi>» = <b dir="ltr">${esc(o.value)}</b>` : "";
+  const norm = (t) => String(t || "").toLowerCase().replace(/[\s\-–—·:()_]+/g, "");
+  // the crystal's names, one per spelling (BiBO and BIBO once)
+  const namesOf = (f) => XNAME.names(f).filter((n, i, all) => all.findIndex((m) => m.toLowerCase() === n.toLowerCase()) === i);
+  for (const sel of document.querySelectorAll("select.xsel")) {
+    const box = document.createElement("span"); box.className = "xcombo";
+    box.innerHTML = '<input type="text" autocomplete="off" spellcheck="false" dir="ltr" placeholder="BBO, lithium niobate, ZGP…"><button type="button" class="alt" title="فهرست همه‌ی بلورها">▾</button><div class="xcpop" hidden></div>';
+    sel.closest("label").after(box);
+    const inp = box.querySelector("input"), pop = box.querySelector(".xcpop");
+    let items = [], on = 0, shown = sel.value;
+    // the option's text, with the crystal's common names when the option only gives the formula (SPDC tab)
+    const label = (o) => !o ? "" : o.textContent.trim() === o.value && namesOf(o.value).length ? `${o.value} — ${namesOf(o.value).slice(0, 3).join(", ")}` : o.textContent;
+    const show = () => { inp.value = label(sel.selectedOptions[0]); shown = sel.value; inp.scrollLeft = 0; };
+    const entries = () => [...sel.options].map((o) => ({ o, group: o.parentElement.tagName === "OPTGROUP" ? o.parentElement.label : "",
+      names: namesOf(o.value), hay: [o.value, o.textContent, ...namesOf(o.value)].map(norm) }));
+    const row = (e, i) => `<div class="i${i === on ? " on" : ""}" data-i="${i}"><b>${esc(e.o.value)}</b>${e.names.length ? ` <small>· ${esc(e.names.slice(0, 4).join(" · "))}</small>` : ""}</div>`;
+    const render = (all) => {
+      const q = norm(inp.value), es = entries();
+      if (all || !q) {
+        // the whole list: the select's groups, or the crystals with common names first
+        const groups = new Map();
+        for (const e of es) { const g = e.group || (e.names.length ? "بلورهای رایج" : "بقیه"); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(e); }
+        items = [...groups.values()].flat(); let i = 0;
+        on = Math.max(0, items.findIndex((e) => e.o.value === sel.value));
+        pop.innerHTML = [...groups].map(([g, list]) => `<div class="g">${esc(g)}${/\(/.test(g) ? "" : ` (${fa(list.length)})`}</div>` + list.map((e) => row(e, i++)).join("")).join("");
+      } else {
+        const score = (e) => Math.min(...e.hay.map((h) => (h === q ? 0 : h.startsWith(q) ? 1 : h.includes(q) ? 2 : 9)));
+        items = es.map((e) => [score(e), e]).filter(([k]) => k < 9).sort((a, b) => a[0] - b[0]).slice(0, 12).map(([, e]) => e);
+        pop.innerHTML = items.length ? items.map(row).join("")
+          : `<div class="g">«${esc(inp.value)}» در فهرست این ابزار نیست${XNAME.of(inp.value) ? ` (در این سایت: ${esc(XNAME.of(inp.value))})` : ""}</div>`;
+      }
+      pop.hidden = false;
+      if (all || !q) pop.querySelector(".i.on")?.scrollIntoView({ block: "nearest" });
     };
-    box.addEventListener("change", go);
-    box.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); go(); } });
+    const pick = (e) => {
+      if (!e) return;
+      sel.value = e.o.value; sel.dispatchEvent(new Event("change", { bubbles: true }));
+      show(); pop.hidden = true;
+    };
+    inp.addEventListener("focus", () => { inp.select(); });
+    inp.addEventListener("input", () => { on = 0; render(false); });
+    inp.addEventListener("keydown", (ev) => {
+      if (ev.key === "ArrowDown" || ev.key === "ArrowUp") {
+        ev.preventDefault(); if (pop.hidden) render(false);
+        on = Math.max(0, Math.min(items.length - 1, on + (ev.key === "ArrowDown" ? 1 : -1)));
+        pop.querySelectorAll(".i").forEach((d) => d.classList.toggle("on", +d.dataset.i === on));
+        pop.querySelector(".i.on")?.scrollIntoView({ block: "nearest" });
+      } else if (ev.key === "Enter") { ev.preventDefault(); ev.stopPropagation(); pick(items[on]); }
+      else if (ev.key === "Escape") { pop.hidden = true; show(); }
+    });
+    box.querySelector("button").addEventListener("click", () => { on = 0; if (pop.hidden) { render(true); inp.focus(); } else pop.hidden = true; });
+    pop.addEventListener("mousedown", (ev) => { const d = ev.target.closest(".i"); if (d) { ev.preventDefault(); pick(items[+d.dataset.i]); } });
+    inp.addEventListener("blur", () => setTimeout(() => { if (!box.contains(document.activeElement)) { pop.hidden = true; show(); } }, 150));
+    sel.addEventListener("change", show);
+    // the code sets the select without an event (a row of the advisor, a share link, a card's button)
+    setInterval(() => { if (sel.value !== shown && document.activeElement !== inp) show(); }, 400);
+    show();
   }
 })();
 // A link to a calculation: the tab and the values of its boxes in the address (#tab=pm&pma=1.064&…). Opened,

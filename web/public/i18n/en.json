@@ -1,4 +1,7 @@
 {
+ "فهرست همه‌ی بلورها": "All crystals",
+ "بلورهای رایج": "Common crystals",
+ "بقیه": "Others",
  "این سؤال درباره‌ی اپتیک و مواد اپتیکی نیست؛ این سامانه فقط مقاله‌ها و کتاب‌های این حوزه را می‌گردد": "This question is not about optics or optical materials; this system only searches papers and books of that field",
  "این سؤال خیلی کلی است.": "This question is too general.",
  "این سامانه برای پیدا کردن عدد، فرمول یا روش مشخص در مقاله‌هاست، نه تعریف کتاب درسی. دقیق‌تر بپرسید؛ مثلاً: «ضریب d": "This system finds a specific number, formula or method in the papers, not a textbook definition. Ask more precisely, e.g. “the d",
@@ -693,7 +696,6 @@
  "(صفحه‌ی": "(page",
  "ثبت شده است.": ".",
  "نام‌های دیگر:": "Other names:",
- "نام بلور: BBO، lithium niobate، ZGP…": "Crystal name: BBO, lithium niobate, ZGP…",
  "(در این سایت:": "(on this site:",
  "این ماده نه در refractiveindex.info هست و نه فرمولی از مقاله‌های مجموعه برایش ثبت شده.": "This material is neither in refractiveindex.info nor has a formula from the collection's papers.",
  "» در این سایت با نام": "» is kept on this site as",
