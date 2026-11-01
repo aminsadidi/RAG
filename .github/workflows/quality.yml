@@ -26,16 +26,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with: { fetch-depth: 0 }
       - name: Keys from the site
         run: bash scripts/ocr_gh/keys.sh
       - name: What to run
         id: what
+        env:
+          EVENT: ${{ github.event_name }}
+          SEARCH_IN: ${{ inputs.search }}
+          QRELS_IN: ${{ inputs.qrels }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "search=${{ inputs.search }}" >> "$GITHUB_OUTPUT"; echo "qrels=${{ inputs.qrels }}" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = "push" ]; then
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            echo "search=$SEARCH_IN" >> "$GITHUB_OUTPUT"; echo "qrels=$QRELS_IN" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = "push" ]; then
             echo "search=$(jq -r .search scripts/quality/run.json)" >> "$GITHUB_OUTPUT"; echo "qrels=$(jq -r .qrels scripts/quality/run.json)" >> "$GITHUB_OUTPUT"
           else
             echo "search=true" >> "$GITHUB_OUTPUT"; echo "qrels=false" >> "$GITHUB_OUTPUT"

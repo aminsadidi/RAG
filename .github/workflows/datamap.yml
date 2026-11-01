@@ -21,12 +21,12 @@ jobs:
       fail-fast: false
       matrix: { k: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Keys from the site
         run: bash scripts/ocr_gh/keys.sh
       - name: Score the passages
         run: python3 scripts/quality/datamap.py shard ${{ matrix.k }} 20 "shard-${{ matrix.k }}.jsonl"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with: { name: "datamap-${{ matrix.k }}", path: "shard-${{ matrix.k }}.jsonl", retention-days: 7 }
 
   merge:
@@ -34,8 +34,8 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with: { pattern: "datamap-*", path: shards }
       - name: Merge
         run: python3 scripts/quality/datamap.py merge shards | tee -a "$GITHUB_STEP_SUMMARY"
@@ -43,5 +43,7 @@ jobs:
         run: |
           git config user.name "matrag-quality"; git config user.email "quality@users.noreply.github.com"
           git add data/rag-optics/datamap.json.gz scripts/quality/reports
+          # an unchanged map is nothing to commit (git commit would fail the job)
+          git diff --cached --quiet && { echo "map unchanged"; exit 0; }
           git commit -q -m "Data map $(date -u +%F)"
           for i in 1 2 3; do git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done
