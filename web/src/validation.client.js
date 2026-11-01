@@ -51,7 +51,7 @@ export function validationCases(f) {
     { group: "temp", crystal: "KTP", what: "noncritical SHG of 3.1842 µm (y + z → y), T", cite: "Katō & Takaoka (2002), Table 2", ref: 77.6, unit: "°C", tol: 0.3,
       calc: () => ncpm("KTiOPO4", "Kato", 3.1842, "yzy") },
     { group: "temp", crystal: "LBO", what: "noncritical type-I SHG of 1.064 µm along x, T", cite: "Ghosh (1995); measured 148.1–149.5 °C", ref: 148.7, unit: "°C", tol: 2,
-      note: "the paper states ±4 °C for its own model", calc: () => ncpm("LiB3O5", "Ghosh-1995", 1.064, "zzy") },
+      note: "the paper states ±4 °C for its own model; the phase-matching tab, with its default source for LBO, gives about 149 °C", calc: () => ncpm("LiB3O5", "Ghosh-1995", 1.064, "zzy") },
     { group: "qpm", crystal: "PPKTP", what: "type-II SHG of 1.5822 µm, grating period", cite: "König & Wong (2004)", ref: 46.15, unit: "µm", tol: 0.05,
       calc: () => qpm("KTiOPO4", "Fradkin-König", [1, 2, 1], 0.7911, 1.5822) },
     { group: "qpm", crystal: "PPKTP", what: "DFG of 1064.4 and 1552.3 nm (all z), grating period", cite: "Fradkin et al. (1999)", ref: 35.7, unit: "µm", tol: 0.15,

@@ -197,12 +197,20 @@ def add(items: Annotated[list[str], typer.Argument(help="arXiv ids (e.g. 2111.01
     """Add papers to the corpus and index them."""
     ws = _workspace()
     paths = []
+    import re
+
     for item in items:
         if Path(item).exists():
             paths += ws.add_files([Path(item)])
-        else:
-            paths.append(ws.download_arxiv(item))
-            typer.echo(f"downloaded arXiv:{item}")
+            continue
+        # a link to an arXiv page (abs or pdf) gives its id; a path that does not exist is not an arXiv id
+        m = re.match(r"https?://(?:www\.)?arxiv\.org/(?:abs|pdf)/([^?#\s]+?)(?:\.pdf)?/?(?:[?#].*)?$", item.strip())
+        arxiv_id = m.group(1) if m else item.strip()
+        old_style = re.fullmatch(r"[a-z-]+(?:\.[A-Z]{2})?/\d{7}(?:v\d+)?", arxiv_id)  # hep-th/9901001
+        if not m and (arxiv_id.lower().endswith(".pdf") or "\\" in arxiv_id or ("/" in arxiv_id and not old_style)):
+            raise typer.BadParameter(f"file not found: {item}")
+        paths.append(ws.download_arxiv(arxiv_id))
+        typer.echo(f"downloaded arXiv:{arxiv_id}")
     _print_ingest(ws.ingest(paths))
 
 
@@ -312,10 +320,18 @@ def formula_table(
     stop: Annotated[float, typer.Option("--to", help="Last wavelength, µm (default: end of validity range).")] = 0.0,
     step: Annotated[float, typer.Option(help="Wavelength step, µm.")] = 0.05,
     temperature: Annotated[float | None, typer.Option(help="Temperature in K (temperature-dependent formulas).")] = None,
+    celsius: Annotated[bool, typer.Option("--celsius", help="Read --temperature in °C instead of K.")] = False,
     out: Annotated[Path | None, typer.Option("--out", "-o")] = None,
 ) -> None:
     """Turn an extracted formula into a table of n(λ)."""
     import numpy as np
+
+    if not step > 0:
+        raise typer.BadParameter("--step must be above zero (µm)")
+    if temperature is not None and celsius:
+        temperature += 273.15
+    elif temperature is not None and temperature < 100:
+        typer.echo(f"note: --temperature {temperature} is read in kelvin; for °C add --celsius", err=True)
 
     from matrag.dispersion import table
     from matrag.evaluate import write_rows

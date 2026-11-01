@@ -346,4 +346,8 @@ def chunk_boxes(doc: DoclingDocument, items) -> list[list[float]]:
 
 
 def find_papers(folder: Path) -> list[Path]:
+    """The papers in the folder itself; papers in its subfolders are not read, and a warning says how many there are."""
+    nested = sum(1 for p in folder.rglob("*") if p.parent != folder and p.suffix.lower() in SUPPORTED_SUFFIXES)
+    if nested:
+        log.warning("%d papers in subfolders of %s are not read; move them into the folder itself", nested, folder)
     return sorted(p for p in folder.iterdir() if p.suffix.lower() in SUPPORTED_SUFFIXES)
