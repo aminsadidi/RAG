@@ -18,7 +18,8 @@ const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.la
 const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
 import { CI_REF, ciKeysFor, verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
-import { checkLogin, getSettings, makeSession, sameText, sessionUser, takeQuota } from "./accounts.js";
+import { addLoginFailure, checkLogin, getSettings, loginFailures, makeSession, sameText, sessionUser, takeQuota } from "./accounts.js";
+import { Counters } from "./counters.js";
 import { telegramWebhook } from "./admin.js";
 const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
 
@@ -59,18 +60,28 @@ async function qdrant(env, path, body) {
   return data.result;
 }
 
-// Model outputs are deterministic (temperature 0), so they are kept in KV for 90 days, keyed by
-// model + the full model input (prompt included, so an edited prompt is not served old answers): a repeated
-// question costs no Workers AI Neurons. A failing cache never fails a search.
-async function cached(env, model, input, compute) {
-  if (!env.AICACHE) return compute();
+// Model outputs are deterministic (temperature 0), so they are kept for 90 days, keyed by model + the full model
+// input (prompt included, so an edited prompt is not served old answers): a repeated question costs no Workers AI
+// Neurons. A failing cache never fails a search.
+// store "kv": Workers KV (global; the translation and SubQ, the costly ones). store "cache": the Cache API of the
+// data centre (the query embedding and the scope check, cheap and asked on every search): KV's 1000 writes a day on
+// the free plan are kept for what needs them (Cache API puts are free and unlimited; on *.workers.dev it does not
+// keep anything, so those are computed again there until the site is on its own domain).
+const CACHE_TTL = 90 * 86400;
+async function cached(env, model, input, compute, store = "kv") {
+  const cache = store === "cache" ? globalThis.caches?.default : null;
+  if (store === "kv" ? !env.AICACHE : !cache) return compute();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${model}\n${input}`));
   const key = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-  const hit = await env.AICACHE.get(key, "json").catch(() => null);
+  const url = `https://matrag-cache.invalid/${key}`;
+  const hit = store === "kv" ? await env.AICACHE.get(key, "json").catch(() => null)
+    : await cache.match(url).then((r) => (r ? r.json() : null)).catch(() => null);
   if (hit !== null) return hit;
   const value = await compute();
   if (value === null || value === undefined) return value; // nothing worth keeping (and "null" would read as a miss)
-  await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: 90 * 86400 }).catch((e) => console.log("AICACHE put", String(e)));
+  if (store === "kv") await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: CACHE_TTL }).catch((e) => console.log("AICACHE put", String(e)));
+  else await cache.put(url, new Response(JSON.stringify(value), { headers: { "content-type": "application/json", "cache-control": `max-age=${CACHE_TTL}` } }))
+    .catch((e) => console.log("cache put", String(e)));
   return value;
 }
 
@@ -90,7 +101,7 @@ async function scopeOf(env, question) {
       messages: [{ role: "system", content: SCOPE_PROMPT }, { role: "user", content: question }], max_tokens: 4, temperature: 0,
     });
     return scopeWord(out.response);
-  });
+  }, "cache");
 }
 
 async function embed(env, query) {
@@ -99,7 +110,7 @@ async function embed(env, query) {
   return cached(env, env.EMBED_MODEL, `cls\n${text}`, async () => {
     const out = await env.AI.run(env.EMBED_MODEL, { text: [text], pooling: "cls" });
     return out.data[0];
-  });
+  }, "cache");
 }
 
 // Reranking: a cross-encoder reads the question and each candidate passage together, which ranks better
@@ -431,10 +442,11 @@ async function handle(request, env, ctx) {
     given = String(form.get("password") ?? ""); name = String(form.get("username") || "").trim().toLowerCase();
   }
   if (given !== null) {
-    // shortcut: KV counts are eventually consistent, so a burst can pass a few more tries; fine for guessing a password
-    // per address and name: one person mistyping behind a shared (university) address does not lock out the others
+    // per address and name: one person mistyping behind a shared (university) address does not lock out the others.
+    // When the count cannot be read or kept, the login is refused (fail closed): a guesser must not get unlimited tries.
     const ip = request.headers.get("cf-connecting-ip") || "?", triesKey = `loginfail:${ip}:${name.slice(0, 32) || "owner"}`;
-    const tries = env.AICACHE ? Number(await env.AICACHE.get(triesKey).catch(() => 0)) || 0 : 0;
+    const tries = await loginFailures(env, triesKey);
+    if (tries === null) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
     if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
     const owner = Boolean(env.SITE_PASSWORD) && (!name || name === "owner") && (await sameText(given, env.SITE_PASSWORD));
     const user = owner ? "owner" : name && (await checkLogin(env, name, String(given))) ? name : null;
@@ -444,8 +456,9 @@ async function handle(request, env, ctx) {
       return new Response(null, { status: 303, headers: {
         location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
     }
-    await env.AICACHE?.put(triesKey, String(tries + 1), { expirationTtl: 900 }).catch(() => {});
+    const counted = await addLoginFailure(env, triesKey, tries);
     await new Promise((r) => setTimeout(r, 800));
+    if (!counted) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
     return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
   }
   if (url.pathname === "/logout") {
@@ -546,6 +559,8 @@ async function handle(request, env, ctx) {
   }
   return json({ error: "not found" }, 404);
 }
+
+export { Counters };
 
 export default {
   fetch: handle,

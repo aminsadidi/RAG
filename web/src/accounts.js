@@ -1,6 +1,8 @@
 // Accounts of the site's users (KV user:<name>), made and managed from the owner's Telegram (admin.js).
 // Passwords are generated here (random, 10 characters), so a salted SHA-256 is enough; sessions are signed
 // cookies "<user>.<expiry>.<hmac>". The owner logs in as "owner" with the site's password (SITE_PASSWORD).
+import { counter } from "./counters.js";
+
 const enc = new TextEncoder();
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 export const NAME = /^[a-z0-9][a-z0-9_.-]{2,31}$/;
@@ -115,12 +117,40 @@ export async function getSettings(env) { return (env.AICACHE && (await env.AICAC
 export async function setSettings(env, change) { const s = { ...(await getSettings(env)), ...change }; await env.AICACHE.put("site:settings", JSON.stringify(s)); return s; }
 
 // Daily search quota (0 = none): true if this search may run (and counts it).
-// kind: a second counter with its own limit (feedback). A KV failure (the daily write limit) never blocks the reader.
+// kind: a second counter with its own limit (feedback). Counted in the Counters Durable Object (counters.js); KV
+// only when that binding is missing. A failure to count lets the reader through (a search, not a password).
 export async function takeQuota(env, acc, kind = "quota") {
-  if (!acc.quota || acc.role === "owner" || !env.AICACHE) return true;
+  if (!acc.quota || acc.role === "owner") return true;
   const key = `${kind}:${acc.name}:${new Date().toISOString().slice(0, 10)}`;
+  if (env.COUNTERS) {
+    return counter(env, "take", { key, limit: acc.quota, ttl: 2 * DAY })
+      .then((r) => r.ok, (e) => { console.log("quota", String(e)); return true; });
+  }
+  if (!env.AICACHE) return true;
   const used = Number(await env.AICACHE.get(key).catch(() => 0)) || 0;
   if (used >= acc.quota) return false;
   await env.AICACHE.put(key, String(used + 1), { expirationTtl: 2 * DAY }).catch((e) => console.log("quota put", String(e)));
   return true;
+}
+
+// Failed logins per address and name: the count, or null when it cannot be read (the login then fails closed).
+export async function loginFailures(env, key) {
+  try {
+    if (env.COUNTERS) return (await counter(env, "get", { key })).n;
+    return env.AICACHE ? Number(await env.AICACHE.get(key)) || 0 : 0;
+  } catch (e) {
+    console.log("loginfail get", String(e));
+    return null;
+  }
+}
+// One more failed login (window: 15 minutes); false when it could not be counted.
+export async function addLoginFailure(env, key, seen) {
+  try {
+    if (env.COUNTERS) await counter(env, "add", { key, ttl: 900 });
+    else await env.AICACHE?.put(key, String(seen + 1), { expirationTtl: 900 });
+    return true;
+  } catch (e) {
+    console.log("loginfail put", String(e));
+    return false;
+  }
 }
