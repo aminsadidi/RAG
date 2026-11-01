@@ -23,6 +23,8 @@ import { telegramWebhook } from "./admin.js";
 const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
 
 const FEEDBACK_PER_DAY = 30; // each one is a Telegram message and a KV write
+// whole papers a non-owner account may open a day: enough to read, not to copy the full-text collection
+const PAPERS_PER_DAY = 150;
 const LOGIN_TRIES = 10; // failed logins per address and name per 15 minutes
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch", "basis_p"];  // basis_p: scripts/quality/passage_basis.py
 const MODES = ["hybrid", "vector", "bm25"];
@@ -214,7 +216,7 @@ async function tableNeighbours(env, payloads) {
   if (!want.size) return new Map();
   const ids = await Promise.all([...want].map(pointId));
   const got = await qdrant(env, `/collections/${env.COLLECTION}/points`,
-    { ids, with_payload: ["node_id", "text", "content_type", "headings", "pages"], with_vector: false });
+    { ids, with_payload: ["node_id", "text", "content_type", "headings", "pages", "boxes"], with_vector: false });
   return new Map(got.map((p) => [String(p.payload.node_id), p.payload]));
 }
 async function stitchTables(env, hits, neighbours) {
@@ -240,6 +242,10 @@ async function stitchTables(env, hits, neighbours) {
       return i && head && t.startsWith(head) ? t.slice(head.length).trimStart() : t;
     }).join("\n");
     h.stitched = before.length + after.length;
+    // the page view marks the whole joined table, not only the hit's rows
+    const boxes = (p) => { try { return JSON.parse(p.boxes || "[]"); } catch { return []; } };
+    const all = [...before, h, ...after].flatMap(boxes);
+    if (all.length) h.boxes = JSON.stringify(all);
   }
 }
 
@@ -565,6 +571,8 @@ async function handle(request, env, ctx) {
     }
     if (url.pathname === "/api/paper") {
       if (!acc.search) return denied("search is not available on this account"); // the papers' full text
+      if (!(await takeQuota(env, { ...acc, quota: PAPERS_PER_DAY }, "paper")))
+        return json({ error: `daily limit of ${PAPERS_PER_DAY} papers opened reached / سقف روزانه‌ی ${PAPERS_PER_DAY} مقاله‌ی بازشده پر شد` }, 429);
       const data = await paper(env, url.searchParams.get("doc_id") || "");
       return json({ ...data, chunks: noPdf(data.chunks || []) });
     }

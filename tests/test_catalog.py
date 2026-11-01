@@ -203,3 +203,11 @@ def test_failed_conversions_are_skipped_until_retried(collection, settings, monk
     assert ws.convert_shard(0, 1)["failed"] == 0  # recorded: not retried by default
     assert ws.status()["pdfs_failed"] == 3
     assert ws.convert_shard(0, 1, retry_failed=True)["failed"] == 3
+
+
+def test_every_doi_form_gives_one_key():
+    from matrag.catalog import CatalogEntry
+
+    keys = {CatalogEntry(doi=d, title="t").key for d in ("10.1364/JOSAB.6.000616", "https://doi.org/10.1364/JOSAB.6.000616",
+                                                       "http://dx.doi.org/10.1364/josab.6.000616", "doi:10.1364/JOSAB.6.000616")}
+    assert keys == {"10.1364_josab.6.000616"}

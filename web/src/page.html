@@ -234,7 +234,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
   <button id="langbtn" type="button" title="English / فارسی">English</button>
-  <a href="/logout" class="logout">خروج</a>
+  <a href="/logout" class="logout" id="logoutlink">خروج</a>
 </aside>
 
 <main>
@@ -1365,6 +1365,19 @@ document.addEventListener("click", (e) => {
   $("q").value = `${$("rimat").value} Sellmeier equation refractive index`; $("material").value = ""; showTab("search"); runSearch();
 });
 
+// Logging out clears this browser's site data (a shared lab computer keeps nothing), the user's own formulas too:
+// with some saved, ask first and offer them as a file
+document.getElementById("logoutlink")?.addEventListener("click", (e) => {
+  let mine = []; try { mine = JSON.parse(localStorage.getItem("ri_user") || "[]"); } catch { /* no storage */ }
+  if (!mine.length) return;
+  e.preventDefault();
+  if (confirm(LANG === "en" ? `Logging out deletes your ${mine.length} own formulas/data in this browser. Save them as a file first?`
+    : `با خروج، ${fa(mine.length)} فرمول یا داده‌ی خودتان در این مرورگر پاک می‌شود. اول در یک فایل ذخیره شوند؟`)) {
+    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([JSON.stringify(mine, null, 1)], { type: "application/json" })), download: "matrag-my-data.json" });
+    a.click();
+  }
+  setTimeout(() => { location.href = "/logout"; }, 300);
+});
 // ---------- user entries (localStorage; the page works without it)
 function loadUser() { try { RI.user = JSON.parse(localStorage.getItem("ri_user") || "[]").filter((u) => u && u.id); } catch { RI.user = []; } }
 function saveUser() { try { localStorage.setItem("ri_user", JSON.stringify(RI.user)); } catch {} }

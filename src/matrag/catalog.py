@@ -20,6 +20,7 @@ import csv
 import hashlib
 import json
 import os
+import logging
 import re
 import shutil
 from dataclasses import dataclass
@@ -42,6 +43,8 @@ PAPER_SUFFIXES = (".pdf",)
 _SKIP_DIRS = {INDEX_DIR, PROCESSED_DIR, "03_Paywalled_DOIs", "04_Dispersion_Formulas_Data", "03_Reference_Data"}
 # Where organize() puts PDFs it cannot place in a category folder.
 NOT_IN_INDEX_DIR, DUPLICATES_DIR = "99_Not_in_master_index", "98_Duplicate_copies"
+
+log = logging.getLogger(__name__)
 
 FULL_TEXT, ABSTRACT, METADATA_ONLY = "full_text_pdf", "abstract", "metadata_only"
 
@@ -98,7 +101,8 @@ class CatalogEntry(BaseModel):
     def key(self) -> str:
         """Stable id: the DOI (file-name form), else arXiv or OpenAlex id, else the index's own id."""
         if self.doi:
-            return doi_key(self.doi.removeprefix("https://doi.org/"))
+            # every way a DOI is written (https://doi.org/, http://dx.doi.org/, doi:) gives the same key
+            return doi_key(re.sub(r"^(https?://(dx\.)?doi\.org/|doi:\s*)", "", self.doi.strip(), flags=re.I))
         if self.arxiv_id:
             return "arxiv_" + doi_key(self.arxiv_id)
         if self.openalex_id:
@@ -216,7 +220,11 @@ def plan(root: Path) -> Plan:
     """Pair every PDF with its index entry; papers without a PDF are kept as abstract/metadata items."""
     entries = load_catalog(root)
     by_path = {e.pdf_path.replace("\\", "/").lower(): e for e in entries if e.pdf_path}
-    by_key = {e.key: e for e in entries}
+    by_key = {}
+    for e in entries:
+        if e.key in by_key and by_key[e.key] is not e:  # two index rows for one paper: the later one wins
+            log.warning("two catalog entries share the key %s (%s / %s)", e.key, by_key[e.key].title[:60], e.title[:60])
+        by_key[e.key] = e
     matched: dict[str, Item] = {}
     unmatched: dict[str, Item] = {}
     duplicates = []
