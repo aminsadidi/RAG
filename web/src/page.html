@@ -2064,6 +2064,8 @@ function ncpmRun() {
 const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "Mg-LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
 // cubic crystals made in orientation-patterned form (OP-GaAs, OP-GaP), the advisor's QPM candidates among them
 const OP = new Set(["GaAs", "GaP"]);
+// the crystals QPM is offered for in the other tabs (the SPDC tab runs in another script)
+window.QPM_OK = new Set([...POLED, ...OP]);
 function qpm(c, src, w) {
   if (src.isotropic) return qpmCubic(c, src, w);
   const d = PM.dij[c.material]?.d;
@@ -2683,7 +2685,8 @@ function fillCfg() {
   try {
     for (const r of solveAll(nAt, s.kind, "opo", lp, l1)) opts.push({ label: `تطبیق فاز زاویه‌ای: صفحه‌ی ${r.plane}، ${r.type}، زاویه ${r.angle.toFixed(2)}°`, plane: r.plane, angle: r.angle * Math.PI / 180, type: r.type, sol: r });
   } catch { /* outside the formula's range */ }
-  const axes = s.kind === "uniaxial" ? ["x", "z"] : ["x", "y", "z"];
+  // QPM only in crystals made periodically poled or orientation-patterned (PPLN, PPKTP, OP-GaAs …), as in the PM tab
+  const axes = !window.QPM_OK || window.QPM_OK.has($("spmat").value) ? (s.kind === "uniaxial" ? ["x", "z"] : ["x", "y", "z"]) : [];
   for (const ax of axes) {
     const [plane, angle] = AXIS[ax], dir = direction(plane, angle), [ns, nf] = eigenIndices(nAt(lp), dir);
     const others = { x: ["y", "z"], y: ["x", "z"], z: ["x", "y"] }[ax], idx = { x: 0, y: 1, z: 2 };
