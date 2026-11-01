@@ -3,11 +3,10 @@ part-relative inside), leave missing ranges as empty pages so page numbers stay 
 replace the book's full-text points on the site."""
 import sys
 from pathlib import Path
-sys.path.insert(0, "/home/user/RAG/scripts/ocr_gh")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "ocr_gh"))
 from docling_core.types.doc import DoclingDocument, Size
 from llama_index.core.schema import MetadataMode
-from qdrant_client import models
-from common import NAME, full_text_points, quality
+from common import full_text_points, quality, replace_points
 from matrag import qdrant_store
 from matrag.config import Settings
 from matrag.index import make_embed_model
@@ -50,13 +49,5 @@ if "--dry" in sys.argv or not (nc > oc and ns >= 0.12):  # a handbook of data ta
 embed = make_embed_model(s)
 vectors = embed.get_text_embedding_batch([n.get_content(metadata_mode=MetadataMode.EMBED) for n in nodes], show_progress=False)
 points = list(qdrant_store.iter_points(nodes, {n.node_id: v for n, v in zip(nodes, vectors)}))
-for p in points:
-    p.payload["ocr"] = True
-    if ref.get("drive_id"):
-        p.payload["drive_id"] = ref["drive_id"]
-qc.delete(NAME, points_selector=models.FilterSelector(filter=models.Filter(must=[
-    models.FieldCondition(key="doc_id", match=models.MatchValue(value=DOC)),
-    models.FieldCondition(key="source_type", match=models.MatchValue(value="full_text_pdf"))])), wait=True)
-for i in range(0, len(points), 64):
-    qc.upsert(NAME, points=points[i:i + 64], wait=True)
+replace_points(qc, DOC, points, old, ocr=True)
 print(f"replaced: {len(points)} points")

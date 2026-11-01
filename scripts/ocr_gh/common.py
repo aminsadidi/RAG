@@ -58,7 +58,40 @@ def listed(name: str) -> set[str]:
     return {line.split("#")[0].strip() for line in lines} - {""}
 
 
+PAPER_KEYS = ("drive_id", "pdf_mismatch", "conversion")  # paper-level fields the site's old points carry
+
+
 def full_text_points(qc, doc_id: str) -> list:
-    points, _ = qc.scroll(NAME, limit=10000, with_payload=True, with_vectors=False, scroll_filter={"must": [
-        {"key": "doc_id", "match": {"value": doc_id}}, {"key": "source_type", "match": {"value": "full_text_pdf"}}]})
+    from qdrant_client import models
+
+    points, _ = qc.scroll(NAME, limit=10000, with_payload=True, with_vectors=False, scroll_filter=models.Filter(must=[
+        models.FieldCondition(key="doc_id", match=models.MatchValue(value=doc_id)),
+        models.FieldCondition(key="source_type", match=models.MatchValue(value="full_text_pdf"))]))
     return points
+
+
+def replace_points(qc, doc_id: str, points: list, old: list, ocr: bool = False, batch: int = 64) -> None:
+    """Put ``points`` in place of the paper's full-text points ``old`` on the site, never leaving it without text.
+
+    The new points are written first and only then the old ones not among them are deleted, so a failure half
+    way leaves the paper with both, not with nothing. Paper-level fields (PAPER_KEYS) come over from the old
+    points, and a passage whose text did not change keeps the fields other scripts added (crystals, junk, ...).
+    """
+    from qdrant_client import models
+
+    from matrag.qdrant_store import ENRICHED_KEYS, text_hash
+
+    ref = old[0].payload if old else {}
+    enriched = {text_hash(p.payload.get("text", "")): {k: p.payload[k] for k in ENRICHED_KEYS if k in p.payload}
+                for p in old}
+    for p in points:
+        p.payload.update({k: ref[k] for k in PAPER_KEYS if k in ref})
+        p.payload.update(enriched.get(text_hash(p.payload.get("text", "")), {}))
+        if ocr:
+            p.payload["ocr"] = True
+    for i in range(0, len(points), batch):
+        qc.upsert(NAME, points=points[i:i + batch], wait=True)
+    new = {str(p.id) for p in points}
+    stale = [p.id for p in old if str(p.id) not in new]
+    if stale:
+        qc.delete(NAME, points_selector=models.PointIdsList(points=stale), wait=True)
