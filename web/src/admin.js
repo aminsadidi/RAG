@@ -66,7 +66,7 @@ async function userList(env, page) {
 async function userCard(env, name, note = "") {
   const u = await getUser(env, name);
   if (!u) return { text: `کاربر «${name}» نیست.`, keyboard: [[btn("👥 کاربران", "ul:0")], BACK] };
-  const events = (await listLogs(env, ago(180))).filter((e) => e.user === name);
+  const events = await listLogs(env, ago(180), { user: name });
   const s = events.filter((e) => e.kind === "search" || e.kind === "unanswered");
   const last = events.at(-1);
   return {

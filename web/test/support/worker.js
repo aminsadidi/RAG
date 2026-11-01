@@ -101,3 +101,19 @@ export async function ownerCookie(e) {
   const { makeSession } = await import("../../src/accounts.js");
   return makeSession(e, "owner", 1);
 }
+
+// A D1 database over node:sqlite, with the migrations of web/migrations applied
+export async function fakeD1() {
+  const { DatabaseSync } = await import("node:sqlite");
+  const { readFileSync, readdirSync } = await import("node:fs");
+  const db = new DatabaseSync(":memory:");
+  const dir = new URL("../../migrations/", import.meta.url);
+  for (const f of readdirSync(dir).sort()) db.exec(readFileSync(new URL(f, dir), "utf8"));
+  const stmt = (q, args = []) => ({
+    bind: (...a) => stmt(q, a),
+    all: async () => ({ results: db.prepare(q).all(...args) }),
+    run: async () => { db.prepare(q).run(...args); return { success: true }; },
+    first: async () => db.prepare(q).get(...args) ?? null,
+  });
+  return { prepare: (q) => stmt(q), db };
+}

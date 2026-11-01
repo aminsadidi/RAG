@@ -26,6 +26,15 @@ class_name = "Counters"
 tag = "v1"
 new_sqlite_classes = ["Counters"]
 
+# The event log (searches, feedback, logins; src/feedback.js) in D1. Until this block is enabled the log stays in
+# KV. To enable: npx wrangler d1 create matrag-logs, put its id below, uncomment, then
+# npx wrangler d1 migrations apply matrag-logs --remote
+# [[d1_databases]]
+# binding = "LOGS"
+# database_name = "matrag-logs"
+# database_id = "<id from wrangler d1 create>"
+# migrations_dir = "migrations"
+
 [[services]]
 binding = "PDFS"
 service = "matrag-pdfs"
