@@ -725,5 +725,9 @@
  "(در این سایت:": "(on this site:",
  "این ماده نه در refractiveindex.info هست و نه فرمولی از مقاله‌های مجموعه برایش ثبت شده.": "This material is neither in refractiveindex.info nor has a formula from the collection's papers.",
  "» در این سایت با نام": "» is kept on this site as",
- "» در فهرست این ابزار نیست": "» is not in this tool's list"
+ "» در فهرست این ابزار نیست": "» is not in this tool's list",
+ "خروج همه‌ی چیزهایی را که این صفحه در این مرورگر نگه داشته پاک می‌کند، از جمله": "Logging out clears everything this page kept in this browser, including",
+ "فرمول ضریب شکستی که خودتان وارد کرده‌اید.": "refractive-index formulas you entered yourself.",
+ "دانلود فرمول‌ها و خروج": "Download the formulas and log out",
+ "خروج بدون دانلود": "Log out without downloading"
 }
