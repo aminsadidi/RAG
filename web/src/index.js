@@ -17,12 +17,13 @@ import BASIS from "../../data/rag-optics/paper_basis.json";
 const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.label : undefined);
 const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
 import { CI_REF, ciKeysFor, verifyOidc } from "./oidc.js";
-import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
+import { dailySummary, feedback, hourlyGaps, logEvent } from "./feedback.js";
 import { addLoginFailure, checkLogin, getSettings, loginFailures, makeSession, sameText, sessionUser, takePaper, takeQuota } from "./accounts.js";
 import { Counters } from "./counters.js";
 import { telegramWebhook } from "./admin.js";
 const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
 
+const HOURLY = "5 * * * *"; // wrangler.toml [triggers]: the unanswered questions of the last hour
 const FEEDBACK_PER_DAY = 30; // each one is a Telegram message and a KV write
 const LOGIN_TRIES = 10; // failed logins per address and name per 15 minutes
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch", "basis_p"];  // basis_p: scripts/quality/passage_basis.py
@@ -112,8 +113,10 @@ async function translate(env, question) {
 
 async function scopeOf(env, question) {
   // the prompt is part of the key: an edited SCOPE_PROMPT must not be served the old verdicts for 90 days
-  return cached(env, env.TRANSLATE_MODEL, `scope\n${SCOPE_PROMPT}\n${question}`, async () => {
-    const out = await env.AI.run(env.TRANSLATE_MODEL, {
+  // a one-word answer: a small model (SCOPE_MODEL) does it for a fraction of the large one's neurons
+  const model = env.SCOPE_MODEL || env.TRANSLATE_MODEL;
+  return cached(env, model, `scope\n${SCOPE_PROMPT}\n${question}`, async () => {
+    const out = await env.AI.run(model, {
       messages: [{ role: "system", content: SCOPE_PROMPT }, { role: "user", content: question }], max_tokens: 4, temperature: 0,
     });
     return scopeWord(out.response);
@@ -552,9 +555,10 @@ async function handle(request, env, ctx) {
       const gap = none && !["offtopic", "general"].includes(found.relevance?.scope);
       // the CI account's searches (the weekly quality run, hundreds of gold questions) are neither logged nor sent
       const ci = Boolean(env.CI_USER) && user === env.CI_USER;
-      const log = ci ? null : logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
-        verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id }, user);
-      if (!ci) ctx?.waitUntil(gap ? Promise.all([log, unanswered(env, found, user)]) : log);
+      // a gap is logged with verdict "gap"; the hourly cron sends the hour's gaps to Telegram in one message
+      if (!ci) ctx?.waitUntil(logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
+        verdict: gap ? "gap" : found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id,
+        missing: found.relevance?.missingMaterials }, user));
       return json({ ...found, hits: noPdf(found.hits) });
     }
     if (url.pathname === "/api/feedback" && request.method === "POST") {
@@ -594,6 +598,7 @@ export { Counters };
 export default {
   fetch: handle,
   async scheduled(event, env, ctx) {
+    if (event.cron === HOURLY) return ctx.waitUntil(hourlyGaps(env, event.scheduledTime));
     ctx.waitUntil(qdrant(env, `/collections/${env.COLLECTION}`).then((info) => console.log("qdrant ok", info.points_count)));
     ctx.waitUntil(dailySummary(env));
   },

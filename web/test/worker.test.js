@@ -198,7 +198,37 @@ test("the CI account's searches are neither logged nor sent to Telegram", async 
     assert.equal([...e.AICACHE.map.keys()].filter((k) => k.startsWith("log:")).length, logsBefore);
     assert.equal(sent.length, 0);
     assert.equal((await search(e, await ownerCookie(e), { q: "zzqx unknown crystal" })).status, 200);
-    assert.equal(sent.length, 1);  // anyone else's unanswered question still is
+    assert.equal(sent.length, 0);  // not at once: the hourly cron sends the hour's questions together
+    const worker = (await import("../src/index.js")).default;
+    const waits = [];
+    await worker.scheduled({ cron: "5 * * * *", scheduledTime: Date.now() + 3600000 }, e, { waitUntil: (p) => waits.push(p) });
+    assert.deepEqual(await Promise.all(waits), [1]);  // anyone else's unanswered question still is, the CI's not
+    assert.equal(sent.length, 1);
+  } finally { q.restore(); }
+});
+
+test("new accounts get a daily quota by access level; a default quota follows a change of level", async () => {
+  const { DEFAULT_QUOTA, getUser, updateUser } = await import("../src/accounts.js");
+  const e = env();
+  await createUser(e, "full1", 0, ""); await createUser(e, "guest1", 0, "", "guest");
+  assert.equal((await getUser(e, "full1")).quota, DEFAULT_QUOTA.full);
+  assert.equal((await getUser(e, "guest1")).quota, DEFAULT_QUOTA.guest);
+  assert.ok(DEFAULT_QUOTA.full >= 300 && DEFAULT_QUOTA.guest === 50);
+  await updateUser(e, "guest1", { role: "full" });
+  assert.equal((await getUser(e, "guest1")).quota, DEFAULT_QUOTA.full);
+  await updateUser(e, "full1", { quota: 0 }); await updateUser(e, "full1", { role: "guest" });
+  assert.equal((await getUser(e, "full1")).quota, 0);  // set by hand (unlimited): kept
+});
+
+test("the scope check runs on SCOPE_MODEL when set", async () => {
+  const ai = fakeAI();
+  const e = searchEnv({ AI: ai, SCOPE_MODEL: "@cf/meta/llama-3.1-8b-instruct" });
+  const q = fakeQdrant([point(0)]);
+  try {
+    assert.equal((await search(e, await ownerCookie(e), { q: "LiNbO3 Sellmeier" })).status, 200);
+    const models = ai.calls.map((c) => c.model);
+    assert.ok(models.includes("@cf/meta/llama-3.1-8b-instruct"));
+    assert.ok(!models.includes(e.TRANSLATE_MODEL), "an English question needs no translation, and the scope check is on the small model");
   } finally { q.restore(); }
 });
 

@@ -3,7 +3,7 @@
 // (header X-Telegram-Bot-Api-Secret-Token = TG_WEBHOOK_SECRET); only the owner (TELEGRAM_CHAT_ID), in a private
 // chat, is answered; anyone else gets nothing. Free text is read only while the panel waits for it (a new
 // user's name, the announcement), the state kept in KV admin:state for 10 minutes.
-import { ROLES, createUser, deleteUser, getSettings, getUser, listUsers, setSettings, updateUser, usable } from "./accounts.js";
+import { DEFAULT_QUOTA, ROLES, createUser, deleteUser, getSettings, getUser, listUsers, setSettings, updateUser, usable } from "./accounts.js";
 import { listLogs } from "./feedback.js";
 
 // the site's address in the messages for users: SITE_URL (wrangler.toml [vars]; web/site_url.txt for the scripts)
@@ -121,7 +121,7 @@ async function online(env) {
 // For the owner: the account as set up. For the user: a separate message to forward as it is, with nothing
 // about the access level (a user without PDFs must not learn that the feature exists).
 const created = (name, days, role) =>
-  `✅ حساب «${name}» ساخته شد — ${ROLES[role].label}، ${days ? `${days} روز` : "بی‌پایان"}\n\nپیام بعدی را همان‌طور که هست برای کاربر فوروارد کنید.`;
+  `✅ حساب «${name}» ساخته شد — ${ROLES[role].label}، ${days ? `${days} روز` : "بی‌پایان"}، ${DEFAULT_QUOTA[role]} جست‌وجو در روز (از «📈 سهمیه» عوض می‌شود)\n\nپیام بعدی را همان‌طور که هست برای کاربر فوروارد کنید.`;
 const forUser = (site, name, password, days) => `سلام 👋
 حساب کاربری شما در MatRAG، سامانه‌ی جست‌وجو در مقاله‌های اپتیک غیرخطی، آماده است.
 
@@ -157,7 +157,7 @@ async function onButton(env, data) {
     case "uon": await updateUser(env, a, { active: true }); return userCard(env, a, "✅ دوباره فعال شد.");
     case "uro": return { text: `🎚 سطح دسترسی ${a}\n\n${ROLE_HELP}`, keyboard: roleKeyboard(`urs:${a}`, btn("↩️ بازگشت", `u:${a}`)) };
     case "urs": await updateUser(env, a, { role: b }); return userCard(env, a, `🎚 سطح دسترسی: ${ROLES[b].label}`);
-    case "uq": return { text: `📈 سهمیه‌ی روزانه‌ی جست‌وجوی ${a}`, keyboard: [[10, 30, 100].map((q) => btn(`${q} در روز`, `uqs:${a}:${q}`)), [btn("نامحدود", `uqs:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
+    case "uq": return { text: `📈 سهمیه‌ی روزانه‌ی جست‌وجوی ${a}`, keyboard: [[10, 50, 100, 300].map((q) => btn(`${q} در روز`, `uqs:${a}:${q}`)), [btn("نامحدود", `uqs:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
     case "uqs": await updateUser(env, a, { quota: Number(b) }); return userCard(env, a, `📈 سهمیه: ${Number(b) ? `${b} در روز` : "نامحدود"}`);
     case "ue": return { text: `⏳ تمدید اعتبار ${a}`, keyboard: [[7, 30, 90].map((d) => btn(`+${d} روز`, `ues:${a}:${d}`)), [btn("بی‌پایان", `ues:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
     case "ues": {
