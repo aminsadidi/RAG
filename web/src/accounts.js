@@ -121,16 +121,31 @@ export async function setSettings(env, change) { const s = { ...(await getSettin
 // only when that binding is missing. A failure to count lets the reader through (a search, not a password).
 export async function takeQuota(env, acc, kind = "quota") {
   if (!acc.quota || acc.role === "owner") return true;
-  const key = `${kind}:${acc.name}:${new Date().toISOString().slice(0, 10)}`;
+  return takeCount(env, `${kind}:${acc.name}:${new Date().toISOString().slice(0, 10)}`, acc.quota, 2 * DAY);
+}
+
+// One more use of a counter that allows `limit` per `ttl` seconds (the key names the window); true if allowed.
+export async function takeCount(env, key, limit, ttl) {
   if (env.COUNTERS) {
-    return counter(env, "take", { key, limit: acc.quota, ttl: 2 * DAY })
+    return counter(env, "take", { key, limit, ttl })
       .then((r) => r.ok, (e) => { console.log("quota", String(e)); return true; });
   }
   if (!env.AICACHE) return true;
   const used = Number(await env.AICACHE.get(key).catch(() => 0)) || 0;
-  if (used >= acc.quota) return false;
-  await env.AICACHE.put(key, String(used + 1), { expirationTtl: 2 * DAY }).catch((e) => console.log("quota put", String(e)));
+  if (used >= limit) return false;
+  await env.AICACHE.put(key, String(used + 1), { expirationTtl: Math.max(60, ttl) }).catch((e) => console.log("quota put", String(e)));
   return true;
+}
+
+// Opening a paper's full text (/api/paper): reading, not copying the collection. PAPERS_PER_SEARCH papers per
+// search of the daily quota (PAPERS_PER_DAY for accounts without one) and at most PAPERS_PER_MINUTE.
+export const PAPERS_PER_SEARCH = 3, PAPERS_PER_DAY = 300, PAPERS_PER_MINUTE = 10;
+export async function takePaper(env, acc) {
+  if (acc.role === "owner") return true;
+  const minute = Math.floor(Date.now() / 60000);
+  if (!(await takeCount(env, `paperrate:${acc.name}:${minute}`, PAPERS_PER_MINUTE, 120))) return false;
+  const day = new Date().toISOString().slice(0, 10);
+  return takeCount(env, `paper:${acc.name}:${day}`, acc.quota ? PAPERS_PER_SEARCH * acc.quota : PAPERS_PER_DAY, 2 * DAY);
 }
 
 // Failed logins per address and name: the count, or null when it cannot be read (the login then fails closed).

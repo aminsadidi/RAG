@@ -18,7 +18,7 @@ const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.la
 const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
 import { CI_REF, ciKeysFor, verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
-import { addLoginFailure, checkLogin, getSettings, loginFailures, makeSession, sameText, sessionUser, takeQuota } from "./accounts.js";
+import { addLoginFailure, checkLogin, getSettings, loginFailures, makeSession, sameText, sessionUser, takePaper, takeQuota } from "./accounts.js";
 import { Counters } from "./counters.js";
 import { telegramWebhook } from "./admin.js";
 const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
@@ -577,6 +577,7 @@ async function handle(request, env, ctx) {
     }
     if (url.pathname === "/api/paper") {
       if (!acc.search) return denied("search is not available on this account"); // the papers' full text
+      if (!(await takePaper(env, acc))) return json({ error: "too many papers opened, please wait / تعداد مقاله‌های بازشده از سقف گذشت، کمی صبر کنید" }, 429);
       const data = await paper(env, url.searchParams.get("doc_id") || "");
       return json({ ...data, chunks: noPdf(data.chunks || []) });
     }
