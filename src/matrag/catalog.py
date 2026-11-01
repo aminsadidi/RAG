@@ -22,6 +22,7 @@ import json
 import os
 import re
 import shutil
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -49,6 +50,14 @@ FULL_TEXT, ABSTRACT, METADATA_ONLY = "full_text_pdf", "abstract", "metadata_only
 def doi_key(doi: str) -> str:
     """File-name and id form of a DOI: lower case, '/' and other symbols replaced by '_'."""
     return re.sub(r"[^a-z0-9.]+", "_", doi.strip().lower()).strip("_.")
+
+
+_DOI_PREFIX = re.compile(r"^\s*(?:https?://(?:dx\.)?doi\.org/|doi:\s*)", re.IGNORECASE)
+
+
+def bare_doi(doi: str) -> str:
+    """The DOI without a resolver or scheme prefix: 'https://doi.org/', 'http://dx.doi.org/', 'doi:'."""
+    return _DOI_PREFIX.sub("", doi.strip())
 
 
 class CatalogEntry(BaseModel):
@@ -98,7 +107,7 @@ class CatalogEntry(BaseModel):
     def key(self) -> str:
         """Stable id: the DOI (file-name form), else arXiv or OpenAlex id, else the index's own id."""
         if self.doi:
-            return doi_key(self.doi.removeprefix("https://doi.org/"))
+            return doi_key(bare_doi(self.doi))
         if self.arxiv_id:
             return "arxiv_" + doi_key(self.arxiv_id)
         if self.openalex_id:
@@ -169,12 +178,20 @@ def load_catalog(root: Path) -> list[CatalogEntry]:
             rows = list(csv.DictReader(f))
     else:
         rows = [json.loads(line) for line in path.read_text("utf-8").splitlines() if line.strip()]
-    entries, seen = [], set()
+    entries, seen = [], {}
     for row in rows:
         entry = CatalogEntry(**_normalise(row))
-        if entry.key not in seen and (entry.title or entry.doi):
-            seen.add(entry.key)
-            entries.append(entry)
+        if not (entry.title or entry.doi):
+            continue
+        doi = bare_doi(entry.doi).lower()
+        if entry.key in seen:
+            # two different DOIs with one file-name form ("10.1002/(SICI)1" and "10.1002/sici_1"): the second is
+            # dropped as a duplicate, which is wrong; say so
+            if doi and seen[entry.key] and doi != seen[entry.key]:
+                warnings.warn(f"DOIs {seen[entry.key]} and {doi} share the id {entry.key}: only the first is kept", stacklevel=2)
+            continue
+        seen[entry.key] = doi
+        entries.append(entry)
     return entries
 
 
