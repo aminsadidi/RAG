@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { entryIndex, interpolate, refractiveIndex } from "../src/dispersion.client.js";
+import { entryIndex, interpolate, refractiveIndex, thermoOutside } from "../src/dispersion.client.js";
 
 const cases = JSON.parse(readFileSync(new URL("./dispersion_cases.json", import.meta.url)));
 
@@ -63,4 +63,13 @@ test("GaN: Sanford et al. (2003) is the first source and is positive uniaxial at
   assert.ok(Math.abs(ne - 2.3373) < 3e-3, `ne ${ne}`);
   assert.ok(Math.abs(entryIndex(src.axes.o, 0.532) - 2.3970) < 5e-3);
   assert.ok(Math.abs(entryIndex(src.axes.e, 0.532) - 2.4350) < 5e-3);
+});
+
+test("wavelengths outside every measured dn/dT piece are reported (thermoShift extrapolates there)", () => {
+  const piece = (lo, hi) => ({ range_um: [lo, hi], terms: [[1, 0]] });
+  const src = { thermo: { form: "kato", t0_c: 20 }, axes: { o: { thermo: [piece(0.4, 1.1), piece(1.1, 3)] }, e: { thermo: [piece(0.5, 3)] } } };
+  assert.deepEqual(thermoOutside(src, [0.532, 1.064, 2.128]), []);
+  assert.deepEqual(thermoOutside(src, [0.45, 1.064, 4]), [0.45, 4]);  // 0.45 only outside the e-ray's piece
+  assert.deepEqual(thermoOutside({ ...src, thermo: { form: "ghosh" } }, [4]), []);
+  assert.deepEqual(thermoOutside({ axes: {} }, [4]), []);
 });

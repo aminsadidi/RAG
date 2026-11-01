@@ -74,6 +74,15 @@ export function entryIndex(entry, lam) {
 // (1996) write 546, given as spec.f_c); "sellmeier": n² = A + B/(λ² − C) − D·λ² with each coefficient
 // linear in T − t0, spec {c: [A, B, C, D], dc: [dA, dB, dC, dD]} (Zhang et al. 2013, CBO); "oscillator":
 // the classical-oscillator model of Thomas et al. (1998), spec {t0_k, eps_inf, modes: [[ν, a1, a2, Δε, b1, b2, Γ/ν, c1, c2]]}.
+// The wavelengths (µm) outside every measured piece of a source's "kato" dn/dT on some axis: thermoShift then uses
+// the nearest piece, an extrapolation the page says. Other forms have no pieces: [].
+export function thermoOutside(src, lams) {
+  if (src?.thermo?.form !== "kato") return [];
+  const specs = Object.values(src.axes || {}).map((e) => e?.thermo).filter(Array.isArray);
+  const inside = (spec, l) => spec.some((p) => l >= p.range_um[0] - 1e-9 && l <= p.range_um[1] + 1e-9);
+  return [...new Set(lams.filter((l) => Number.isFinite(l) && specs.some((spec) => !inside(spec, l))))];
+}
+
 export function thermoShift(form, spec, t0, n0, lam, T) {
   if (T === t0 || !Number.isFinite(T)) return 0;
   if (form === "kato") {
