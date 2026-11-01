@@ -505,7 +505,11 @@ class Workspace:
             return False
         how = self.conversion_of(item.doc_id)
         folder = self.settings.processed_dir.parent / f"docling_{how.replace('+', '_')}" if how else self.settings.processed_dir
-        return any((folder / "parts" / item.doc_id).glob("*.json.gz"))
+        from matrag.ingest import is_book
+
+        parts = folder / "parts" / item.doc_id
+        # a book's marked parts folder (not the parts a max_pages run of a thesis leaves behind)
+        return is_book(parts, self.settings.max_pages) and any(parts.glob("*.json.gz"))
 
     def _stale_conversion(self, item) -> bool:
         """Delete the cached conversion of a paper listed in reconvert.txt if it is older than its date."""

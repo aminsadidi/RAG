@@ -156,3 +156,45 @@ def test_a_book_converted_in_parts_is_joined_whole_despite_max_pages(monkeypatch
     assert sorted(doc.pages) == list(range(1, 8))
     assert not (cache / "parts" / "book").exists()  # removed once every page is joined
     assert sorted(ingest.convert(pdf, FakeConverter(), cache, "book", max_pages=4).pages) == list(range(1, 8))
+
+
+def test_a_thesis_cut_at_max_pages_is_not_taken_for_a_book(monkeypatch, tmp_path):
+    """The parts a max_pages run leaves behind used to make the next run drop the cache and convert every page."""
+    from docling_core.types.doc import DoclingDocument, Size
+
+    def part(path, converter, page_range):
+        calls.append(page_range)
+        doc = DoclingDocument(name="thesis")
+        for n in range(page_range[0], page_range[1] + 1):
+            doc.add_page(page_no=n, size=Size(width=1, height=1))
+            doc.add_text(label="text", text=f"page {n}")
+        return doc
+
+    pdf = tmp_path / "thesis.pdf"
+    pdf.write_bytes(b"%PDF")
+    monkeypatch.setattr(ingest, "page_count", lambda p: 40)  # a 40-page thesis, cut at 6 pages
+    monkeypatch.setattr(ingest, "PART_PAGES", 2)
+    monkeypatch.setattr(ingest, "_convert_pages", part)
+    cache = tmp_path / "cache"
+    calls = []
+    first = ingest.convert(pdf, FakeConverter(), cache, "thesis", max_pages=6)
+    assert sorted(first.pages) == list(range(1, 7)) and calls == [(1, 2), (3, 4), (5, 6)]
+    assert (cache / "parts" / "thesis").is_dir()  # left behind: not every page is in
+    assert not ingest.is_book(cache / "parts" / "thesis", 6)
+    calls = []
+    again = ingest.convert(pdf, FakeConverter(), cache, "thesis", max_pages=6)
+    assert calls == [] and sorted(again.pages) == list(range(1, 7))  # the cached conversion, nothing converted
+
+
+def test_book_marker_and_old_unmarked_books(tmp_path):
+    parts = tmp_path / "parts" / "b"
+    parts.mkdir(parents=True)
+    (parts / "00001-00010.json.gz").write_bytes(b"x")
+    assert not ingest.is_book(parts, 60)
+    (parts / "00071-00080.json.gz").write_bytes(b"x")  # a part past max_pages: an old convert-book run
+    assert ingest.is_book(parts, 60)
+    marked = tmp_path / "parts" / "m"
+    marked.mkdir()
+    (marked / ingest.BOOK_MARKER).touch()
+    assert ingest.is_book(marked, 60) and ingest.is_book(marked, None)
+    assert not ingest.is_book(tmp_path / "parts" / "none", 60)
