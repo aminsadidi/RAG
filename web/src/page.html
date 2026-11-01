@@ -661,7 +661,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0">بازیابی: برنامه‌ی کولب در برابر سایت</h2>
       <div class="seg" id="evmetric"></div></div>
     <p class="hint">«سایت بعد از OCR و معادله‌ها»: متن ۵۴ مقاله‌ی اسکن‌شده یا بی‌متن با OCR (RapidOCR) خوانده شد، معادله‌های ۴۶ مقاله‌ی ارزیابی فرمول با مدل CodeFormula (GPU کولب) به LaTeX درآمد و ۶ مقاله که PDF آن‌ها در مجموعه مقاله‌ی دیگری بود فقط با چکیده نمایه شدند (اجرای کامل در کولب).</p>
-    <p class="hint">MRR: میانگین ۱/رتبه‌ی اولین مقاله‌ی درست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
+    <p class="hint">MRR (در سطح بخش، با بررسی صفحه، بدون برش در ۱۰): میانگین ۱/رتبه‌ی اولین بخشِ درست؛ با MRR@10 مقاله‌ای گزارش‌های کیفیت جست‌وجو قابل مقایسه نیست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
     <div id="evchart"><svg id="evsvg" role="img" aria-label="retrieval comparison"></svg></div>
     <div id="evlegend" class="chips" style="direction:ltr"></div>
     <table id="evtable" style="margin-top:10px"></table>
@@ -2473,7 +2473,7 @@ let EV = null, evMetric = "MRR";
 const GROUP_FA = { "generated-text": "نوشته‌ی مدل از متن مقاله", "generated-table": "نوشته‌ی مدل از جدول مقاله",
   ri: "refractiveindex.info (سه شکل نام)", dij: "ضرایب غیرخطی d", paper: "فرمول‌های خوانده‌شده از مقاله‌ها", all: "همه" };
 function drawBig(B) {
-  const MRR = B.metrics.indexOf("MRR"), R10 = B.metrics.indexOf("recall@10"), R5 = B.metrics.indexOf("recall@5");
+  const MRR = B.metrics.findIndex((m) => m === "MRR" || m === "chunk MRR"), R10 = B.metrics.indexOf("recall@10"), R5 = B.metrics.indexOf("recall@5");
   const all = B.groups.find((g) => g.group === "all"), nf = B.notfound;
   $("evbig").hidden = false;
   $("evbigtiles").innerHTML = [[fa(all.questions + nf.unanswerable), "سؤال (" + fa(nf.unanswerable) + " تا بی‌جواب)"],
@@ -2491,7 +2491,7 @@ function drawBig(B) {
 }
 window.loadEval = async () => {
   if (!EV) EV = await (await fetch("/eval.json")).json();
-  const r = EV.retrieval, mi = r.metrics.indexOf("MRR");
+  const r = EV.retrieval, mi = r.metrics.findIndex((m) => m === "MRR" || m === "chunk MRR");
   const facets = await api("/api/facets").then((x) => x.json()).catch(() => ({}));
   const tiles = [[fa(r.questions), "سؤال ارزیابی"], [facets.points ? fa(facets.points) : "—", "بخش در پایگاه"],
     [r.site_ocr.bm25[mi].toFixed(3), "بهترین MRR سایت"], [`+${Math.round((r.site_ocr.hybrid[mi] / r.local.hybrid[mi] - 1) * 100)}%`, "بهبود روش ترکیبی نسبت به کولب"]];

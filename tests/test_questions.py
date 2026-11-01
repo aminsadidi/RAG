@@ -66,5 +66,5 @@ def test_group_summaries(tmp_path):
     assert [it.group for it in items] == ["ri", "none", "dij"]
     rep = RetrievalReport("hybrid", {"ri-a-1": 1, "dij-x": None}, (1,))
     rows = {r["group"]: r for r in group_summaries(rep, items)}
-    assert rows["ri"]["MRR"] == 1 and rows["dij"]["MRR"] == 0 and rows["all"]["questions"] == 2
+    assert rows["ri"]["chunk MRR"] == 1 and rows["dij"]["chunk MRR"] == 0 and rows["all"]["questions"] == 2
     assert len(NOT_FOUND) == 40
