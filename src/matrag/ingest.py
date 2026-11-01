@@ -141,7 +141,7 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
     parts_dir = cache_dir / "parts" / name
     # A book whose parts were converted on purpose (convert-book) is joined whole: max_pages is for theses
     # that come along with the papers, and the parts left out would be lost when the folder is removed.
-    book = parts_dir.is_dir() and any(parts_dir.glob("*.json.gz"))
+    book = is_book(parts_dir, max_pages)
     doc = None if book else cached_document(cache_dir, name)
     if doc is not None:
         return doc
@@ -158,6 +158,22 @@ def convert(path: Path, converter: DocumentConverter, cache_dir: Path, name: str
     if pages > PART_PAGES and pages == total:  # only once every page is in the joined document
         shutil.rmtree(parts_dir, ignore_errors=True)
     return doc
+
+
+# convert_parts marks a book's parts folder with this file. A thesis converted once with max_pages also leaves its
+# parts folder behind (it is removed only when every page is in), so parts alone do not make a book: taken for one,
+# the thesis lost its cached conversion and all its pages (hours with OCR) were converted on the next run.
+BOOK_MARKER = "BOOK"
+
+
+def is_book(parts_dir: Path, max_pages: int | None = None) -> bool:
+    """Whether ``parts_dir`` holds the parts of a book (convert-book): the marker, or, for folders made before it, a
+    part that starts past ``max_pages`` (a run limited to max_pages never converts one)."""
+    if (parts_dir / BOOK_MARKER).exists():
+        return True
+    if not max_pages or not parts_dir.is_dir():
+        return False
+    return any(int(p.name[:5]) > max_pages for p in parts_dir.glob("[0-9][0-9][0-9][0-9][0-9]-*.json.gz"))
 
 
 # A book is converted PART_PAGES pages at a time, each part cached as it is done, so a run cut off by a
@@ -197,6 +213,8 @@ def convert_parts(path: Path, converter: DocumentConverter, cache_dir: Path, nam
     finds every part done. Returns (parts of this share, parts converted now)."""
     pages = page_count(path)
     extend_timeout(converter, path)
+    (cache_dir / "parts" / name).mkdir(parents=True, exist_ok=True)
+    (cache_dir / "parts" / name / BOOK_MARKER).touch()  # convert() joins it whole, whatever max_pages says
     starts = list(range(1, pages + 1, PART_PAGES))[shard::shards]
     done = 0
     for k, start in enumerate(starts, 1):
