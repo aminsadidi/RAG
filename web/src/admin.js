@@ -45,7 +45,7 @@ async function home(env) {
       [btn("❓ بی‌جواب‌ها", "unans"), btn("💬 بازخوردها", "fb")],
       [btn("🕘 فعالیت‌ها", "act"), btn("🔑 ورودهای ناموفق", "fail")],
       [btn("📢 اعلان سایت", "banner"), btn(settings.maintenance ? "🛠 خاموش‌کردن تعمیر" : "🛠 حالت تعمیر", "maint")],
-      [btn("🔄 تازه‌سازی", "m")],
+      [btn("🔒 خروج مالک از همه‌جا", "oout"), btn("🔄 تازه‌سازی", "m")],
     ],
   };
 }
@@ -153,7 +153,8 @@ async function onButton(env, data) {
     case "ua": return { ...(await logScreen(env, `🕘 فعالیت‌های ${a}`, (e) => e.user === a, 180, 30)), keyboard: [[btn(`👤 ${a}`, `u:${a}`)], BACK] };
     case "ur": { const { password } = await updateUser(env, a, { resetPassword: true });
       return { ...(await userCard(env, a, `🔑 رمز ${a} عوض شد؛ پیام بعدی را برایش فوروارد کنید.`)), forward: passwordFor(siteOf(env), a, password) }; }
-    case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ همین حالا از سایت بیرون است.");
+    // KV reads are cached up to about a minute at the edge: the account stops working within that, not at once
+    case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ حداکثر تا یک دقیقه‌ی دیگر از سایت بیرون است.");
     case "uon": await updateUser(env, a, { active: true }); return userCard(env, a, "✅ دوباره فعال شد.");
     case "uro": return { text: `🎚 سطح دسترسی ${a}\n\n${ROLE_HELP}`, keyboard: roleKeyboard(`urs:${a}`, btn("↩️ بازگشت", `u:${a}`)) };
     case "urs": await updateUser(env, a, { role: b }); return userCard(env, a, `🎚 سطح دسترسی: ${ROLES[b].label}`);
@@ -183,6 +184,10 @@ async function onButton(env, data) {
     case "fb": return logScreen(env, "💬 آخرین بازخوردها", (e) => e.kind === "feedback", 90);
     case "act": return logScreen(env, "🕘 آخرین فعالیت‌ها", () => true, 30);
     case "fail": return logScreen(env, "🔑 ورودهای ناموفق", (e) => e.kind === "failedlogin", 30);
+    case "oout": return { text: "🔒 همه‌ی نشست‌های مالک (همه‌ی مرورگرهایی که با رمز مالک وارد شده‌اند) باطل شود؟ بعد از آن دوباره با رمز وارد شوید.",
+      keyboard: [[btn("بله، همه را بیرون کن", "oouty"), btn("نه", "m")]] };
+    case "oouty": { const s = await getSettings(env); await setSettings(env, { ownerEpoch: (s.ownerEpoch || 0) + 1 });
+      const h = await home(env); return { ...h, text: "🔒 همه‌ی نشست‌های مالک باطل شد (حداکثر تا یک دقیقه).\n\n" + h.text }; }
     case "maint": { const s = await getSettings(env); await setSettings(env, { maintenance: !s.maintenance }); return home(env); }
     case "banner": {
       const s = await getSettings(env);

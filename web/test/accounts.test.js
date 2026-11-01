@@ -73,8 +73,10 @@ test("admin panel: buttons, a user made in three steps, only the owner", async (
   await press("urs:sara:tools"); assert.equal((await e.AICACHE.get("user:sara", "json")).role, "tools");
   await press("uqs:sara:30"); assert.equal((await e.AICACHE.get("user:sara", "json")).quota, 30);
   await press("uoff:sara"); assert.equal((await e.AICACHE.get("user:sara", "json")).active, false);
+  assert.match(sent.filter((x) => x.text).at(-1).text, /تا یک دقیقه/);  // KV is cached at the edge: not "at once"
   // site settings
   await press("maint"); assert.equal((await e.AICACHE.get("site:settings", "json")).maintenance, true);
+  await press("oout"); await press("oouty"); assert.equal((await e.AICACHE.get("site:settings", "json")).ownerEpoch, 1);
   await press("banner"); await text("سرور امشب به‌روز می‌شود");
   assert.equal((await e.AICACHE.get("site:settings", "json")).banner, "سرور امشب به‌روز می‌شود");
   await press("udel:sara"); await press("udely:sara"); assert.equal(await e.AICACHE.get("user:sara"), null);

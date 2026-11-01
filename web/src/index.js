@@ -452,6 +452,28 @@ function etagOf(text) {
   return etags.get(text);
 }
 
+// The login form's name and password: a session cookie, or the login page again with the reason.
+async function login(request, env, ctx, name, given) {
+  // per address and name: one person mistyping behind a shared (university) address does not lock out the others.
+  // When the count cannot be read or kept, the login is refused (fail closed): a guesser must not get unlimited tries.
+  const ip = request.headers.get("cf-connecting-ip") || "?", triesKey = `loginfail:${ip}:${name.slice(0, 32) || "owner"}`;
+  const tries = await loginFailures(env, triesKey);
+  if (tries === null) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
+  if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
+  const owner = Boolean(env.SITE_PASSWORD) && (!name || name === "owner") && (await sameText(given, env.SITE_PASSWORD));
+  const user = owner ? "owner" : name && (await checkLogin(env, name, String(given))) ? name : null;
+  ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
+  if (user) {
+    const days = user === "owner" ? 365 : 30;
+    return new Response(null, { status: 303, headers: {
+      location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
+  }
+  const counted = await addLoginFailure(env, triesKey, tries);
+  await new Promise((r) => setTimeout(r, 800));
+  if (!counted) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
+  return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
+}
+
 async function handle(request, env, ctx) {
   const url = new URL(request.url);
   if (url.pathname === "/ci/keys" && request.method === "POST") return ciKeys(request, env);
@@ -460,28 +482,16 @@ async function handle(request, env, ctx) {
   // a password in a URL stays in histories and logs); the browser is then remembered (owner a year, users 30 days).
   let given = null, name = "";
   if (url.pathname === "/login" && request.method === "POST") {
-    const form = await request.formData();
+    // a body that is no form (JSON, garbage) is a failed login, not an exception page
+    const form = await request.formData().catch(() => null);
+    if (!form) return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 400);
     given = String(form.get("password") ?? ""); name = String(form.get("username") || "").trim().toLowerCase();
   }
   if (given !== null) {
-    // per address and name: one person mistyping behind a shared (university) address does not lock out the others.
-    // When the count cannot be read or kept, the login is refused (fail closed): a guesser must not get unlimited tries.
-    const ip = request.headers.get("cf-connecting-ip") || "?", triesKey = `loginfail:${ip}:${name.slice(0, 32) || "owner"}`;
-    const tries = await loginFailures(env, triesKey);
-    if (tries === null) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
-    if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
-    const owner = Boolean(env.SITE_PASSWORD) && (!name || name === "owner") && (await sameText(given, env.SITE_PASSWORD));
-    const user = owner ? "owner" : name && (await checkLogin(env, name, String(given))) ? name : null;
-    ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
-    if (user) {
-      const days = user === "owner" ? 365 : 30;
-      return new Response(null, { status: 303, headers: {
-        location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
+    try { return await login(request, env, ctx, name, given); } catch (e) {
+      console.log("login", String(e?.message || e));
+      return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
     }
-    const counted = await addLoginFailure(env, triesKey, tries);
-    await new Promise((r) => setTimeout(r, 800));
-    if (!counted) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
-    return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
   }
   if (url.pathname === "/logout") {
     // POST only: a link or an image elsewhere must not sign the reader out and wipe the page's data; a form posted
