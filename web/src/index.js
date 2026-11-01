@@ -57,7 +57,11 @@ async function signedIn(request, env) {
 
 const MAINTENANCE = `<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MatRAG</title>
 <body style="font-family:Tahoma,sans-serif;display:grid;place-items:center;min-height:90vh;text-align:center;color:#334">
-<div><h2>سایت موقتاً در دست تعمیر است</h2><p>کمی بعد دوباره سر بزنید.</p><p dir="ltr">MatRAG is down for maintenance; please come back a little later.</p><p><a href="/logout">خروج / Log out</a></p></div></body></html>`;
+<div><h2>سایت موقتاً در دست تعمیر است</h2><p>کمی بعد دوباره سر بزنید.</p><p dir="ltr">MatRAG is down for maintenance; please come back a little later.</p><form method="post" action="/logout"><button>خروج / Log out</button></form></div></body></html>`;
+
+const LOGOUT = `<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MatRAG</title>
+<body style="font-family:Tahoma,sans-serif;display:grid;place-items:center;min-height:90vh;text-align:center;color:#334">
+<form method="post" action="/logout"><p>خروج از MatRAG؟ / Log out of MatRAG?</p><button>خروج / Log out</button> <a href="/">بازگشت / Back</a></form></body></html>`;
 
 async function qdrant(env, path, body) {
   const response = await fetch(`${env.QDRANT_URL}${path}`, {
@@ -477,9 +481,14 @@ async function handle(request, env, ctx) {
     return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
   }
   if (url.pathname === "/logout") {
+    // POST only: a link or an image elsewhere must not sign the reader out and wipe the page's data; a form posted
+    // from another site is refused too. A GET (an old bookmark) gets a button.
+    if (request.method !== "POST") return html(LOGOUT);
+    const origin = request.headers.get("origin");
+    if (origin && origin !== url.origin) return json({ error: "cross-site logout" }, 403);
     // what the page kept in this browser (last question, own formulas, the PDF folder handle) goes too: a shared
-    // lab computer shows the next person nothing of it
-    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; Max-Age=0",
+    // lab computer shows the next person nothing of it (the page offers the own formulas as a file first)
+    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0",
       "clear-site-data": '"cache", "storage"' } });
   }
   const acc = await signedIn(request, env);

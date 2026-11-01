@@ -146,6 +146,7 @@ body{font-size:14.5px;line-height:1.7;display:grid;grid-template-columns:232px m
 #side .navsec{font-size:11px;letter-spacing:.6px;color:#6f7f93;padding:14px 10px 4px}
 #side .logout{margin-top:auto;color:var(--side-ink);font-size:13px;padding:8px 10px;text-decoration:none;border-radius:8px}
 #side .logout:hover{background:rgba(255,255,255,.06)}
+#side form.logout button{all:unset;cursor:pointer;width:100%}
 main{max-width:1180px;width:100%;margin:0;padding:26px 32px 70px}
 #pagehead{margin:0 0 18px}#pagehead h1{font-size:22px;margin:0;font-weight:700;letter-spacing:-.2px}#pagehead p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
 .card{border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
@@ -206,7 +207,7 @@ th,td{padding:7px 10px}
 .xcard .actions button:hover{background:var(--accent);color:#fff}
 @media (max-width:600px){.xrows th{white-space:normal}}
 #fbopen{position:fixed;inset-inline-end:16px;bottom:16px;z-index:50;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;font:inherit}
-#fbdlg{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:460px;width:calc(100% - 32px)}
+#fbdlg,#logoutdlg{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:460px;width:calc(100% - 32px)}
 #fbdlg textarea,#fbdlg input,.fbbar input{width:100%;box-sizing:border-box;margin:6px 0;padding:8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit}
 .fbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.fbbar input{flex:1 1 100%}
 .fbhit{margin-inline-start:auto}.fbhit button{padding:2px 8px}
@@ -233,7 +234,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
   <button id="langbtn" type="button" title="English / فارسی">English</button>
-  <a href="/logout" class="logout">خروج</a>
+  <form method="post" action="/logout" class="logout" id="logoutf"><button type="submit">خروج</button></form>
 </aside>
 
 <main>
@@ -3259,6 +3260,11 @@ document.addEventListener("click", (e) => {
 }, true);
 </script>
 <button id="fbopen" title="نظر، مشکل یا پیشنهاد">💬 بازخورد</button>
+<dialog id="logoutdlg"><form method="dialog">
+  <h3>خروج</h3>
+  <p>خروج همه‌ی چیزهایی را که این صفحه در این مرورگر نگه داشته پاک می‌کند، از جمله <b id="logoutn"></b> فرمول ضریب شکستی که خودتان وارد کرده‌اید.</p>
+  <div class="actions"><button value="save" class="primary">دانلود فرمول‌ها و خروج</button><button value="go">خروج بدون دانلود</button><button value="cancel">انصراف</button></div>
+</form></dialog>
 <dialog id="fbdlg"><form method="dialog" id="fbform">
   <h3>بازخورد</h3>
   <p class="hint">مشکل، اشتباه در داده‌ها، بلور یا مقاله‌ای که کم است، یا هر پیشنهادی. مستقیم به سازنده‌ی سایت می‌رسد.</p>
@@ -3266,6 +3272,27 @@ document.addEventListener("click", (e) => {
   <input id="fbwho" placeholder="نام یا آیدی تلگرام (اختیاری، برای پاسخ)">
   <div class="actions"><button value="send" class="primary">ارسال</button><button value="cancel" formnovalidate>انصراف</button></div>
 </form></dialog>
+<script nonce="__CSP_NONCE__">
+// Logging out (POST) clears what the page kept in this browser: the reader's own formulas (ri_user) are offered
+// as a file first, so they are not lost without warning.
+(() => {
+  const f = document.getElementById("logoutf"), dlg = document.getElementById("logoutdlg");
+  const own = () => { try { return JSON.parse(localStorage.getItem("ri_user") || "[]"); } catch { return []; } };
+  f.addEventListener("submit", (e) => {
+    if (f.dataset.ok || !own().length) return;
+    e.preventDefault();
+    document.getElementById("logoutn").textContent = fa(own().length);
+    dlg.returnValue = ""; dlg.showModal();
+  });
+  dlg.addEventListener("close", () => {
+    if (dlg.returnValue === "save") {
+      const url = URL.createObjectURL(new Blob([JSON.stringify(own(), null, 1)], { type: "application/json" }));
+      Object.assign(document.createElement("a"), { href: url, download: "matrag-my-formulas.json" }).click();
+      setTimeout(() => { URL.revokeObjectURL(url); f.dataset.ok = "1"; f.requestSubmit(); }, 300);
+    } else if (dlg.returnValue === "go") { f.dataset.ok = "1"; f.requestSubmit(); }
+  });
+})();
+</script>
 <script nonce="__CSP_NONCE__">
 (() => {
   const dlg = document.getElementById("fbdlg"), who = document.getElementById("fbwho");

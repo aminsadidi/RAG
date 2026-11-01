@@ -166,3 +166,22 @@ test("an account without search gets no collection lists (facets, papers, in-col
     assert.equal((await call(e, "/api/papers", withCookie(owner))).status, 200);
   } finally { q.restore(); }
 });
+
+test("logout is a POST from the site itself; a GET only shows a button", async () => {
+  const e = env();
+  const get = await call(e, "/logout");
+  assert.equal(get.status, 200); assert.equal(get.headers.get("set-cookie"), null); assert.equal(get.headers.get("clear-site-data"), null);
+  assert.match(await get.text(), /method="post" action="\/logout"/);
+  const cross = await call(e, "/logout", { method: "POST", headers: { origin: "https://evil.example" } });
+  assert.equal(cross.status, 403); assert.equal(cross.headers.get("clear-site-data"), null);
+  const own = await call(e, "/logout", { method: "POST", headers: { origin: "https://site.test" } });
+  assert.equal(own.status, 303); assert.match(own.headers.get("set-cookie"), /Max-Age=0/); assert.ok(own.headers.get("clear-site-data"));
+});
+
+test("the page logs out with a POST form and offers the reader's own formulas first", async () => {
+  const { readFileSync } = await import("node:fs");
+  const page = readFileSync(new URL("../src/page.html", import.meta.url), "utf8");
+  assert.ok(!page.includes('href="/logout"'));
+  assert.match(page, /<form method="post" action="\/logout"[^>]*id="logoutf"/);
+  assert.match(page, /localStorage\.getItem\("ri_user"/); assert.match(page, /matrag-my-formulas\.json/);
+});
