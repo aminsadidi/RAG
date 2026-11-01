@@ -1097,6 +1097,8 @@ async function localPdf(hit) {
 
 // ---------- page viewer
 // pdf.js (same files as cdnjs 3.11.174, in public/vendor) is loaded when the viewer is first opened
+// pdf.js 3.11.174 runs font code with eval unless isEvalSupported is false (CVE-2024-4367: a crafted PDF ran
+// script); every getDocument passes it. pdf.js 4.2.67 and later fix it at the source.
 const PDFJS = "/vendor/pdfjs-3.11.174/";
 let pdfjsReady = null;
 window.loadPdfjs = loadPdfjs;
@@ -1147,7 +1149,7 @@ async function openViewer(hit) {
 function partsDoc(lib, hit, m) {
   const base = pdfUrl(hit).replace(/[^/]+$/, ""), docs = new Map();
   const open = (f) => {
-    if (!docs.has(f)) docs.set(f, lib.getDocument({ url: base + encodeURIComponent(f), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true }).promise);
+    if (!docs.has(f)) docs.set(f, lib.getDocument({ isEvalSupported: false, url: base + encodeURIComponent(f), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true }).promise);
     return docs.get(f);
   };
   return {
@@ -1169,7 +1171,7 @@ async function openDoc(hit) {
     el.textContent = `در حال دریافت مقاله… ${fa(Math.round(loaded / 1024))}${total ? " از " + fa(Math.round(total / 1024)) : ""} کیلوبایت`;
   };
   let doc = null;
-  const task = lib.getDocument({ url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
+  const task = lib.getDocument({ isEvalSupported: false, url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
   task.onProgress = progress;
   doc = await task.promise.catch(() => null);
   if (!doc) { // a long book is on the site in parts (qdrant_store.split_pdf): one part is read, not the whole book
@@ -1178,7 +1180,7 @@ async function openDoc(hit) {
   }
   if (!doc) {
     const file = await localPdf(hit).catch(() => null);
-    if (file) doc = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+    if (file) doc = await lib.getDocument({ isEvalSupported: false, data: await file.arrayBuffer() }).promise;
   }
   if (doc) V.cache.set(key, doc);
   return doc;
