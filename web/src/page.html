@@ -753,6 +753,8 @@ const tempOf = (id) => { const v = $(id).value.trim(); return v === "" || !Numbe
 const tempNote = (id, th) => { const v = +$(id).value;
   if ($(id).value.trim() !== "" && v < -273.15) return " — <span class=\"err\">زیر صفر مطلق است؛ در نظر گرفته نشد</span>";
   return th && $(id).value.trim() !== "" && Math.abs(v - th.t0_c) > 200 ? " — <span class=\"err\">بیش از ۲۰۰ °C دور از دمای فرمول: برون‌یابی است و ممکن است درست نباشد</span>" : ""; };
+// wavelengths (µm) where the dn/dT of the source was not measured (thermoOutside in dispersion.client.js)
+const pieceNote = (out) => (out.length ? ` — <span class="err">dn/dT برای <bdi dir="ltr">${out.map((l) => l.toFixed(3)).join(", ")} µm</bdi> اندازه‌گیری نشده؛ از نزدیک‌ترین بازه‌ی اندازه‌گیری برون‌یابی شده است</span>` : "");
 // Data read from papers (paper_formulas.yml, thermo_optic.yml, nonlinear_coefficients.yml) is measured unless marked basis: calculated
 // where a value comes from (src/matrag/references/provenance.py): a colored mark, a short name, and the whole sentence on hover
 const TIER = {
@@ -1791,7 +1793,7 @@ new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w &
 </script>
 <script type="module" nonce="__CSP_NONCE__">
 // ---------- phase-matching tab (web/src/phasematch.client.js does the physics)
-import { entryIndex, thermoShift } from "/dispersion.js";
+import { entryIndex, thermoOutside, thermoShift } from "/dispersion.js";
 import { advise, contract, cutTemperatures, describe, dTensor, effectiveD, MIN_PERIOD, mixingWidths, ncpmTemperatures, offAxis, ONE, PAIR, qpmSolutions, solveAll, solveMixing, temperatureAcceptance, waves } from "/phasematch.js";
 
 const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
@@ -1964,6 +1966,7 @@ function run() {
   const ref = Object.values(src.axes)[0];
   const moved = PM.moved; PM.moved = "";
   showTemp(src); $("pmncpm").innerHTML = "";
+  if (src.thermo && tempC() !== src.thermo.t0_c) $("pmTinfo").innerHTML += pieceNote(thermoOutside(src, [w.l1, w.l2, w.l3]));
   $("pmwarn").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "")
     + (src !== src0 ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src0.range_um[0]}–${src0.range_um[1]} µm</bdi></span>` : "");
   $("pmhow").innerHTML = `${esc(c.material)} · با فرمول ضریب شکست ${tierMark(src)} ${esc(src.label)}${src.thermo ? ` در <bdi dir="ltr">${tempC()} °C</bdi>` : " (در دمای اندازه‌گیری فرمول)"}`
@@ -2606,7 +2609,7 @@ new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).o
 </script>
 <script type="module" nonce="__CSP_NONCE__">
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
-import { entryIndex, thermoShift } from "/dispersion.js";
+import { entryIndex, thermoOutside, thermoShift } from "/dispersion.js";
 import { eigenIndices, direction, solveAll, effectiveD, fieldVectors, dTensor, contract, groupIndex } from "/phasematch.js";
 import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, pairRate, detectedCounts, powerForCar, C_UM_PS } from "/spdc.js";
 
@@ -2694,7 +2697,8 @@ const spStop = (out) => { const why = spBad(); if (why) $(out).innerHTML = `<spa
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
-  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + tempNote("spT", s.thermo);
+  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + tempNote("spT", s.thermo)
+    + (s.thermo && spTemp() !== null && spTemp() !== s.thermo.t0_c ? pieceNote(thermoOutside(s, [lp, l1, l2])) : "");
   $("spl2").innerHTML = spBad() ? `<span class="err">${spBad()}</span>` : `λ₂ = ${l2.toFixed(4)} µm`;
   const opts = [];
   try {
