@@ -54,6 +54,8 @@ export function jointSpectrum(opts) {
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
     const s = nu1[i] + nu2[j] - nupc;
     let amp = Math.exp(-2 * LN2 * s * s / (dnup * dnup));
+    // far outside the pump band the amplitude is nil: the indices there (perhaps beyond the formula's range) are not needed
+    if (amp < 1e-15) continue;
     if (fil) amp *= Math.exp(-2 * LN2 * ((nu1[i] - nu1c) ** 2 / fil[0] ** 2 + (nu2[j] - nu2c) ** 2 / fil[1] ** 2));
     const x = mismatch(nu1[i], nu2[j]) * L / 2;
     if (xi) {
