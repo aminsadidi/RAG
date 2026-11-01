@@ -47,6 +47,14 @@ def test_context_pack_is_the_rag_prompt_plus_notes():
     assert text.index("Question: γ_air?") < text.index("- corpus: hitran")
 
 
+def test_prompt_asks_for_source_and_page_and_keeps_latex_dollars():
+    text = "$$n_o$$ = 2.2 at $& 1064 nm {question}"
+    node = NodeWithScore(node=TextNode(text=text, metadata={"doc_id": "p", "pages": "3"}), score=1.0)
+    pack = build_context_pack("n_o of {context}?", [node], {})
+    assert "(Source 2, p. 5)" in pack and "e.g. [2]" not in pack
+    assert f"[1] (p, p. 3)\n{text}" in pack and "Question: n_o of {context}?" in pack
+
+
 class TranslatingLLM(FakeLLM):
     def complete(self, prompt):
         if prompt.startswith("Translate this question"):
