@@ -202,6 +202,8 @@ def build_properties(out: Path, path: Path) -> int:
             for n in r["notes"]:
                 if not {"fa", "doc_id", "pdf_page", "what"} <= set(n):
                     raise ValueError(f"{r['material']}: a note needs fa, doc_id, pdf_page and what")
+                if "keep_c" in n and not (len(n["keep_c"]) == 2 and float(n["keep_c"][0]) < float(n["keep_c"][1])):
+                    raise ValueError(f"{r['material']}: a note's keep_c is [low, high] in °C")
             e["notes"] = r["notes"]
         for k in ("min_pump_um", "thermal_conductivity", "thermal_expansion", "class"):
             if k in r:

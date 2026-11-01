@@ -18,7 +18,7 @@ const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.la
 const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
 import { CI_REF, ciKeysFor, verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, hourlyGaps, logEvent } from "./feedback.js";
-import { addLoginFailure, checkLogin, getSettings, loginFailures, makeSession, sameText, sessionUser, takePaper, takeQuota } from "./accounts.js";
+import { addLoginFailure, getSettings, giveQuota, loginFailures, loginState, makeSession, sameText, sessionUser, takePaper, takeQuota } from "./accounts.js";
 import { Counters } from "./counters.js";
 import { telegramWebhook } from "./admin.js";
 const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
@@ -468,14 +468,21 @@ async function login(request, env, ctx, name, given) {
   const tries = await loginFailures(env, triesKey);
   if (tries === null) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
   if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
+  // the site makes passwords without spaces: one copied from Telegram with a trailing space or newline still works
+  given = String(given).trim();
   const owner = Boolean(env.SITE_PASSWORD) && (!name || name === "owner") && (await sameText(given, env.SITE_PASSWORD));
-  const user = owner ? "owner" : name && (await checkLogin(env, name, String(given))) ? name : null;
+  const state = owner ? "ok" : name ? await loginState(env, name, given) : null;
+  const user = owner ? "owner" : state === "ok" ? name : null;
   ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
   if (user) {
     const days = user === "owner" ? 365 : 30;
     return new Response(null, { status: 303, headers: {
       location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
   }
+  // the right password of an account that ended or was stopped: say so (asking the admin), not "wrong password"
+  if (state === "expired" || state === "inactive") return html(LOGIN.replace("<!--error-->", state === "expired"
+    ? '<p class="err">اعتبار حساب شما تمام شده است؛ برای تمدید به مدیر سایت پیام بدهید. / Your account has expired; ask the site admin to extend it.</p>'
+    : '<p class="err">دسترسی این حساب قطع شده است؛ با مدیر سایت تماس بگیرید. / This account has been stopped; contact the site admin.</p>'), 403);
   const counted = await addLoginFailure(env, triesKey, tries);
   await new Promise((r) => setTimeout(r, 800));
   if (!counted) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
@@ -563,10 +570,11 @@ async function handle(request, env, ctx) {
   try {
     if ((url.pathname === "/api/search" || url.pathname === "/api/pack") && request.method === "POST") {
       if (!acc.search) return denied("search is not available on this account");
-      if (!(await takeQuota(env, acc))) return json({ error: `daily limit of ${acc.quota} searches reached / سهمیه‌ی روزانه‌ی ${acc.quota} جست‌وجو تمام شد` }, 429);
+      // the day is UTC's: it starts again at 03:30 Tehran time
+      if (!(await takeQuota(env, acc))) return json({ error: `daily limit of ${acc.quota} searches reached; it renews at 00:00 UTC / سهمیه‌ی روزانه‌ی ${acc.quota} جست‌وجو تمام شد؛ ساعت ۳:۳۰ بامداد به وقت تهران دوباره پر می‌شود` }, 429);
     }
     if (url.pathname === "/api/search" && request.method === "POST") {
-      const found = await search(env, await request.json().catch(() => ({})));
+      const found = await search(env, await request.json().catch(() => ({}))).catch(async (e) => { await giveQuota(env, acc); throw e; });
       // every question is kept (log:), the ones the collection cannot answer also go to Telegram
       const none = !found.hits.length || found.relevance?.verdict === "none";
       // off-topic and too general questions are logged, not sent to Telegram as a gap of the collection
@@ -584,7 +592,7 @@ async function handle(request, env, ctx) {
       return json(await feedback(env, await request.json().catch(() => ({})), user));
     }
     if (url.pathname === "/api/pack" && request.method === "POST") {
-      const found = await search(env, await request.json().catch(() => ({})));
+      const found = await search(env, await request.json().catch(() => ({}))).catch(async (e) => { await giveQuota(env, acc); throw e; });
       return new Response(packFile(found), { headers: {
         "content-type": "text/markdown; charset=utf-8",
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
