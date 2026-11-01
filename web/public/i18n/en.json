@@ -1,4 +1,12 @@
 {
+ "نوع فرمول:": "Formula type:",
+ "(λ بر حسب µm)": "(λ in µm)",
+ "بازه‌ی اعتبار:": "Valid range:",
+ "اختلاف با میانه‌ی": "Difference from the median of",
+ "منبع دیگرِ هم‌جهت در": "other sources of the same direction at",
+ "فرمول و ضرایب": "Formula and coefficients",
+ "کپی ضرایب": "Copy the coefficients",
+ "دما و روش اندازه‌گیری را مقاله‌ی منبع می‌گوید.": "The source paper gives the measuring temperature and method.",
  "کمترین دما = دمای اتاق یا آزمایشگاه؛ بیشترین دما = بالاترین دمایی که آون بلور شما می‌رسد (بی‌آون: همان دمای اتاق)": "Lowest = room or lab temperature; highest = the highest temperature your crystal oven reaches (no oven: room temperature)",
  "دمای کار: از": "Working temperature: from",
  "بلوری را که سازنده با زاویه‌ی مشخص بریده است بدهید (صفحه، زاویه و نوع روی برگه‌ی بلور نوشته شده)، با فرایند و طول موج‌های بالا: دمایی که این برش در آن تطبیق فاز می‌دهد و پهنای دمایی‌اش حساب می‌شود، و این‌که در بازه‌ی دمای کار بالا هست یا نه. مثال: LBO بریده‌شده در صفحه‌ی xy با φ = 0° (نوع I) برای دوبرابرکردن 1064 nm حدود ۱۴۹ °C می‌خواهد؛ اگر آون شما تا این دما نمی‌رسد، این برش به کارتان نمی‌آید. فقط بلورهایی که فرمول وابستگی دمایی دارند.": "Give a crystal the maker has cut at a given angle (plane, angle and type are on its data sheet), with the process and wavelengths above: the temperature at which this cut phase-matches and its temperature width are calculated, and whether it lies in the working temperature range above. Example: LBO cut in the xy plane at φ = 0° (type I) for doubling 1064 nm needs about 149 °C; if your oven does not reach it, this cut is of no use to you. Only crystals with a temperature-dependent formula.",
