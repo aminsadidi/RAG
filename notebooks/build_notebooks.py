@@ -208,8 +208,8 @@ print('✅ Language model ready:', LLM_PROVIDER)
 #@markdown مجموعه‌ی پیش‌فرض (در خود برنامه هم قابل تغییر است). `rag-optics` همان پوشه‌ی مقاله‌های Drive است.
 CORPUS = "rag-optics"  #@param ["rag-optics", "optical", "hitran"] {allow-input: true}
 #@markdown **PUBLIC_LINK** (پیشنهادی): برنامه با یک لینک موقت https://….gradio.live باز می‌شود — روی لینکی که
-#@markdown پایین این سلول چاپ می‌شود بزنید. لینک خصوصی نیست (هر کس آن را داشته باشد باز می‌کند) و با بسته شدن
-#@markdown کولب از کار می‌افتد. خاموش: نمایش داخل کولب (ممکن است ظاهر برنامه درست بارگذاری نشود).
+#@markdown پایین این سلول چاپ می‌شود بزنید. لینک عمومی است، پس با نام و رمزی که همان‌جا چاپ می‌شود باز می‌شود
+#@markdown و با بسته شدن کولب از کار می‌افتد. خاموش: نمایش داخل کولب (ممکن است ظاهر برنامه درست بارگذاری نشود).
 PUBLIC_LINK = True  #@param {type:"boolean"}
 import os, sys
 os.environ['MATRAG_CORPUS'] = CORPUS
