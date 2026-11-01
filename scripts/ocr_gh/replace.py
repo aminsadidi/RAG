@@ -10,9 +10,8 @@ from pathlib import Path
 
 from docling_core.types.doc import DoclingDocument, Size
 from llama_index.core.schema import MetadataMode
-from qdrant_client import models
 
-from common import DATA, NAME, full_text_points, listed, quality
+from common import DATA, full_text_points, listed, quality, replace_points
 from matrag import qdrant_store
 from matrag.config import Settings
 from matrag.index import make_embed_model
@@ -65,16 +64,7 @@ for doc_id, paper in sorted(plan["papers"].items()):
             texts = [n.get_content(metadata_mode=MetadataMode.EMBED) for n in nodes]
             vectors = embed.get_text_embedding_batch(texts, show_progress=False)
             points = list(qdrant_store.iter_points(nodes, {n.node_id: v for n, v in zip(nodes, vectors)}))
-            for p in points:
-                if ref.get("drive_id"):
-                    p.payload["drive_id"] = ref["drive_id"]
-                if paper["mode"] == "ocr":
-                    p.payload["ocr"] = True
-            qc.delete(NAME, points_selector=models.FilterSelector(filter=models.Filter(must=[
-                models.FieldCondition(key="doc_id", match=models.MatchValue(value=doc_id)),
-                models.FieldCondition(key="source_type", match=models.MatchValue(value="full_text_pdf"))])), wait=True)
-            for i in range(0, len(points), 64):
-                qc.upsert(NAME, points=points[i:i + 64], wait=True)
+            replace_points(qc, doc_id, points, old, ocr=paper["mode"] == "ocr")
             row["replaced"] = True
     report[doc_id] = row
     print(doc_id, row, flush=True)
