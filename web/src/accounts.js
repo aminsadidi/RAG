@@ -53,10 +53,14 @@ async function putUser(env, name, u) {
     metadata: { active: u.active, expires: u.expires || 0, created: u.created, note: (u.note || "").slice(0, 120), role: u.role || "full", quota: u.quota || 0 } });
 }
 
-export async function checkLogin(env, name, password) {
+// "ok", "expired" or "inactive" for the right password (the last two only to someone who knows it, so they tell an
+// attacker nothing), null otherwise
+export async function loginState(env, name, password) {
   const u = await getUser(env, name);
-  return Boolean(u && usable(u) && (await hash(u.salt, password)) === u.hash);
+  if (!u || (await hash(u.salt, password)) !== u.hash) return null;
+  return usable(u) ? "ok" : !u.active ? "inactive" : "expired";
 }
+export async function checkLogin(env, name, password) { return (await loginState(env, name, password)) === "ok"; }
 
 export async function createUser(env, name, days, note, role = "full") {
   if (!NAME.test(name) || name === "owner") throw new Error("نام کاربری: ۳ تا ۳۲ حرف کوچک انگلیسی، عدد، _ . -");
@@ -73,7 +77,8 @@ export async function updateUser(env, name, change) {
   let password;
   if (change.resetPassword) { password = newPassword(); u.salt = newPassword(16); u.hash = await hash(u.salt, password); }
   if ("active" in change) u.active = change.active;
-  if (change.extendDays) u.expires = Math.max(u.expires || Date.now(), Date.now()) + change.extendDays * DAY * 1000;
+  // an account without an end stays so: extending it would give it one
+  if (change.extendDays && u.expires) u.expires = Math.max(u.expires, Date.now()) + change.extendDays * DAY * 1000;
   if (change.noExpiry) u.expires = 0;
   if (change.role && ROLES[change.role]) u.role = change.role;
   if ("quota" in change) u.quota = Math.max(0, change.quota | 0);
@@ -110,4 +115,11 @@ export async function takeQuota(env, acc, kind = "quota") {
   if (used >= acc.quota) return false;
   await env.AICACHE.put(key, String(used + 1), { expirationTtl: 2 * DAY }).catch((e) => console.log("quota put", String(e)));
   return true;
+}
+// a search that failed on the server's side does not count: its unit goes back
+export async function giveQuota(env, acc, kind = "quota") {
+  if (!acc.quota || acc.role === "owner" || !env.AICACHE) return;
+  const key = `${kind}:${acc.name}:${new Date().toISOString().slice(0, 10)}`;
+  const used = Number(await env.AICACHE.get(key).catch(() => 0)) || 0;
+  if (used > 0) await env.AICACHE.put(key, String(used - 1), { expirationTtl: 2 * DAY }).catch(() => {});
 }

@@ -1,4 +1,12 @@
 {
+ "بلورهای کمیاب و پژوهشی را هم بیاور": "Include the rare and research crystals",
+ "داده‌ها بار نشد (اتصال).": "The data did not load (connection).",
+ "دوباره": "Try again",
+ "Δk باید عدد باشد (یا ۰).": "Δk must be a number (or 0).",
+ "زاویه باید بین ۰ و ۹۰ درجه باشد.": "The angle must be between 0 and 90 degrees.",
+ "زاویه‌ی تبهگن (سیگنال = آیدلر) این پیکربندی": "The degenerate angle (signal = idler) of this configuration is",
+ "است؛ آن سوی آن جفتی تولید نمی‌شود.": "; beyond it no pair is generated.",
+ "تبهگن: ∞": "degenerate: ∞",
  "فرمول ضریب شکست و وابستگی دمایی که دما با آن حساب می‌شود": "The index formula and temperature dependence the temperature is computed with",
  "این برش به دما کم‌حساس است (پهنای دمایی بیش از ۲۰ °C): اختلاف بسیار کوچکی در زاویه (حتی بین منابع) دمای بالا را خیلی جابه‌جا می‌کند. در عمل در": "This cut hardly depends on temperature (temperature width above 20 °C): a very small angle difference (even between sources) moves the temperature above a lot. In practice at",
  "با چرخاندن بلور به اندازه‌ی": "turning the crystal by",

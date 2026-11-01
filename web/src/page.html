@@ -213,7 +213,7 @@ th,td{padding:7px 10px}
 html.i18n-wait body{visibility:hidden}
 html.nopdf [data-act="view"],html.nopdf [data-needpdf],html.nopdf .pagemap{display:none!important}
 html:not(.nopdf) [data-nopdfonly]{display:none!important}
-html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.nosearch #risearch{display:none!important}
+html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.nosearch #risearch,html.nosearch #rinomat{display:none!important}
 #langbtn{margin-top:6px;color:var(--side-ink);background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}
 </style>
 </head>
@@ -447,7 +447,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2>کدام بلورها؟</h2>
     <p class="hint" id="pmallinfo"></p>
     <div class="row"><label>مرتب‌سازی <select id="pmsort"><option value="fom">ضریب کیفیت d<sub>eff</sub>²/n³ (بازده تبدیل)</option><option value="deff">d_eff</option><option value="walk">کمترین walk-off</option></select></label>
-    <label class="hint"><input type="checkbox" id="pmevery"> مواد دوشکستیِ بدون ضرایب غیرخطی را هم بیاور</label></div>
+    <label class="hint"><input type="checkbox" id="pmevery"> مواد دوشکستیِ بدون ضرایب غیرخطی را هم بیاور</label>
+    <label class="hint"><input type="checkbox" id="pmrare"> بلورهای کمیاب و پژوهشی را هم بیاور</label></div>
     <div style="overflow-x:auto;direction:ltr"><table id="pmalltable" style="direction:ltr;min-width:640px"></table></div>
   </div>
 </section>
@@ -790,8 +791,11 @@ const TAB_TITLE = {
   eval: ["ارزیابی و اعتبارسنجی", "ماشین‌حساب‌ها در برابر عددهای مقاله‌ها، و کیفیت جست‌وجو"],
   about: ["راهنما", ""],
 };
-function showTab(name) {
+// fromHistory: the back button (or a reload) is showing a tab, so no new history entry is made
+function showTab(name, fromHistory = false) {
   const nav = name === "paper" ? "search" : name;
+  // an account sees only its tabs, whatever button or link asks for another
+  if (window.ME && !(window.ME.tabs.includes(nav) || (nav === "eval" && window.ME.tabs.includes("library")))) return;
   for (const b of document.querySelectorAll("nav button")) b.classList.toggle("on", b.dataset.tab === nav);
   const show = TAB_GROUP[name] || [name];
   for (const s of document.querySelectorAll("main > section")) s.hidden = !show.includes(s.id.slice(4));
@@ -800,12 +804,14 @@ function showTab(name) {
   if (name === "library") { loadFacets(); loadPapers(); }
   if (name === "eval") loadEval();
   if (name === "index") window.loadFormulas?.();
-  if (name === "pm") window.loadPM?.();
-  if (name === "advisor") window.loadAdvisor?.();
-  if (name === "spdc") window.loadSPDC?.();
+  if (name === "pm") window.loadPM?.()?.catch(() => {});
+  if (name === "advisor") window.loadAdvisor?.()?.catch(() => {});
+  if (name === "spdc") window.loadSPDC?.()?.catch(() => {});
   $("sharelink").hidden = !SHARE_TABS[name];
   window.scrollTo(0, 0);
   document.querySelector("nav button.on")?.scrollIntoView({ block: "nearest", inline: "center" });
+  // one history entry per tab (#pm): the phone's back button goes to the previous tab, and a reload stays here
+  if (!fromHistory && name !== "paper" && location.hash !== "#" + name) history.pushState({ tab: name }, "", "#" + name);
 }
 // Number fields are text fields (inputmode decimal): a number input refuses the digits of a Persian keyboard and
 // was left empty. Persian and Arabic digits, the Persian decimal sign and the minus sign become ASCII as typed.
@@ -851,10 +857,13 @@ document.addEventListener("click", (e) => {
   const c = e.target.closest(".clamp");
   if (c && !e.target.closest("a, button")) c.classList.toggle("open");
 });
-showTab("search");
+showTab("search", true);
 // long introductory notes collapse behind an "about" toggle
 for (const p of document.querySelectorAll("main section > .card > p.hint")) {
   if (p.textContent.length < 160 || p.id) continue;
+  // a second long note right after the first goes into the same toggle (one link per card)
+  const prev = p.previousElementSibling;
+  if (prev?.matches("details.about")) { p.classList.remove("hint"); prev.append(p); continue; }
   const d = document.createElement("details"); d.className = "about";
   d.innerHTML = "<summary>توضیح ابزار و منابع</summary>"; p.replaceWith(d); p.classList.remove("hint"); d.append(p);
 }
@@ -869,6 +878,15 @@ for (const b of $("examples").children) b.onclick = () => { $("q").value = b.tex
 function options() {
   return { q: $("q").value, mode: $("mode").value, topK: $("topk").value, material: $("material").value,
     fullTextOnly: $("fulltext").checked, perPaper: $("perpaper").checked, rerank: $("rerank").checked };
+}
+// a tab's data did not load: the message and a button that tries again (in each box named)
+function loadFailed(ids, retry) {
+  for (const id of ids) {
+    const box = $(id); if (!box) continue;
+    const msg = `<span class="err">${LANG === "en" ? "The data did not load (connection)." : "داده‌ها بار نشد (اتصال)."}</span> <button type="button" class="alt" data-retry>${LANG === "en" ? "Try again" : "دوباره"}</button>`;
+    box.innerHTML = box.tagName === "TABLE" ? `<tr><td style="text-align:start">${msg}</td></tr>` : msg;
+    box.querySelector("[data-retry]").onclick = () => { box.innerHTML = ""; retry().catch(() => {}); };
+  }
 }
 function setBusy(busy) { for (const id of ["go", "pack"]) $(id).disabled = busy; }
 function status(text, error) { $("status").textContent = text; $("status").className = error ? "err" : ""; }
@@ -1293,7 +1311,7 @@ const GROUP_FA = { main: "", "doped crystals": "بلور آلاییده", "mixed
 const matName = (m) => (m.shelf === "main" || m.shelf === "papers" ? m.material : `${m.material} — ${m.group}`);
 
 // Finding a material by its formula, name, abbreviation (BBO) or Persian name (باریم بورات).
-const FA_MAT = { باریم: "barium", باریوم: "barium", بورات: "borate", تری‌بورات: "triborate", لیتیوم: "lithium", لیتیم: "lithium",
+const FA_MAT = window.FA_MAT = { باریم: "barium", باریوم: "barium", بورات: "borate", تری‌بورات: "triborate", لیتیوم: "lithium", لیتیم: "lithium",
   نیوبات: "niobate", نایوبات: "niobate", تانتالات: "tantalate", پتاسیم: "potassium", فسفات: "phosphate", تیتانیل: "titanyl",
   آرسنات: "arsenate", سیلیکا: "silica", سیلیسیم: "silicon", سیلیکون: "silicon", ژرمانیوم: "germanium", ژرمانیم: "germanium",
   کوارتز: "quartz", کوارتس: "quartz", یاقوت: "sapphire", سافایر: "sapphire", الماس: "diamond", فلوراید: "fluoride", فلورید: "fluoride",
@@ -1893,7 +1911,10 @@ function inputs() {
 
 window.loadPM = async () => {
   if (PM.list) return;
-  [PM.list, PM.dij, PM.props] = await Promise.all([fetch("/ri/aniso.json").then((r) => r.json()), fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({})),
+  // the crystals' data; when it does not arrive (a weak connection) the tab says so and offers to try again
+  const aniso = await fetch("/ri/aniso.json").then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .catch((e) => { loadFailed(["pmtable", "advinfo"], () => window.loadPM().then(() => window.loadAdvisor?.())); throw e; });
+  [PM.list, PM.dij, PM.props] = await Promise.all([aniso, fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({})),
     fetch("/ri/props.json").then((r) => r.json()).catch(() => ({}))]);
   // partial tensors (not all elements, or not in the dielectric frame) would give a wrong d_eff: card only
   PM.dij = Object.fromEntries(Object.entries(PM.dij).filter(([, v]) => !v.partial));
@@ -2242,9 +2263,13 @@ function compareAll() {
   const bad = pmBad();
   if (bad) { $("pmallcard").hidden = false; $("pmallinfo").innerHTML = `<span class="err">${bad}</span>`; $("pmalltable").innerHTML = ""; return; }
   const { proc, a, b, w } = inputs(), every = $("pmevery").checked, rows = [];
+  // as the advisor: the common and new crystals unless the rare and research ones are asked for
+  const keep = $("pmrare").checked ? null : ADV_CLASSES.est;
   for (const c of PM.list) {
     if (!every && !PM.dij[c.material]) continue;
-    const src = c.sources.find((s) => covers(s, w)); if (!src) continue;
+    if (keep && !keep.includes(PM.props[c.material]?.class?.value)) continue;
+    // the most trusted source that covers the wavelengths (as the table above)
+    const src = c.sources.slice().sort((p, q) => (TIER_RANK[p.tier] ?? 9) - (TIER_RANK[q.tier] ?? 9)).find((s) => covers(s, w)); if (!src) continue;
     const sols = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r)); if (!sols.length) continue;
     const useful = sols.filter((r) => r.deff == null || r.deff > 0.005);
     if (!useful.length) continue; // phase-matched only where d_eff vanishes
@@ -2282,6 +2307,7 @@ function pmGo() {
   $("pmTwrap").hidden = mode === "ncpm";
   if (tempOf("pmT") === null && !$("pmT").value.trim()) $("pmT").value = "25";
   run();
+  if (!$("pmallcard").hidden) compareAll(); // the comparison follows the new wavelengths
   if (pmBad()) return;
   if (mode === "ncpm") { ncpmRun(); $("pmncpm").scrollIntoView({ behavior: "smooth", block: "nearest" }); }
   if (mode === "tune") {
@@ -2356,6 +2382,8 @@ function svRun() {
   const g = { lp: numOr("svlp"), ls: numOr("svls"), li: numOr("svli"), T: numOr("svT"), x: numOr("svx"), dk: (numOr("svdk") ?? 0) / 1000 };
   const m = Math.max(1, Math.round(numOr("svm") ?? 1)), L = numOr("svL");
   if (!(L > 0)) return info("طول بلور باید عدد مثبت باشد.");
+  if ($("svdk").value.trim() && numOr("svdk") == null) return info('<span class="err">Δk باید عدد باشد (یا ۰).</span>');
+  if (cfg.kind === "angle" && g.x != null && !(g.x >= 0 && g.x <= 90)) return info('<span class="err">زاویه باید بین ۰ و ۹۰ درجه باشد.</span>');
   if (!src.thermo && g.T == null) {
     if (["lp", "ls", "li", "x"].every((k) => g[k] != null)) return info("این منبع وابستگی دمایی ندارد؛ دما را نمی‌توان حساب کرد. منبع دیگری را انتخاب کنید.");
     g.T = 25; // no thermo-optic data: the temperature does nothing, the formula's own is used
@@ -2366,7 +2394,15 @@ function svRun() {
     : { kind: "angle", nAtT: (T) => nAtT(src, T), plane: cfg.plane, type: cfg.type };
   const res = solveMixing(model, g, { lam: src.range_um, T: [-50, 300], x: [0, 90] });
   if (res.error) return info(`<span class="err">${SV_ERR[res.error]}</span>`);
-  if (!res.roots.length) return info("برای این ورودی‌ها جوابی در بازه‌ی فرمول این منبع (و دمای −۵۰ تا ۳۰۰ °C) پیدا نشد.");
+  if (!res.roots.length) {
+    // an angle past the degenerate one (signal = idler) has no pair: say so with that angle
+    let deg = "";
+    if (cfg.kind === "angle" && g.x != null && g.lp != null && g.T != null && g.ls == null && g.li == null) {
+      const r0 = solveAll(nAtT(src, g.T), src.kind, "opo", g.lp, 2 * g.lp).find((r) => r.plane === cfg.plane && r.type === cfg.type);
+      if (r0 && Math.abs(r0.angle - g.x) < 10) deg = ` زاویه‌ی تبهگن (سیگنال = آیدلر) این پیکربندی <bdi dir="ltr">${r0.angle.toFixed(2)}°</bdi> است؛ آن سوی آن جفتی تولید نمی‌شود.`;
+    }
+    return info("برای این ورودی‌ها جوابی در بازه‌ی فرمول این منبع (و دمای −۵۰ تا ۳۰۰ °C) پیدا نشد." + deg);
+  }
   const d = PM.dij[c.material]?.d, out = (l) => l < src0.range_um[0] - 1e-9 || l > src0.range_um[1] + 1e-9;
   const deffOf = (r) => {
     if (cfg.kind === "qpm") return cfg.deff / m;
@@ -2383,7 +2419,8 @@ function svRun() {
       return `<tr><td>${bold("lp", f4(r.lp))}</td><td>${bold("ls", f4(r.ls))}</td><td>${bold("li", f4(r.li))}</td><td>${bold("T", r.T.toFixed(2))}</td>`
         + `<td>${bold("x", cfg.kind === "qpm" ? r.x.toFixed(3) : r.x.toFixed(2))}${ex ? " *" : ""}</td><td>${deffOf(r) == null ? "—" : deffOf(r).toFixed(2)}</td>`
         + `<td>${f2(wd.signal_nm)}</td><td>${f2(wd.pump_nm)}</td><td>${src.thermo ? (wd.temp_C >= 999 ? "> 500" : f2(wd.temp_C)) : "—"}</td>`
-        + `<td>${src.thermo ? `${f2(wd.dls_dT_nm)}, ${f2(wd.dli_dT_nm)}` : "—"}</td></tr>`;
+        // at degeneracy (signal = idler) the tuning rate diverges: no number is meaningful there
+        + `<td>${!src.thermo ? "—" : Math.abs(r.ls - r.li) < 1e-4 || Math.abs(wd.dls_dT_nm) > 1e4 ? "تبهگن: ∞" : `${f2(wd.dls_dT_nm)}, ${f2(wd.dli_dT_nm)}`}</td></tr>`;
     }).join("");
   const exp = expansion;
   $("svinfo").innerHTML = `<bdi dir="ltr">${esc(src0.label)}</bdi> · `
@@ -2558,6 +2595,7 @@ $("advproc").onchange = () => {
 };
 $("pmall").onclick = compareAll;
 $("pmevery").onchange = compareAll;
+$("pmrare").onchange = compareAll;
 $("pmsort").onchange = compareAll;
 $("pmalltable").onclick = (e) => { const tr = e.target.closest("tr[data-mat]"); if (tr) { if (!PM.dij[tr.dataset.mat] && !$("pmmore").checked) { $("pmmore").checked = true; fillMats(); } pick(tr.dataset.mat, tr.dataset.src); $("pmtable").scrollIntoView({ behavior: "smooth", block: "center" }); } };
 </script>
@@ -2589,7 +2627,7 @@ window.loadEval = async () => {
   if (!EV) EV = await (await fetch("/eval.json")).json();
   const r = EV.retrieval, mi = r.metrics.indexOf("MRR");
   const facets = await api("/api/facets").then((x) => x.json()).catch(() => ({}));
-  const tiles = [[fa(r.questions), "سؤال ارزیابی"], [facets.points ? fa(facets.points) : "—", "بخش در پایگاه"],
+  const tiles = [[fa(r.questions), "سؤال ارزیابی"], ...(facets.points ? [[fa(facets.points), "بخش در پایگاه"]] : []),
     [r.site_ocr.bm25[mi].toFixed(3), "بهترین MRR سایت"], [`+${Math.round((r.site_ocr.hybrid[mi] / r.local.hybrid[mi] - 1) * 100)}%`, "بهبود روش ترکیبی نسبت به کولب"]];
   $("evtiles").innerHTML = tiles.map(([v, t]) => `<div class="tile"><b>${v}</b><span>${t}</span></div>`).join("");
   $("evmetric").innerHTML = r.metrics.map((m) => `<button data-m="${m}" class="${m === evMetric ? "on" : ""}">${m}</button>`).join("");
@@ -2648,16 +2686,26 @@ window.loadPapers = async () => {
 };
 
 function filtered() {
-  const q = $("plq").value.trim().toLowerCase(), cat = $("plcat").value, full = $("plfull").checked;
-  return PL.filter((p) => (!cat || p.category === cat) && (!full || p.source_type === "full_text_pdf") &&
-    (!q || `${p.reference} ${p.doi} ${p.material}`.toLowerCase().includes(q)));
+  // a DOI as a link (https://doi.org/…, doi:…), words in any order (Kato 1994), each from its start (BBO is not SBBO),
+  // a crystal's other names (lithium niobate → LiNbO3) and Persian material words (باریم)
+  const raw = $("plq").value.trim().replace(/^(https?:\/\/(dx\.)?doi\.org\/|doi:\s*)/i, ""), cat = $("plcat").value, full = $("plfull").checked;
+  const formula = XNAME.of(raw);
+  const words = raw.toLowerCase().split(/[\s,،]+/).filter(Boolean).map((w) => window.FA_MAT?.[w] || window.FA_MAT?.[w.replace(/ی$/, "")] || w);
+  const esc2 = (w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const res = words.map((w) => new RegExp(`(^|[^a-z0-9])${esc2(w)}`));
+  return PL.filter((p) => {
+    if ((cat && p.category !== cat) || (full && p.source_type !== "full_text_pdf")) return false;
+    if (!raw) return true;
+    const hay = `${p.reference} ${p.doi} ${p.material}`.toLowerCase();
+    return (formula && String(p.material || "").split(/[,;|]\s*|\s+/).includes(formula)) || res.every((r) => r.test(hay));
+  });
 }
 function renderList() {
   if (!PL) return; // the list did not load (loadPapers says so)
   const list = filtered();
   $("plcount").textContent = `${fa(list.length)} مقاله`;
   $("pllist").innerHTML = list.slice(0, plShown).map((p) => `<div class="prow" data-doc="${esc(p.doc_id)}">
-    <div class="yr">${p.year || "—"}</div>
+    <div class="yr">${p.year > 1800 ? p.year : "—"}</div>
     <div class="meta"><b>${esc(p.citation || p.doc_id)}</b> ${basisChip(p)} <span class="hint">${esc(p.material || "")}</span><br>${esc(p.reference || "")}
       <div class="chips"><span class="chip ${p.source_type === "full_text_pdf" ? "full" : "abs"}">${TYPE_FA[p.source_type] || ""}</span>
       <span class="chip">${fa(p.chunks)} بخش</span>
@@ -2670,9 +2718,9 @@ $("plmore").onclick = () => { plShown += 100; renderList(); };
 $("pllist").onclick = (e) => { const row = e.target.closest(".prow"); if (row && e.target.dataset.act === "open") openPaper(row.dataset.doc, null); };
 
 function drawYears() {
-  const years = PL.map((p) => p.year).filter(Boolean), lo = Math.floor(Math.min(...years) / 5) * 5, hi = Math.floor(Math.max(...years) / 5) * 5;
+  const years = PL.map((p) => p.year).filter((y) => y > 1800), lo = Math.floor(Math.min(...years) / 5) * 5, hi = Math.floor(Math.max(...years) / 5) * 5;
   const bins = []; for (let y = lo; y <= hi; y += 5) bins.push({ y, full: 0, other: 0 });
-  for (const p of PL) if (p.year) bins[Math.floor((p.year - lo) / 5)][p.source_type === "full_text_pdf" ? "full" : "other"]++;
+  for (const p of PL) if (p.year > 1800) bins[Math.floor((p.year - lo) / 5)][p.source_type === "full_text_pdf" ? "full" : "other"]++;
   const svg = $("yrsvg"), W = Math.round($("yrchart").clientWidth) || 500, H = 240, m = { l: 40, r: 8, t: 10, b: 30 };
   const max = Math.max(...bins.map((b) => b.full + b.other)), bw = (W - m.l - m.r) / bins.length;
   const Y = (v) => H - m.b - v / max * (H - m.t - m.b);
@@ -2730,7 +2778,8 @@ const POLS = [["s", "s", "s", "نوع ۰"], ["f", "f", "f", "نوع ۰"], ["f", 
 
 window.loadSPDC = async () => {
   if (SP.list) return;
-  SP.list = (await fetch("/ri/aniso.json").then((r) => r.json())).filter((c) => !c.sources[0].isotropic);
+  SP.list = (await fetch("/ri/aniso.json").then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .catch((e) => { loadFailed(["spinfo"], () => window.loadSPDC()); throw e; })).filter((c) => !c.sources[0].isotropic);
   SP.dij = await fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({}));
   $("spmat").innerHTML = SP.list.map((c) => `<option value="${esc(c.material)}">${esc(c.material)}</option>`).join("");
   $("spmat").value = [SP.want, "KTiOPO4"].find((m) => SP.list.some((c) => c.material === m)) || SP.list[0].material;
@@ -3276,7 +3325,7 @@ api("/api/me").then((r) => r.json()).then((me) => {
     if (!n || n.classList.contains("navsec")) s.remove();
   }
   const on = document.querySelector("nav button.on");
-  if (!on) showTab(me.tabs[0]);
+  if (!on) showTab(me.tabs[0], true);
   if (!me.pdf) document.documentElement.classList.add("nopdf");
   if (!me.search) document.documentElement.classList.add("nosearch");
   // the PDF viewer's library, fetched once the page is idle (cached for a year): the first page view waits less
@@ -3357,28 +3406,33 @@ document.addEventListener("click", (e) => {
 // option to exist) and the tab's button is pressed.
 const shareFields = (tab, visible = true) => [...document.querySelectorAll(`#tab-${tab} input[id], #tab-${tab} select[id]`)]
   .filter((el) => el.type !== "file" && el.id !== "rimat" && !(visible && el.closest("[hidden]")));
-$("sharelink").onclick = () => {
-  const tab = document.querySelector("main > section:not([hidden])")?.id.slice(4);
-  if (!(tab in SHARE_TABS)) return;
+// a tab's boxes that differ from their defaults, as the query of a link
+function fieldsQuery(tab) {
   const q = new URLSearchParams({ tab });
   if (tab === "index" && $("rimat").value) q.set("rimat", $("rimat").value);
   for (const el of shareFields(tab)) {
     const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : SRC_SEL.has(el.id) ? srcName(el.selectedOptions[0]) : el.value;
     if (v !== "" && v !== el.defaultValue && !(el.type === "checkbox" && el.checked === el.defaultChecked)) q.set(el.id, v);
   }
+  return q;
+}
+$("sharelink").onclick = () => {
+  const tab = document.querySelector("main > section:not([hidden])")?.id.slice(4);
+  if (!(tab in SHARE_TABS)) return;
+  const q = fieldsQuery(tab);
   const url = `${location.origin}/#${q}`, b = $("sharelink");
   navigator.clipboard?.writeText(url).then(() => { b.textContent = "لینک کپی شد"; setTimeout(() => { b.textContent = "🔗 کپی لینک این محاسبه"; }, 1500); }).catch(() => prompt("", url));
 };
 // the index-source lists are shared by the source's name, not its place in the list (which changes as data is added)
 const SRC_SEL = new Set(["pmsrc", "spsrc"]);
 const srcName = (o) => (o ? o.textContent.replace(/^[^A-Za-z0-9(]+/, "").split(" · ")[0].trim() : "");
-async function openShared() {
-  const q = new URLSearchParams(location.hash.slice(1)), tab = q.get("tab");
+async function openShared(query = location.hash.slice(1)) {
+  const q = new URLSearchParams(query), tab = q.get("tab");
   if (!(tab in SHARE_TABS)) return;
   const until = async (ok) => { for (let k = 0; k < 150 && !ok(); k++) await new Promise((r) => setTimeout(r, 100)); return ok(); };
   // the page's modules (they define the tabs' loaders) run after this script: wait for them too
   if (!(await until(() => window.ME && window.loadFormulas && window.loadSPDC && window.loadAdvisor)) || !window.ME.tabs.includes(tab)) return;
-  showTab(tab);
+  showTab(tab, true);
   if (SHARE_READY[tab] && !(await until(() => $(SHARE_READY[tab]).options.length))) return;
   if (tab === "index" && q.get("rimat")) { await until(() => window.RI.byName); window.riSelectCrystal(q.get("rimat")); await until(() => window.RI.mat === q.get("rimat")); }
   for (const el of shareFields(tab, false)) {
@@ -3397,8 +3451,25 @@ async function openShared() {
 }
 // a shared link opened before signing in: the login page kept its #tab=… for after the login
 try { const h = sessionStorage.getItem("afterLogin"); sessionStorage.removeItem("afterLogin"); if (h && location.hash.length < 2) history.replaceState(null, "", "/" + h); } catch { /* no storage */ }
-openShared();
-window.addEventListener("hashchange", openShared); // a link pasted into an open page
+// A calculator's boxes are kept in this browser as they change, and a reload of its tab (#pm) puts them back
+// (phones reload a page left for another app). The back button shows the previous tab without re-applying a link.
+document.addEventListener("change", (e) => {
+  const tab = e.target.closest?.("main > section")?.id.slice(4);
+  if (tab in SHARE_TABS && tab !== "index") setTimeout(() => store.set("fields:" + tab, fieldsQuery(tab).toString()), 0);
+});
+async function openTab(name) {
+  for (let k = 0; k < 150 && !(window.ME && window.loadFormulas && window.loadSPDC && window.loadAdvisor); k++) await new Promise((r) => setTimeout(r, 100));
+  const saved = store.get("fields:" + name);
+  if (saved && name in SHARE_TABS && name !== "index") openShared(saved); else showTab(name, true);
+}
+let fromBack = false;
+window.addEventListener("popstate", (e) => {
+  const t = e.state?.tab || (location.hash.match(/^#([a-z]+)$/) || [])[1] || "search";
+  fromBack = true; showTab(t, true); setTimeout(() => { fromBack = false; }, 300);
+});
+const bare = (location.hash.match(/^#([a-z]+)$/) || [])[1];
+if (bare) openTab(bare); else openShared();
+window.addEventListener("hashchange", () => { if (fromBack) { fromBack = false; return; } openShared(); }); // a link pasted into an open page
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-xact]");
   if (b && window.ME && b.dataset.xact !== "filter" && !window.ME.tabs.includes(b.dataset.xact)) { e.stopImmediatePropagation(); e.preventDefault(); }
