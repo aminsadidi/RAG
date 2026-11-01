@@ -118,3 +118,38 @@ test("HTML pages carry a CSP with a fresh nonce on every inline script, and anti
   const login = await call(e, "/");
   assert.match(login.headers.get("content-security-policy"), /frame-ancestors 'none'/);
 });
+
+const search = (e, c, body) => call(e, "/api/search", withCookie(c, { method: "POST", body: JSON.stringify(body), headers: { "content-type": "application/json" } }));
+const searchEnv = (extra = {}) => env({ AI: fakeAI(), TRANSLATE_MODEL: "@cf/meta/llama-3.3-70b-instruct-fp8-fast", EMBED_MODEL: "@cf/baai/bge-base-en-v1.5", ...extra });
+
+test("a failing best-cosine request does not fail the search", async () => {
+  const e = searchEnv();
+  const q = fakeQdrant([point(0), point(1)], (u, body) => (u.endsWith("/points/query") && body?.limit === 1 ? new Response("{}", { status: 500 }) : null));
+  try {
+    const r = await search(e, await ownerCookie(e), { q: "LiNbO3 Sellmeier", perPaper: true });  // perPaper: the cosine has its own request
+    assert.equal(r.status, 200);
+    const j = await r.json();
+    assert.equal(j.hits.length, 2); assert.ok(j.degraded.includes("cosine"));
+  } finally { q.restore(); }
+});
+
+test("SubQ: a missing answer scores -1, never NaN, and an incomplete answer is not cached", async () => {
+  const e = searchEnv({ SUBQ_KEYS: "k1" });
+  const pts = [point(0), point(1), point(2)];
+  let subqCalls = 0;
+  const q = fakeQdrant(pts, (u, body) => {
+    if (!u.startsWith("https://api.subq.ai")) return null;
+    subqCalls++;
+    return Response.json({ answers: { p0: { noul: 0.2 }, p2: { noul: 0.9 } } });  // p1 missing
+  });
+  try {
+    const c = await ownerCookie(e);
+    const j = await (await search(e, c, { q: "LiNbO3 Sellmeier" })).json();
+    assert.ok(j.reranked);
+    assert.ok(j.hits.every((h) => Number.isFinite(h.score)), JSON.stringify(j.hits.map((h) => h.score)));
+    assert.deepEqual(j.hits.map((h) => h.doc_id), ["doc2", "doc0", "doc1"]);
+    assert.ok(![...e.AICACHE.map.keys()].some((k) => !k.startsWith("log:")), "nothing cached");
+    await search(e, c, { q: "LiNbO3 Sellmeier" });
+    assert.equal(subqCalls, 2);  // asked again
+  } finally { q.restore(); }
+});
