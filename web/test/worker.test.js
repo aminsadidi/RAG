@@ -288,3 +288,19 @@ test("the owner can be signed out everywhere (ownerEpoch); users' sessions are u
   assert.equal((await call(e, "/api/me", withCookie(sara))).status, 200);
   assert.equal((await call(e, "/api/me", withCookie(await ownerCookie(e)))).status, 200);  // a new login works
 });
+
+test("a table split over passages is stitched with the neighbours' text and their places on the page", async () => {
+  const e = searchEnv();
+  const table = { content_type: "table", headings: "Table 2", pages: "4" };
+  const hit = point(0, { ...table, node_id: "doc0::5", text: "Table 2 row b", boxes: JSON.stringify([[4, 0.1, 0.4, 0.9, 0.5]]) });
+  const part = (n, text, boxes) => ({ id: `n${n}`, payload: { ...table, node_id: `doc0::${n}`, text, boxes: JSON.stringify(boxes) } });
+  const neighbours = [part(4, "Table 2 row a", [[4, 0.1, 0.3, 0.9, 0.4]]), part(6, "Table 2 row c", [[4, 0.1, 0.5, 0.9, 0.6], [4, 0.1, 0.4, 0.9, 0.5]]),
+    { id: "n7", payload: { node_id: "doc0::7", text: "next section", content_type: "text", headings: "3", pages: "4" } }];
+  const q = fakeQdrant([hit], (u, body) => (u.endsWith("/points") && body?.ids ? Response.json({ result: neighbours }) : null));
+  try {
+    const [h] = (await (await search(e, await ownerCookie(e), { q: "LiNbO3 Sellmeier" })).json()).hits;
+    assert.equal(h.text, "Table 2 row a\nrow b\nrow c");
+    assert.equal(h.stitched, 2);
+    assert.deepEqual(JSON.parse(h.boxes), [[4, 0.1, 0.3, 0.9, 0.4], [4, 0.1, 0.4, 0.9, 0.5], [4, 0.1, 0.5, 0.9, 0.6]]);
+  } finally { q.restore(); }
+});

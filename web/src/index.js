@@ -230,7 +230,7 @@ async function tableNeighbours(env, payloads) {
   if (!want.size) return new Map();
   const ids = await Promise.all([...want].map(pointId));
   const got = await qdrant(env, `/collections/${env.COLLECTION}/points`,
-    { ids, with_payload: ["node_id", "text", "content_type", "headings", "pages"], with_vector: false });
+    { ids, with_payload: ["node_id", "text", "content_type", "headings", "pages", "boxes"], with_vector: false });
   return new Map(got.map((p) => [String(p.payload.node_id), p.payload]));
 }
 async function stitchTables(env, hits, neighbours) {
@@ -256,6 +256,14 @@ async function stitchTables(env, hits, neighbours) {
       return i && head && t.startsWith(head) ? t.slice(head.length).trimStart() : t;
     }).join("\n");
     h.stitched = before.length + after.length;
+    // the parts' places on the page too, so "show on page" frames the whole table and not the hit's rows only
+    const boxes = [];
+    for (const p of [...before, h, ...after]) {
+      let b = [];
+      try { b = JSON.parse(p.boxes || "[]"); } catch { /* a part without boxes adds none */ }
+      for (const x of Array.isArray(b) ? b : []) if (!boxes.some((y) => JSON.stringify(y) === JSON.stringify(x))) boxes.push(x);
+    }
+    if (boxes.length) h.boxes = JSON.stringify(boxes);
   }
 }
 
