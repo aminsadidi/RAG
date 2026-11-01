@@ -154,7 +154,7 @@ async function onButton(env, data) {
     case "ua": return { ...(await logScreen(env, `🕘 فعالیت‌های ${a}`, (e) => e.user === a, 180, 30)), keyboard: [[btn(`👤 ${a}`, `u:${a}`)], BACK] };
     case "ur": { const { password } = await updateUser(env, a, { resetPassword: true });
       return { ...(await userCard(env, a, `🔑 رمز ${a} عوض شد؛ پیام بعدی را برایش فوروارد کنید.`)), forward: passwordFor(a, password) }; }
-    case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ همین حالا از سایت بیرون است.");
+    case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ تا حدود یک دقیقه‌ی دیگر (تأخیر حافظه‌ی KV) از سایت بیرون است.");
     case "uon": await updateUser(env, a, { active: true }); return userCard(env, a, "✅ دوباره فعال شد.");
     case "uro": return { text: `🎚 سطح دسترسی ${a}\n\n${ROLE_HELP}`, keyboard: roleKeyboard(`urs:${a}`, btn("↩️ بازگشت", `u:${a}`)) };
     case "urs": await updateUser(env, a, { role: b }); return userCard(env, a, `🎚 سطح دسترسی: ${ROLES[b].label}`);

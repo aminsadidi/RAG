@@ -74,3 +74,11 @@ test("the scope check reads the model's word and lets doubt through", () => {
   assert.equal(scopeWord("D22"), "specific");
   assert.equal(scopeWord(""), "specific");
 });
+
+test("LaTeX dollars in a passage or question survive the pack and the translation prompt", () => {
+  const text = "the index $$n_o$$ and $& and $' and $` stay";
+  const pack = mod.contextPack("q $$x$$?", [{ citation: "A", pages: "2", text, reference: "R" }], {}, null, null);
+  assert.ok(pack.includes(text), pack);
+  assert.ok(pack.includes("q $$x$$?"));
+  assert.ok(!pack.includes("{context}"));
+});

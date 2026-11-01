@@ -143,7 +143,8 @@ export const SCOPE_MAX_COSINE = 0.72;
 
 export function translatePrompt(question) {
   const glossary = Object.entries(S.PERSIAN_GLOSSARY).map(([fa, en]) => `  ${fa} = ${en}`).join("\n");
-  return S.TRANSLATE_PROMPT.replace("{glossary}", glossary).replace("{question}", question);
+  // function replacements: a "$$", "$&" or "$'" in the text (LaTeX in papers, a user's question) stays as written
+  return S.TRANSLATE_PROMPT.replace("{glossary}", () => glossary).replace("{question}", () => question);
 }
 
 // First line of the model's reply, as translate_query() does.
@@ -175,10 +176,10 @@ export function contextPack(question, payloads, about, language, searchQuery) {
   const kind = { experimental: "experimental work", theoretical: "theoretical/computational work", both: "experimental and theoretical work", review: "review or compilation" };
   const passage = { experimental: "this passage: measured", theoretical: "this passage: calculated", both: "this passage: measured and calculated", review: "this passage: cites other work" };
   const context = payloads.map((p, i) => `[${i + 1}] (${sourceLabel(p)}${kind[p.basis] ? `; ${kind[p.basis]}` : ""}${passage[p.basis_p] ? `; ${passage[p.basis_p]}` : ""})\n${p.text}`).join("\n\n");
-  const prompt = S.RAG_PROMPT.replace("{not_found}", S.NOT_FOUND)
-    .replace("{extra_rules}", rules.map((r) => `- ${r}\n`).join(""))
-    .replace("{context}", context)
-    .replace("{question}", questionText(question, searchQuery));
+  const prompt = S.RAG_PROMPT.replace("{not_found}", () => S.NOT_FOUND)
+    .replace("{extra_rules}", () => rules.map((r) => `- ${r}\n`).join(""))
+    .replace("{context}", () => context)
+    .replace("{question}", () => questionText(question, searchQuery));
   const aboutLines = Object.entries(about).map(([k, v]) => `- ${k}: ${v}`).join("\n");
   const refs = [...new Set(payloads.map((p) => p.reference || p.doc_id || "?"))].map((r) => `- ${r}`).join("\n");
   return `${prompt}\n\n---\nAbout this file (for the reader; not part of the sources):\n${aboutLines}` +

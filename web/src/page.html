@@ -920,11 +920,12 @@ function terms(query) {
   return [...new Set((query.match(/[A-Za-z0-9α-ωΑ-Ω]+/g) || []).filter((w) => w.length > 1 && !STOP.has(w.toLowerCase())))];
 }
 // a word is marked where it starts (BaB2O4 in β-BaB2O4); a short one (Si, IR) only as a whole word, not in "Sintered"
+// the words are found in the raw text and each piece escaped after (searching the escaped HTML marked "lt" in "&lt;")
 function highlight(text, words) {
-  let out = esc(text);
-  if (!words.length) return out;
+  text = String(text ?? "");
+  if (!words.length) return esc(text);
   const re = new RegExp(`(?<![\\p{L}\\p{N}])(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + (w.length < 4 ? "(?![\\p{L}])" : "")).join("|")})`, "giu");
-  return out.replace(re, "<mark>$1</mark>");
+  return text.split(re).map((piece, i) => (i % 2 ? `<mark>${esc(piece)}</mark>` : esc(piece))).join("");
 }
 function boxesOf(hit) { try { return JSON.parse(hit.boxes || "[]"); } catch { return []; } }
 function pageMap(hit) {
@@ -1003,7 +1004,8 @@ async function runSearch() {
     const data = await (await api("/api/search", opts, req.signal)).json();
     if (req.stale()) return;
     lastHits = data.hits; lastSearch = data;
-    const words = terms(data.searchQuery || data.question);
+    // the question's words and the crystals it names as formulas (LBO is marked as LiB3O5 too)
+    const words = [...new Set([...terms(data.searchQuery || data.question), ...(data.materials || [])])];
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
       (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : "") +
       (data.degraded?.includes("translation") ? " — ترجمه در دسترس نبود؛ با متن خود پرسش جست‌وجو شد (بهتر است انگلیسی یا با فرمول بنویسید)" : "") +
@@ -1201,7 +1203,7 @@ async function openViewer(hit) {
 function partsDoc(lib, hit, m) {
   const base = pdfUrl(hit).replace(/[^/]+$/, ""), docs = new Map();
   const open = (f) => {
-    if (!docs.has(f)) docs.set(f, lib.getDocument({ url: base + encodeURIComponent(f), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true }).promise);
+    if (!docs.has(f)) docs.set(f, lib.getDocument({ url: base + encodeURIComponent(f), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true, isEvalSupported: false }).promise);
     return docs.get(f);
   };
   return {
@@ -1223,7 +1225,7 @@ async function openDoc(hit) {
     el.textContent = `در حال دریافت مقاله… ${fa(Math.round(loaded / 1024))}${total ? " از " + fa(Math.round(total / 1024)) : ""} کیلوبایت`;
   };
   let doc = null;
-  const task = lib.getDocument({ url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
+  const task = lib.getDocument({ url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true, isEvalSupported: false });
   task.onProgress = progress;
   doc = await task.promise.catch(() => null);
   if (!doc) { // a long book is on the site in parts (qdrant_store.split_pdf): one part is read, not the whole book
@@ -1232,7 +1234,7 @@ async function openDoc(hit) {
   }
   if (!doc) {
     const file = await localPdf(hit).catch(() => null);
-    if (file) doc = await lib.getDocument({ data: await file.arrayBuffer() }).promise;
+    if (file) doc = await lib.getDocument({ data: await file.arrayBuffer(), isEvalSupported: false }).promise;
   }
   if (doc) V.cache.set(key, doc);
   return doc;
@@ -2940,7 +2942,7 @@ function run() {
         + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}</div>`;
     }
     if ($("sppm").value === "apod" && !$("spfoc").checked)
-      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">آپودایز گاوسی با σ = ${$("spapod").value}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</div>`;
+      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">آپودایز گاوسی با σ = ${esc($("spapod").value)}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</div>`;
     drawJSI(I.jsi, j.n, lam1, lam2);
     drawHOM(j, l1, l2);
     // the joint spectral intensity as CSV: λ1 (nm), λ2 (nm), |f|² normalized to its peak
@@ -3096,7 +3098,7 @@ function counts() {
       + `heralding (Klyshko) efficiency: photon 1 ${pc(c.h1)}, photon 2 ${pc(c.h2)}; mean pairs per window R·τ = ${c.pairsPerWindow.toPrecision(3)}`
       + (Math.max(c.S1, c.S2) > 2e6 ? `<br><span class="err">singles above 2·10⁶/s: most single-photon detectors saturate (dead time); lower the power</span>` : "")
       + `<br>highest CAR ${f(pw.best.CAR)} at ${pw.best.P > 0 ? mw(pw.best.P) : "the lowest power (no dark counts)"}`
-      + (pw.high ? `; CAR = ${$("spCarT").value} at ${pw.low ? mw(pw.low) + " and " : "up to "}${mw(pw.high)} (between them it is higher)` : `; CAR ${$("spCarT").value} is not reachable with these dark counts`);
+      + (pw.high ? `; CAR = ${esc($("spCarT").value)} at ${pw.low ? mw(pw.low) + " and " : "up to "}${mw(pw.high)} (between them it is higher)` : `; CAR ${esc($("spCarT").value)} is not reachable with these dark counts`);
   }, 20);
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
@@ -3123,7 +3125,7 @@ function fiber(optimize) {
     $("spfibres").innerHTML = `w<sub>p</sub> = ${f.wp.toFixed(1)} µm, w₁ = ${f.ws.toFixed(1)} µm, w₂ = ${f.wi.toFixed(1)} µm<br>`
       + `<b>all modes:</b> γ₁ = ${pc(f.gammaS)}, γ₂ = ${pc(f.gammaI)}, γc = ${pc(f.gammaC)}, μ₂|₁ = ${pc(f.muIgS)}, μ₁|₂ = ${pc(f.muSgI)}<br>`
       + `l = 0 only (as Ljunggren &amp; Tengner): γ₁ = ${pc(z.gammaS)}, γ₂ = ${pc(z.gammaI)}, γc = ${pc(z.gammaC)}`
-      + (optimize ? `<br>best pair coupling on the grid at ξp = ${$("spxp").value}, ξ fibres = ${$("spxs").value}` : "");
+      + (optimize ? `<br>best pair coupling on the grid at ξp = ${esc($("spxp").value)}, ξ fibres = ${esc($("spxs").value)}` : "");
   }, 20);
 }
 // viridis-like ramp

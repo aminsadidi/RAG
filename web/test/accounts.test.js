@@ -119,3 +119,11 @@ test("accounts: an ended or stopped account is told so, an endless one is not sh
   await giveQuota(e, acc);
   assert.ok(await takeQuota(e, acc));
 });
+
+test("login: names the site does not make are refused before any KV read", async () => {
+  const { loginState } = await import("../src/accounts.js");
+  const e = env(); let reads = 0; const get = e.AICACHE.get; e.AICACHE.get = (...a) => { reads++; return get(...a); };
+  assert.equal(await loginState(e, "x".repeat(600), "pw"), null);
+  assert.equal(await loginState(e, "Bad Name", "pw"), null);
+  assert.equal(reads, 0);
+});

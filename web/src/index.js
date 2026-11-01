@@ -29,15 +29,19 @@ const MODES = ["hybrid", "vector", "bm25"];
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8" } });
+// the pages are never framed (clickjacking of the login or the admin's tools), no plug-ins, no foreign <base>
+const SECURITY = { "x-frame-options": "DENY", "content-security-policy": "frame-ancestors 'none'; object-src 'none'; base-uri 'none'",
+  "x-content-type-options": "nosniff", "referrer-policy": "same-origin" };
 const html = (body, status = 200) =>
-  new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow" } });
+  new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow", ...SECURITY } });
 
-async function sha256(text) {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+// constant-time comparison of two strings (the owner password): the time does not tell how many characters match
+function sameText(a, b) {
+  const x = new TextEncoder().encode(String(a)), y = new TextEncoder().encode(String(b));
+  let diff = x.length ^ y.length;
+  for (let i = 0; i < Math.max(x.length, y.length); i++) diff |= (x[i] ?? 0) ^ (y[i] ?? 0);
+  return diff === 0;
 }
-
-const sessionToken = (env) => sha256(`matrag-session:${env.SITE_PASSWORD}`);
 
 function cookie(request, name) {
   const match = (request.headers.get("cookie") || "").match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
@@ -48,9 +52,8 @@ function cookie(request, name) {
 // old cookie form), or null.
 async function signedIn(request, env) {
   if (!env.SITE_PASSWORD) return null;
-  const token = cookie(request, "session");
-  if (token && token === (await sessionToken(env))) return OWNER;
-  return sessionUser(env, token);
+  // only signed sessions with an end date (the old cookie made from the password never expired)
+  return sessionUser(env, cookie(request, "session"));
 }
 
 const MAINTENANCE = `<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MatRAG</title>
@@ -71,14 +74,15 @@ async function qdrant(env, path, body) {
 // Model outputs are deterministic (temperature 0), so they are kept in KV for 90 days, keyed by
 // model + the full model input (prompt included, so an edited prompt is not served old answers): a repeated
 // question costs no Workers AI Neurons. A failing cache never fails a search.
-async function cached(env, model, input, compute) {
+// keep(value): whether the value may be kept (an incomplete answer is used once, not cached for 90 days)
+async function cached(env, model, input, compute, keep = () => true) {
   if (!env.AICACHE) return compute();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${model}\n${input}`));
   const key = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
   const hit = await env.AICACHE.get(key, "json").catch(() => null);
   if (hit !== null) return hit;
   const value = await compute();
-  if (value === null || value === undefined) return value; // nothing worth keeping (and "null" would read as a miss)
+  if (value === null || value === undefined || !keep(value)) return value; // nothing worth keeping (and "null" would read as a miss)
   await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: 90 * 86400 }).catch((e) => console.log("AICACHE put", String(e)));
   return value;
 }
@@ -94,7 +98,8 @@ async function translate(env, question) {
 }
 
 async function scopeOf(env, question) {
-  return cached(env, env.TRANSLATE_MODEL, `scope\n${question}`, async () => {
+  // the prompt is part of the key: an edited prompt does not serve the old verdicts
+  return cached(env, env.TRANSLATE_MODEL, `scope\n${SCOPE_PROMPT}\n${question}`, async () => {
     const out = await env.AI.run(env.TRANSLATE_MODEL, {
       messages: [{ role: "system", content: SCOPE_PROMPT }, { role: "user", content: question }], max_tokens: 4, temperature: 0,
     });
@@ -150,8 +155,9 @@ async function subqBatch(env, q, texts) {
       headers: { "content-type": "application/json", authorization: `Bearer ${key}` } });
     if (r.status === 401 || r.status === 402) continue; // this key is spent or refused: the next one
     if (!r.ok) throw new Error(`SubQ ${r.status} ${(await r.text()).slice(0, 200)}`);
-    const answers = (await r.json()).answers;
-    return texts.map((_, i) => answers[`p${i}`].noul);
+    const answers = (await r.json()).answers || {};
+    // a passage the model did not answer ranks last (−1), and the batch is not cached (see subqRerank)
+    return texts.map((_, i) => { const v = Number(answers[`p${i}`]?.noul); return Number.isFinite(v) ? v : null; });
   }
   throw new Error("no SubQ key left");
 }
@@ -162,8 +168,8 @@ async function subqRerank(env, query, points, topK) {
     const parts = [];
     for (let i = 0; i < texts.length; i += SUBQ_BATCH) parts.push(subqBatch(env, query, texts.slice(i, i + SUBQ_BATCH)));
     return (await Promise.all(parts)).flat();
-  });
-  return points.map((p, i) => ({ ...p, score: scores[i] + SUBQ_RANK_WEIGHT / (i + 1) }))
+  }, (v) => v.every((x) => x !== null));
+  return points.map((p, i) => ({ ...p, score: (scores[i] ?? -1) + SUBQ_RANK_WEIGHT / (i + 1) }))
     .sort((a, b) => b.score - a.score).slice(0, topK);
 }
 const within = (ms, promise) => Promise.race([promise, new Promise((_, no) => setTimeout(() => no(new Error("timeout")), ms))]);
@@ -289,7 +295,8 @@ async function search(env, opts) {
   const cosine = { query: vector, using: shared.DENSE, filter, limit: 1 };
   const together = !opts.perPaper && mode !== "vector" && Boolean(vector);
   let bestCosine = mode === "vector" || !vector || together ? null
-    : qdrant(env, `/collections/${env.COLLECTION}/points/query`, cosine).then((r) => r.points[0]?.score ?? 0);
+    : qdrant(env, `/collections/${env.COLLECTION}/points/query`, cosine).then((r) => r.points[0]?.score ?? 0)
+      .catch((e) => { console.log("cosine", String(e)); degraded.push("cosine"); return null; });
   if (mode === "bm25") {
     body = named.length
       ? { prefetch: [{ query: sparse, using: shared.SPARSE, filter, limit: 50 }, ...named], query: { fusion: "rrf" }, limit }
@@ -327,6 +334,7 @@ async function search(env, opts) {
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload, basis: basisOf(p.payload.doc_id) }));
   if (opts.stitch !== false) await stitchTables(env, hits, neighbours).catch((e) => { console.log("stitch", String(e)); degraded.push("stitch"); });
   lap("stitch");
+  // the separate cosine request failing (Qdrant busy) leaves the check without it, not the whole search failed
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
   const materialsFound = crystalsIn(searchQuery ? `${question} ${searchQuery}` : question);
   check.scope = await scopeP;
@@ -387,7 +395,7 @@ function relevanceNote(r) {
   const parts = [];
   if (r.verdict === "general") return "too general: a textbook definition or a whole topic, nothing specific to look up";
   if (r.scope === "offtopic") parts.push("the question is not about optics or optical materials");
-  if (r.offTopic) parts.push(`the question is far from every passage (best cosine ${r.bestCosine.toFixed(2)})`);
+  if (r.offTopic) parts.push(typeof r.bestCosine === "number" ? `the question is far from every passage (best cosine ${r.bestCosine.toFixed(2)})` : "the question is far from every passage");
   if (r.missingMaterials.length) parts.push(`not in any source: ${r.missingMaterials.join(", ")}`);
   if (r.missingWords.length) parts.push(`words in no source: ${r.missingWords.join(", ")}`);
   return `${r.verdict === "none" ? "NO RELEVANT SOURCE FOUND" : "partial"}: ${parts.join("; ")}`;
@@ -437,8 +445,9 @@ async function handle(request, env, ctx) {
   // /?key= link); the browser is then remembered (owner a year, users 30 days).
   let given = url.searchParams.get("key"), name = "";
   if (given === null && url.pathname === "/login" && request.method === "POST") {
-    const form = await request.formData();
-    given = form.get("password"); name = String(form.get("username") || "").trim().toLowerCase();
+    // a body that is not a form is a failed login, not a server error
+    const form = await request.formData().catch(() => null);
+    given = form?.get("password") ?? ""; name = String(form?.get("username") || "").trim().toLowerCase().slice(0, 64);
   }
   if (given !== null) {
     // shortcut: KV counts are eventually consistent, so a burst can pass a few more tries; fine for guessing a password
@@ -448,7 +457,7 @@ async function handle(request, env, ctx) {
     if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
     // the site makes passwords without spaces: one copied from Telegram with a trailing space or newline still works
     given = String(given).trim();
-    const owner = env.SITE_PASSWORD && (!name || name === "owner") && given === env.SITE_PASSWORD;
+    const owner = env.SITE_PASSWORD && (!name || name === "owner") && sameText(given, env.SITE_PASSWORD);
     const state = owner ? "ok" : name ? await loginState(env, name, given) : null;
     const user = owner ? "owner" : state === "ok" ? name : null;
     ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
@@ -547,6 +556,8 @@ async function handle(request, env, ctx) {
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
     if (url.pathname === "/api/me") return json({ user, role: acc.role, tabs: acc.tabs, pdf: acc.pdf, search: acc.search, quota: acc.quota, banner: settings.banner || "" });
+    // the collection's lists belong to the search (a tools-only account has neither the library nor the search)
+    if ((url.pathname === "/api/facets" || url.pathname === "/api/papers") && !acc.search) return denied("search is not available on this account");
     if (url.pathname === "/api/facets") return json(await facets(env));
     if (url.pathname === "/api/papers") return json(PAPERS);
     if (url.pathname === "/api/incollection" && request.method === "POST") {

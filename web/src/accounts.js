@@ -56,6 +56,7 @@ async function putUser(env, name, u) {
 // "ok", "expired" or "inactive" for the right password (the last two only to someone who knows it, so they tell an
 // attacker nothing), null otherwise
 export async function loginState(env, name, password) {
+  if (!NAME.test(String(name))) return null; // not a name the site makes (and no over-long KV key)
   const u = await getUser(env, name);
   if (!u || (await hash(u.salt, password)) !== u.hash) return null;
   return usable(u) ? "ok" : !u.active ? "inactive" : "expired";
