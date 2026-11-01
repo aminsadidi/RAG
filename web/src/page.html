@@ -868,11 +868,20 @@ function terms(query) {
   return [...new Set((query.match(/[A-Za-z0-9α-ωΑ-Ω]+/g) || []).filter((w) => w.length > 1 && !STOP.has(w.toLowerCase())))];
 }
 // a word is marked where it starts (BaB2O4 in β-BaB2O4); a short one (Si, IR) only as a whole word, not in "Sintered"
+// The words are found in the raw text and each piece is escaped on its own: searching the escaped HTML marked
+// "lt" inside &lt; (and 39, amp, quot) and broke the entity.
 function highlight(text, words) {
-  let out = esc(text);
-  if (!words.length) return out;
-  const re = new RegExp(`(?<![\\p{L}\\p{N}])(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + (w.length < 4 ? "(?![\\p{L}])" : "")).join("|")})`, "giu");
-  return out.replace(re, "<mark>$1</mark>");
+  text = String(text ?? "");
+  words = words.filter(Boolean);
+  if (!words.length) return esc(text);
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + (w.length < 4 ? "(?![\\p{L}])" : "")).join("|")})`, "giu");
+  let out = "", at = 0;
+  for (const m of text.matchAll(re)) {
+    if (!m[0]) continue;
+    out += esc(text.slice(at, m.index)) + `<mark>${esc(m[0])}</mark>`;
+    at = m.index + m[0].length;
+  }
+  return out + esc(text.slice(at));
 }
 function boxesOf(hit) { try { return JSON.parse(hit.boxes || "[]"); } catch { return []; } }
 function pageMap(hit) {
@@ -941,7 +950,8 @@ async function runSearch() {
   try {
     const data = await (await api("/api/search", opts)).json();
     lastHits = data.hits; lastSearch = data;
-    const words = terms(data.searchQuery || data.question);
+    // the question's words and the formulas of the materials it names (LBO -> LiB3O5), as the papers write them
+    const words = [...new Set([...terms(data.searchQuery || data.question), ...(data.materials || [])])];
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
       (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : "") +
       (data.degraded?.includes("translation") ? " — ترجمه در دسترس نبود؛ با متن خود پرسش جست‌وجو شد (بهتر است انگلیسی یا با فرمول بنویسید)" : "") +
