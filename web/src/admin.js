@@ -6,7 +6,8 @@
 import { ROLES, createUser, deleteUser, getSettings, getUser, listUsers, setSettings, updateUser, usable } from "./accounts.js";
 import { listLogs } from "./feedback.js";
 
-const SITE = "https://matrag.ethanjamescarter1995.workers.dev";
+// the site's address in the messages for users: SITE_URL (wrangler.toml [vars]; web/site_url.txt for the scripts)
+const siteOf = (env) => env.SITE_URL || "";
 const KIND = { search: "🔎", unanswered: "❓", feedback: "💬", login: "🔑", failedlogin: "🚫" };
 const when = (t) => new Date(t).toLocaleString("fa-IR", { timeZone: "Asia/Tehran", dateStyle: "short", timeStyle: "short" });
 const ago = (days) => new Date(Date.now() - days * 86400e3).toISOString();
@@ -121,10 +122,10 @@ async function online(env) {
 // about the access level (a user without PDFs must not learn that the feature exists).
 const created = (name, days, role) =>
   `✅ حساب «${name}» ساخته شد — ${ROLES[role].label}، ${days ? `${days} روز` : "بی‌پایان"}\n\nپیام بعدی را همان‌طور که هست برای کاربر فوروارد کنید.`;
-const forUser = (name, password, days) => `سلام 👋
+const forUser = (site, name, password, days) => `سلام 👋
 حساب کاربری شما در MatRAG، سامانه‌ی جست‌وجو در مقاله‌های اپتیک غیرخطی، آماده است.
 
-🔗 آدرس: ${SITE}
+🔗 آدرس: ${site}
 👤 نام کاربری: ${name}
 🔑 رمز: ${password}${days ? `\n📅 اعتبار: ${days} روز` : ""}
 
@@ -136,9 +137,9 @@ const forUser = (name, password, days) => `سلام 👋
 
 اگر سایت باز نشد، با فیلترشکن امتحان کنید.
 لطفاً نام کاربری و رمز را با کس دیگری به اشتراک نگذارید.`;
-const passwordFor = (name, password) => `🔑 رمز تازه‌ی حساب MatRAG شما
+const passwordFor = (site, name, password) => `🔑 رمز تازه‌ی حساب MatRAG شما
 
-🔗 آدرس: ${SITE}
+🔗 آدرس: ${site}
 👤 نام کاربری: ${name}
 🔑 رمز: ${password}`;
 
@@ -151,7 +152,7 @@ async function onButton(env, data) {
     case "u": return userCard(env, a);
     case "ua": return { ...(await logScreen(env, `🕘 فعالیت‌های ${a}`, (e) => e.user === a, 180, 30)), keyboard: [[btn(`👤 ${a}`, `u:${a}`)], BACK] };
     case "ur": { const { password } = await updateUser(env, a, { resetPassword: true });
-      return { ...(await userCard(env, a, `🔑 رمز ${a} عوض شد؛ پیام بعدی را برایش فوروارد کنید.`)), forward: passwordFor(a, password) }; }
+      return { ...(await userCard(env, a, `🔑 رمز ${a} عوض شد؛ پیام بعدی را برایش فوروارد کنید.`)), forward: passwordFor(siteOf(env), a, password) }; }
     case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ همین حالا از سایت بیرون است.");
     case "uon": await updateUser(env, a, { active: true }); return userCard(env, a, "✅ دوباره فعال شد.");
     case "uro": return { text: `🎚 سطح دسترسی ${a}\n\n${ROLE_HELP}`, keyboard: roleKeyboard(`urs:${a}`, btn("↩️ بازگشت", `u:${a}`)) };
@@ -174,7 +175,7 @@ async function onButton(env, data) {
       const s = await getState(env); if (!s?.name || !s.role) return home(env);
       const password = await createUser(env, s.name, Number(a), s.note || "", s.role);
       await setState(env, null);
-      return { text: created(s.name, Number(a), s.role), forward: forUser(s.name, password, Number(a)), keyboard: [[btn(`👤 ${s.name}`, `u:${s.name}`), btn("➕ یکی دیگر", "new")], BACK] };
+      return { text: created(s.name, Number(a), s.role), forward: forUser(siteOf(env), s.name, password, Number(a)), keyboard: [[btn(`👤 ${s.name}`, `u:${s.name}`), btn("➕ یکی دیگر", "new")], BACK] };
     }
     case "stats": return stats(env);
     case "online": return online(env);

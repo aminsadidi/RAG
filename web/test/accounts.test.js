@@ -38,7 +38,7 @@ test("accounts: create, log in, session, disable logs out, expiry", async () => 
 });
 
 test("admin panel: buttons, a user made in three steps, only the owner", async () => {
-  const e = env();
+  const e = { ...env(), SITE_URL: "https://matrag.example" };
   const sent = [];
   globalThis.fetch = async (url, init) => { sent.push({ method: url.split("/").pop(), ...JSON.parse(init.body) }); return new Response("{}"); };
   const post = (body, secret = "hook") => telegramWebhook(new Request("https://x/tg/webhook", {
@@ -65,6 +65,7 @@ test("admin panel: buttons, a user made in three steps, only the owner", async (
   const [panel, toUser] = sent.filter((x) => x.text).slice(-2);
   assert.match(panel.text, /sara.*مهمان/);
   assert.match(toUser.text, /نام کاربری: sara\n🔑 رمز: \S{10}/);
+  assert.match(toUser.text, /آدرس: https:\/\/matrag\.example\n/);  // the site's address from SITE_URL
   assert.ok(!toUser.reply_markup && !/مهمان|دسترسی|PDF|pdf/.test(toUser.text));
   const u = await e.AICACHE.get("user:sara", "json");
   assert.equal(u.role, "guest"); assert.equal(u.note, "دانشجوی آزمایشگاه");
@@ -118,4 +119,12 @@ test("sameText compares in constant time and is exact", async () => {
   const { sameText } = await import("../src/accounts.js");
   assert.ok(await sameText("abc", "abc"));
   assert.ok(!(await sameText("abc", "abd")) && !(await sameText("abc", "abcd")) && !(await sameText("", "a")));
+});
+
+test("the site's address is set in one place for the Worker and one for the scripts, and they agree", async () => {
+  const { readFileSync } = await import("node:fs");
+  const file = readFileSync(new URL("../site_url.txt", import.meta.url), "utf8").trim();
+  const toml = /^SITE_URL = "([^"]+)"/m.exec(readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8"))[1];
+  assert.equal(file, toml);
+  assert.ok(!readFileSync(new URL("../src/admin.js", import.meta.url), "utf8").includes("workers.dev"));
 });

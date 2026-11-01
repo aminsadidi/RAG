@@ -4,7 +4,7 @@
 # only the keys it needs (CI_WORKFLOWS in oidc.js). Each value is masked in the log before it is set.
 set -euo pipefail
 oidc=$(curl -sSf -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=matrag" | jq -r .value)
-keys=$(curl -sSf -X POST -H "Authorization: Bearer $oidc" "${SITE_URL:-https://matrag.ethanjamescarter1995.workers.dev}/ci/keys")
+keys=$(curl -sSf -X POST -H "Authorization: Bearer $oidc" "${SITE_URL:-$(cat "$(dirname "$0")/../../web/site_url.txt")}/ci/keys")
 for k in $(jq -r 'keys[]' <<<"$keys"); do
   [[ "$k" =~ ^[A-Z_]+$ ]] || continue
   v=$(jq -r --arg k "$k" '.[$k]' <<<"$keys")

@@ -27,7 +27,7 @@ import subq  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).parent / "reports"
-BASE = os.environ.get("SITE_URL", "https://matrag.ethanjamescarter1995.workers.dev")
+BASE = os.environ.get("SITE_URL") or (ROOT / "web" / "site_url.txt").read_text().strip()
 rows = list(csv.DictReader(open(ROOT / "data/rag-optics/gold/data_questions.csv", encoding="utf-8")))
 # papers that also answer, found by SubQ and read by a person (data_alternatives.csv): accepted as well
 ALT = {}

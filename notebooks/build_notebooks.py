@@ -325,7 +325,7 @@ else:
 if os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
     !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
-print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+print('✅ Done: ' + open('/content/RAG/web/site_url.txt').read().strip())
 """),
     ], gpu=False)
 
@@ -387,7 +387,7 @@ if os.environ.get('CLOUDFLARE_API_TOKEN'):
 if os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
     !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
-print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+print('✅ Done: ' + open('/content/RAG/web/site_url.txt').read().strip())
 """),
         code("""
 #@title ۲. (اختیاری) ارزیابی دوباره‌ی استخراج فرمول با qwen3:8b
@@ -698,7 +698,7 @@ for name, (doi, *_rest) in PAPERS.items():
     if pdf.exists() and doi_key(doi) in in_collection:
         shutil.move(str(pdf), str(done_dir / name)); moved += 1
 print(f'{moved} handled PDFs moved to {done_dir}')
-print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+print('✅ Done: ' + open('/content/RAG/web/site_url.txt').read().strip())
 """),
     ], gpu=True)
 

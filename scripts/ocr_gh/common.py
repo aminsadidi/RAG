@@ -10,7 +10,7 @@ from pathlib import Path
 import requests
 
 NAME = "rag-optics"
-SITE = os.environ.get("SITE_URL", "https://matrag.ethanjamescarter1995.workers.dev")
+SITE = os.environ.get("SITE_URL") or (Path(__file__).resolve().parents[2] / "web" / "site_url.txt").read_text().strip()
 PART_PAGES = 40  # pages per work unit; a book is spread over the shards in units
 STOP = set("the of and in to is a for with by are was on that as from be this at an which were it we or".split())
 DATA = Path(__file__).resolve().parents[2] / "data" / NAME

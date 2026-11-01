@@ -40,6 +40,8 @@ binding = "PDFS"
 service = "matrag-pdfs"
 
 [vars]
+# the site's address (messages to users); the scripts read web/site_url.txt. Change both with a custom domain.
+SITE_URL = "https://matrag.ethanjamescarter1995.workers.dev"
 COLLECTION = "rag-optics"
 TRANSLATE_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
 EMBED_MODEL = "@cf/baai/bge-base-en-v1.5"
