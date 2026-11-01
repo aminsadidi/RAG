@@ -34,15 +34,21 @@ const formulaLike = (n) => FORMULA_LIKE.test(n) && /[\da-z]/.test(n) && (n.match
 let ALIASES_;
 const aliases = () => (ALIASES_ ||= [...new Map(Object.entries(S.CRYSTAL_NAMES).flatMap(([f, names]) => [f, ...names].map((n) => [n, f]))).entries()]
   .filter(([n]) => n.length >= 2).sort((a, b) => b[0].length - a[0].length)
-  .map(([n, f]) => [n, f, new RegExp(`(?<![A-Za-z0-9])${escape(n)}(?![A-Za-z0-9])`, n.length >= 3 && !formulaLike(n) ? "gi" : "g")]));
+  .map(([n, f]) => {
+    // [name, formula, the name as it is matched (any case for most), the name in its own case (findCrystals' first pass)]
+    const own = new RegExp(`(?<![A-Za-z0-9])${escape(n)}(?![A-Za-z0-9])`, "g");
+    return [n, f, n.length >= 3 && !formulaLike(n) ? new RegExp(own.source, "gi") : own, own];
+  }));
 export const CRYSTAL_NAMES = S.CRYSTAL_NAMES;
 // The crystals a text names (formulas, in order) and the text with those names blanked out.
 export function findCrystals(text) {
   const found = [];
   text = String(text || "");
   // names in their own case first (HgS is cinnabar, not HGS = HgGa2S4 read in any case), then in any case
-  for (const pass of [false, true]) for (const [n, f, re] of aliases()) {
-    const cs = pass ? re : new RegExp(re.source, "g");
+  // (the expressions are built once, in aliases(): building them on every call cost ~15 ms of CPU per search)
+  for (const pass of [false, true]) for (const [, f, re, own] of aliases()) {
+    const cs = pass ? re : own;
+    if (pass && re === own) continue;  // a formula: already done in its own case
     cs.lastIndex = 0;
     if (cs.test(text)) { cs.lastIndex = 0; text = text.replace(cs, " , "); if (!found.includes(f)) found.push(f); }
   }

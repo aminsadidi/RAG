@@ -8,7 +8,7 @@ const cases = JSON.parse(readFileSync(new URL("./cases.json", import.meta.url)))
 // text.js imports shared.json the way wrangler bundles it; rebuild the functions here from its source.
 const src = readFileSync(new URL("../src/text.js", import.meta.url), "utf8")
   .replace(/^import S from .*$/m, "").replace(/^export \{ S as shared \};$/m, "").replace(/^export /gm, "");
-const mod = new Function("S", `${src}; return { normalizeFormulas, expandQuery, sourceLabel, contextPack, cleanTranslation, scopeWord, translatePrompt };`)(S);
+const mod = new Function("S", `${src}; return { normalizeFormulas, expandQuery, sourceLabel, contextPack, cleanTranslation, scopeWord, translatePrompt, findCrystals };`)(S);
 
 test("formula normalization and query expansion match Python", () => {
   for (const c of cases) {
@@ -85,4 +85,15 @@ test("paper text with $$, $& and $' and a question with {context} go into the pr
   assert.ok(!/e\.g\. \[2\]/.test(pack));
   const tr = mod.translatePrompt("ضریب شکست $& و $$x$$ {glossary}");
   assert.ok(tr.includes("Question: ضریب شکست $& و $$x$$ {glossary}\n"));
+});
+
+test("findCrystals builds its expressions once, not on every call", () => {
+  assert.deepEqual(mod.findCrystals("beta barium borate and HgS").found, ["BaB2O4", "HgS"]);
+  const Real = globalThis.RegExp;
+  let built = 0;
+  globalThis.RegExp = new Proxy(Real, { construct(target, args) { built++; return new target(...args); } });
+  try {
+    for (const q of ["LiNbO3 PPLN", "lbo Sellmeier", "KTP gray tracking"]) mod.findCrystals(q);
+  } finally { globalThis.RegExp = Real; }
+  assert.equal(built, 0);
 });
