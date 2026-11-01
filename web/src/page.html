@@ -382,14 +382,18 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="row">
       <label>بلور <select id="pmmat" class="xsel"></select></label>
       <label>منبع <select id="pmsrc" style="max-width:260px"></select></label> <span class="hint" title="منشأ هر عدد: سبز از صفحه‌ی مقاله‌ی اصلی، زرد از کتاب مرجع، نارنجی از پایگاه داده‌ی باز، آبی محاسبه‌ی نظری.">🟢 تأییدشده · 🟡 کتاب مرجع · 🟠 پایگاه داده · 🔵 محاسباتی</span>
+    </div>
+    <div class="row">
+      <label>چه می‌خواهید؟ <select id="pmmode">
+        <option value="angle">زاویه‌ی برش، در دمای کار</option>
+        <option value="ncpm">دمای تطبیق فاز ۹۰ درجه (NCPM، بدون walk-off)</option>
+        <option value="tune">با زاویه یا دوره‌ی ثابت: طول موج‌ها یا دما (حل‌کننده)</option>
+      </select></label>
+      <label id="pmTwrap">دمای کار <input id="pmT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:72px" value="25"> °C</label>
       <button id="pmgo">محاسبه</button>
       <button class="alt" id="pmall">مقایسه‌ی همه‌ی بلورها</button>
     </div>
-    <div class="row">
-      <label>دمای بلور <input id="pmT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:84px" placeholder="—"> °C</label>
-      <button class="alt" id="pmncpmgo">دمای تطبیق فاز غیربحرانی (NCPM)</button>
-      <span class="hint" id="pmTinfo"></span>
-    </div>
+    <p class="hint" id="pmTinfo" style="margin:4px 0 0"></p>
     <label class="hint"><input type="checkbox" id="pmmore"> مواد دوشکستیِ دیگر را هم نشان بده (فقط زاویه و walk-off؛ ضرایب غیرخطی‌شان در داده‌ها نیست)</label>
     <p class="hint clamp" id="pminfo" title=""></p>
   </div>
@@ -1744,7 +1748,7 @@ const key = (c) => c.material;
 
 // Principal indices of a source at temperature T (°C); sources without thermo-optic data (and T = null)
 // stay at the temperature of their formula.
-const tempC = () => tempOf("pmT");
+const tempC = () => tempOf("pmT") ?? 25; // the working temperature, 25 °C when the box is empty
 function nAtT(src, T) {
   const ax = src.axes, th = src.thermo;
   const one = (e) => (lam) => {
@@ -1975,16 +1979,14 @@ function offCard(c, src, proc, a, b, rows) {
 
 // The temperature line: the source's thermo-optic formula, or why the temperature has no effect.
 function showTemp(src) {
-  const th = src.thermo, T = tempC(), other = PM.crystal.sources.findIndex((s) => s.thermo);
-  $("pmT").placeholder = th ? String(th.t0_c) : "—";
-  $("pmncpmgo").disabled = !th && other < 0;
+  const th = src.thermo, other = PM.crystal.sources.findIndex((s) => s.thermo);
   $("pmTinfo").innerHTML = th
     ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)}</button>`
       : th.doi ? `<a class="chip" title="${esc(th.where || "")}" href="https://doi.org/${esc(th.doi)}" target="_blank" rel="noopener">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)} (خارج از مجموعه)</a>` : esc(th.cite)}`
-      + (T === null ? ` — خالی = ${fa(th.t0_c)} °C (دمای فرمول)` : "") + tempNote("pmT", th)
+      + tempNote("pmT", th)
     : "برای این منبع فرمول وابستگی دمایی در مجموعه نیست" + (other >= 0
       ? `؛ <button class="chip coll" style="border:0;cursor:pointer" id="pmTalt">رفتن به منبع ${esc(PM.crystal.sources[other].label)} که دارد</button>`
-      : T === null ? "." : "؛ محاسبه در دمای اندازه‌گیری فرمول است و دما اثری ندارد.") + (th ? "" : tempNote("pmT", null));
+      : "؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + (th ? "" : tempNote("pmT", null));
   if (!th && other >= 0) $("pmTalt").onclick = () => { $("pmsrc").value = String(other); run(); };
 }
 
@@ -2139,8 +2141,22 @@ $("pmproc").onchange = () => {
 for (const id of ["pma", "pmb"]) $(id).addEventListener("change", () => pick(key(PM.crystal), undefined, false));
 $("pmsrc").onchange = run;
 $("pmT").addEventListener("change", run);
-$("pmncpmgo").onclick = ncpmRun;
-$("pmgo").onclick = run;
+// what the user wants decides what the compute button does: the angle table (always), the temperature of 90°
+// phase matching, or the solver (fixed angle or period: the wavelengths or the temperature)
+function pmGo() {
+  const mode = $("pmmode").value;
+  $("pmTwrap").hidden = mode === "ncpm";
+  if (tempOf("pmT") === null && !$("pmT").value.trim()) $("pmT").value = "25";
+  run();
+  if (pmBad()) return;
+  if (mode === "ncpm") { ncpmRun(); $("pmncpm").scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+  if (mode === "tune") {
+    const card = $("solvecard"); card.classList.remove("closed");
+    svFill(); card.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+$("pmgo").onclick = pmGo;
+$("pmmode").onchange = pmGo;
 $("pmmat").onchange = (e) => { PM.extrapolate = false; pick(e.target.value); };
 $("pmmore").onchange = () => {
   if (!$("pmmore").checked && PM.crystal && !PM.dij[PM.crystal.material]) { PM.crystal = null; fillMats(); pick("BaB2O4"); } else fillMats();
