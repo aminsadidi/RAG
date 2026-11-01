@@ -94,3 +94,27 @@ test("the scope verdict's cache key holds the scope prompt (an edited prompt is 
   assert.ok(cacheApi.has(key(`scope\n${prompt}\nBBO cut angle`)));
   assert.ok(!cacheApi.has(key("scope\nBBO cut angle")));
 });
+
+test("HTML pages carry a CSP with a fresh nonce on every inline script, and anti-framing headers", async () => {
+  const e = env();
+  const c = await ownerCookie(e);
+  const nonces = [];
+  for (let i = 0; i < 2; i++) {
+    const r = await call(e, "/", withCookie(c));
+    const policy = r.headers.get("content-security-policy");
+    const nonce = /'nonce-([^']+)'/.exec(policy)[1];
+    nonces.push(nonce);
+    assert.match(policy, /frame-ancestors 'none'/); assert.match(policy, /object-src 'none'/); assert.ok(!/script-src[^;]*unsafe-inline/.test(policy));
+    assert.equal(r.headers.get("x-frame-options"), "DENY");
+    assert.equal(r.headers.get("referrer-policy"), "same-origin");
+    assert.equal(r.headers.get("x-content-type-options"), "nosniff");
+    const body = await r.text();
+    const scripts = body.match(/<script\b[^>]*>/g);
+    assert.ok(scripts.length > 5 && scripts.every((t) => t.includes(`nonce="${nonce}"`)), "every inline script has the nonce");
+    assert.ok(!body.includes("__CSP_NONCE__"));
+    assert.ok(!/\son(click|error|load|input|change)="/i.test(body), "no inline event handlers (the CSP blocks them)");
+  }
+  assert.notEqual(nonces[0], nonces[1]);
+  const login = await call(e, "/");
+  assert.match(login.headers.get("content-security-policy"), /frame-ancestors 'none'/);
+});

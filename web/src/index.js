@@ -29,9 +29,19 @@ const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "
 const MODES = ["hybrid", "vector", "bm25"];
 
 const json = (data, status = 200) =>
-  new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8" } });
-const html = (body, status = 200) =>
-  new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow" } });
+  new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "x-content-type-options": "nosniff" } });
+// HTML pages: a Content-Security-Policy with a new nonce on every response (the page's inline scripts carry it as
+// __CSP_NONCE__), so an injected <script> or onerror= does not run; no framing (clickjacking), no referrer to the
+// sites the page links (DOI, Drive), no MIME sniffing.
+const PAGE_HEADERS = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow",
+  "x-frame-options": "DENY", "referrer-policy": "same-origin", "x-content-type-options": "nosniff" };
+const csp = (nonce) => [`default-src 'self'`, `script-src 'self' 'nonce-${nonce}'`, `style-src 'self' 'unsafe-inline'`,
+  `img-src 'self' data: blob:`, `font-src 'self' data:`, `connect-src 'self'`, `worker-src 'self' blob:`, `object-src 'none'`,
+  `base-uri 'none'`, `form-action 'self'`, `frame-ancestors 'none'`].join("; ");
+function html(body, status = 200) {
+  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
+  return new Response(body.replaceAll("__CSP_NONCE__", nonce), { status, headers: { ...PAGE_HEADERS, "content-security-policy": csp(nonce) } });
+}
 
 function cookie(request, name) {
   const match = (request.headers.get("cookie") || "").match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
