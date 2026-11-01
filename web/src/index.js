@@ -18,7 +18,7 @@ const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.la
 const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
 import { CI_REF, ciKeysFor, verifyOidc } from "./oidc.js";
 import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
-import { OWNER, checkLogin, getSettings, makeSession, sessionUser, takeQuota } from "./accounts.js";
+import { checkLogin, getSettings, makeSession, sameText, sessionUser, takeQuota } from "./accounts.js";
 import { telegramWebhook } from "./admin.js";
 const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
 
@@ -32,25 +32,16 @@ const json = (data, status = 200) =>
 const html = (body, status = 200) =>
   new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow" } });
 
-async function sha256(text) {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-const sessionToken = (env) => sha256(`matrag-session:${env.SITE_PASSWORD}`);
-
 function cookie(request, name) {
   const match = (request.headers.get("cookie") || "").match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
   return match ? match[1] : null;
 }
 
-// The signed-in account ({name, role, tabs, search, pdf, quota}; OWNER for the shared password, also in its
-// old cookie form), or null.
+// The signed-in account ({name, role, tabs, search, pdf, quota}; OWNER for the owner), from the signed session
+// cookie only (accounts.js), or null.
 async function signedIn(request, env) {
   if (!env.SITE_PASSWORD) return null;
-  const token = cookie(request, "session");
-  if (token && token === (await sessionToken(env))) return OWNER;
-  return sessionUser(env, token);
+  return sessionUser(env, cookie(request, "session"));
 }
 
 const MAINTENANCE = `<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MatRAG</title>
@@ -432,12 +423,12 @@ async function handle(request, env, ctx) {
   const url = new URL(request.url);
   if (url.pathname === "/ci/keys" && request.method === "POST") return ciKeys(request, env);
   if (url.pathname === "/tg/webhook" && request.method === "POST") return telegramWebhook(request, env);
-  // A user's name and password from the form, or the owner's shared password (form without a name, or the
-  // /?key= link); the browser is then remembered (owner a year, users 30 days).
-  let given = url.searchParams.get("key"), name = "";
-  if (given === null && url.pathname === "/login" && request.method === "POST") {
+  // A user's name and password, or the owner's password (name empty or "owner"), from the login form only (POST:
+  // a password in a URL stays in histories and logs); the browser is then remembered (owner a year, users 30 days).
+  let given = null, name = "";
+  if (url.pathname === "/login" && request.method === "POST") {
     const form = await request.formData();
-    given = form.get("password"); name = String(form.get("username") || "").trim().toLowerCase();
+    given = String(form.get("password") ?? ""); name = String(form.get("username") || "").trim().toLowerCase();
   }
   if (given !== null) {
     // shortcut: KV counts are eventually consistent, so a burst can pass a few more tries; fine for guessing a password
@@ -445,7 +436,7 @@ async function handle(request, env, ctx) {
     const ip = request.headers.get("cf-connecting-ip") || "?", triesKey = `loginfail:${ip}:${name.slice(0, 32) || "owner"}`;
     const tries = env.AICACHE ? Number(await env.AICACHE.get(triesKey).catch(() => 0)) || 0 : 0;
     if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
-    const owner = env.SITE_PASSWORD && (!name || name === "owner") && given === env.SITE_PASSWORD;
+    const owner = Boolean(env.SITE_PASSWORD) && (!name || name === "owner") && (await sameText(given, env.SITE_PASSWORD));
     const user = owner ? "owner" : name && (await checkLogin(env, name, String(given))) ? name : null;
     ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
     if (user) {
