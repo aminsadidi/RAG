@@ -337,7 +337,8 @@ def run_formulas(corpus, provider, doc_ids, progress=gr.Progress()):
              "T (K)": r.formula.temperature_K or ("T-dependent" if r.formula.temperature_dependent else "-"),
              "source": r.source, "pages": r.pages, "coefficients in source": f"{r.numbers_in_source:.0%}",
              "problems": "; ".join(r.problems) or "✓",
-             "max |Δn| vs refractiveindex.info": "-" if r.reference_max_dn is None else f"{r.reference_max_dn:.2e}"}
+             "max |Δn| vs refractiveindex.info": "-" if r.reference_max_dn is None
+             else f"{r.reference_max_dn:.2e}" + (" (other axis)" if r.reference_any_axis else "")}
             for i, r in enumerate(records)]
     path = _results_path(ws, "formulas", "formulas", ".jsonl")
     save_formulas(records, path)
