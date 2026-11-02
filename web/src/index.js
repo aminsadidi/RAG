@@ -77,15 +77,23 @@ async function qdrant(env, path, body) {
 // model + the full model input (prompt included, so an edited prompt is not served old answers): a repeated
 // question costs no Workers AI Neurons. A failing cache never fails a search.
 // keep(value): whether the value may be kept (an incomplete answer is used once, not cached for 90 days)
+// Model answers are kept in the Cache API (free and without the 1,000 writes a day of KV on the free plan, which
+// the quotas, login counters and logs need); it is per data centre, which is fine for a cache. KV where there is
+// no Cache API (tests).
 async function cached(env, model, input, compute, keep = () => true) {
-  if (!env.AICACHE) return compute();
+  const cache = globalThis.caches?.default;
+  if (!cache && !env.AICACHE) return compute();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${model}\n${input}`));
   const key = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-  const hit = await env.AICACHE.get(key, "json").catch(() => null);
+  const url = `https://matrag-cache.internal/${key}`;
+  const hit = cache ? await cache.match(url).then((r) => (r ? r.json() : null)).catch(() => null)
+    : await env.AICACHE.get(key, "json").catch(() => null);
   if (hit !== null) return hit;
   const value = await compute();
   if (value === null || value === undefined || !keep(value)) return value; // nothing worth keeping (and "null" would read as a miss)
-  await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: 90 * 86400 }).catch((e) => console.log("AICACHE put", String(e)));
+  if (cache) await cache.put(url, new Response(JSON.stringify(value), { headers: { "content-type": "application/json", "cache-control": `max-age=${90 * 86400}` } }))
+    .catch((e) => console.log("cache put", String(e)));
+  else await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: 90 * 86400 }).catch((e) => console.log("AICACHE put", String(e)));
   return value;
 }
 
