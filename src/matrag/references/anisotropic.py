@@ -215,6 +215,12 @@ def build_properties(out: Path, path: Path) -> int:
         if "damage" in r:
             if not {"threshold", "pdf_page"} <= set(r["damage"]) or not ({"doc_id", "doi"} & set(r["damage"])):
                 raise ValueError(f"{r['material']}: damage needs threshold, doc_id (or doi) and pdf_page")
+            # the number the laser-safety calculator compares with: the threshold's first value (a range's lower end),
+            # in GW/cm² or J/cm², at the source's pulse length tau_ns when it gives one
+            dm = r["damage"]
+            if "value" in dm and not (isinstance(dm["value"], (int, float)) and dm["value"] > 0 and dm.get("unit") in ("GW/cm2", "J/cm2")
+                                      and (dm.get("tau_ns") is None or (isinstance(dm["tau_ns"], (int, float)) and dm["tau_ns"] > 0))):
+                raise ValueError(f"{r['material']}: damage value is a positive number with unit GW/cm2 or J/cm2 (and tau_ns > 0)")
             e["damage"] = r["damage"]
     for e in data.values():  # the tier of every value, from the document it was read from
         for item in [*e.get("sources", []), e.get("hygroscopic_source"), *e.get("notes", []),

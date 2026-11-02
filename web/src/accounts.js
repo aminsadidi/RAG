@@ -10,10 +10,10 @@ const DAY = 86400;
 
 // Access levels: which tabs a user sees and whether the papers' PDFs are served to them.
 export const ROLES = {
-  full: { label: "کامل", tabs: ["search", "index", "pm", "advisor", "spdc", "library", "about"], search: true, pdf: true },
-  guest: { label: "مهمان (بدون PDF)", tabs: ["search", "index", "pm", "advisor", "spdc", "library", "about"], search: true, pdf: false },
+  full: { label: "کامل", tabs: ["search", "index", "pm", "advisor", "spdc", "power", "library", "about"], search: true, pdf: true },
+  guest: { label: "مهمان (بدون PDF)", tabs: ["search", "index", "pm", "advisor", "spdc", "power", "library", "about"], search: true, pdf: false },
   search: { label: "فقط جست‌وجو", tabs: ["search", "about"], search: true, pdf: false },
-  tools: { label: "فقط ابزارها", tabs: ["index", "pm", "advisor", "spdc", "about"], search: false, pdf: false },
+  tools: { label: "فقط ابزارها", tabs: ["index", "pm", "advisor", "spdc", "power", "about"], search: false, pdf: false },
 };
 // Daily searches of a new account, by access level (the panel can change it; 0 = unlimited). A full account is
 // someone the owner knows: many more.

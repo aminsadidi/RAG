@@ -8,6 +8,7 @@ import LOGIN from "./login.html";
 import DISPERSION_JS from "./dispersion.client.js";
 import PHASEMATCH_JS from "./phasematch.client.js";
 import SPDC_JS from "./spdc.client.js";
+import POWER_JS from "./power.client.js";
 import VALIDATION_JS from "./validation.client.js";
 // the module imports the phase-matching module by its file name; the browser loads it as /phasematch.js
 const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "/phasematch.js"');
@@ -533,7 +534,7 @@ async function handle(request, env, ctx) {
   const PDF_FIELDS = ["source_file", "drive_id", "boxes", "pdf_mismatch"];
   const noPdf = (rows) => (acc.pdf ? rows : rows.map((r) => Object.fromEntries(Object.entries(r).filter(([k]) => !PDF_FIELDS.includes(k)))));
   if (url.pathname === "/") return html(PAGE_OUT);
-  const SCRIPT = { "/phasematch.js": PHASEMATCH_JS, "/spdc.js": SPDC_BROWSER_JS, "/dispersion.js": DISPERSION_JS, "/validation.js": VALIDATION_JS }[url.pathname];
+  const SCRIPT = { "/phasematch.js": PHASEMATCH_JS, "/spdc.js": SPDC_BROWSER_JS, "/power.js": POWER_JS, "/dispersion.js": DISPERSION_JS, "/validation.js": VALIDATION_JS }[url.pathname];
   if (SCRIPT) {
     // checked on every load (no-cache), but an unchanged module is answered 304 by its ETag, not sent again
     const etag = `"${etagOf(SCRIPT)}"`;

@@ -112,6 +112,15 @@ select,input{max-width:100%}
 .chip.coll{color:var(--ok)}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.verdict{border:1px solid var(--line);border-inline-start:5px solid var(--muted);border-radius:12px;padding:12px 14px;margin-top:12px;background:var(--card)}
+.verdict.ok{border-inline-start-color:var(--ok)}.verdict.thin{border-inline-start-color:var(--warn)}.verdict.over{border-inline-start-color:var(--err)}
+.verdict .big{font-size:18px;font-weight:700}.verdict.ok .big{color:var(--ok)}.verdict.thin .big{color:var(--warn)}.verdict.over .big{color:var(--err)}
+.tile small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.tile.bad b{color:var(--err)}.tile.good b{color:var(--ok)}
+.wlist{margin:10px 0 0;padding-inline-start:20px}.wlist li{margin:5px 0;font-size:13.5px}.wlist li.w{color:var(--warn)}.wlist li.e{color:var(--err)}
+#tab-power .tile b{font-size:21px}@media (max-width:760px){#tab-power .tile b{font-size:17px}#tab-power .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pwcharts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:6px}
+.pwchart{position:relative;direction:ltr}.pwchart svg{display:block;width:100%}
 .tile{background:var(--soft);border-radius:12px;padding:12px 14px}
 .tile b{display:block;font-size:24px;direction:ltr;text-align:start}
 .tile span{color:var(--muted);font-size:13px}
@@ -229,6 +238,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <button data-tab="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 1.5a7.5 7.5 0 0 1 7.42 6.37L4.6 13.45A7.5 7.5 0 0 1 12 4.5Zm-7.03 10.4 14.6-2.55A7.5 7.5 0 0 1 4.97 14.9Z"/></svg><span>تطبیق فاز</span></button>
     <button data-tab="advisor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 14.6 9H21l-5.2 4 2 6.5L12 15.6 6.2 19.5l2-6.5L3 9h6.4L12 2.5Zm0 4.2-1.5 3.8H6.9l3 2.3-1.1 3.6 3.2-2.2 3.2 2.2-1.1-3.6 3-2.3h-3.6L12 6.7Z"/></svg><span>پیشنهاد بلور</span></button>
     <button data-tab="spdc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12a2.5 2.5 0 1 0 0 .01ZM19 6a2 2 0 1 0 0 .01ZM19 18a2 2 0 1 0 0 .01ZM7.3 11.3l9.6-4.6.6 1.3-9.6 4.6-.6-1.3Zm0 1.4.6-1.3 9.6 4.6-.6 1.3-9.6-4.6Z"/></svg><span>جفت فوتون</span></button>
+    <button data-tab="power"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Zm-1.6 5.6-.4 4.4h4.5l-4.1 5.6.4-4.6H7.4l4-5.4Z"/></svg><span>توان و ایمنی لیزر</span></button>
     <div class="navsec">داده</div>
     <button data-tab="library"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4V4Zm5.5 0h4v16h-4V4Zm6.2.6 3.8-1 4 15.5-3.8 1-4-15.5Z"/></svg><span>مجموعه‌ی مقاله‌ها</span></button>
     <button data-tab="eval"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v1.5H4V19Zm1-2.5 4.2-5.6 3.3 2.7L17.4 6l1.2.9-5.7 8.6-3.4-2.7L6.2 17.4 5 16.5Z"/></svg><span>ارزیابی و اعتبارسنجی</span></button>
@@ -609,6 +619,106 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   </div>
 </section>
 
+<section id="tab-power" hidden class="viz-root">
+  <div class="card">
+    <h2>توان هماهنگ دوم (SHG) با کانونی‌کردن بهینه</h2>
+    <p class="hint">چند وات یا چند میلی‌ژول سبز (یا هر هماهنگ دومی) از لیزر شما بیرون می‌آید؟ بازده با نظریه‌ی بوید–کلاینمن برای باریکه‌ی گاوسی کانونی‌شده حساب می‌شود: کانونی‌کردن، walk-off و ناهمخوانی فاز بهینه همه در ضریب h هستند. ضریب‌های شکست، d<sub>eff</sub> و walk-off از همان داده‌های زبانه‌ی «تطبیق فاز» می‌آیند و هر عدد به مقاله‌اش برمی‌گردد. شدت قله در کانون با آستانه‌ی آسیب همان بلور مقایسه می‌شود، و می‌توانید بگویید کانونی‌کردن تا جایی تنگ شود که بلور آسیب نبیند.</p>
+    <div class="row">
+      <label>بلور <select id="pwmat" class="xsel"></select></label>
+      <label title="فرمول ضریب شکست که محاسبه با آن انجام می‌شود">منبع ضریب شکست <select id="pwsrc" style="max-width:240px"></select></label>
+      <button type="button" class="alt tierbtn" title="رنگ‌ها یعنی چه؟">ⓘ</button>
+    </div>
+    <div class="row">
+      <label>طول موج لیزر <input id="pwlam" type="text" inputmode="decimal" dir="ltr" data-num value="1.064" style="width:84px"> µm</label>
+      <label>دمای بلور <input id="pwT" type="text" inputmode="decimal" dir="ltr" data-num value="25" style="width:64px"> °C</label>
+      <label>طول بلور <input id="pwL" type="text" inputmode="decimal" dir="ltr" data-num value="10" style="width:60px"> mm</label>
+      <span class="hint" id="pwharm" style="direction:ltr"></span>
+    </div>
+    <div class="row">
+      <label>پیکربندی تطبیق فاز <select id="pwcfg" style="max-width:420px"></select></label>
+      <label title="اگر d_eff نمونه‌ی خودتان را اندازه گرفته‌اید، آن را بنویسید؛ خالی = از ضرایب d مقاله‌ها">d<sub>eff</sub> دلخواه <input id="pwdeff" type="text" inputmode="decimal" dir="ltr" data-num placeholder="خودکار" style="width:72px"> pm/V</label>
+    </div>
+    <div class="row">
+      <label>لیزر <select id="pwmode"><option value="cw">پیوسته (CW)</option><option value="pulsed">پالسی</option></select></label>
+      <label id="pwPw">توان <input id="pwP" type="text" inputmode="decimal" dir="ltr" data-num value="1" style="width:72px"> W</label>
+      <label id="pwEw" hidden>انرژی پالس <input id="pwE" type="text" inputmode="decimal" dir="ltr" data-num value="1" style="width:72px"> mJ</label>
+      <label id="pwtauw" hidden>پهنای پالس (FWHM) <input id="pwtau" type="text" inputmode="decimal" dir="ltr" data-num value="10" style="width:64px">
+        <select id="pwtauu"><option value="1e-15">fs</option><option value="1e-12">ps</option><option value="1e-9" selected>ns</option></select></label>
+      <label id="pwrepw" hidden>نرخ تکرار <input id="pwrep" type="text" inputmode="decimal" dir="ltr" data-num value="1" style="width:64px"> kHz</label>
+      <label id="pwshapew" hidden>شکل پالس <select id="pwshape"><option value="gauss">گاوسی</option><option value="sech2">sech² (لیزرهای قفل مُد)</option><option value="flat">تخت</option></select></label>
+      <label title="پهنای طیف لیزر؛ خالی = برای لیزر پیوسته بسیار باریک، برای پالس حد تبدیل فوریه">پهنای طیف لیزر <input id="pwbw" type="text" inputmode="decimal" dir="ltr" data-num placeholder="خودکار" style="width:64px"> nm</label>
+    </div>
+    <div class="row">
+      <label>کانونی‌کردن <select id="pwfocus">
+        <option value="optimal">بهینه (بیشترین توان، بوید–کلاینمن)</option>
+        <option value="safe">بهینه، ولی با فاصله‌ی ایمن از آستانه‌ی آسیب</option>
+        <option value="waist">کمر باریکه‌ی معلوم (باریکه‌ی خودم)</option>
+      </select></label>
+      <label id="pww0w" hidden title="شعاع 1/e² باریکه در کانون، وسط بلور؛ برای باریکه‌ی موازی همان شعاع باریکه">شعاع کمر باریکه <bdi dir="ltr">(1/e²)</bdi> <input id="pww0" type="text" inputmode="decimal" dir="ltr" data-num value="50" style="width:64px"> µm</label>
+      <label title="شدت قله باید چند برابر کمتر از آستانه‌ی آسیب باشد">ضریب اطمینان <input id="pwS" type="text" inputmode="decimal" dir="ltr" data-num value="2" style="width:48px"> ×</label>
+      <button id="pwgo">محاسبه‌ی توان</button>
+      <button id="pwboth" hidden></button>
+    </div>
+    <p class="hint" id="pwinfo" style="margin:4px 0 0"></p>
+    <div id="pwres" hidden>
+      <div class="tiles" id="pwtiles" style="margin-top:12px"></div>
+      <div id="pwdmg" class="verdict" hidden></div>
+      <ul class="wlist" id="pwwarn"></ul>
+      <div class="pwcharts">
+        <div><h3 style="margin:8px 0 4px">توان خروجی بر حسب ورودی</h3><div id="pwc1" class="pwchart"><svg role="img"></svg></div><div class="chips" id="pwc1leg"></div></div>
+        <div><h3 style="margin:8px 0 4px">کانونی‌کردن: h بر حسب ξ = L/b</h3><div id="pwc2" class="pwchart"><svg role="img"></svg></div><div class="chips" id="pwc2leg"></div></div>
+      </div>
+      <details style="margin-top:10px"><summary class="hint">همه‌ی پارامترهای محاسبه و منبع هر عدد</summary>
+        <div style="overflow-x:auto;direction:ltr"><table id="pwparams" style="direction:ltr;min-width:520px"></table></div>
+        <p class="hint" id="pwsrcs" style="margin:6px 0 0"></p>
+      </details>
+    </div>
+    <details class="about" style="margin-top:10px"><summary>فرض‌ها و محدودیت‌ها</summary>
+      <p class="hint">P<sub>2ω</sub> = (16π² d<sub>eff</sub>² L h / ε₀ c λ³ n<sub>ω</sub> n<sub>2ω</sub>) · P<sub>ω</sub>² برای باریکه‌ی گاوسی TEM<sub>00</sub> (M² = 1) با کانون در وسط بلور و بدون جذب (Boyd و Kleinman، J. Appl. Phys. 39, 3597 (1968)). h(ξ, B) با انتگرال عددی دقیق حساب می‌شود (h = 1.068 در ξ = 2.84 بدون walk-off). کاهش توان پمپ در تبدیل‌های زیاد با رابطه‌ی موج تخت tanh² تقریب زده می‌شود؛ بالای حدود ۳۰٪ این فقط برآورد است. برای پالس، تبدیل لحظه‌به‌لحظه روی شکل پالس جمع زده می‌شود (فرض شبه‌ایستا: پالس از تأخیر GVM بلندتر است؛ اگر نباشد هشدار می‌دهیم). برای نوع II، قطبش لیزر ۴۵ درجه فرض شده است. d<sub>eff</sub> از ضرایبی است که بیشترشان در 1.064 µm اندازه‌گیری شده‌اند؛ پراکندگی بین نمونه‌ها ممکن است ده‌ها درصد باشد.</p>
+    </details>
+  </div>
+
+  <div class="card" style="margin-top:14px" id="dmcard">
+    <h2>ایمنی بلور: لیزر من به این بلور آسیب می‌زند؟</h2>
+    <p class="hint">شدت و شار انرژی قله‌ی باریکه‌ی شما با آستانه‌ی آسیبی که مقاله‌های مجموعه برای همان بلور گزارش کرده‌اند مقایسه می‌شود. آستانه با پهنای پالس شما مقیاس می‌شود (شار آستانه ∝ √τ، برای پالس‌های ۱۰ پیکوثانیه تا حدود یک میکروثانیه)، و بیشترین انرژی پالس، بیشترین توان و کوچک‌ترین قطر باریکه‌ای که هنوز با ضریب اطمینان شما ایمن است گفته می‌شود. آستانه‌ی آسیب به کیفیت بلور، پوشش سطح، طول موج و تعداد پالس‌ها بسیار وابسته است: این عددها برآوردند، نه ضمانت.</p>
+    <div class="row">
+      <label>بلور <select id="dmmat" class="xsel"></select></label>
+      <label>طول موج <input id="dmlam" type="text" inputmode="decimal" dir="ltr" data-num value="1.064" style="width:80px"> µm</label>
+      <button type="button" class="alt tierbtn" title="رنگ‌ها یعنی چه؟">ⓘ</button>
+    </div>
+    <div class="row">
+      <label>لیزر <select id="dmmode"><option value="pulsed">پالسی</option><option value="cw">پیوسته (CW)</option></select></label>
+      <label id="dmPw" hidden>توان <input id="dmP" type="text" inputmode="decimal" dir="ltr" data-num value="5" style="width:72px"> W</label>
+      <label id="dmEw">انرژی پالس <input id="dmE" type="text" inputmode="decimal" dir="ltr" data-num value="1" style="width:72px"> mJ</label>
+      <label id="dmtauw">پهنای پالس (FWHM) <input id="dmtau" type="text" inputmode="decimal" dir="ltr" data-num value="10" style="width:64px">
+        <select id="dmtauu"><option value="1e-15">fs</option><option value="1e-12">ps</option><option value="1e-9" selected>ns</option></select></label>
+      <label id="dmrepw">نرخ تکرار <input id="dmrep" type="text" inputmode="decimal" dir="ltr" data-num value="0.01" style="width:64px"> kHz</label>
+      <label id="dmshapew">شکل پالس <select id="dmshape"><option value="gauss">گاوسی</option><option value="sech2">sech²</option><option value="flat">تخت</option></select></label>
+    </div>
+    <div class="row">
+      <label>اندازه‌ی باریکه روی بلور <input id="dmw" type="text" inputmode="decimal" dir="ltr" data-num value="1" style="width:64px">
+        <select id="dmwu"><option value="1e-3">mm</option><option value="1e-6">µm</option></select></label>
+      <label>به‌صورت <select id="dmwk"><option value="d2">قطر ‎1/e²</option><option value="r2">شعاع ‎1/e²</option><option value="fwhm">قطر FWHM</option></select></label>
+      <label>نمایه <select id="dmprof"><option value="gauss">گاوسی (TEM₀₀)</option><option value="top">تخت (top-hat)</option></select></label>
+      <label title="بیشترین مقدار ایمن = آستانه تقسیم بر این عدد">ضریب اطمینان <input id="dmS" type="text" inputmode="decimal" dir="ltr" data-num value="2" style="width:48px"> ×</label>
+    </div>
+    <div class="row">
+      <button id="dmgo">بررسی ایمنی</button>
+      <button class="alt" id="dmfill">از ماشین‌حساب SHG بالا پر کن</button>
+      <button class="alt" id="dmall">همه‌ی بلورها با همین باریکه</button>
+    </div>
+    <p class="hint" id="dminfo" style="margin:4px 0 0"></p>
+    <div id="dmverdict" class="verdict" hidden></div>
+    <div class="tiles" id="dmtiles" style="margin-top:12px"></div>
+    <ul class="wlist" id="dmnotes"></ul>
+    <div id="dmallwrap" hidden style="margin-top:12px">
+      <h3 style="margin:4px 0">همین باریکه روی بلورهای دیگر</h3>
+      <p class="hint" id="dmallinfo" style="margin:0 0 6px"></p>
+      <div style="overflow-x:auto;direction:ltr"><table id="dmalltable" style="direction:ltr;min-width:600px"></table></div>
+    </div>
+  </div>
+</section>
+
 
 <section id="tab-library" hidden>
   <div class="grid2">
@@ -694,6 +804,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <li data-nopdfonly><b>جست‌وجو:</b> منابع با نام مقاله و صفحه؛ «دانلود فایل برای هوش مصنوعی» سؤال و منابع شماره‌دار را برای هر چت‌بات آماده می‌کند. «هر مقاله یک بار» از هر مقاله فقط بهترین بخش را می‌آورد.</li>
       <li><b>مقاله:</b> همه‌ی بخش‌های یک مقاله، صفحه به صفحه.</li>
       <li><b>ضریب شکست:</b> n(λ) از همه‌ی داده‌های refractiveindex.info (فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده، ۲٬۲۴۶ ماده) با پیوند به مقاله‌ی منبع در همین مجموعه؛ فرمول یا نقاط اندازه‌گیری خودتان را هم می‌توانید وارد کنید، اختلاف Δn نسبت به یک منحنی مرجع را ببینید و جدول مقادیر را کپی یا CSV دانلود کنید.</li>
+      <li><b>توان و ایمنی لیزر:</b> توان یا انرژی هماهنگ دوم با کانونی‌کردن بهینه (بوید–کلاینمن)، با هشدار جدایی پالس، پهنای طیفی و دمایی؛ و فاصله‌ی باریکه تا آستانه‌ی آسیب هر بلور، با بیشترین انرژی و کوچک‌ترین باریکه‌ی ایمن.</li>
       <li><b>مجموعه:</b> مقاله‌ها بر اساس سال و دسته، و فهرست قابل‌جست‌وجوی همه‌ی مقاله‌ها.</li>
       <li><b>ارزیابی:</b> نتیجه‌ی ارزیابی خودکار بازیابی (کولب در برابر سایت) و استخراج فرمول.</li>
     </ul>
@@ -780,9 +891,9 @@ const TYPE_FA = { full_text_pdf: "متن کامل", abstract: "فقط چکیده
 
 // ---------- tabs
 // tabs whose inputs a link can carry, and the button that computes with them
-const SHARE_TABS = { index: "", pm: "pmgo", advisor: "advgo", spdc: "spgo" };
+const SHARE_TABS = { index: "", pm: "pmgo", advisor: "advgo", spdc: "spgo", power: "pwboth" };
 // a select each tab fills once its data are loaded: the link's values wait for it
-const SHARE_READY = { pm: "pmmat", advisor: "cutmat", spdc: "spmat" };
+const SHARE_READY = { pm: "pmmat", advisor: "cutmat", spdc: "spmat", power: "pwmat" };
 const TAB_GROUP = { paper: ["paper"] };
 const TAB_TITLE = {
   search: ["جست‌وجو در مقاله‌ها", "پرسش به فارسی یا انگلیسی؛ پاسخ با ارجاع به صفحه‌ی مقاله"],
@@ -790,6 +901,7 @@ const TAB_TITLE = {
   index: ["ضریب شکست", "فرمول‌های پاشندگی، مقایسه‌ی منابع و جدول مقادیر"],
   pm: ["تطبیق فاز", "زاویه، walk-off، پهنای پذیرش، QPM و d_eff برای SHG، SFG و OPO"],
   advisor: ["پیشنهاد بلور", "شرط‌ها را ثابت کنید، بلورهایی که شدنی‌اند با دلیل؛ و دمای کار بلوری که بریده شده"],
+  power: ["توان و ایمنی لیزر", "توان هماهنگ دوم با کانونی‌کردن بهینه (بوید–کلاینمن)، و فاصله‌ی باریکه تا آستانه‌ی آسیب بلور"],
   spdc: ["جفت فوتون (SPDC)", "طیف مشترک، خلوص، عدد اشمیت، HOM، قطبش‌دهی آپودایز، بهینه‌سازی خلوص، زاویه‌ی گسیل، دما، کانونی‌کردن و جفت‌شدن به فیبر"],
   library: ["مجموعه‌ی مقاله‌ها", "مقاله‌های مجموعه بر اساس سال، دسته و ماده"],
   eval: ["ارزیابی و اعتبارسنجی", "ماشین‌حساب‌ها در برابر عددهای مقاله‌ها، و کیفیت جست‌وجو"],
@@ -811,6 +923,7 @@ function showTab(name, fromHistory = false) {
   if (name === "pm") window.loadPM?.()?.catch(() => {});
   if (name === "advisor") window.loadAdvisor?.()?.catch(() => {});
   if (name === "spdc") window.loadSPDC?.()?.catch(() => {});
+  if (name === "power") window.loadPower?.()?.catch(() => {});
   $("sharelink").hidden = !SHARE_TABS[name];
   window.scrollTo(0, 0);
   document.querySelector("nav button.on")?.scrollIntoView({ block: "nearest", inline: "center" });
@@ -822,7 +935,7 @@ function showTab(name, fromHistory = false) {
 const ASCII_NUM = (t) => t.replace(/[۰-۹]/g, (c) => c.charCodeAt(0) - 0x06f0).replace(/[٠-٩]/g, (c) => c.charCodeAt(0) - 0x0660)
   .replace(/[٫]/g, ".").replace(/[٬]/g, "").replace(/[−–]/g, "-");
 // A wavelength in µm boxes typed in nm (1064 for 1.064): a one-click fix beside the box
-const UM_BOXES = new Set(["pma", "pmb", "adva", "advb", "splp", "spl1", "svlp", "svls", "svli", "riprobe", "rilo", "rihi"]);
+const UM_BOXES = new Set(["pma", "pmb", "adva", "advb", "splp", "spl1", "svlp", "svls", "svli", "riprobe", "rilo", "rihi", "pwlam", "dmlam"]);
 document.addEventListener("change", (e) => {
   const el = e.target; if (!(el instanceof HTMLInputElement) || !UM_BOXES.has(el.id)) return;
   const old = el.parentElement.querySelector(".nmfix");
@@ -3309,6 +3422,428 @@ $("xcards").onclick = (e) => {
   ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
   showTab(act);
 };
+</script>
+<script type="module" nonce="__CSP_NONCE__">
+// ---------- power tab: second-harmonic output power (Boyd–Kleinman) and laser-damage margins (web/src/power.client.js)
+import { entryIndex, thermoShift } from "/dispersion.js";
+import { effectiveD, ncpmAcceptance, ncpmTemperatures, qpmSolutions, solveAll, temperatureAcceptance, waves } from "/phasematch.js";
+import { bkBestSigma, damageMargin, PEAK, pulseBandwidthNm, pulseSH, shg, thresholdAt } from "/power.js";
+
+const PW = { list: null, dij: {}, props: {}, cfgs: [], last: null, hcache: new Map() };
+const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "Mg-LiTaO3", "KTiOPO4", "RbTiOPO4", "KTiOAsO4", "RbTiOAsO4"]);
+const OP = new Set(["GaAs", "GaP"]);
+const TIER_RANK = { verified: 0, compiled: 1, database: 2, computed: 3 };
+const AX = ["x", "y", "z"];
+const num = (id) => { const v = $(id).value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v; };
+const pause = () => new Promise((r) => setTimeout(r, 0));
+const short = (c) => (c.name ? c.name.replace(/^\S+\s*/, "").replace(/^\(|\)$/g, "") : "");
+const bySrc = (c) => c.sources.map((x, i) => ({ x, i })).sort((p, q) => (TIER_RANK[p.x.tier] ?? 9) - (TIER_RANK[q.x.tier] ?? 9));
+const covers = (src, ls) => ls.every((l) => l >= src.range_um[0] - 1e-9 && l <= src.range_um[1] + 1e-9);
+// principal indices at T (°C), as in the phase-matching tab
+function nAtT(src, T) {
+  const ax = src.axes, th = src.thermo;
+  const one = (e) => (lam) => { const n0 = entryIndex(e, lam); return th && e.thermo ? n0 + thermoShift(th.form, e.thermo, th.t0_c, n0, lam, T) : n0; };
+  if (src.kind === "uniaxial") { const o = one(ax.o), e = one(ax.e); return (lam) => { const n = o(lam); return [n, n, e(lam)]; }; }
+  const x = one(ax.x), y = one(ax.y), z = one(ax.z);
+  return (lam) => [x(lam), y(lam), z(lam)];
+}
+// engineering units: 3 significant digits
+const sig = (x) => (Math.abs(x) >= 100 ? x.toFixed(0) : Math.abs(x) >= 10 ? x.toFixed(1) : Math.abs(x) >= 1 ? x.toFixed(2) : x.toPrecision(3));
+function eng(x, unit, scales) {
+  if (!Number.isFinite(x)) return "—";
+  if (x === 0) return `0 ${unit}`;
+  for (const [f, p] of scales) if (Math.abs(x) >= f * 0.9995) return `${sig(x / f)} ${p}${unit}`;
+  const [f, p] = scales[scales.length - 1]; return `${(x / f).toPrecision(3)} ${p}${unit}`;
+}
+const SC = [[1e9, "G"], [1e6, "M"], [1e3, "k"], [1, ""], [1e-3, "m"], [1e-6, "µ"], [1e-9, "n"], [1e-12, "p"]];
+const bd = (t) => `<bdi dir="ltr">${t}</bdi>`;
+const fW = (x) => bd(eng(x, "W", SC)), fJ = (x) => bd(eng(x, "J", SC));
+const fI = (x) => bd(eng(x, "W/cm²", SC.slice(0, 7))), fF = (x) => bd(eng(x, "J/cm²", SC.slice(3, 7)));
+const pct = (x) => bd((x >= 0.1 ? (x * 100).toFixed(1) : x >= 1e-3 ? (x * 100).toFixed(2) : (x * 100).toPrecision(2)) + "%");
+const chipDoc = (s, text) => (s?.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what || "")}" data-open-paper="${esc(s.doc_id)}">${text} · ${basisName(s)}</button>`
+  : s?.doi ? `<a class="chip" title="${esc(s.what || "")}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${text} · ${basisName(s)} (خارج از مجموعه)</a>` : text);
+
+window.loadPower = async () => {
+  if (PW.list) return;
+  try {
+    [PW.list, PW.dij, PW.props] = await Promise.all([
+      fetch("/ri/aniso.json").then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }),
+      fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({})), fetch("/ri/props.json").then((r) => r.json()).catch(() => ({}))]);
+  } catch (e) { loadFailed(["pwinfo", "dminfo"], () => window.loadPower()); throw e; }
+  // partial tensors would give a wrong d_eff (as in the phase-matching tab)
+  PW.dij = Object.fromEntries(Object.entries(PW.dij).filter(([, v]) => !v.partial));
+  const opt = (c) => `<option value="${esc(c.material)}">${esc(c.material)}${short(c) ? " — " + esc(short(c)) : ""}</option>`;
+  // SHG: crystals with d coefficients whose formulas hold both λ and λ/2
+  const ok = PW.list.filter((c) => PW.dij[c.material] && c.sources.some((s) => s.range_um[1] / s.range_um[0] >= 2));
+  const qpm = ok.filter((c) => POLED.has(c.material) || OP.has(c.material)), bi = ok.filter((c) => !qpm.includes(c));
+  $("pwmat").innerHTML = `<optgroup label="قطبیده‌ی تناوبی یا الگودار (QPM)">${qpm.map(opt).join("")}</optgroup><optgroup label="دوشکستی">${bi.map(opt).join("")}</optgroup>`;
+  const dm = PW.list.filter((c) => PW.props[c.material]?.damage?.value);
+  $("dmmat").innerHTML = dm.map(opt).join("");
+  $("pwmat").value = "KTiOPO4"; $("dmmat").value = "BaB2O4";
+  fillSrc(); fillCfg();
+  for (const id of ["pwmat", "dmmat"]) $(id).dispatchEvent(new Event("change"));
+  setModes();
+};
+
+// ---------- SHG
+const crystal = () => PW.list?.find((c) => c.material === $("pwmat").value);
+function fillSrc() {
+  const c = crystal(); if (!c) return;
+  const lam = num("pwlam"), ls = lam > 0 ? [lam, lam / 2] : [];
+  const srcs = bySrc(c), fit = srcs.filter(({ x }) => covers(x, ls));
+  $("pwsrc").innerHTML = (fit.length ? fit : srcs).map(({ x, i }) => `<option value="${i}">${tierMark(x)} ${esc(x.label)}${x.thermo ? " · T" : ""}</option>`).join("");
+}
+const source = () => crystal()?.sources[+$("pwsrc").value];
+// group index n − λ·dn/dλ of the axis i at T
+function ngAxis(fT, i, lam) { const h = 1e-4, n = (l) => fT(l)[i]; return n(lam) - lam * (n(lam + h) - n(lam - h)) / (2 * h); }
+// full width (µm) of |g(δ)| < limit around δ = 0
+function fwhm(g, limit) {
+  const edge = (s) => { let x = 1e-6; while (Math.abs(g(s * x)) < limit) { x *= 2; if (x > 0.5) return 0.5; }
+    let lo = x / 2, hi = x; if (Math.abs(g(s * lo)) >= limit) lo = 0;
+    for (let k = 0; k < 50; k++) { const m = (lo + hi) / 2; if (Math.abs(g(s * m)) < limit) lo = m; else hi = m; } return (lo + hi) / 2; };
+  return edge(1) + edge(-1);
+}
+// Every way the crystal can double λ: critical angles at T, 90° by temperature (anywhere in −50…300 °C) and QPM at T.
+// Each with what the power needs: n_ω, n_2ω, d_eff, walk-off ρ, GVM, and the acceptances of a 1 cm crystal.
+function configs() {
+  const c = crystal(), src = source(), lam = num("pwlam"), T = tempOf("pwT") ?? 25;
+  if (!c || !src || !(lam > 0)) return { list: [] };
+  const w = waves("shg", lam), d = PW.dij[c.material]?.d;
+  if (!covers(src, [w.l1, w.l3])) return { list: [], err: "range" };
+  const fT = (t) => nAtT(src, t), fn = fT(T), list = [];
+  const n0 = fn(lam), iso = Math.max(...n0) - Math.min(...n0) < 1e-6;
+  const fom = (x) => (x.deff ?? 0) ** 2 / (x.n1 * x.n1 * x.n2);
+  const angTxt = (r) => src.kind === "uniaxial" ? `θ = ${r.angle.toFixed(2)}°` : `${r.plane}، ${r.plane === "xy" ? "φ" : "θ"} = ${r.angle.toFixed(2)}°`;
+  if (!iso) for (const r of solveAll(fn, src.kind, "shg", lam)) {
+    const e = d ? effectiveD(fn, src.kind, r, d) : null;
+    list.push({ how: "angle", type: r.type === "I" ? "I" : "II", T, label: `${r.type === "I" ? "نوع I" : "نوع II"} · ${angTxt(r)}`,
+      n1: Math.sqrt(r.n[0] * r.n[1]), n2: r.n[2], deff: e?.deff ?? null, rho: Math.max(...r.walkoff_mrad),
+      gvm: Math.max(Math.abs(r.gvm_fs_mm[0]), Math.abs(r.gvm_fs_mm[1])), spec: r.spectral_nm, ang: r.angular_mrad,
+      temp: src.thermo ? temperatureAcceptance(fT, r.plane, r.angle * Math.PI / 180, "shg", lam, null, r.type, T) : null });
+  }
+  const group = (t, pol) => { const f = fT(t), g = pol.map((p, k) => ngAxis(f, p, k < 2 ? w.l1 : w.l3)); return Math.max(Math.abs(g[0] - g[2]), Math.abs(g[1] - g[2])) / 2.99792458e-4; };
+  const spectral = (t, pol) => { const f = fT(t), dk = (l) => 2 * Math.PI * (f(l / 2)[pol[2]] / (l / 2) - f(l)[pol[0]] / l - f(l)[pol[1]] / l), k0 = dk(lam);
+    return fwhm((x) => dk(lam + x) - k0, 2.78312 / 1e4) * 1e3; };
+  if (src.thermo && !iso) for (const r of ncpmTemperatures(fT, src.kind, "shg", lam, null, d, [-50, 300])) {
+    const p = r.pol.map((x) => AX.indexOf(x)), f = fT(r.T);
+    list.push({ how: "ncpm", type: p[0] === p[1] ? "I" : "II", T: r.T,
+      label: `۹۰° (NCPM) · ${src.kind === "uniaxial" ? "⊥ z" : "∥ " + r.axis} · ${r.T.toFixed(1)} °C`,
+      n1: Math.sqrt(f(lam)[p[0]] * f(lam)[p[1]]), n2: f(w.l3)[p[2]], deff: r.deff, rho: 0, gvm: group(r.T, p), spec: spectral(r.T, p),
+      temp: ncpmAcceptance(fT, "shg", lam, null, p, r.T) });
+  }
+  if (d && (POLED.has(c.material) || OP.has(c.material))) {
+    for (const q of qpmSolutions(fT, src.kind, OP.has(c.material) ? "op" : "poled", d, "shg", lam, null, T)) {
+      const p = q.pol.length ? q.pol.map((x) => AX.indexOf(x)) : [0, 0, 0];
+      list.push({ how: "qpm", type: q.type, T, label: `QPM نوع ${q.type}${q.pol.length ? ` (${q.pol.join("")})` : ""} · Λ = ${q.period_um.toFixed(2)} µm`,
+        n1: Math.sqrt(q.n[0] * q.n[1]), n2: q.n[2], deff: q.deff, rho: 0, gvm: group(T, p), spec: q.spectral_nm, temp: src.thermo ? q.temp_C : null, period: q.period_um });
+    }
+  }
+  const useful = list.filter((x) => x.deff == null || x.deff > 0.005).sort((p, q) => fom(q) - fom(p));
+  return { list: useful, dropped: list.length - useful.length };
+}
+function fillCfg() {
+  const keep = $("pwcfg").selectedOptions[0]?.dataset.key, r = configs();
+  PW.cfgs = r.list;
+  const dtxt = (x) => (x.deff == null ? "" : ` · d_eff = ${x.deff.toFixed(2)} pm/V`);
+  $("pwcfg").innerHTML = r.list.length ? r.list.map((x, i) => `<option value="${i}" data-key="${esc(x.how + x.label.split(" · ")[0])}">${esc(x.label + dtxt(x))}</option>`).join("")
+    : `<option value="">${r.err === "range" ? "این منبع λ و λ/2 را پوشش نمی‌دهد" : "در این طول موج و دما تطبیق فاز ندارد"}</option>`;
+  const again = [...$("pwcfg").options].find((o) => o.dataset.key === keep); if (again) $("pwcfg").value = again.value;
+  const lam = num("pwlam");
+  $("pwharm").textContent = lam > 0 ? `→ ${(lam / 2).toFixed(4)} µm` : "";
+}
+function setModes() {
+  const pulsed = $("pwmode").value === "pulsed";
+  $("pwPw").hidden = pulsed; for (const id of ["pwEw", "pwtauw", "pwrepw", "pwshapew"]) $(id).hidden = !pulsed;
+  $("pww0w").hidden = $("pwfocus").value !== "waist";
+  const dp = $("dmmode").value === "pulsed";
+  $("dmPw").hidden = dp; for (const id of ["dmEw", "dmtauw", "dmrepw", "dmshapew"]) $(id).hidden = !dp;
+}
+for (const id of ["pwmode", "pwfocus", "dmmode"]) $(id).addEventListener("change", setModes);
+$("pwmat").addEventListener("change", () => { fillSrc(); fillCfg(); });
+for (const id of ["pwsrc", "pwT"]) $(id).addEventListener("change", fillCfg);
+$("pwlam").addEventListener("change", () => { fillSrc(); fillCfg(); });
+
+// The laser of a calculator ("pw" or "dm"), or the reason it cannot be read.
+function laserOf(p) {
+  if ($(p + "mode").value === "cw") { const P = num(p + "P"); return P > 0 ? { cw: true, P } : { err: "توان لیزر را بنویسید (بیشتر از صفر)." }; }
+  const E = num(p + "E"), t = num(p + "tau"), rep = num(p + "rep");
+  if (!(E > 0)) return { err: "انرژی پالس را بنویسید (بیشتر از صفر)." };
+  if (!(t > 0)) return { err: "پهنای پالس را بنویسید (بیشتر از صفر)." };
+  if (rep != null && rep < 0) return { err: "نرخ تکرار نمی‌تواند منفی باشد." };
+  return { E: E * 1e-3, tau: t * +$(p + "tauu").value, rep: (rep || 0) * 1e3, shape: $(p + "shape").value };
+}
+const safety = (id) => { const s = num(id); return s >= 1 ? s : 2; };
+// the peak intensity (W/cm²) that keeps the margin S for this laser, or null (CW, no threshold, too short a pulse)
+function intensityLimit(dmg, laser, S) {
+  if (laser.cw || !dmg?.value) return null;
+  const th = thresholdAt(dmg, laser.tau);
+  if (!th || th.how === "short") return null;
+  const v = [th.I, th.F ? PEAK[laser.shape] * th.F / laser.tau : null].filter((x) => x > 0);
+  return v.length ? Math.min(...v) / S : null;
+}
+
+async function runPower() {
+  const c = crystal(), cfg = PW.cfgs[+$("pwcfg").value], lam = num("pwlam"), L = num("pwL"), laser = laserOf("pw"), S = safety("pwS");
+  const fail = (t) => { $("pwinfo").innerHTML = `<span class="err">${t}</span>`; $("pwres").hidden = true; };
+  if (!c) return fail("بلور را انتخاب کنید.");
+  if (!(lam > 0)) return fail("طول موج لیزر را به میکرومتر بنویسید (مثلاً 1.064).");
+  if (!(L > 0)) return fail("طول بلور را به میلی‌متر بنویسید.");
+  if (!cfg) return fail($("pwcfg").selectedOptions[0]?.textContent || "پیکربندی تطبیق فازی پیدا نشد.");
+  if (laser.err) return fail(laser.err);
+  const deff = num("pwdeff") ?? cfg.deff;
+  if (!(deff > 0)) return fail("ضرایب d این بلور در داده‌ها نیست: d<sub>eff</sub> را خودتان بنویسید.");
+  const focusMode = $("pwfocus").value, w0 = num("pww0");
+  if (focusMode === "waist" && !(w0 > 0)) return fail("شعاع کمر باریکه را به میکرومتر بنویسید.");
+  const props = PW.props[c.material] || {}, dmg = props.damage;
+  let focus = { mode: focusMode === "waist" ? "waist" : "optimal", w0_um: w0 }, safeNote = "";
+  if (focusMode === "safe") {
+    const Imax = intensityLimit(dmg, laser, S);
+    if (Imax) focus = { mode: "safe", Imax };
+    else safeNote = laser.cw ? "برای لیزر پیوسته آستانه‌ی آسیب در داده‌ها نیست؛ کانونی‌کردن بهینه به کار رفت."
+      : !dmg?.value ? "آستانه‌ی آسیب این بلور در داده‌ها نیست؛ کانونی‌کردن بهینه به کار رفت."
+      : "برای پالس کوتاه‌تر از ۱۰ پیکوثانیه آستانه را نمی‌شود مقیاس کرد؛ کانونی‌کردن بهینه به کار رفت.";
+  }
+  $("pwinfo").textContent = "در حال محاسبه…"; await pause();
+  // a pulse shorter than the delay the GVM builds up: the harmonic grows only over about τ/GVM, so that is the length used
+  const Lg = !laser.cw && cfg.gvm > 0 ? laser.tau * 1e15 / cfg.gvm : Infinity, Leff = Math.min(L, Lg);
+  const inp = { lam_um: lam, n1: cfg.n1, n2: cfg.n2, deff_pm: deff, rho_mrad: cfg.rho, L_mm: Leff, focus, laser };
+  const r = shg(inp), best = focus.mode === "safe" && r.capped ? shg({ ...inp, focus: { mode: "optimal" } }) : null;
+  const m = dmg?.value ? damageMargin(laser, r.w0_um, dmg, S) : null;
+  PW.last = { c, cfg, r, laser, L, lam, S, m, best, deff, Lg, Leff };
+  $("pwinfo").textContent = safeNote; $("pwres").hidden = false;
+  renderTiles(); renderDamage(); renderWarnings(); renderParams();
+  await pause(); drawPowerChart(); await pause(); drawFocusChart();
+}
+
+function renderTiles() {
+  const { r, laser, m, Leff, L } = PW.last, tile = (big, label, small = "", cls = "") => `<div class="tile ${cls}"><span>${label}</span><b>${big}</b>${small ? `<small>${small}</small>` : ""}</div>`;
+  const out = [];
+  if (laser.cw) {
+    out.push(tile(fW(r.P2), "توان هماهنگ دوم", r.eta_und > 0.05 ? `بدون کاهش پمپ: ${fW(r.P2_und)}` : ""));
+    out.push(tile(pct(r.eta), "بازده تبدیل"));
+  } else {
+    out.push(tile(fJ(r.E2), "انرژی پالس هماهنگ دوم", `توان متوسط ${fW(r.P2avg)} · قله ${fW(r.P2pk)}`));
+    out.push(tile(pct(r.eta), "بازده تبدیل انرژی", r.eta_und > 0.05 ? `بدون کاهش پمپ: ${pct(r.eta_und)}` : ""));
+  }
+  out.push(tile(`${bd(`${sig(r.kappa * 100)} %/W`)}`, "بازده بهنجار (توان کم)", `${bd(`${sig(r.kappa * 100 / (Leff / 10))} %/(W·cm)`)}${Leff < L ? ` · طول مؤثر ${bd(`${sig(Leff)} mm`)}` : ""}`));
+  out.push(tile(`${bd(`${sig(r.w0_um)} µm`)}`, `شعاع کمر باریکه در کانون ${bd("(1/e²)")}`, bd(`ξ = ${sig(r.xi)} · z<sub>R</sub> = ${sig(r.zR_mm)} mm`)));
+  out.push(tile(sig(r.h), "ضریب کانونی‌کردن h", `${bd(`B = ${sig(r.B)}`)} · بیشینه‌ی ممکن ۱٫۰۶۸`));
+  const bad = m?.ratio != null ? (m.verdict === "over" ? "bad" : m.verdict === "ok" ? "good" : "") : "";
+  out.push(tile(fI(r.I_peak), "شدت قله در کانون", m?.ratio != null ? `${pct(m.ratio)} از آستانه‌ی آسیب` : "", bad));
+  $("pwtiles").innerHTML = out.join("");
+}
+
+// the verdict of a margin, as one sentence; used by both calculators
+function verdictHtml(m, S, where) {
+  const th = m.th;
+  if (!th) return { cls: "", html: "آستانه‌ی آسیب این بلور در داده‌ها نیست." };
+  if (th.how === "cw") return { cls: "", html: "آستانه‌های آسیب داده‌ها برای پالس‌اند؛ برای لیزر پیوسته آسیب گرمایی است و به جذب بلور بستگی دارد، پس مقایسه‌ی مستقیم ممکن نیست." };
+  if (th.how === "short") return { cls: "", html: "پالس زیر ۱۰ پیکوثانیه: رابطه‌ی √τ آنجا برقرار نیست و آستانه‌ی پالس شما را از این داده نمی‌شود برآورد کرد." };
+  if (m.ratio == null) return { cls: "", html: "مقایسه ممکن نشد." };
+  const k = m.ratio >= 1 ? `${sig(m.ratio)} برابر آستانه` : `${sig(1 / m.ratio)} برابر کمتر از آستانه`;
+  if (m.verdict === "ok") return { cls: "ok", html: `<span class="big">ایمن</span> — ${where}: ${k} (ضریب اطمینان خواسته‌شده: ${bd(String(+S.toPrecision(3)))}).` };
+  if (m.verdict === "thin") return { cls: "thin", html: `<span class="big">زیر آستانه، با حاشیه‌ی کم</span> — ${where}: ${k} — کمتر از ضریب اطمینان ${bd(String(+S.toPrecision(3)))} که خواستید.` };
+  return { cls: "over", html: `<span class="big">بالاتر از آستانه‌ی آسیب</span> — ${where}: ${k} — باریکه را بزرگ‌تر کنید یا انرژی را کم کنید.` };
+}
+function renderDamage() {
+  const { m, S, laser, r, best } = PW.last, box = $("pwdmg");
+  if (!m) { box.hidden = true; return; }
+  const v = verdictHtml(m, S, "شدت قله در کانون");
+  box.className = "verdict " + v.cls; box.hidden = false;
+  const hint = m.verdict && m.verdict !== "ok" && $("pwfocus").value === "optimal" ? '<div class="hint" style="margin-top:6px">برای این‌که ابزار خودش کانون را تا حد ایمن شل کند، در «کانونی‌کردن» گزینه‌ی «بهینه، ولی با فاصله‌ی ایمن از آستانه‌ی آسیب» را انتخاب کنید.</div>' : "";
+  box.innerHTML = v.html + hint + (best ? `<div class="hint" style="margin-top:6px">کانونی‌کردن برای ایمنی شل‌تر شد: ξ از ${sig(best.xi)} به ${sig(r.xi)}، h از ${sig(best.h)} به ${sig(r.h)}؛ با کانونی‌کردن بهینه ${laser.cw ? fW(best.P2) : fJ(best.E2)} می‌شد، ولی شدت قله ${fI(best.I_peak)} بود.</div>` : "");
+}
+function renderWarnings() {
+  const { c, cfg, r, laser, L, lam, deff, Lg } = PW.last, props = PW.props[c.material] || {}, out = [];
+  const li = (t, k = "") => out.push(`<li class="${k}">${t}</li>`);
+  const tr = props.transparency_um;
+  if (tr && (lam / 2 < tr[0] || lam > tr[1])) li(`${lam / 2 < tr[0] ? "هماهنگ دوم" : "طول موج لیزر"} بیرون از بازه‌ی شفافیت بلور (${tr[0]}–${tr[1]} µm) است: جذب می‌شود و این عدد واقعی نیست.`, "e");
+  if (props.min_pump_um && lam / 2 < props.min_pump_um.value) li(`هماهنگ دوم کوتاه‌تر از ${props.min_pump_um.value} µm است؛ این بلور آنجا جذب دوفوتونی یا باقی‌مانده دارد.`, "w");
+  if (num("pwdeff") != null) li(`d<sub>eff</sub> = ${bd(`${sig(deff)} pm/V`)} را خودتان داده‌اید (از داده‌ها: ${cfg.deff == null ? "—" : sig(cfg.deff) + " pm/V"}).`);
+  if (cfg.type === "II") li("نوع II: قطبش لیزر ۴۵ درجه نسبت به محورهای بلور فرض شده است (نیمی از توان در هر قطبش).");
+  if (!laser.cw && cfg.gvm > 0) {
+    if (Lg < L) li(`جدایی پالس (GVM = ${bd(`${sig(cfg.gvm)} fs/mm`)}): پالس لیزر و هماهنگ دوم پس از حدود ${bd(`${sig(Lg)} mm`)} از هم جدا می‌شوند، کوتاه‌تر از بلور ${bd(`${sig(L)} mm`)}. توان با همین طول مؤثر حساب شد (برآورد تقریبی)؛ بلور بلندتر از این بازده را بالا نمی‌برد و فقط پالس را پهن می‌کند.`, "w");
+  }
+  if (cfg.spec) {
+    const own = num("pwbw"), Lb = Math.min(L, Lg), acc = cfg.spec / (Lb / 10), bw = own ?? (laser.cw ? 0 : pulseBandwidthNm(lam, laser.tau, laser.shape));
+    if (bw > acc * 1.05) li(`${own == null ? "پهنای طیف لیزر در حد تبدیل فوریه (" : "پهنای طیف لیزر ("}${bd(`${sig(bw)} nm`)}) از پهنای پذیرش طیفی بلور ${bd(`${sig(Lb)} mm`)} (${bd(`${sig(acc)} nm`)}) بیشتر است: تنها بخشی از طیف (حدود ${pct(acc / bw)}) تبدیل می‌شود و توان واقعی کمتر است.`, "w");
+  }
+  if (cfg.temp != null && Number.isFinite(cfg.temp)) {
+    const ta = cfg.temp / (L / 10);
+    if (ta < 3) li(`پهنای پذیرش دمایی فقط ${bd(`${sig(ta)} °C`)} است: آون با پایداری بهتر از ±${bd(`${sig(ta / 4)} °C`)} لازم است.`, ta < 1 ? "w" : "");
+  } else if (cfg.temp == null && cfg.how !== "angle") li("وابستگی دمایی این منبع معلوم نیست: پهنای دمایی حساب نشد.");
+  if (r.eta_und > 0.3) li(`تبدیل زیاد (بدون کاهش پمپ ${pct(r.eta_und)}): کاهش پمپ با رابطه‌ی موج تخت tanh² برآورد شده است؛ عدد واقعی برای باریکه‌ی گاوسی معمولاً کمتر است و در تبدیل خیلی زیاد ممکن است خیلی کمتر باشد.`, "w");
+  if (r.B > 1) li(`walk-off بازده را محدود کرده است (B = ${sig(r.B)}): بلند کردن بلور کمک کمی می‌کند؛ تطبیق فاز غیربحرانی یا QPM (اگر هست) بهتر است.`);
+  // with no threshold to compare (CW, a short pulse, no data) a very high intensity is still worth a word
+  if (r.I_peak > 1e10 && !(PW.last.m?.ratio != null)) li(`شدت قله در کانون ${fI(r.I_peak)} است: در این شدت خودکانونی، جذب دوفوتونی و آسیب محتمل‌اند؛ کانون را شل‌تر کنید (شعاع کمر باریکه‌ی بزرگ‌تر).`, "w");
+  if (props.hygroscopic === "yes" || props.hygroscopic === "strong") li("این بلور جاذب رطوبت است: در محفظه‌ی خشک یا گرم نگه دارید.", "w");
+  for (const n of props.notes || []) {
+    if (n.keep_c && (cfg.T < n.keep_c[0] || cfg.T > n.keep_c[1])) li(esc(LANG === "en" ? n.en : n.fa), "w");
+  }
+  $("pwwarn").innerHTML = out.join("");
+}
+function renderParams() {
+  const { c, cfg, r, laser, L, lam, deff, Leff } = PW.last, src = source(), dij = PW.dij[c.material], props = PW.props[c.material] || {};
+  const row = (k, v) => `<tr><td style="text-align:start">${k}</td><td style="text-align:start;font-family:ui-monospace,Consolas,monospace">${v}</td></tr>`;
+  const rows = [
+    row("λ (fundamental → SH)", `${lam} → ${(lam / 2).toFixed(4)} µm`), row("phase matching", esc(cfg.label) + (cfg.how === "ncpm" ? "" : ` at ${bd(`${sig(cfg.T)} °C`)}`)),
+    row("n(ω), n(2ω)", `${cfg.n1.toFixed(5)}, ${cfg.n2.toFixed(5)}`), row("d_eff", `${bd(`${sig(deff)} pm/V`)}`),
+    row("walk-off ρ", `${bd(`${sig(cfg.rho)} mrad`)}`), row("B = ρ√(L k₁)/2", sig(r.B)), row("ξ = L/b", sig(r.xi)),
+    row("b = k₁w₀² (confocal parameter)", `${bd(`${sig(Leff / r.xi)} mm`)}`), ...(Leff < L ? [row("effective length τ/GVM (used for the power)", `${bd(`${sig(Leff)} mm`)} of ${bd(`${sig(L)} mm`)}`)] : []), row("w₀ (1/e² radius at focus)", `${bd(`${sig(r.w0_um)} µm`)}`),
+    row("σ = bΔk/2 (optimum), Δk", `${sig(r.sigma)}, ${sig(r.dk_per_mm)} rad/mm`), row("h (Boyd–Kleinman)", sig(r.h)),
+    row("κ = P₂/P₁² (low power)", `${r.kappa.toPrecision(3)} W⁻¹`),
+    row("spectral acceptance (FWHM, this L)", cfg.spec ? `${bd(`${sig(cfg.spec / (L / 10))} nm`)}` : "—"),
+    row("temperature acceptance (FWHM, this L)", cfg.temp != null && Number.isFinite(cfg.temp) ? `${bd(`${sig(cfg.temp / (L / 10))} °C`)}` : "—"),
+    row("angular acceptance (FWHM, this L)", cfg.ang ? `${bd(`${sig(cfg.ang / (L / 10))} mrad`)}` : "noncritical"),
+    row("GVM (fundamental − SH)", `${bd(`${sig(cfg.gvm)} fs/mm`)}`),
+    row("peak power", fW(r.Ppk)), row("peak intensity at focus", fI(r.I_peak)),
+  ];
+  if (!laser.cw) rows.push(row("peak fluence at focus", fF(r.F_peak)), row("transform-limited bandwidth", `${bd(`${sig(pulseBandwidthNm(lam, laser.tau, laser.shape))} nm`)}`));
+  $("pwparams").innerHTML = rows.join("");
+  const parts = [`ضریب شکست: ${tierMark(src)} ${esc(src.label)}`];
+  if (dij) parts.push(`ضرایب d: ${dij.sources.map((s) => chipDoc(s, `${esc(s.cite)}، ص ${fa(s.pdf_page)}`)).join(" ")}`);
+  if (props.damage) parts.push(`آستانه‌ی آسیب: ${chipDoc(props.damage, `<bdi dir="ltr">${esc(props.damage.threshold)}</bdi>، ص ${fa(props.damage.pdf_page)}`)}`);
+  $("pwsrcs").innerHTML = parts.join("<br>");
+}
+
+// ---------- charts (SVG, in the theme's colors)
+function axes(svg, box, { x0, x1, y0, y1, logx, xl, yl, fx = (v) => sig(v), fy = (v) => sig(v) }) {
+  const W = Math.round(box.clientWidth) || 420, H = Math.round(Math.min(280, Math.max(210, W * 0.6)));
+  svg.style.height = H + "px"; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const m = { l: 54, r: 12, t: 10, b: 38 }, tx = (x) => (logx ? Math.log10(x) : x);
+  const X = (x) => m.l + (tx(x) - tx(x0)) / (tx(x1) - tx(x0)) * (W - m.l - m.r), Y = (y) => H - m.b - (y - y0) / (y1 - y0) * (H - m.t - m.b);
+  const lin = (a, b, n) => { const st = 10 ** Math.floor(Math.log10((b - a) / n)), f = [1, 2, 5, 10].find((q) => (b - a) / (st * q) <= n) * st, o = []; for (let v = Math.ceil(a / f) * f; v <= b + 1e-12; v += f) o.push(+v.toPrecision(12)); return o; };
+  const xt = logx ? [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30].filter((v) => v >= x0 && v <= x1) : lin(x0, x1, W < 400 ? 4 : 6);
+  let s = lin(y0, y1, 5).map((v) => `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${fy(v)}</text>`).join("");
+  s += xt.map((v) => `<text x="${X(v)}" y="${H - m.b + 16}" text-anchor="middle" font-size="11" fill="var(--muted)">${fx(v)}</text>`).join("");
+  s += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="var(--line)"/>`;
+  s += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle" font-size="12" fill="var(--muted)">${xl}</text>`;
+  s += `<text transform="translate(13 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="var(--muted)">${yl}</text>`;
+  return { X, Y, s, H, m, W };
+}
+const path = (pts, X, Y) => pts.map(([x, y], i) => `${i ? "L" : "M"}${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join("");
+function drawPowerChart() {
+  const { r, laser, m } = PW.last, box = $("pwc1"), svg = box.querySelector("svg");
+  const x0 = laser.cw ? laser.P : laser.E, N = 80, xs = [...Array(N + 1)].map((_, i) => (2 * x0 * i) / N);
+  const und = xs.map((x) => [x, laser.cw ? r.kappa * x * x : pulseSH(r.kappa, x, laser.tau, laser.shape).und]);
+  const dep = xs.map((x) => [x, laser.cw ? x * Math.tanh(Math.sqrt(r.kappa * x)) ** 2 : pulseSH(r.kappa, x, laser.tau, laser.shape).dep]);
+  // units: W or mJ on both axes
+  const k = laser.cw ? 1 : 1e3, u = laser.cw ? "W" : "mJ";
+  const yMax = Math.max(...dep.map((p) => p[1]), Math.min(Math.max(...und.map((p) => p[1])), 1.5 * Math.max(...dep.map((p) => p[1])))) * k * 1.08 || 1;
+  const a = axes(svg, box, { x0: 0, x1: 2 * x0 * k, y0: 0, y1: yMax, xl: `fundamental ${laser.cw ? "power" : "pulse energy"} (${u})`, yl: `second harmonic (${u})` });
+  const clip = (pts) => { const o = []; for (const [x, y] of pts) { o.push([x * k, Math.min(y * k, yMax)]); if (y * k > yMax) break; } return o; };
+  let s = a.s + `<path d="${path(clip(und), a.X, a.Y)}" fill="none" stroke="var(--series-1)" stroke-width="1.6" stroke-dasharray="5 4"/>`
+    + `<path d="${path(clip(dep), a.X, a.Y)}" fill="none" stroke="var(--series-1)" stroke-width="2.4"/>`;
+  // the damage threshold and the safe limit at this focus, when they fall in the plot
+  const legend = [`<span class="chip"><span class="sw" style="background:var(--series-1)"></span>with pump depletion</span>`, `<span class="chip">- - - undepleted (∝ P²)</span>`];
+  if (m?.ratio) {
+    for (const [f, col, name] of [[1, "var(--err)", "damage threshold"], [1 / PW.last.S, "var(--warn)", `safe limit (÷${+PW.last.S.toPrecision(3)})`]]) {
+      const xl = (x0 / m.ratio) * f * k;
+      if (xl > 0 && xl <= 2 * x0 * k) { s += `<line x1="${a.X(xl)}" x2="${a.X(xl)}" y1="${a.m.t}" y2="${a.H - a.m.b}" stroke="${col}" stroke-width="1.5" stroke-dasharray="3 3"/>`; legend.push(`<span class="chip"><span class="sw" style="background:${col}"></span>${name}</span>`); }
+    }
+  }
+  const y = (laser.cw ? r.P2 : r.E2) * k;
+  s += `<circle cx="${a.X(x0 * k)}" cy="${a.Y(Math.min(y, yMax))}" r="5.5" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  svg.innerHTML = s; $("pwc1leg").innerHTML = legend.join("") + '<span class="chip">○ your laser</span>';
+}
+function hCurve(B) {
+  const key = B.toFixed(3); if (PW.hcache.has(key)) return PW.hcache.get(key);
+  const pts = []; for (let i = 0; i <= 28; i++) { const xi = 0.03 * Math.pow(20 / 0.03, i / 28); pts.push([xi, bkBestSigma(B, xi).h]); }
+  PW.hcache.set(key, pts); return pts;
+}
+function drawFocusChart() {
+  const { r } = PW.last, box = $("pwc2"), svg = box.querySelector("svg");
+  const ref = hCurve(0), cur = r.B > 1e-6 ? hCurve(r.B) : null;
+  const a = axes(svg, box, { x0: 0.03, x1: 20, y0: 0, y1: 1.15, logx: true, xl: "ξ = L / b  (tighter focus →)", yl: "h", fy: (v) => v.toFixed(1) });
+  let s = a.s + `<path d="${path(ref, a.X, a.Y)}" fill="none" stroke="var(--series-3)" stroke-width="${cur ? 1.6 : 2.4}"${cur ? ' stroke-dasharray="5 4"' : ""}/>`;
+  if (cur) s += `<path d="${path(cur, a.X, a.Y)}" fill="none" stroke="var(--series-2)" stroke-width="2.4"/>`;
+  s += `<circle cx="${a.X(Math.min(20, Math.max(0.03, r.xi)))}" cy="${a.Y(r.h)}" r="5.5" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  svg.innerHTML = s;
+  $("pwc2leg").innerHTML = `<span class="chip"><span class="sw" style="background:var(--series-3)"></span>no walk-off (B = 0)</span>`
+    + (cur ? `<span class="chip"><span class="sw" style="background:var(--series-2)"></span>this crystal (B = ${sig(r.B)})</span>` : "") + '<span class="chip">○ chosen focus</span>';
+}
+$("pwgo").addEventListener("click", () => { runPower().catch((e) => { $("pwinfo").innerHTML = `<span class="err">${esc(e.message)}</span>`; }); });
+// a shared link runs both calculators
+$("pwboth").addEventListener("click", () => { runPower().catch(() => {}); runDamage(); });
+
+// ---------- damage
+function beamRadiusUm() {
+  const v = num("dmw"), u = +$("dmwu").value, k = $("dmwk").value, top = $("dmprof").value === "top";
+  if (!(v > 0)) return null;
+  const x = v * u * 1e6; // µm
+  return k === "r2" ? x : k === "d2" ? x / 2 : top ? x / 2 : x / Math.sqrt(2 * Math.LN2);
+}
+function runDamage() {
+  const c = PW.list?.find((x) => x.material === $("dmmat").value), dmg = PW.props[c?.material]?.damage, laser = laserOf("dm"), w = beamRadiusUm();
+  const S = safety("dmS"), top = $("dmprof").value === "top", lam = num("dmlam");
+  const fail = (t) => { $("dminfo").innerHTML = `<span class="err">${t}</span>`; $("dmverdict").hidden = true; $("dmtiles").innerHTML = ""; $("dmnotes").innerHTML = ""; };
+  if (!c || !dmg) return fail("بلور را انتخاب کنید.");
+  if (laser.err) return fail(laser.err);
+  if (!w) return fail("اندازه‌ی باریکه را بنویسید (بیشتر از صفر).");
+  $("dminfo").textContent = "";
+  const m = damageMargin(laser, w, dmg, S, top), v = verdictHtml(m, S, laser.cw ? "شدت قله" : "شدت و شار قله‌ی باریکه");
+  $("dmverdict").className = "verdict " + v.cls; $("dmverdict").hidden = false; $("dmverdict").innerHTML = v.html;
+  const tile = (big, label, small = "", cls = "") => `<div class="tile ${cls}"><span>${label}</span><b>${big}</b>${small ? `<small>${small}</small>` : ""}</div>`;
+  const th = m.th, out = [];
+  out.push(tile(fI(m.I), "شدت قله‌ی شما", th?.I ? `آستانه: ${fI(th.I)}` : ""));
+  if (!laser.cw) out.push(tile(fF(m.F), "شار انرژی قله‌ی شما", th?.F ? `آستانه: ${fF(th.F)}` : ""));
+  out.push(tile(fI(m.Iavg), "شدت متوسط (گرمایی)", laser.cw ? "" : `توان متوسط ${fW(laser.E * laser.rep)}`));
+  if (m.ratio != null) {
+    out.push(tile(pct(m.ratio), "نسبت به آستانه", "", m.verdict === "over" ? "bad" : m.verdict === "ok" ? "good" : ""));
+    out.push(tile(laser.cw ? fW(m.Pmax) : fJ(m.Emax), laser.cw ? "بیشترین توان ایمن" : "بیشترین انرژی پالس ایمن", `با ضریب اطمینان ${bd(String(+S.toPrecision(3)))} و همین باریکه${!laser.cw && laser.rep ? ` · ${fW(m.Pmax)} متوسط` : ""}`));
+    out.push(tile(`${sig(2 * m.wmin_um >= 1000 ? 2 * m.wmin_um / 1000 : 2 * m.wmin_um)} ${2 * m.wmin_um >= 1000 ? "mm" : "µm"}`, "کوچک‌ترین قطر باریکه‌ی ایمن", top ? "قطر باریکه‌ی تخت" : "قطر 1/e²، با همین انرژی"));
+  }
+  $("dmtiles").innerHTML = out.join("");
+  $("dmnotes").innerHTML = damageNotes(c, dmg, m, laser, lam).join("");
+  if (!$("dmallwrap").hidden) runAll();
+}
+function damageNotes(c, dmg, m, laser, lam) {
+  const out = [], li = (t, k = "") => out.push(`<li class="${k}">${t}</li>`), th = m.th, props = PW.props[c.material] || {};
+  li(`آستانه‌ی گزارش‌شده: ${chipDoc(dmg, `<bdi dir="ltr">${esc(dmg.threshold)}${dmg.pulse ? ", " + esc(dmg.pulse) : ""}${dmg.lambda_um ? ", " + dmg.lambda_um + " µm" : ""}</bdi>، ص ${fa(dmg.pdf_page)}`)}`);
+  if (th?.how === "scaled") li(`آستانه از پهنای پالس منبع (${fmtTau(th.ref)}) به پالس شما (${fmtTau(laser.tau)}) با شار ∝ √τ مقیاس شد: ${fF(th.Fref)} → ${fF(th.F)}. این رابطه‌ی تجربی برای پالس‌های ۱۰ ps تا حدود ۱ µs است.`);
+  if (th?.how === "same") li(`پهنای پالس شما نزدیک پالس منبع (${fmtTau(th.ref)}) است: آستانه بی‌مقیاس به کار رفت.`);
+  if (th?.how === "noref") li("منبع پهنای پالس را نگفته است: آستانه بی‌مقیاس، با همان یکای منبع مقایسه شد؛ این مقایسه تقریبی‌تر است.", "w");
+  if (dmg.lower_bound) li("این عدد بیشترین مقداری است که منبع بی‌آسیب آزمود (آستانه‌ی واقعی بالاتر است): مقایسه محافظه‌کارانه است.");
+  if (/surface/i.test(dmg.threshold)) li("آستانه‌ی سطح بلور است؛ پوشش ضدبازتاب و تمیزی سطح آن را بسیار تغییر می‌دهد.");
+  if (lam > 0 && dmg.lambda_um && Math.abs(lam / dmg.lambda_um - 1) > 0.2)
+    li(`طول موج شما (${lam} µm) با طول موج اندازه‌گیری (${dmg.lambda_um} µm) فرق دارد؛ آستانه به طول موج وابسته است (در طول موج کوتاه‌تر معمولاً کمتر). طول موج مقیاس نشده است.`, "w");
+  if (!laser.cw && laser.rep > 1e3) li(`نرخ تکرار ${eng(laser.rep, "Hz", SC.slice(0, 4))}: آستانه‌ها معمولاً برای یک یا چند پالس اند؛ در پالس‌های پیاپی آسیب انباشتی و گرمایی آستانه را پایین می‌آورد.`, "w");
+  else if (!laser.cw && /single|one-on-one|1 pulse/i.test(`${dmg.pulse} ${dmg.threshold}`)) li("آستانه‌ی منبع برای یک پالس است؛ برای کار طولانی با پالس‌های پیاپی حاشیه‌ی بیشتری بگذارید.");
+  if (laser.cw && props.thermal_conductivity) li(`رسانندگی گرمایی: <bdi dir="ltr">${esc(props.thermal_conductivity.value)} W/(m·K)</bdi>؛ در توان پیوسته‌ی زیاد، عدسی گرمایی و ناهمخوانی فاز گرمایی پیش از آسیب سر می‌رسند.`);
+  return out;
+}
+const fmtTau = (t) => (t >= 1e-9 ? `${sig(t * 1e9)} ns` : t >= 1e-12 ? `${sig(t * 1e12)} ps` : `${sig(t * 1e15)} fs`);
+function runAll() {
+  const laser = laserOf("dm"), w = beamRadiusUm(), S = safety("dmS"), top = $("dmprof").value === "top", lam = num("dmlam");
+  if (laser.err || !w) return;
+  const rows = PW.list.filter((c) => PW.props[c.material]?.damage?.value).map((c) => {
+    const d = PW.props[c.material].damage; return { c, d, m: damageMargin(laser, w, d, S, top) };
+  }).sort((p, q) => (p.m.ratio ?? Infinity) - (q.m.ratio ?? Infinity));
+  const mark = (m) => (m.ratio == null ? "—" : m.verdict === "ok" ? "🟢" : m.verdict === "thin" ? "🟡" : "🔴");
+  const thr = (m) => (m.th?.F && !laser.cw ? fF(m.th.F) : m.th?.I ? fI(m.th.I) : "—");
+  $("dmalltable").innerHTML = `<tr><th></th><th>crystal</th><th>reported threshold</th><th>its pulse, λ</th><th>at your pulse</th><th>you / threshold</th><th>${laser.cw ? "max safe power" : "max safe energy"}</th></tr>`
+    + rows.map(({ c, d, m }) => `<tr><td>${mark(m)}</td><td style="text-align:start"><b>${esc(c.material)}</b></td><td style="text-align:start">${tierMark(d)} ${esc(d.threshold)}</td>`
+      + `<td style="text-align:start">${esc(d.pulse || "?")}${d.lambda_um ? ", " + d.lambda_um + " µm" : ""}${lam > 0 && d.lambda_um && Math.abs(lam / d.lambda_um - 1) > 0.2 ? " ⚠" : ""}</td>`
+      + `<td>${thr(m)}${m.th?.how === "scaled" ? " (√τ)" : m.th?.how === "noref" ? " (?)" : ""}</td><td>${m.ratio == null ? "—" : pct(m.ratio)}</td>`
+      + `<td>${m.ratio == null ? "—" : laser.cw ? fW(m.Pmax) : fJ(m.Emax)}</td></tr>`).join("");
+  $("dmallinfo").textContent = `${fa(rows.length)} بلور با آستانه‌ی آسیب در داده‌ها، از ایمن‌ترین؛ ⚠ = طول موج اندازه‌گیری با طول موج شما فرق دارد، (?) = پهنای پالس منبع نامعلوم.`;
+  $("dmallwrap").hidden = false;
+}
+$("dmgo").addEventListener("click", runDamage);
+$("dmall").addEventListener("click", () => { runDamage(); runAll(); });
+// the SHG calculator's laser and its beam at the focus
+$("dmfill").addEventListener("click", () => {
+  const L = PW.last; if (!L) { $("dminfo").innerHTML = '<span class="err">اول توان SHG را حساب کنید.</span>'; return; }
+  if ([...$("dmmat").options].some((o) => o.value === L.c.material)) { $("dmmat").value = L.c.material; $("dmmat").dispatchEvent(new Event("change")); }
+  $("dmlam").value = L.lam; $("dmmode").value = $("pwmode").value;
+  for (const k of ["P", "E", "tau", "rep"]) $("dm" + k).value = $("pw" + k).value;
+  $("dmtauu").value = $("pwtauu").value; $("dmshape").value = $("pwshape").value; $("dmS").value = $("pwS").value;
+  $("dmw").value = sig(L.r.w0_um); $("dmwu").value = "1e-6"; $("dmwk").value = "r2"; $("dmprof").value = "gauss";
+  setModes(); runDamage();
+  $("dmcard").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("dmmat").addEventListener("change", () => { const d = PW.props[$("dmmat").value]?.damage; if (d?.lambda_um && !$("dmlam").dataset.touched) $("dmlam").value = d.lambda_um; });
+$("dmlam").addEventListener("input", () => { $("dmlam").dataset.touched = "1"; });
 </script>
 <script type="module" nonce="__CSP_NONCE__">
 // The validation table: published numbers recomputed with the site's own data and code (web/src/validation.client.js)
