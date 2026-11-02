@@ -57,7 +57,7 @@ jobs:
       - name: Keep the reports
         if: always()
         run: |
-          git config user.name "matrag-quality"; git config user.email "quality@users.noreply.github.com"
+          git config user.name "aminsadidi"; git config user.email "146538774+aminsadidi@users.noreply.github.com"
           git add scripts/quality/reports
           git diff --cached --quiet || { git commit -q -m "Quality reports $(date -u +%F)"; for i in 1 2 3; do git pull -q --rebase origin "${GITHUB_REF_NAME}" && git push -q origin "HEAD:${GITHUB_REF_NAME}" && break; sleep 5; done; }
       - name: Search below the baseline

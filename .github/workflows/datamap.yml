@@ -41,7 +41,7 @@ jobs:
         run: python3 scripts/quality/datamap.py merge shards | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Keep the map
         run: |
-          git config user.name "matrag-quality"; git config user.email "quality@users.noreply.github.com"
+          git config user.name "aminsadidi"; git config user.email "146538774+aminsadidi@users.noreply.github.com"
           git add data/rag-optics/datamap.json.gz scripts/quality/reports
           git diff --cached --quiet && exit 0  # nothing changed this week
           git commit -q -m "Data map $(date -u +%F)"
