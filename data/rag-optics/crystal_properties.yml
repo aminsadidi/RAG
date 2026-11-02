@@ -651,3 +651,7 @@
   transparency_um: [0.3, 1.8]
   transparency_level: "≥ 10%, 1 mm"
   sources: [{doc_id: "10.1201_9781420050196", cite: "Weber (2003)", pdf_page: 94, what: "Optical Properties of Biaxial Crystalline Materials: HIO3, transmission 0.3-1.8 µm"}]
+- material: "Te"
+  damage: {threshold: "≈ 43 MW/cm² (chemically cut, 1000 pulses; 10–63 MW/cm² with the surface preparation)", value: 0.043, unit: "GW/cm2", lambda_um: 10.6, pulse: "Q-switched CO2, 1000 pulses", doc_id: "10.1109_jqe.1972.1076963", pdf_page: 5, what: "Hanna et al. (1972), Table II (cont'd), tellurium at 10.6 µm: Hoboken material, chemically cut, 1000 pulses = 43 MW/cm²; Wacker mechanically cut 1000 pulses ~10 MW/cm²; CNET etched 10 000 pulses = 63 MW/cm²; AR-coated ~20 MW/cm²"}
+- material: "TmCa4O(BO3)3"
+  damage: {threshold: "> 3 GW/cm² (no damage seen)", value: 3, unit: "GW/cm2", tau_ns: 0.035, lower_bound: true, lambda_um: 1.064, pulse: "35 ps, 10 Hz", doc_id: "10.1039_c4ce00869c", pdf_page: 6, what: "both sample A and sample B exhibited good stability when the power density of the laser beam focused by a lens reached 3 GW cm−2 (Nd:YAG, 1064 nm, 10 Hz, 35 ps: PDF p. 2)"}
