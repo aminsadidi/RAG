@@ -133,6 +133,10 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 @media (prefers-color-scheme:dark){.viz-root{--series-1:#3987e5;--series-2:#d95926;--series-3:#199e70;--series-4:#c98500;--series-5:#d55181;--series-6:#008300;--series-7:#9085e9;--series-8:#e66767;--grid:#2a3542}}
 #chart{position:relative;direction:ltr}
 #chart svg{display:block;width:100%}
+#chart .ripin{display:block;pointer-events:none;border-color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.12)}
+#riprobeg{cursor:ew-resize;touch-action:none}#riprobeg:focus{outline:none}#riprobeg:focus .handle{stroke:var(--ink);stroke-width:2}
+#riprobeg .handle{fill:var(--accent)}#riprobeg text{fill:var(--accent-ink);font-size:11px;font-weight:600;pointer-events:none}
+#chart.dragging,#chart.dragging *{cursor:ew-resize!important;user-select:none}
 select,input{max-width:100%}
 .row label{max-width:100%;flex-wrap:wrap}
 #uftable input{width:100%;min-width:70px;max-width:130px;direction:ltr}
@@ -340,7 +344,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
   </div>
   <div class="card" style="margin-top:14px">
-    <div id="chart"><svg id="risvg" role="img" aria-label="refractive index versus wavelength"></svg><div class="tip" id="ritip"></div></div>
+    <div id="chart"><svg id="risvg" role="img" aria-label="refractive index versus wavelength"></svg><div class="tip" id="ritip"></div><div class="tip ripin" id="ripin"></div></div>
     <div id="rilegend" class="chips" style="direction:ltr"></div>
   </div>
   <div class="card" style="margin-top:14px">
@@ -1771,6 +1775,8 @@ $("rimat").addEventListener("blur", () => setTimeout(() => {
 }, 150));
 $("rimatsugg").onclick = (e) => { const b = e.target.closest("[data-mat]"); if (b) { selectMaterial(b.dataset.mat); $("rimatsugg").innerHTML = ""; } };
 for (const id of ["rilo", "rihi", "riprobe", "riref", "rirows"]) $(id).addEventListener("change", render);
+// a typed λ moves the line as it is typed (the table follows a moment later)
+$("riprobe").addEventListener("input", () => { clearTimeout(RI.typeT); RI.typeT = setTimeout(() => { if (getProbe() > 0) render(); }, 250); });
 
 // ---------- units (inputs show the chosen unit; everything inside is in µm)
 const getRange = () => { // in µm; a wavelength cannot be zero or negative
@@ -2149,7 +2155,7 @@ function drawChart(lo, hi, probe) {
     .flatMap((s) => s.e.points.filter(([l]) => l >= lo && l <= hi).map(([l]) => ({ s, l, v: valueOf(s.e, l, ref) })));
   const all = [...series.flatMap((s) => s.ys.filter(Number.isFinite)), ...pts.map((p) => p.v).filter(Number.isFinite)];
   $("rilegend").innerHTML = series.map((s) => `<span class="chip"><span class="sw" style="background:${color(slotOf(s.key))}"></span>${esc(label(s.e))}${s.e.user ? " ★" : ""}${s.e.basis === "calculated" ? " · calculated (dashed)" : ""}</span>`).join("");
-  if (!all.length) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">No data covers ${fmtL(lo)}–${fmtL(hi)} ${unitName()}</text>`; return; }
+  if (!all.length) { $("ripin").style.display = "none"; svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">No data covers ${fmtL(lo)}–${fmtL(hi)} ${unitName()}</text>`; return; }
   let y0 = Math.min(...all), y1 = Math.max(...all); const pad = (y1 - y0) * 0.08 || 0.01; y0 -= pad; y1 += pad;
   const X = (x) => m.l + (x - lo) / (hi - lo) * (W - m.l - m.r), Y = (y) => H - m.b - (y - y0) / (y1 - y0) * (H - m.t - m.b);
   const gx = niceTicks(lo * U(), hi * U(), W < 500 ? 4 : 7).map((v) => v / U()), gy = niceTicks(y0, y1, 5);
@@ -2160,7 +2166,6 @@ function drawChart(lo, hi, probe) {
   out += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle" font-size="12" fill="var(--muted)">wavelength λ (${unitName()})</text>`;
   out += `<text transform="translate(14 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="var(--muted)">${chartMode() === "ng" ? "group index n_g" : chartMode() === "gvd" ? "GVD (fs²/mm)" : ref ? "Δn (vs " + esc(label(ref.e)) + ")" : "refractive index n"}</text>`;
   if ((ref || chartMode() === "gvd") && y0 < 0 && y1 > 0) out += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--muted)"/>`;
-  if (probe >= lo && probe <= hi) out += `<line x1="${X(probe)}" x2="${X(probe)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--muted)" stroke-dasharray="4 4"/>`;
   for (const s of series) {
     let d = "", pen = false;
     s.ys.forEach((y, k) => { if (Number.isFinite(y)) { d += `${pen ? "L" : "M"}${X(xs[k]).toFixed(1)},${Y(y).toFixed(1)}`; pen = true; } else pen = false; });
@@ -2170,22 +2175,63 @@ function drawChart(lo, hi, probe) {
   // measured points: 8px markers with a 2px surface ring
   for (const p of pts) if (Number.isFinite(p.v)) out += `<circle cx="${X(p.l).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="4" fill="${color(slotOf(p.s.key))}" stroke="var(--card)" stroke-width="2"/>`;
   out += `<line id="rix" y1="${m.t}" y2="${H - m.b}" stroke="var(--ink)" stroke-opacity=".35" visibility="hidden"/><rect x="${m.l}" y="${m.t}" width="${W - m.l - m.r}" height="${H - m.t - m.b}" fill="transparent" id="rihit"/>`;
+  // The probe: the λ of "n at λ", a solid line with a handle on top. Its values stay on the chart (the box beside the
+  // line) while the mouse is elsewhere; the line is dragged by the handle or the line itself (mouse, pen or finger),
+  // moved with the arrow keys once clicked, or set by typing λ or clicking the chart.
+  const inside = probe >= lo && probe <= hi;
+  out += `<g id="riprobeg" tabindex="0" role="slider" aria-label="λ" ${inside ? "" : 'visibility="hidden"'}>
+    <line id="ripl" y1="${m.t + 18}" y2="${H - m.b}" stroke="var(--accent)" stroke-width="2"/>
+    <line id="riplhit" y1="${m.t}" y2="${H - m.b}" stroke="transparent" stroke-width="16"/>
+    <g id="ripdots" style="pointer-events:none"></g>
+    <rect class="handle" id="riph" y="${m.t - 2}" width="64" height="20" rx="6"/><text id="ripht" y="${m.t + 12}" text-anchor="middle"></text></g>`;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = out;
-  const tip = $("ritip"), hit = $("rihit"), cross = $("rix");
+  const tip = $("ritip"), hit = $("rihit"), cross = $("rix"), pin = $("ripin"), g = $("riprobeg");
   const at = (ev) => { const box = svg.getBoundingClientRect(), px = (ev.clientX - box.left) * (W / box.width); return [box, px, lo + (px - m.l) / (W - m.l - m.r) * (hi - lo)]; };
+  const fmtLam = (lam) => `${(lam * U()).toFixed(RI.unit === "nm" ? 1 : 4)}`;
+  const values = (lam) => series.map((s) => [s, valueOf(s.e, lam, ref)]).filter(([, v]) => Number.isFinite(v))
+    .map(([s, v]) => `<span class="sw" style="background:${color(slotOf(s.key))}"></span>${esc(label(s.e))}: <b>${chartMode() === "gvd" ? v.toFixed(1) + " fs²/mm" : ref ? (v >= 0 ? "+" : "") + v.toExponential(3) : v.toFixed(5)}</b>`).join("<br>") || "—";
+  // the screen position of a chart x (the svg is scaled to the box)
+  const screenX = (x) => { const box = svg.getBoundingClientRect(); return x * box.width / W; };
+  let cur = probe;
+  const place = (lam) => {
+    cur = Math.min(hi, Math.max(lo, lam));
+    const x = X(cur), hw = 32, hx = Math.min(W - m.r - hw, Math.max(m.l + hw, x));
+    for (const id of ["ripl", "riplhit"]) { $(id).setAttribute("x1", x); $(id).setAttribute("x2", x); }
+    $("riph").setAttribute("x", hx - hw); $("ripht").setAttribute("x", hx); $("ripht").textContent = fmtLam(cur);
+    g.setAttribute("aria-valuenow", fmtLam(cur)); g.setAttribute("visibility", "visible");
+    // a dot where the line crosses each curve
+    $("ripdots").innerHTML = series.map((s) => [s, valueOf(s.e, cur, ref)]).filter(([, v]) => Number.isFinite(v) && v >= y0 && v <= y1)
+      .map(([s, v]) => `<circle cx="${x.toFixed(1)}" cy="${Y(v).toFixed(1)}" r="4.5" fill="${color(slotOf(s.key))}" stroke="var(--card)" stroke-width="2"/>`).join("");
+    pin.innerHTML = `<b>λ = ${fmtLam(cur)} ${unitName()}</b><br>${values(cur)}`; pin.style.display = "block";
+    const box = svg.getBoundingClientRect(), sx = screenX(x);
+    pin.style.top = (screenX(m.t) + 26) + "px";
+    pin.style.left = (sx + 12 + pin.offsetWidth > box.width ? Math.max(0, sx - pin.offsetWidth - 12) : sx + 12) + "px";
+  };
+  if (inside) place(probe); else pin.style.display = "none";
+  // the probe's box steps aside while the mouse reads other wavelengths
   hit.onmousemove = (ev) => {
     const [box, px, lam] = at(ev);
     cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("visibility", "visible");
-    const rows = series.map((s) => [s, valueOf(s.e, lam, ref)]).filter(([, v]) => Number.isFinite(v));
-    tip.innerHTML = `<b>λ = ${(lam * U()).toFixed(RI.unit === "nm" ? 1 : 4)} ${unitName()}</b><br>` +
-      (rows.map(([s, v]) => `<span class="sw" style="background:${color(slotOf(s.key))}"></span>${esc(label(s.e))}: ${chartMode() === "gvd" ? v.toFixed(1) + " fs²/mm" : ref ? (v >= 0 ? "+" : "") + v.toExponential(3) : v.toFixed(5)}`).join("<br>") || "—") +
-      '<br><span style="color:var(--muted)">click: set λ</span>';
-    tip.style.display = "block";
+    tip.innerHTML = `<b>λ = ${fmtLam(lam)} ${unitName()}</b><br>${values(lam)}<br><span style="color:var(--muted)">click: put the line here</span>`;
+    tip.style.display = "block"; pin.style.visibility = "hidden";
     const left = ev.clientX - box.left + 14; tip.style.left = (left + tip.offsetWidth > box.width ? left - tip.offsetWidth - 28 : left) + "px";
     tip.style.top = (ev.clientY - box.top + 10) + "px";
   };
-  hit.onmouseleave = () => { tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); };
+  hit.onmouseleave = () => { tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); pin.style.visibility = ""; };
   hit.onclick = (ev) => { const [, , lam] = at(ev); setProbe(lam); render(); };
+  // dragging: the line and its values follow the pointer; the box "n at λ" follows too, the table below on release
+  let drag = false;
+  g.onpointerdown = (ev) => { drag = true; g.setPointerCapture(ev.pointerId); $("chart").classList.add("dragging"); tip.style.display = "none"; cross.setAttribute("visibility", "hidden"); pin.style.visibility = ""; ev.preventDefault(); };
+  g.onpointermove = (ev) => { if (!drag) return; const [, , lam] = at(ev); place(lam); setProbe(cur); };
+  const end = () => { if (!drag) return; drag = false; $("chart").classList.remove("dragging"); setProbe(cur); render(); $("riprobeg")?.focus({ preventScroll: true }); };
+  g.onpointerup = end; g.onpointercancel = end;
+  // the keyboard: a step of 1/200 of the range, ten with Shift
+  g.onkeydown = (ev) => {
+    if (ev.key !== "ArrowLeft" && ev.key !== "ArrowRight") return;
+    ev.preventDefault();
+    place(cur + (ev.key === "ArrowRight" ? 1 : -1) * (hi - lo) / (ev.shiftKey ? 20 : 200)); setProbe(cur);
+    clearTimeout(RI.keyT); RI.keyT = setTimeout(() => { render(); $("riprobeg")?.focus({ preventScroll: true }); }, 250);
+  };
 }
 let lastW = 0;
 new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w && w !== lastW && RI.mat) { lastW = w; render(); } }).observe($("chart"));
