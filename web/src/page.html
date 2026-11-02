@@ -39,6 +39,7 @@ select{max-width:100%} /* a long option never widens the page on a phone */
 .xcombo input{width:260px;max-width:62vw}
 .xcombo button{padding:0 10px;margin-inline-start:2px}
 .xcpop{position:absolute;top:100%;inset-inline-start:0;z-index:30;width:min(420px,88vw);max-height:340px;overflow:auto;background:var(--card,#fff);border:1px solid var(--line,#ccc);border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:4px 0}
+.xcpop .via{color:var(--muted);font-size:12px}.xcpop .cnt{float:inline-end;opacity:.7;margin-inline-start:8px}
 .xcpop .g{font-size:12px;opacity:.7;padding:6px 10px 2px}
 .xcpop .i{padding:5px 10px;cursor:pointer;direction:ltr;text-align:left}
 .xcpop .i small{opacity:.7}
@@ -158,6 +159,9 @@ select,input{max-width:100%}
 .tile{background:var(--soft);border-radius:12px;padding:12px 14px}
 .tile b{display:block;font-size:24px;direction:ltr;text-align:start}
 .tile span{color:var(--muted);font-size:13px}
+.ripick{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.ripick .tools{display:flex;gap:6px;flex-wrap:wrap}
+#ripick button{font:inherit;font-size:12.5px;border:1px solid var(--line);background:var(--card);color:var(--accent);border-radius:14px;padding:3px 11px;cursor:pointer}
+#ripick button:hover:not(:disabled){border-color:var(--accent)}#ripick button:disabled{color:var(--muted);opacity:.55;cursor:default}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;direction:ltr}
 .seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:5px 12px;cursor:pointer}
 .seg button.on{background:var(--accent);color:var(--accent-ink)}
@@ -320,7 +324,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2>ضریب شکست از فرمول‌های پاشندگی</h2>
     <p class="hint">همه‌ی داده‌های ضریب شکست پایگاه refractiveindex.info (۲٬۲۴۶ ماده: بلورها، بلورهای آلاییده و آمیخته، آلیاژهای نیم‌رسانا، مواد آلی و شیشه‌های نوری تجاری)؛ فرمول‌های پاشندگی و داده‌های اندازه‌گیری‌شده. هر منحنی از یک مقاله است؛ اگر آن مقاله در مجموعه‌ی شما باشد، با یک کلیک متن و صفحه‌اش باز می‌شود. داده‌ی خودتان (فرمول یا نقاط اندازه‌گیری) را هم می‌توانید پایین صفحه اضافه کنید.</p>
     <div class="row">
-      <label>ماده <input id="rimat" list="rimats" placeholder="مثلاً BBO، باریم بورات، LiB3O5، N-BK7" style="width:240px" autocomplete="off"><datalist id="rimats"></datalist></label>
+      <label>ماده <span class="xcombo" id="ribox"><input id="rimat" placeholder="مثلاً BBO، PPKTP، باریم بورات، N-BK7" style="width:300px" autocomplete="off" spellcheck="false" dir="ltr" role="combobox" aria-expanded="false" aria-controls="ripop"><button type="button" class="alt" id="ripopbtn" title="فهرست همه‌ی مواد">▾</button><div class="xcpop" id="ripop" role="listbox" hidden></div></span></label>
       <span id="riinfo" class="hint"></span>
       <div id="rimatsugg" class="hint" style="width:100%"></div>
       <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button>
@@ -338,7 +342,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   </div>
   <div class="card" style="margin-top:14px">
     <h2>منابع و مقدار n در طول موج انتخاب‌شده</h2>
-    <div class="chips"><span class="tools"><button data-act="all" id="riall">نمایش همه (تا ۸ منحنی)</button><button data-act="none" id="rinone">پنهان کردن همه</button></span></div>
+    <div class="ripick"><span class="hint">نمایش روی نمودار:</span> <span class="tools" id="ripick"></span></div>
     <div id="rientries"></div>
     <div id="rispread" class="hint" style="margin-top:8px"></div>
   </div>
@@ -356,15 +360,15 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
           <label>نوع فرمول <select id="uftype">
             <option value="sell">سلمایر استاندارد: n² = 1 + Σ Bᵢλ²/(λ² − Cᵢ)</option>
             <option value="cauchy">کوشی: n = A + B/λ² + C/λ⁴</option>
-            <option value="1">refractiveindex.info نوع ۱ (Sellmeier)</option>
-            <option value="2">refractiveindex.info نوع ۲ (Sellmeier-2)</option>
-            <option value="3">refractiveindex.info نوع ۳ (Polynomial)</option>
-            <option value="4">refractiveindex.info نوع ۴ (RefractiveIndex.INFO)</option>
-            <option value="5">refractiveindex.info نوع ۵ (Cauchy)</option>
-            <option value="6">refractiveindex.info نوع ۶ (Gases)</option>
-            <option value="7">refractiveindex.info نوع ۷ (Herzberger)</option>
-            <option value="8">refractiveindex.info نوع ۸ (Retro)</option>
-            <option value="9">refractiveindex.info نوع ۹ (Exotic)</option>
+            <option value="1">Sellmeier (C²): n² = 1 + C1 + Σ Cᵢλ²/(λ² − Cᵢ₊₁²)</option>
+            <option value="2">Sellmeier-2: n² = 1 + C1 + Σ Cᵢλ²/(λ² − Cᵢ₊₁)</option>
+            <option value="3">چندجمله‌ای (Polynomial): n² = C1 + Σ Cᵢλ^Cᵢ₊₁</option>
+            <option value="4">سلمایر عمومی با توان آزاد + چندجمله‌ای: n² = C1 + C2λ^C3/(λ² − C4^C5) + …</option>
+            <option value="5">کوشی عمومی با توان آزاد: n = C1 + Σ Cᵢλ^Cᵢ₊₁</option>
+            <option value="6">گازها (Gases): n = 1 + C1 + Σ Cᵢ/(Cᵢ₊₁ − λ⁻²)</option>
+            <option value="7">Herzberger: n = C1 + C2·L + C3·L² + C4λ² + …</option>
+            <option value="8">Retro (لورنتس–لورنز): (n² − 1)/(n² + 2) = …</option>
+            <option value="9">Exotic: n² = C1 + C2/(λ² − C3) + …</option>
             <option value="10">دو قطبی با توان آزاد (Fève 2000): n² = C1 + C2·λ^C3/(λ^C3−C4) + C5·λ^C6/(λ^C6−C7)</option>
           </select></label>
         </div>
@@ -1637,17 +1641,18 @@ window.loadFormulas = () => {
       const name = matName(m);
       if (RI.byName.has(name)) RI.extra.set(name, [...(RI.extra.get(name) || []), m]); else RI.byName.set(name, m);
     }
-    $("rimats").innerHTML = index.map((m) => `<option value="${esc(matName(m))}">${esc(m.name ? m.name.replace(/^\S+ /, "") + " · " : "")}${m.n} (${m.formulas} formula)</option>`).join("");
     const saved = store.get("rimat2");
     selectMaterial(saved && RI.byName.has(saved) ? saved : "LiB3O5");
   }).catch((err) => { loaded = null; $("rientries").innerHTML = `<p class="err">خطا: ${esc(err.message)}</p>`; });
   return loaded;
 };
 
+// the collection's answers kept for a day in this browser: {doc_id: "full" | "abstract" | 0}
+function collSeen() { const c = store.get("ricoll"); return c && Date.now() - c.t < 86400e3 ? c.v : {}; }
 async function selectMaterial(name) {
   const m = RI.byName.get(name); if (!m) return;
   RI.req = name; // a later choice wins over this one while its files load
-  $("rimat").value = name; store.set("rimat2", name);
+  $("rimat").value = riLabel(name); store.set("rimat2", name);
   const parts = [m, ...(RI.extra.get(name) || [])];
   const sum = (k) => parts.reduce((t, p) => t + (p[k] || 0), 0);
   $("riinfo").textContent = `${m.name ? m.name.replace(/^\S+ /, "") + " · " : ""}${fa(sum("n"))} منبع (${fa(sum("formulas"))} فرمول)${GROUP_FA[m.group] ? " · " + GROUP_FA[m.group] : m.shelf === "specs" ? " · شیشه‌ی تجاری " + m.group : ""}`;
@@ -1655,9 +1660,18 @@ async function selectMaterial(name) {
   const list = (await Promise.all(parts.map((p) => fetch(`/ri/m/${p.i}.json`).then((r) => r.json())))).flat();
   if (RI.req !== name) return;
   const ids = [...new Set(list.map((e) => e.doc_id).filter(Boolean))];
-  // which sources are in the collection: a failing request (Qdrant down) only loses those marks, not the tab
-  RI.inColl = ids.length ? await api("/api/incollection", { ids }).then((r) => r.json()).catch(() => ({})) : {};
-  if (RI.req !== name) return;
+  // Which sources are in the collection: known ones come from this browser's memory of earlier answers and the
+  // tab is drawn at once; the rest are asked in the background (a search-database query, ~0.5 s) and their
+  // marks appear when the answer comes. A failing request (Qdrant down) only loses those marks.
+  const seen = collSeen(), unknown = ids.filter((d) => !(d in seen));
+  RI.inColl = Object.fromEntries(ids.filter((d) => seen[d]).map((d) => [d, seen[d]]));
+  if (unknown.length) api("/api/incollection", { ids: unknown }).then((r) => r.json()).then((got) => {
+    const all = collSeen(); for (const d of unknown) all[d] = got[d] || 0;
+    store.set("ricoll", { t: Date.now(), v: all });
+    if (RI.mat !== name) return;
+    RI.inColl = Object.fromEntries(ids.filter((d) => all[d]).map((d) => [d, all[d]]));
+    renderEntries(getProbe());
+  }).catch(() => {});
   RI.mat = name; RI.byMat.set(name, list);
   // the previous material's curves go; this material's user curves come first, then the database's
   for (const k of [...RI.shown]) show(k, false);
@@ -1681,31 +1695,62 @@ $("risearch").onclick = () => {
   const m = RI.byName?.get(RI.mat); if (!m) return;
   $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
 };
-$("rimat").addEventListener("input", (e) => {
-  const v = e.target.value, named = XNAME.of(v), m = named && RI.index ? findMaterials(v)[0] : null;
-  if (RI.byName?.has(v)) selectMaterial(v);
-  else if (m && m.material === named && RI.byName?.has(matName(m))) {
-    // the note goes in once the crystal is shown (selecting it clears the suggestions)
-    const key = matName(m);
-    Promise.resolve(selectMaterial(key)).then(() => { if ($("rimat").value === key) $("rimatsugg").innerHTML = nameNote(v.trim(), named); });
-    return;
-  }
-  suggestMaterials(v);
+// The material box: suggestions while typing (formula, common names, how many sources), arrows and Enter or a click to
+// choose. Once chosen the box shows the formula with its common names, so "ppktp" is seen to be KTiOPO4 (KTP).
+const RIP = { items: [], on: 0 };
+function riLabel(name) {
+  const m = RI.byName?.get(name), f = m?.material || name;
+  const names = XNAME.names(f).filter((n, i, all) => n.toLowerCase() !== f.toLowerCase() && all.findIndex((x) => x.toLowerCase() === n.toLowerCase()) === i).slice(0, 4);
+  return names.length ? `${name} — ${names.join(", ")}` : name;
+}
+function riPopRender(all = false) {
+  const pop = $("ripop"), q = $("rimat").value.trim();
+  if (!RI.index) { pop.innerHTML = '<div class="g">در حال بارگذاری فهرست مواد…</div>'; pop.hidden = false; return; }
+  const named = XNAME.of(q);
+  // one row per material the tab lists (a crystal in refractiveindex.info and in the papers is one material)
+  const once = (list) => list.filter((m, i) => list.findIndex((x) => matName(x) === matName(m)) === i);
+  RIP.items = once(all || !q ? RI.index.filter((m) => m.shelf === "main" || m.shelf === "papers").filter((m) => XNAME.names(m.material).length) : findMaterials(q, 16)).slice(0, all || !q ? 60 : 12);
+  RIP.on = Math.min(RIP.on, Math.max(0, RIP.items.length - 1));
+  const row = (m, i) => {
+    const key = matName(m), names = XNAME.names(m.material).filter((n) => n.toLowerCase() !== m.material.toLowerCase()).slice(0, 4);
+    const via = i === 0 && named && named === m.material && q.toLowerCase() !== m.material.toLowerCase() ? `<span class="via">${esc(q)} →</span> ` : "";
+    return `<div class="i${i === RIP.on ? " on" : ""}" data-i="${i}" role="option">${via}<b>${esc(key)}</b>${names.length ? ` <small>· ${esc(names.join(" · "))}</small>` : ""}<small class="cnt">${fa(m.n + (RI.extra.get(key) || []).reduce((t, x) => t + (x.n || 0), 0))} منبع</small></div>`;
+  };
+  pop.innerHTML = RIP.items.length ? (all || !q ? '<div class="g">مواد پرکاربرد؛ برای بقیه نام یا فرمول را بنویسید</div>' : "") + RIP.items.map(row).join("")
+    : `<div class="g">«${esc(q)}» پیدا نشد؛ نام انگلیسی یا فرمول شیمیایی را امتحان کنید</div>`;
+  pop.hidden = false; $("rimat").setAttribute("aria-expanded", "true");
+  pop.querySelector(".i.on")?.scrollIntoView({ block: "nearest" });
+}
+function riPopClose() { $("ripop").hidden = true; $("rimat").setAttribute("aria-expanded", "false"); }
+function riChoose(m) {
+  if (!m) return;
+  riPopClose(); $("rimatsugg").innerHTML = "";
+  selectMaterial(matName(m));
+}
+$("rimat").addEventListener("focus", () => { $("rimat").select(); });
+$("rimat").addEventListener("input", () => {
+  RIP.on = 0; riPopRender();
+  if (!findMaterials($("rimat").value).length && $("rimat").value.trim()) suggestMaterials($("rimat").value); else $("rimatsugg").innerHTML = "";
+});
+$("rimat").addEventListener("keydown", (e) => {
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault(); if ($("ripop").hidden) riPopRender();
+    RIP.on = Math.max(0, Math.min(RIP.items.length - 1, RIP.on + (e.key === "ArrowDown" ? 1 : -1)));
+    $("ripop").querySelectorAll(".i").forEach((d) => d.classList.toggle("on", +d.dataset.i === RIP.on));
+    $("ripop").querySelector(".i.on")?.scrollIntoView({ block: "nearest" });
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    riChoose($("ripop").hidden ? bestMaterial($("rimat").value) : RIP.items[RIP.on] || bestMaterial($("rimat").value));
+  } else if (e.key === "Escape") { riPopClose(); if (RI.mat) $("rimat").value = riLabel(RI.mat); }
 });
 // the best match of the box: the material written exactly (any case), else the first suggestion
 const bestMaterial = (v) => { const found = findMaterials(v); return found.find((m) => m.material.toLowerCase() === v.trim().toLowerCase()) || found[0]; };
-$("rimat").addEventListener("change", (e) => {
-  if (RI.byName?.has(e.target.value)) return;
-  // (no re-render here: a click on a suggestion blurs the input first and must still find its button)
-  const found = findMaterials(e.target.value), exact = found.find((m) => m.material.toLowerCase() === e.target.value.trim().toLowerCase());
-  if (found.length === 1 || exact) { selectMaterial(matName(exact || found[0])); $("rimatsugg").innerHTML = ""; }
-});
-// Enter takes the best match
-$("rimat").addEventListener("keydown", (e) => {
-  if (e.key !== "Enter" || RI.byName?.has(e.target.value)) return;
-  const m = bestMaterial(e.target.value); if (!m) return;
-  e.preventDefault(); selectMaterial(matName(m)); $("rimatsugg").innerHTML = "";
-});
+$("ripop").addEventListener("mousedown", (e) => { const d = e.target.closest(".i"); if (d) { e.preventDefault(); riChoose(RIP.items[+d.dataset.i]); } });
+$("ripopbtn").addEventListener("click", () => { if ($("ripop").hidden) { RIP.on = 0; riPopRender(true); $("rimat").focus(); } else riPopClose(); });
+$("rimat").addEventListener("blur", () => setTimeout(() => {
+  if ($("ribox").contains(document.activeElement)) return;
+  riPopClose(); if (RI.mat && !$("rimatsugg").innerHTML) $("rimat").value = riLabel(RI.mat);
+}, 150));
 $("rimatsugg").onclick = (e) => { const b = e.target.closest("[data-mat]"); if (b) { selectMaterial(b.dataset.mat); $("rimatsugg").innerHTML = ""; } };
 for (const id of ["rilo", "rihi", "riprobe", "riref", "rirows"]) $(id).addEventListener("change", render);
 
@@ -1789,8 +1834,8 @@ const FORM = {
   1: ["Sellmeier", "n² = 1 + C1 + Σ Cᵢ·λ² / (λ² − Cᵢ₊₁²)   (i = 2, 4, …)"],
   2: ["Sellmeier", "n² = 1 + C1 + Σ Cᵢ·λ² / (λ² − Cᵢ₊₁)   (i = 2, 4, …)"],
   3: ["polynomial", "n² = C1 + Σ Cᵢ·λ^Cᵢ₊₁   (i = 2, 4, …)"],
-  4: ["refractiveindex.info, general", "n² = C1 + C2·λ^C3 / (λ² − C4^C5) + C6·λ^C7 / (λ² − C8^C9) + Σ Cᵢ·λ^Cᵢ₊₁   (i = 10, 12, …)"],
-  5: ["Cauchy", "n = C1 + Σ Cᵢ·λ^Cᵢ₊₁   (i = 2, 4, …)"],
+  4: ["general Sellmeier with free exponents + polynomial", "n² = C1 + C2·λ^C3 / (λ² − C4^C5) + C6·λ^C7 / (λ² − C8^C9) + Σ Cᵢ·λ^Cᵢ₊₁   (i = 10, 12, …)"],
+  5: ["Cauchy (general, free exponents)", "n = C1 + Σ Cᵢ·λ^Cᵢ₊₁   (i = 2, 4, …)"],
   6: ["gases", "n = 1 + C1 + Σ Cᵢ / (Cᵢ₊₁ − λ⁻²)   (i = 2, 4, …)"],
   7: ["Herzberger", "n = C1 + C2·L + C3·L² + C4·λ² + C5·λ⁴ + C6·λ⁶,   L = 1 / (λ² − 0.028)"],
   8: ["Retro", "(n² − 1) / (n² + 2) = C1 + C2·λ² / (λ² − C3) + C4·λ²"],
@@ -1814,6 +1859,7 @@ function formulaDetails(e, list, probe) {
 }
 
 function renderEntries(probe) {
+  renderPick();
   const list = RI.byMat.get(RI.mat) || [], values = [];
   $("rientries").innerHTML = list.map((e, i) => {
     const n = nOf(e, probe); if (Number.isFinite(n)) values.push(n);
@@ -1822,7 +1868,7 @@ function renderEntries(probe) {
       <span class="hint"> ${esc(dirName(e.direction))} · ${e.type === "tab" ? "measured data" : "formula " + e.type} · <bdi dir="ltr">${fmtL(e.range_um[0])}–${fmtL(e.range_um[1])} ${unitName()}</bdi></span><br>
       <span class="clamp c1" title="">${esc(e.reference)}</span>
       ${e.source === "paper" ? `<div class="hint clamp c1" style="margin-top:4px"><b>${basisName(e)} · از مقاله‌ی همین مجموعه، صفحه‌ی ${fa(e.pdf_page)} PDF:</b> <bdi dir="ltr">${esc(e.where)}</bdi></div>` : ""}
-      <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : '<span class="chip">در مجموعه نیست</span>'}
+      <div class="chips">${coll ? `<button class="chip coll" data-act="paper" style="border:0;cursor:pointer">✓ در مجموعه (${coll === "full" ? "متن کامل" : "چکیده"}) — باز کردن</button>` : e.doc_id && !(e.doc_id in collSeen()) ? "" : '<span class="chip">در مجموعه نیست</span>'}
       ${e.doi ? `<a class="chip" href="https://doi.org/${esc(e.doi)}" target="_blank" rel="noopener">DOI</a>` : ""}
       <span class="tools"><button data-act="copy">کپی و ویرایش</button></span></div>${formulaDetails(e, list, probe)}`);
   }).join("") || '<p class="hint">داده‌ای برای این ماده نیست.</p>';
@@ -1865,15 +1911,36 @@ for (const box of ["rientries", "riuser"]) $(box).addEventListener("click", (ev)
 });
 
 // tick every curve of this material (the first eight: the chart's limit), or none
-function showAll(on) {
-  for (const c of curves()) {
-    if (on) show(c.key, true); else show(c.key, false);
-    if (c.e.user) c.e.visible = RI.shown.has(c.key);
-  }
+// Which sources the chart shows at once: all, none, or those of a kind. Each button says how many sources it has;
+// at most MAX_SERIES curves are drawn, the first ones of the list. Own curves keep their state except for all / none.
+const theoretical = (e) => e.basis === "calculated" || /ab[ -]initio|first[- ]principles?|density[- ]functional|\bDFT\b/i.test(e.reference || "");
+const RI_PICK = [
+  ["all", "همه", () => true, "همه‌ی منبع‌ها (تا ۸ منحنی)"],
+  ["exp", "تجربی", (e) => !theoretical(e), "منبع‌هایی که n را اندازه گرفته‌اند (فرمول برازش‌شده به اندازه‌گیری یا نقاط اندازه‌گیری)"],
+  ["theo", "نظری / محاسباتی", (e) => theoretical(e), "منبع‌هایی که خودشان گفته‌اند n را حساب کرده‌اند (DFT و مانند آن)"],
+  ["formula", "فقط فرمول", (e) => e.type !== "tab", "فقط فرمول‌های پاشندگی"],
+  ["tab", "فقط نقاط اندازه‌گیری", (e) => e.type === "tab", "فقط جدول‌های اندازه‌گیری‌شده (λ، n)"],
+  ["coll", "مقاله‌های همین مجموعه", (e) => e.source === "paper" || Boolean(e.doc_id && RI.inColl[e.doc_id]), "منبع‌هایی که مقاله‌شان در مجموعه هست"],
+  ["probe", "شامل λ انتخاب‌شده", (e, p) => e.range_um[0] <= p && p <= e.range_um[1], "منبع‌هایی که بازه‌ی اعتبارشان λ کادر «n در λ» را دارد"],
+];
+function pickCurves(id, dir) {
+  const probe = getProbe(), [, , test] = RI_PICK.find((x) => x[0] === id) || [null, null, () => false];
+  const ok = (e) => (dir ? e.direction === dir : test(e, probe));
+  const whole = id === "all" || id === "none";
+  for (const c of curves()) if (whole || !c.e.user) show(c.key, false);
+  if (id !== "none") for (const c of curves()) if ((whole || !c.e.user) && ok(c.e)) show(c.key, true);
+  for (const c of curves()) if (c.e.user) c.e.visible = RI.shown.has(c.key);
   saveUser(); render();
 }
-$("riall").onclick = () => showAll(true);
-$("rinone").onclick = () => showAll(false);
+function renderPick() {
+  const list = RI.byMat.get(RI.mat) || [], probe = getProbe();
+  const btn = (act, text, n, title, dir = "") => `<button data-pick="${act}"${dir ? ` data-dir="${esc(dir)}"` : ""} title="${esc(title)}"${n === 0 ? " disabled" : ""}>${text}${n == null ? "" : ` (${fa(n)})`}</button>`;
+  const dirs = [...new Set(list.map((e) => e.direction).filter(Boolean))];
+  $("ripick").innerHTML = RI_PICK.map(([k, t, f, title]) => btn(k, t, k === "all" ? null : list.filter((e) => f(e, probe)).length, title)).join("")
+    + (dirs.length > 1 ? dirs.map((d) => btn("dir", `فقط ${esc(dirName(d))}`, list.filter((e) => e.direction === d).length, "فقط یک جهت قطبش", d)).join("") : "")
+    + btn("none", "هیچ‌کدام", null, "پنهان کردن همه");
+}
+$("ripick").addEventListener("click", (ev) => { const b = ev.target.closest("[data-pick]"); if (b) pickCurves(b.dataset.pick, b.dataset.dir); });
 
 // ---------- the entry form
 const HELP = {
@@ -1953,7 +2020,7 @@ function msg(text, error) { $("ufmsg").textContent = text; $("ufmsg").style.colo
 function toEntry(type, c) {
   if (type === "sell") return { type: 2, coefficients: [0, ...c], label: "سلمایر" };
   if (type === "cauchy") { const [A = 0, B = 0, C = 0] = c; return { type: 5, coefficients: [A, B, -2, C, -4], label: "کوشی" }; }
-  return { type: +type, coefficients: c, label: +type === 10 ? "دو قطبی با توان آزاد" : `refractiveindex.info نوع ${type}` };
+  return { type: +type, coefficients: c, label: +type === 10 ? "دو قطبی با توان آزاد" : (FORM[type]?.[0] || `type ${type}`) };
 }
 
 function fillForm(u) {
@@ -3983,7 +4050,9 @@ $("valgo").onclick = async () => {
 <script nonce="__CSP_NONCE__">
 // What this account may use (/api/me): tabs not allowed are taken out, PDFs hidden for accounts without them,
 // and the site announcement (set from the admin bot) shown on top.
-api("/api/me").then((r) => r.json()).then((me) => {
+// the Worker writes the account into the page (one request less); /api/me if it did not
+const ME0 = /*__ME__*/null;
+(ME0 ? Promise.resolve(ME0) : api("/api/me").then((r) => r.json())).then((me) => {
   window.ME = me;
   // the evaluation page came out of the library one: an account that sees the library sees it too
   const may = (t) => me.tabs.includes(t) || (t === "eval" && me.tabs.includes("library"));
@@ -4084,7 +4153,7 @@ const shareFields = (tab, visible = true) => [...document.querySelectorAll(`#tab
 // a tab's boxes that differ from their defaults, as the query of a link
 function fieldsQuery(tab) {
   const q = new URLSearchParams({ tab });
-  if (tab === "index" && $("rimat").value) q.set("rimat", $("rimat").value);
+  if (tab === "index" && RI.mat) q.set("rimat", RI.mat);
   for (const el of shareFields(tab)) {
     const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : SRC_SEL.has(el.id) ? srcName(el.selectedOptions[0]) : el.value;
     if (v !== "" && v !== el.defaultValue && !(el.type === "checkbox" && el.checked === el.defaultChecked)) q.set(el.id, v);

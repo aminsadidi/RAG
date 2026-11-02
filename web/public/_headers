@@ -5,3 +5,14 @@
 # Logo and icons: a new logo gets a new file name, so a week in the browser cache is safe.
 /brand/*
   Cache-Control: public, max-age=604800
+
+# The crystals' data, the translations and the evaluation: a new deploy changes them without changing their names,
+# so the browser keeps them five minutes and then shows its copy at once while it checks for a newer one.
+/ri/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=604800
+
+/i18n/*
+  Cache-Control: public, max-age=300, stale-while-revalidate=604800
+
+/eval.json
+  Cache-Control: public, max-age=300, stale-while-revalidate=604800

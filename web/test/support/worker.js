@@ -10,7 +10,7 @@ export function kv() {
   const m = new Map();
   const store = {
     fail: false, puts: 0,
-    get: async (k, t) => (m.has(k) ? (t === "json" ? JSON.parse(m.get(k).v) : m.get(k).v) : null),
+    get: async (k, t) => (m.has(k) ? (t === "json" || t?.type === "json" ? JSON.parse(m.get(k).v) : m.get(k).v) : null),
     put: async (k, v, o = {}) => { if (store.fail) throw new Error("KV put() limit exceeded for the day."); store.puts++; m.set(k, { v, metadata: o.metadata }); },
     delete: async (k) => { m.delete(k); },
     list: async ({ prefix = "" } = {}) => ({ keys: [...m.keys()].filter((k) => k.startsWith(prefix)).sort().map((name) => ({ name, metadata: m.get(name).metadata })), list_complete: true }),

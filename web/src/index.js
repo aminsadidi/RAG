@@ -10,8 +10,6 @@ import PHASEMATCH_JS from "./phasematch.client.js";
 import SPDC_JS from "./spdc.client.js";
 import POWER_JS from "./power.client.js";
 import VALIDATION_JS from "./validation.client.js";
-// the module imports the phase-matching module by its file name; the browser loads it as /phasematch.js
-const SPDC_BROWSER_JS = SPDC_JS.replace('from "./phasematch.client.js"', 'from "/phasematch.js"');
 import PAPERS0 from "./papers.json";
 import BASIS from "../../data/rag-optics/paper_basis.json";
 // experimental / theoretical / both / review label of each paper (scripts/quality/basis.py)
@@ -452,6 +450,21 @@ async function ciKeys(request, env) {
 
 // A short hash of a text (FNV-1a), for the ETag of the modules served from the Worker's bundle
 const etags = new Map();
+// what the page knows of the signed-in account (also /api/me)
+const me = (acc, user, settings) => ({ user, role: acc.role, tabs: acc.tabs, pdf: acc.pdf, search: acc.search, quota: acc.quota, banner: settings.banner || "" });
+// The browser modules with their versions (built once per Worker instance): each is imported by the page, and the
+// SPDC module imports the phase-matching one, at /name.js?v=<hash>.
+let VERSIONED = null;
+function versioned() {
+  if (VERSIONED) return VERSIONED;
+  const spdc = SPDC_JS.replace('from "./phasematch.client.js"', `from "/phasematch.js?v=${etagOf(PHASEMATCH_JS)}"`);
+  const scripts = { "/phasematch.js": PHASEMATCH_JS, "/spdc.js": spdc, "/power.js": POWER_JS, "/dispersion.js": DISPERSION_JS, "/validation.js": VALIDATION_JS };
+  const v = Object.fromEntries(Object.entries(scripts).map(([path, text]) => [path, etagOf(text)]));
+  let page = PAGE_OUT;
+  for (const path of Object.keys(scripts)) page = page.replaceAll(`from "${path}"`, `from "${path}?v=${v[path]}"`);
+  VERSIONED = { page, scripts, v };
+  return VERSIONED;
+}
 function etagOf(text) {
   if (!etags.has(text)) {
     let h = 0x811c9dc5;
@@ -533,12 +546,15 @@ async function handle(request, env, ctx) {
   // Accounts without the papers' PDFs get no trace of them: no file path, Drive link or place on the page.
   const PDF_FIELDS = ["source_file", "drive_id", "boxes", "pdf_mismatch"];
   const noPdf = (rows) => (acc.pdf ? rows : rows.map((r) => Object.fromEntries(Object.entries(r).filter(([k]) => !PDF_FIELDS.includes(k)))));
-  if (url.pathname === "/") return html(PAGE_OUT);
-  const SCRIPT = { "/phasematch.js": PHASEMATCH_JS, "/spdc.js": SPDC_BROWSER_JS, "/power.js": POWER_JS, "/dispersion.js": DISPERSION_JS, "/validation.js": VALIDATION_JS }[url.pathname];
+  const V = versioned();
+  // the account is written into the page, so the page does not ask /api/me before it can show anything
+  if (url.pathname === "/") return html(V.page.replace("/*__ME__*/null", () => JSON.stringify(me(acc, user, settings)).replace(/</g, "\\u003c")));
+  const SCRIPT = V.scripts[url.pathname];
   if (SCRIPT) {
-    // checked on every load (no-cache), but an unchanged module is answered 304 by its ETag, not sent again
-    const etag = `"${etagOf(SCRIPT)}"`;
-    const headers = { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-cache", etag };
+    // the page asks for /x.js?v=<hash of its text>: that URL never changes its content, so the browser keeps it a year
+    // and does not ask again; a new version has a new URL. Without the version: checked on every load (304 by ETag).
+    const etag = `"${V.v[url.pathname]}"`, fixed = url.searchParams.get("v") === V.v[url.pathname];
+    const headers = { "content-type": "text/javascript; charset=utf-8", "cache-control": fixed ? "private, max-age=31536000, immutable" : "no-cache", etag };
     return request.headers.get("if-none-match") === etag ? new Response(null, { status: 304, headers }) : new Response(SCRIPT, { headers });
   }
   if (url.pathname.startsWith("/pdf/") && env.PDFS) {
@@ -598,7 +614,7 @@ async function handle(request, env, ctx) {
         "content-type": "text/markdown; charset=utf-8",
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
-    if (url.pathname === "/api/me") return json({ user, role: acc.role, tabs: acc.tabs, pdf: acc.pdf, search: acc.search, quota: acc.quota, banner: settings.banner || "" });
+    if (url.pathname === "/api/me") return json(me(acc, user, settings));
     // the collection's lists are part of search: an account without it (tools only) does not get them
     if (["/api/facets", "/api/papers", "/api/incollection"].includes(url.pathname) && !acc.search) return denied("search is not available on this account");
     if (url.pathname === "/api/facets") return json(await facets(env));

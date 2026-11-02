@@ -58,7 +58,7 @@ export async function makeSession(env, user, days = 30) {
 export async function sessionUser(env, token) {
   const m = /^([a-z0-9][a-z0-9_.-]{2,31})\.(\d+)\.([0-9a-f]{64})$/.exec(token || "");
   if (!m || Number(m[2]) < Date.now() / 1000) return null;
-  const u = m[1] === "owner" ? null : await getUser(env, m[1]);
+  const u = m[1] === "owner" ? null : await getUser(env, m[1], true);
   const signed = `${m[1]}.${m[2]}.${m[1] === "owner" ? await ownerSalt(env) : u?.salt || ""}`;
   if (!(await sameText(await hmac(env, signed), m[3]))
     && !(env.SESSION_SECRET && env.SESSION_LEGACY === "1" && (await sameText(await hmac(env, signed, true), m[3])))) return null;
@@ -67,7 +67,11 @@ export async function sessionUser(env, token) {
 }
 
 export const usable = (u) => u.active && !(u.expires && u.expires < Date.now());
-export async function getUser(env, name) { return env.AICACHE ? env.AICACHE.get(`user:${name}`, "json") : null; }
+// A session check reads the account at every request: the edge keeps the read for a minute (KV cacheTtl), so a
+// stopped account or a changed password takes effect within a minute on every edge. Logins and the admin read fresh.
+export async function getUser(env, name, cached = false) {
+  return env.AICACHE ? env.AICACHE.get(`user:${name}`, cached ? { type: "json", cacheTtl: 60 } : "json") : null;
+}
 async function putUser(env, name, u) {
   await env.AICACHE.put(`user:${name}`, JSON.stringify(u), {
     metadata: { active: u.active, expires: u.expires || 0, created: u.created, note: (u.note || "").slice(0, 120), role: u.role || "full", quota: u.quota || 0 } });
@@ -128,8 +132,21 @@ export async function listUsers(env) {
 }
 
 // Site-wide settings, changed from the panel: an announcement shown to everyone, maintenance mode.
-export async function getSettings(env) { return (env.AICACHE && (await env.AICACHE.get("site:settings", "json"))) || { banner: "", maintenance: false }; }
-export async function setSettings(env, change) { const s = { ...(await getSettings(env)), ...change }; await env.AICACHE.put("site:settings", JSON.stringify(s)); return s; }
+// The site's settings (banner, maintenance, the owner's session epoch) are read by every request, twice: kept 30 s in
+// the isolate and a minute at the edge, so a change shows within a minute (at once in the isolate that made it).
+const SETTINGS = new WeakMap();
+export async function getSettings(env, fresh = false) {
+  const memo = SETTINGS.get(env);
+  if (!fresh && memo && Date.now() - memo.t < 30e3) return memo.v;
+  const v = (env.AICACHE && (await env.AICACHE.get("site:settings", fresh ? "json" : { type: "json", cacheTtl: 60 }))) || { banner: "", maintenance: false };
+  SETTINGS.set(env, { t: Date.now(), v });
+  return v;
+}
+export async function setSettings(env, change) {
+  const s = { ...(await getSettings(env, true)), ...change };
+  await env.AICACHE.put("site:settings", JSON.stringify(s)); SETTINGS.set(env, { t: Date.now(), v: s });
+  return s;
+}
 
 // Daily search quota (0 = none): true if this search may run (and counts it).
 // kind: a second counter with its own limit (feedback). Counted in the Counters Durable Object (counters.js); KV
