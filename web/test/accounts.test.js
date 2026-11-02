@@ -127,3 +127,11 @@ test("login: names the site does not make are refused before any KV read", async
   assert.equal(await loginState(e, "Bad Name", "pw"), null);
   assert.equal(reads, 0);
 });
+
+test("a new account starts with the default daily quota", async () => {
+  const { DEFAULT_QUOTA } = await import("../src/accounts.js");
+  const e = env();
+  await createUser(e, "nima", 30, "");
+  assert.equal((await e.AICACHE.get("user:nima", "json")).quota, DEFAULT_QUOTA);
+  assert.equal(DEFAULT_QUOTA, 50);
+});

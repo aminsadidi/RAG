@@ -4,6 +4,8 @@
 const enc = new TextEncoder();
 const hex = (buf) => [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
 export const NAME = /^[a-z0-9][a-z0-9_.-]{2,31}$/;
+// searches a day for a new account (the admin bot changes it per account; 0 = unlimited)
+export const DEFAULT_QUOTA = 50;
 const DAY = 86400;
 
 // Access levels: which tabs a user sees and whether the papers' PDFs are served to them.
@@ -68,7 +70,7 @@ export async function createUser(env, name, days, note, role = "full") {
   if (await getUser(env, name)) throw new Error(`«${name}» از قبل هست`);
   const password = newPassword(), salt = newPassword(16);
   await putUser(env, name, { salt, hash: await hash(salt, password), active: true, created: Date.now(),
-    expires: days ? Date.now() + days * DAY * 1000 : 0, note: note || "", role: ROLES[role] ? role : "full", quota: 0 });
+    expires: days ? Date.now() + days * DAY * 1000 : 0, note: note || "", role: ROLES[role] ? role : "full", quota: DEFAULT_QUOTA });
   return password;
 }
 

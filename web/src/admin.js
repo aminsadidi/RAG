@@ -158,7 +158,7 @@ async function onButton(env, data) {
     case "uon": await updateUser(env, a, { active: true }); return userCard(env, a, "✅ دوباره فعال شد.");
     case "uro": return { text: `🎚 سطح دسترسی ${a}\n\n${ROLE_HELP}`, keyboard: roleKeyboard(`urs:${a}`, btn("↩️ بازگشت", `u:${a}`)) };
     case "urs": await updateUser(env, a, { role: b }); return userCard(env, a, `🎚 سطح دسترسی: ${ROLES[b].label}`);
-    case "uq": return { text: `📈 سهمیه‌ی روزانه‌ی جست‌وجوی ${a}`, keyboard: [[10, 30, 100].map((q) => btn(`${q} در روز`, `uqs:${a}:${q}`)), [btn("نامحدود", `uqs:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
+    case "uq": return { text: `📈 سهمیه‌ی روزانه‌ی جست‌وجوی ${a}`, keyboard: [[10, 50, 100].map((q) => btn(`${q} در روز`, `uqs:${a}:${q}`)), [btn("نامحدود", `uqs:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
     case "uqs": await updateUser(env, a, { quota: Number(b) }); return userCard(env, a, `📈 سهمیه: ${Number(b) ? `${b} در روز` : "نامحدود"}`);
     case "ue": {
       // an account without an end has nothing to extend
