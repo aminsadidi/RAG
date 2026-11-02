@@ -3,10 +3,11 @@
 // (header X-Telegram-Bot-Api-Secret-Token = TG_WEBHOOK_SECRET); only the owner (TELEGRAM_CHAT_ID), in a private
 // chat, is answered; anyone else gets nothing. Free text is read only while the panel waits for it (a new
 // user's name, the announcement), the state kept in KV admin:state for 10 minutes.
-import { ROLES, createUser, deleteUser, getSettings, getUser, listUsers, setSettings, updateUser, usable } from "./accounts.js";
+import { DEFAULT_QUOTA, ROLES, createUser, deleteUser, getSettings, getUser, listUsers, setSettings, updateUser, usable } from "./accounts.js";
 import { listLogs } from "./feedback.js";
 
-const SITE = "https://matrag.ethanjamescarter1995.workers.dev";
+// the site's address in the messages for users: SITE_URL (wrangler.toml [vars]; web/site_url.txt for the scripts)
+const siteOf = (env) => env.SITE_URL || "";
 const KIND = { search: "🔎", unanswered: "❓", feedback: "💬", login: "🔑", failedlogin: "🚫" };
 const when = (t) => new Date(t).toLocaleString("fa-IR", { timeZone: "Asia/Tehran", dateStyle: "short", timeStyle: "short" });
 const ago = (days) => new Date(Date.now() - days * 86400e3).toISOString();
@@ -44,7 +45,7 @@ async function home(env) {
       [btn("❓ بی‌جواب‌ها", "unans"), btn("💬 بازخوردها", "fb")],
       [btn("🕘 فعالیت‌ها", "act"), btn("🔑 ورودهای ناموفق", "fail")],
       [btn("📢 اعلان سایت", "banner"), btn(settings.maintenance ? "🛠 خاموش‌کردن تعمیر" : "🛠 حالت تعمیر", "maint")],
-      [btn("🔄 تازه‌سازی", "m")],
+      [btn("🔒 خروج مالک از همه‌جا", "oout"), btn("🔄 تازه‌سازی", "m")],
     ],
   };
 }
@@ -66,7 +67,7 @@ async function userList(env, page) {
 async function userCard(env, name, note = "") {
   const u = await getUser(env, name);
   if (!u) return { text: `کاربر «${name}» نیست.`, keyboard: [[btn("👥 کاربران", "ul:0")], BACK] };
-  const events = (await listLogs(env, ago(180))).filter((e) => e.user === name);
+  const events = await listLogs(env, ago(180), { user: name });
   const s = events.filter((e) => e.kind === "search" || e.kind === "unanswered");
   const last = events.at(-1);
   return {
@@ -122,11 +123,11 @@ async function online(env) {
 // For the owner: the account as set up. For the user: a separate message to forward as it is, with nothing
 // about the access level (a user without PDFs must not learn that the feature exists).
 const created = (name, days, role) =>
-  `✅ حساب «${name}» ساخته شد — ${ROLES[role].label}، ${days ? `${days} روز` : "بی‌پایان"}\n\nپیام بعدی را همان‌طور که هست برای کاربر فوروارد کنید.`;
-const forUser = (name, password, days) => `سلام 👋
+  `✅ حساب «${name}» ساخته شد — ${ROLES[role].label}، ${days ? `${days} روز` : "بی‌پایان"}، ${DEFAULT_QUOTA[role]} جست‌وجو در روز (از «📈 سهمیه» عوض می‌شود)\n\nپیام بعدی را همان‌طور که هست برای کاربر فوروارد کنید.`;
+const forUser = (site, name, password, days) => `سلام 👋
 حساب کاربری شما در MatRAG، سامانه‌ی جست‌وجو در مقاله‌های اپتیک غیرخطی، آماده است.
 
-🔗 آدرس: ${SITE}
+🔗 آدرس: ${site}
 👤 نام کاربری: ${name}
 🔑 رمز: ${password}${days ? `\n📅 اعتبار: ${days} روز` : ""}
 
@@ -138,9 +139,9 @@ const forUser = (name, password, days) => `سلام 👋
 
 اگر سایت باز نشد، با فیلترشکن امتحان کنید.
 لطفاً نام کاربری و رمز را با کس دیگری به اشتراک نگذارید.`;
-const passwordFor = (name, password) => `🔑 رمز تازه‌ی حساب MatRAG شما
+const passwordFor = (site, name, password) => `🔑 رمز تازه‌ی حساب MatRAG شما
 
-🔗 آدرس: ${SITE}
+🔗 آدرس: ${site}
 👤 نام کاربری: ${name}
 🔑 رمز: ${password}`;
 
@@ -153,12 +154,13 @@ async function onButton(env, data) {
     case "u": return userCard(env, a);
     case "ua": return { ...(await logScreen(env, `🕘 فعالیت‌های ${a}`, (e) => e.user === a, 180, 30)), keyboard: [[btn(`👤 ${a}`, `u:${a}`)], BACK] };
     case "ur": { const { password } = await updateUser(env, a, { resetPassword: true });
-      return { ...(await userCard(env, a, `🔑 رمز ${a} عوض شد؛ پیام بعدی را برایش فوروارد کنید.`)), forward: passwordFor(a, password) }; }
-    case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ تا حدود یک دقیقه‌ی دیگر (تأخیر حافظه‌ی KV) از سایت بیرون است.");
+      return { ...(await userCard(env, a, `🔑 رمز ${a} عوض شد؛ پیام بعدی را برایش فوروارد کنید.`)), forward: passwordFor(siteOf(env), a, password) }; }
+    // KV reads are cached up to about a minute at the edge: the account stops working within that, not at once
+    case "uoff": await updateUser(env, a, { active: false }); return userCard(env, a, "⛔ دسترسی قطع شد؛ حداکثر تا یک دقیقه‌ی دیگر از سایت بیرون است.");
     case "uon": await updateUser(env, a, { active: true }); return userCard(env, a, "✅ دوباره فعال شد.");
     case "uro": return { text: `🎚 سطح دسترسی ${a}\n\n${ROLE_HELP}`, keyboard: roleKeyboard(`urs:${a}`, btn("↩️ بازگشت", `u:${a}`)) };
     case "urs": await updateUser(env, a, { role: b }); return userCard(env, a, `🎚 سطح دسترسی: ${ROLES[b].label}`);
-    case "uq": return { text: `📈 سهمیه‌ی روزانه‌ی جست‌وجوی ${a}`, keyboard: [[10, 50, 100].map((q) => btn(`${q} در روز`, `uqs:${a}:${q}`)), [btn("نامحدود", `uqs:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
+    case "uq": return { text: `📈 سهمیه‌ی روزانه‌ی جست‌وجوی ${a}`, keyboard: [[10, 50, 100, 300].map((q) => btn(`${q} در روز`, `uqs:${a}:${q}`)), [btn("نامحدود", `uqs:${a}:0`)], [btn("↩️ بازگشت", `u:${a}`)]] };
     case "uqs": await updateUser(env, a, { quota: Number(b) }); return userCard(env, a, `📈 سهمیه: ${Number(b) ? `${b} در روز` : "نامحدود"}`);
     case "ue": {
       // an account without an end has nothing to extend
@@ -181,7 +183,7 @@ async function onButton(env, data) {
       const s = await getState(env); if (!s?.name || !s.role) return home(env);
       const password = await createUser(env, s.name, Number(a), s.note || "", s.role);
       await setState(env, null);
-      return { text: created(s.name, Number(a), s.role), forward: forUser(s.name, password, Number(a)), keyboard: [[btn(`👤 ${s.name}`, `u:${s.name}`), btn("➕ یکی دیگر", "new")], BACK] };
+      return { text: created(s.name, Number(a), s.role), forward: forUser(siteOf(env), s.name, password, Number(a)), keyboard: [[btn(`👤 ${s.name}`, `u:${s.name}`), btn("➕ یکی دیگر", "new")], BACK] };
     }
     case "stats": return stats(env);
     case "online": return online(env);
@@ -189,6 +191,10 @@ async function onButton(env, data) {
     case "fb": return logScreen(env, "💬 آخرین بازخوردها", (e) => e.kind === "feedback", 90);
     case "act": return logScreen(env, "🕘 آخرین فعالیت‌ها", () => true, 30);
     case "fail": return logScreen(env, "🔑 ورودهای ناموفق", (e) => e.kind === "failedlogin", 30);
+    case "oout": return { text: "🔒 همه‌ی نشست‌های مالک (همه‌ی مرورگرهایی که با رمز مالک وارد شده‌اند) باطل شود؟ بعد از آن دوباره با رمز وارد شوید.",
+      keyboard: [[btn("بله، همه را بیرون کن", "oouty"), btn("نه", "m")]] };
+    case "oouty": { const s = await getSettings(env); await setSettings(env, { ownerEpoch: (s.ownerEpoch || 0) + 1 });
+      const h = await home(env); return { ...h, text: "🔒 همه‌ی نشست‌های مالک باطل شد (حداکثر تا یک دقیقه).\n\n" + h.text }; }
     case "maint": { const s = await getSettings(env); await setSettings(env, { maintenance: !s.maintenance }); return home(env); }
     case "banner": {
       const s = await getSettings(env);

@@ -21,6 +21,10 @@ export function normalizeFormulas(text) {
 }
 
 const escape = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+// A prompt's {name} fields filled in one pass, as Python's str.format: a value is put in as it is (String.replace
+// with a string reads $$, $& and $' in it, and paper text in LaTeX has them), and a value holding "{question}"
+// or the like is not filled again.
+const fill = (template, values) => template.replace(/\{([a-z_]+)\}/g, (m, k) => (Object.hasOwn(values, k) ? String(values[k]) : m));
 
 // Every name of every crystal (src/matrag/crystal_names.py), the longest first, with the same rules as the Python
 // find_crystals: a formula (GaP, BiBO) only in its own case, so "gap" or "gas" in a sentence is no crystal; other
@@ -31,11 +35,9 @@ let ALIASES_;
 const aliases = () => (ALIASES_ ||= [...new Map(Object.entries(S.CRYSTAL_NAMES).flatMap(([f, names]) => [f, ...names].map((n) => [n, f]))).entries()]
   .filter(([n]) => n.length >= 2).sort((a, b) => b[0].length - a[0].length)
   .map(([n, f]) => {
-    // both variants made once (a new RegExp per name per call cost ~17 ms of CPU on a cold isolate): the name in
-    // its own case, and in any case for the names read so (null for those matched in their own case only)
-    const exact = new RegExp(`(?<![A-Za-z0-9])${escape(n)}(?![A-Za-z0-9])`, "g");
-    const fold = n.length >= 3 && !formulaLike(n) ? new RegExp(exact.source, "gi") : null;
-    return [n, f, fold || exact, exact, fold];
+    // [name, formula, the name as it is matched (any case for most), the name in its own case (findCrystals' first pass)]
+    const own = new RegExp(`(?<![A-Za-z0-9])${escape(n)}(?![A-Za-z0-9])`, "g");
+    return [n, f, n.length >= 3 && !formulaLike(n) ? new RegExp(own.source, "gi") : own, own];
   }));
 export const CRYSTAL_NAMES = S.CRYSTAL_NAMES;
 // The crystals a text names (formulas, in order) and the text with those names blanked out.
@@ -43,9 +45,10 @@ export function findCrystals(text) {
   const found = [];
   text = String(text || "");
   // names in their own case first (HgS is cinnabar, not HGS = HgGa2S4 read in any case), then in any case
-  for (const pass of [false, true]) for (const [, f, , exact, fold] of aliases()) {
-    const cs = pass ? fold : exact;
-    if (!cs) continue; // a name read in its own case only was done in the first pass
+  // (the expressions are built once, in aliases(): building them on every call cost ~15 ms of CPU per search)
+  for (const pass of [false, true]) for (const [, f, re, own] of aliases()) {
+    const cs = pass ? re : own;
+    if (pass && re === own) continue;  // a formula: already done in its own case
     cs.lastIndex = 0;
     if (cs.test(text)) { cs.lastIndex = 0; text = text.replace(cs, " , "); if (!found.includes(f)) found.push(f); }
   }
@@ -150,8 +153,7 @@ export const SCOPE_MAX_COSINE = 0.72;
 
 export function translatePrompt(question) {
   const glossary = Object.entries(S.PERSIAN_GLOSSARY).map(([fa, en]) => `  ${fa} = ${en}`).join("\n");
-  // function replacements: a "$$", "$&" or "$'" in the text (LaTeX in papers, a user's question) stays as written
-  return S.TRANSLATE_PROMPT.replace("{glossary}", () => glossary).replace("{question}", () => question);
+  return fill(S.TRANSLATE_PROMPT, { glossary, question });
 }
 
 // First line of the model's reply, as translate_query() does.
@@ -177,16 +179,14 @@ const languageRules = (language) =>
 
 // Same file as build_context_pack() in qa.py.
 export function contextPack(question, payloads, about, language, searchQuery) {
-  const rules = ["Write citations as plain text with the page, e.g. (Source 2, p. 5), not as links or footnotes.",
+  const rules = ["Write citations as plain text, not as links or footnotes.",
     "Say whether each value you give was measured or calculated, as the source shows (each source is labelled with the kind of work it is).",
     ...languageRules(language)];
   const kind = { experimental: "experimental work", theoretical: "theoretical/computational work", both: "experimental and theoretical work", review: "review or compilation" };
   const passage = { experimental: "this passage: measured", theoretical: "this passage: calculated", both: "this passage: measured and calculated", review: "this passage: cites other work" };
   const context = payloads.map((p, i) => `[${i + 1}] (${sourceLabel(p)}${kind[p.basis] ? `; ${kind[p.basis]}` : ""}${passage[p.basis_p] ? `; ${passage[p.basis_p]}` : ""})\n${p.text}`).join("\n\n");
-  const prompt = S.RAG_PROMPT.replace("{not_found}", () => S.NOT_FOUND)
-    .replace("{extra_rules}", () => rules.map((r) => `- ${r}\n`).join(""))
-    .replace("{context}", () => context)
-    .replace("{question}", () => questionText(question, searchQuery));
+  const prompt = fill(S.RAG_PROMPT, { not_found: S.NOT_FOUND, extra_rules: rules.map((r) => `- ${r}\n`).join(""),
+    context, question: questionText(question, searchQuery) });
   const aboutLines = Object.entries(about).map(([k, v]) => `- ${k}: ${v}`).join("\n");
   const refs = [...new Set(payloads.map((p) => p.reference || p.doc_id || "?"))].map((r) => `- ${r}`).join("\n");
   return `${prompt}\n\n---\nAbout this file (for the reader; not part of the sources):\n${aboutLines}` +

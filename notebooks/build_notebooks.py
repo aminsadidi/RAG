@@ -208,8 +208,8 @@ print('✅ Language model ready:', LLM_PROVIDER)
 #@markdown مجموعه‌ی پیش‌فرض (در خود برنامه هم قابل تغییر است). `rag-optics` همان پوشه‌ی مقاله‌های Drive است.
 CORPUS = "rag-optics"  #@param ["rag-optics", "optical", "hitran"] {allow-input: true}
 #@markdown **PUBLIC_LINK** (پیشنهادی): برنامه با یک لینک موقت https://….gradio.live باز می‌شود — روی لینکی که
-#@markdown پایین این سلول چاپ می‌شود بزنید. لینک خصوصی نیست (هر کس آن را داشته باشد باز می‌کند) و با بسته شدن
-#@markdown کولب از کار می‌افتد. خاموش: نمایش داخل کولب (ممکن است ظاهر برنامه درست بارگذاری نشود).
+#@markdown پایین این سلول چاپ می‌شود بزنید. لینک عمومی است، پس با نام و رمزی که همان‌جا چاپ می‌شود باز می‌شود
+#@markdown و با بسته شدن کولب از کار می‌افتد. خاموش: نمایش داخل کولب (ممکن است ظاهر برنامه درست بارگذاری نشود).
 PUBLIC_LINK = True  #@param {type:"boolean"}
 import os, sys
 os.environ['MATRAG_CORPUS'] = CORPUS
@@ -325,7 +325,7 @@ else:
 if os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
     !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
-print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+print('✅ Done: ' + open('/content/RAG/web/site_url.txt').read().strip())
 """),
     ], gpu=False)
 
@@ -387,7 +387,7 @@ if os.environ.get('CLOUDFLARE_API_TOKEN'):
 if os.path.exists(f'{WORK}/data/rag-optics/gold/questions.csv'):
     !matrag --corpus rag-optics evaluate retrieval --backend qdrant 2>&1 | grep -vE "Warning|Loading" | tee -a "{WORK}/logs/eval.log"
 %cd /content/RAG
-print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+print('✅ Done: ' + open('/content/RAG/web/site_url.txt').read().strip())
 """),
         code("""
 #@title ۲. (اختیاری) ارزیابی دوباره‌ی استخراج فرمول با qwen3:8b
@@ -698,7 +698,7 @@ for name, (doi, *_rest) in PAPERS.items():
     if pdf.exists() and doi_key(doi) in in_collection:
         shutil.move(str(pdf), str(done_dir / name)); moved += 1
 print(f'{moved} handled PDFs moved to {done_dir}')
-print('✅ Done: https://matrag.ethanjamescarter1995.workers.dev')
+print('✅ Done: ' + open('/content/RAG/web/site_url.txt').read().strip())
 """),
     ], gpu=True)
 

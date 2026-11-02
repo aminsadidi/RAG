@@ -106,6 +106,7 @@ class FormulaRecord(BaseModel):
     problems: list[str] = Field(default_factory=list)  # physical sanity problems
     reference_entry: str = ""  # matching refractiveindex.info entry, if any
     reference_max_dn: float | None = None  # max |n_extracted − n_reference| over the common range
+    reference_any_axis: bool = False  # no reference entry for the formula's axis: compared with every axis
 
 
 # --- candidates ---------------------------------------------------------------
@@ -216,7 +217,11 @@ def extract_from_candidate(candidate: Candidate, context: str, llm: LLM) -> list
 def compare_with_reference(record: FormulaRecord, entries, default_temperature_K: float = 295.0) -> None:
     """Fill reference_entry / reference_max_dn from the best-matching refractiveindex.info entry."""
     axis = record.formula.axis.lower()
-    candidates = [e for e in entries if not axis or not e.direction or e.direction.lower() == axis] or entries
+    candidates = [e for e in entries if not axis or not e.direction or e.direction.lower() == axis]
+    # none for this axis: the best of all axes is still reported, flagged, since an o-ray formula "matching" the
+    # e-ray entry says little
+    record.reference_any_axis = bool(entries) and not candidates
+    candidates = candidates or entries
     lo, hi = record.formula.valid_range_um()
     temperature = record.formula.temperature_K or (default_temperature_K if record.formula.temperature_dependent else None)
     best = None

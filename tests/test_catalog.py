@@ -205,9 +205,21 @@ def test_failed_conversions_are_skipped_until_retried(collection, settings, monk
     assert ws.convert_shard(0, 1, retry_failed=True)["failed"] == 3
 
 
-def test_every_doi_form_gives_one_key():
-    from matrag.catalog import CatalogEntry
+def test_doi_prefixes_are_stripped_from_the_key():
+    from matrag.catalog import CatalogEntry, bare_doi
 
-    keys = {CatalogEntry(doi=d, title="t").key for d in ("10.1364/JOSAB.6.000616", "https://doi.org/10.1364/JOSAB.6.000616",
-                                                       "http://dx.doi.org/10.1364/josab.6.000616", "doi:10.1364/JOSAB.6.000616")}
-    assert keys == {"10.1364_josab.6.000616"}
+    for doi in ("10.1364/JOSAB.6.000616", "https://doi.org/10.1364/JOSAB.6.000616", "http://dx.doi.org/10.1364/JOSAB.6.000616",
+                "doi:10.1364/JOSAB.6.000616", "DOI: 10.1364/JOSAB.6.000616", "HTTPS://DX.DOI.ORG/10.1364/JOSAB.6.000616"):
+        assert CatalogEntry(doi=doi, title="t").key == "10.1364_josab.6.000616", doi
+    assert bare_doi("10.1000/doi:x") == "10.1000/doi:x"  # only a prefix
+
+
+def test_a_doi_key_collision_is_reported(tmp_path):
+    (tmp_path / "02_Master_Index").mkdir()
+    rows = [{"title": "A", "doi": "10.1002/(SICI)1097"}, {"title": "B", "doi": "10.1002/sici_1097"},
+            {"title": "A again", "doi": "http://dx.doi.org/10.1002/(SICI)1097"}]
+    (tmp_path / "02_Master_Index" / "rag_corpus.jsonl").write_text("\n".join(json.dumps(r) for r in rows), "utf-8")
+    with pytest.warns(UserWarning, match="share the id") as caught:
+        entries = load_catalog(tmp_path)
+    assert [e.title for e in entries] == ["A"]
+    assert len(caught) == 1  # the same DOI again (with a prefix) is a plain duplicate

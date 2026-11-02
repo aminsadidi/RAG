@@ -5,7 +5,7 @@
 <title>MatRAG Optics</title>
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" type="image/webp" href="/brand/icon.webp"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- fonts and pdf.js are served by the site itself: a CDN filtered or slow on the reader's network must not break the page -->
-<script>
+<script nonce="__CSP_NONCE__">
 // Interface language: Persian (default) or English, remembered in this browser; English pages stay hidden until
 // translated (at most 2 s) so Persian text does not flash.
 const LANG = (() => { try { return localStorage.getItem("lang") === "en" ? "en" : "fa"; } catch { return "fa"; } })();
@@ -147,6 +147,7 @@ body{font-size:14.5px;line-height:1.7;display:grid;grid-template-columns:232px m
 #side .navsec{font-size:11px;letter-spacing:.6px;color:#6f7f93;padding:14px 10px 4px}
 #side .logout{margin-top:auto;color:var(--side-ink);font-size:13px;padding:8px 10px;text-decoration:none;border-radius:8px}
 #side .logout:hover{background:rgba(255,255,255,.06)}
+#side form.logout button{all:unset;cursor:pointer;width:100%}
 main{max-width:1180px;width:100%;margin:0;padding:26px 32px 70px}
 #pagehead{margin:0 0 18px}#pagehead h1{font-size:22px;margin:0;font-weight:700;letter-spacing:-.2px}#pagehead p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
 .card{border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow)}
@@ -207,7 +208,7 @@ th,td{padding:7px 10px}
 .xcard .actions button:hover{background:var(--accent);color:#fff}
 @media (max-width:600px){.xrows th{white-space:normal}}
 #fbopen{position:fixed;inset-inline-end:16px;bottom:16px;z-index:50;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.12);cursor:pointer;font:inherit}
-#fbdlg{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:460px;width:calc(100% - 32px)}
+#fbdlg,#logoutdlg{border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);max-width:460px;width:calc(100% - 32px)}
 #fbdlg textarea,#fbdlg input,.fbbar input{width:100%;box-sizing:border-box;margin:6px 0;padding:8px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);font:inherit}
 .fbbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.fbbar input{flex:1 1 100%}
 .fbhit{margin-inline-start:auto}.fbhit button{padding:2px 8px}
@@ -234,7 +235,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
   <button id="langbtn" type="button" title="English / فارسی">English</button>
-  <a href="/logout" class="logout" id="logoutlink">خروج</a>
+  <form method="post" action="/logout" class="logout" id="logoutf"><button type="submit">خروج</button></form>
 </aside>
 
 <main>
@@ -663,7 +664,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div class="row" style="justify-content:space-between;margin-top:0"><h2 style="margin:0">بازیابی: برنامه‌ی کولب در برابر سایت</h2>
       <div class="seg" id="evmetric"></div></div>
     <p class="hint">«سایت بعد از OCR و معادله‌ها»: متن ۵۴ مقاله‌ی اسکن‌شده یا بی‌متن با OCR (RapidOCR) خوانده شد، معادله‌های ۴۶ مقاله‌ی ارزیابی فرمول با مدل CodeFormula (GPU کولب) به LaTeX درآمد و ۶ مقاله که PDF آن‌ها در مجموعه مقاله‌ی دیگری بود فقط با چکیده نمایه شدند (اجرای کامل در کولب).</p>
-    <p class="hint">MRR: میانگین ۱/رتبه‌ی اولین مقاله‌ی درست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
+    <p class="hint">MRR (در سطح بخش، با بررسی صفحه، بدون برش در ۱۰): میانگین ۱/رتبه‌ی اولین بخشِ درست؛ با MRR@10 مقاله‌ای گزارش‌های کیفیت جست‌وجو قابل مقایسه نیست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.</p>
     <div id="evchart"><svg id="evsvg" role="img" aria-label="retrieval comparison"></svg></div>
     <div id="evlegend" class="chips" style="direction:ltr"></div>
     <table id="evtable" style="margin-top:10px"></table>
@@ -716,7 +717,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   <div class="note" id="vnote"></div>
 </div></div>
 
-<script>
+<script nonce="__CSP_NONCE__">
 "use strict";
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -755,6 +756,8 @@ const tempOf = (id) => { const v = $(id).value.trim(); return v === "" || !Numbe
 const tempNote = (id, th) => { const v = +$(id).value;
   if ($(id).value.trim() !== "" && v < -273.15) return " — <span class=\"err\">زیر صفر مطلق است؛ در نظر گرفته نشد</span>";
   return th && $(id).value.trim() !== "" && Math.abs(v - th.t0_c) > 200 ? " — <span class=\"err\">بیش از ۲۰۰ °C دور از دمای فرمول: برون‌یابی است و ممکن است درست نباشد</span>" : ""; };
+// wavelengths (µm) where the dn/dT of the source was not measured (thermoOutside in dispersion.client.js)
+const pieceNote = (out) => (out.length ? ` — <span class="err">dn/dT برای <bdi dir="ltr">${out.map((l) => l.toFixed(3)).join(", ")} µm</bdi> اندازه‌گیری نشده؛ از نزدیک‌ترین بازه‌ی اندازه‌گیری برون‌یابی شده است</span>` : "");
 // Data read from papers (paper_formulas.yml, thermo_optic.yml, nonlinear_coefficients.yml) is measured unless marked basis: calculated
 // where a value comes from (src/matrag/references/provenance.py): a colored mark, a short name, and the whole sentence on hover
 const TIER = {
@@ -920,12 +923,20 @@ function terms(query) {
   return [...new Set((query.match(/[A-Za-z0-9α-ωΑ-Ω]+/g) || []).filter((w) => w.length > 1 && !STOP.has(w.toLowerCase())))];
 }
 // a word is marked where it starts (BaB2O4 in β-BaB2O4); a short one (Si, IR) only as a whole word, not in "Sintered"
-// the words are found in the raw text and each piece escaped after (searching the escaped HTML marked "lt" in "&lt;")
+// The words are found in the raw text and each piece is escaped on its own: searching the escaped HTML marked
+// "lt" inside &lt; (and 39, amp, quot) and broke the entity.
 function highlight(text, words) {
   text = String(text ?? "");
+  words = words.filter(Boolean);
   if (!words.length) return esc(text);
-  const re = new RegExp(`(?<![\\p{L}\\p{N}])(${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + (w.length < 4 ? "(?![\\p{L}])" : "")).join("|")})`, "giu");
-  return text.split(re).map((piece, i) => (i % 2 ? `<mark>${esc(piece)}</mark>` : esc(piece))).join("");
+  const re = new RegExp(`(?<![\\p{L}\\p{N}])(?:${words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + (w.length < 4 ? "(?![\\p{L}])" : "")).join("|")})`, "giu");
+  let out = "", at = 0;
+  for (const m of text.matchAll(re)) {
+    if (!m[0]) continue;
+    out += esc(text.slice(at, m.index)) + `<mark>${esc(m[0])}</mark>`;
+    at = m.index + m[0].length;
+  }
+  return out + esc(text.slice(at));
 }
 function boxesOf(hit) { try { return JSON.parse(hit.boxes || "[]"); } catch { return []; } }
 function pageMap(hit) {
@@ -1004,7 +1015,7 @@ async function runSearch() {
     const data = await (await api("/api/search", opts, req.signal)).json();
     if (req.stale()) return;
     lastHits = data.hits; lastSearch = data;
-    // the question's words and the crystals it names as formulas (LBO is marked as LiB3O5 too)
+    // the question's words and the formulas of the materials it names (LBO -> LiB3O5), as the papers write them
     const words = [...new Set([...terms(data.searchQuery || data.question), ...(data.materials || [])])];
     status(`${fa(data.hits.length)} منبع در ${fa((data.ms / 1000).toFixed(1))} ثانیه` +
       (data.searchQuery ? ` — جست‌وجو با ترجمه‌ی انگلیسی: «${data.searchQuery}»` : "") +
@@ -1068,6 +1079,8 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ---------- paper view
+// buttons made in HTML templates open a paper by data-open-paper (inline onclick is blocked by the page's CSP)
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-paper]"); if (b) openPaper(b.dataset.openPaper, null); });
 async function openPaper(docId, nodeId) {
   showTab("paper");
   $("paperhead").innerHTML = '<p class="hint">در حال خواندن…</p>'; $("paperbody").innerHTML = "";
@@ -1153,6 +1166,8 @@ async function localPdf(hit) {
 
 // ---------- page viewer
 // pdf.js (same files as cdnjs 3.11.174, in public/vendor) is loaded when the viewer is first opened
+// pdf.js 3.11.174 runs font code with eval unless isEvalSupported is false (CVE-2024-4367: a crafted PDF ran
+// script); every getDocument passes it. pdf.js 4.2.67 and later fix it at the source.
 const PDFJS = "/vendor/pdfjs-3.11.174/";
 let pdfjsReady = null;
 window.loadPdfjs = loadPdfjs;
@@ -1203,7 +1218,7 @@ async function openViewer(hit) {
 function partsDoc(lib, hit, m) {
   const base = pdfUrl(hit).replace(/[^/]+$/, ""), docs = new Map();
   const open = (f) => {
-    if (!docs.has(f)) docs.set(f, lib.getDocument({ url: base + encodeURIComponent(f), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true, isEvalSupported: false }).promise);
+    if (!docs.has(f)) docs.set(f, lib.getDocument({ isEvalSupported: false, url: base + encodeURIComponent(f), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true }).promise);
     return docs.get(f);
   };
   return {
@@ -1225,7 +1240,7 @@ async function openDoc(hit) {
     el.textContent = `در حال دریافت مقاله… ${fa(Math.round(loaded / 1024))}${total ? " از " + fa(Math.round(total / 1024)) : ""} کیلوبایت`;
   };
   let doc = null;
-  const task = lib.getDocument({ url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true, isEvalSupported: false });
+  const task = lib.getDocument({ isEvalSupported: false, url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
   task.onProgress = progress;
   doc = await task.promise.catch(() => null);
   if (!doc) { // a long book is on the site in parts (qdrant_store.split_pdf): one part is read, not the whole book
@@ -1234,7 +1249,7 @@ async function openDoc(hit) {
   }
   if (!doc) {
     const file = await localPdf(hit).catch(() => null);
-    if (file) doc = await lib.getDocument({ data: await file.arrayBuffer(), isEvalSupported: false }).promise;
+    if (file) doc = await lib.getDocument({ isEvalSupported: false, data: await file.arrayBuffer() }).promise;
   }
   if (doc) V.cache.set(key, doc);
   return doc;
@@ -1295,7 +1310,7 @@ const saved = store.get("opts");
 if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; $("perpaper").checked = !!saved.perPaper; $("rerank").checked = saved.precise !== false; }
 loadFacets().then(() => { if (saved?.material) $("material").value = saved.material; });
 </script>
-<script type="module">
+<script type="module" nonce="__CSP_NONCE__">
 import { entryIndex } from "/dispersion.js";
 // ---------- refractive index tab: n(λ) of every refractiveindex.info entry for a material, plus the user's own data
 // A curve has a key: "db:<i>" (entry i of the material) or "u:<id>" (a user entry, kept in this browser).
@@ -1365,19 +1380,6 @@ document.addEventListener("click", (e) => {
   $("q").value = `${$("rimat").value} Sellmeier equation refractive index`; $("material").value = ""; showTab("search"); runSearch();
 });
 
-// Logging out clears this browser's site data (a shared lab computer keeps nothing), the user's own formulas too:
-// with some saved, ask first and offer them as a file
-document.getElementById("logoutlink")?.addEventListener("click", (e) => {
-  let mine = []; try { mine = JSON.parse(localStorage.getItem("ri_user") || "[]"); } catch { /* no storage */ }
-  if (!mine.length) return;
-  e.preventDefault();
-  if (confirm(LANG === "en" ? `Logging out deletes your ${mine.length} own formulas/data in this browser. Save them as a file first?`
-    : `با خروج، ${fa(mine.length)} فرمول یا داده‌ی خودتان در این مرورگر پاک می‌شود. اول در یک فایل ذخیره شوند؟`)) {
-    const a = Object.assign(document.createElement("a"), { href: URL.createObjectURL(new Blob([JSON.stringify(mine, null, 1)], { type: "application/json" })), download: "matrag-my-data.json" });
-    a.click();
-  }
-  setTimeout(() => { location.href = "/logout"; }, 300);
-});
 // ---------- user entries (localStorage; the page works without it)
 function loadUser() { try { RI.user = JSON.parse(localStorage.getItem("ri_user") || "[]").filter((u) => u && u.id); } catch { RI.user = []; } }
 function saveUser() { try { localStorage.setItem("ri_user", JSON.stringify(RI.user)); } catch {} }
@@ -1879,9 +1881,9 @@ function drawChart(lo, hi, probe) {
 let lastW = 0;
 new ResizeObserver(() => { const w = Math.round($("chart").clientWidth); if (w && w !== lastW && RI.mat) { lastW = w; render(); } }).observe($("chart"));
 </script>
-<script type="module">
+<script type="module" nonce="__CSP_NONCE__">
 // ---------- phase-matching tab (web/src/phasematch.client.js does the physics)
-import { entryIndex, thermoShift } from "/dispersion.js";
+import { entryIndex, thermoOutside, thermoShift } from "/dispersion.js";
 import { advise, contract, cutTemperatures, describe, dTensor, effectiveD, MIN_PERIOD, mixingWidths, ncpmTemperatures, offAxis, ONE, PAIR, qpmSolutions, solveAll, solveMixing, temperatureAcceptance, waves } from "/phasematch.js";
 
 const PLANE_FA = { xy: "xy (φ)", yz: "yz (θ)", xz: "xz (θ)" };
@@ -2065,15 +2067,16 @@ function run() {
   const ref = Object.values(src.axes)[0];
   const moved = PM.moved; PM.moved = "";
   showTemp(src); $("pmncpm").innerHTML = "";
+  if (src.thermo && tempC() !== src.thermo.t0_c) $("pmTinfo").innerHTML += pieceNote(thermoOutside(src, [w.l1, w.l2, w.l3]));
   $("pmwarn").innerHTML = (moved ? `<span style="color:var(--warn,#b45309)">${moved}</span><br>` : "")
     + (src !== src0 ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${src0.range_um[0]}–${src0.range_um[1]} µm</bdi></span>` : "");
   $("pmhow").innerHTML = `${esc(c.material)} · با فرمول ضریب شکست ${tierMark(src)} ${esc(src.label)}${src.thermo ? ` در <bdi dir="ltr">${tempC()} °C</bdi>` : " (در دمای اندازه‌گیری فرمول)"}`
     + (PM.dij[c.material] ? ` · d<sub>eff</sub> از ضرایب غیرخطی ${PM.dij[c.material].sources.map((x) => `${tierMark(x)} ${esc(x.cite)}`).join("، ")}` : "") + ` · پهنای پذیرش برای بلور ۱ سانتی‌متری`;
   $("pminfo").innerHTML = `${esc(c.name || c.material)} — ${src.isotropic ? "همسان‌گرد (مکعبی)" : src.kind === "uniaxial" ? "تک‌محوری" : "دومحوری"}؛ منبع: ${esc(ref.reference || src.label)}`
-    + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" onclick="openPaper('${esc(ref.doc_id)}')">باز کردن مقاله در مجموعه</button>` : "")
+    + (ref.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" data-open-paper="${esc(ref.doc_id)}">باز کردن مقاله در مجموعه</button>` : "")
     + (PM.dij[c.material] ? `<br>ضرایب غیرخطی (${esc(PM.dij[c.material].point_group)}): <bdi dir="ltr">${Object.entries(PM.dij[c.material].d).map(([k, v]) => `d${k} = ${v}`).join(", ")} pm/V</bdi> — `
         + PM.dij[c.material].sources.map((s) => (s.doc_id
-          ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what)}" onclick="openPaper('${esc(s.doc_id)}')">${esc(s.cite)}، ص ${fa(s.pdf_page)} · ${basisName(s)}</button>`
+          ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what)}" data-open-paper="${esc(s.doc_id)}">${esc(s.cite)}، ص ${fa(s.pdf_page)} · ${basisName(s)}</button>`
           : `<a class="chip" title="${esc(s.what)}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${esc(s.cite)}، ص ${fa(s.pdf_page)} · ${basisName(s)} (خارج از مجموعه)</a>`)).join(" ")
       : "<br>ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d<sub>eff</sub> حساب نمی‌شود.");
   if (!covers(src, w)) {
@@ -2150,7 +2153,7 @@ function offCard(c, src, proc, a, b, rows) {
 function showTemp(src) {
   const th = src.thermo, other = PM.crystal.sources.findIndex((s) => s.thermo);
   $("pmTinfo").innerHTML = th
-    ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" onclick="openPaper('${esc(th.doc_id)}')">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)}</button>`
+    ? `وابستگی دمایی: ${th.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(th.where || "")}" data-open-paper="${esc(th.doc_id)}">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)}</button>`
       : th.doi ? `<a class="chip" title="${esc(th.where || "")}" href="https://doi.org/${esc(th.doi)}" target="_blank" rel="noopener">${esc(th.cite)}، ص ${fa(th.pdf_page)} · ${basisName(th)} (خارج از مجموعه)</a>` : esc(th.cite)}`
       + tempNote("pmT", th)
     : "برای این منبع فرمول وابستگی دمایی در مجموعه نیست" + (other >= 0
@@ -2615,7 +2618,7 @@ $("pmrare").onchange = compareAll;
 $("pmsort").onchange = compareAll;
 $("pmalltable").onclick = (e) => { const tr = e.target.closest("tr[data-mat]"); if (tr) { if (!PM.dij[tr.dataset.mat] && !$("pmmore").checked) { $("pmmore").checked = true; fillMats(); } pick(tr.dataset.mat, tr.dataset.src); $("pmtable").scrollIntoView({ behavior: "smooth", block: "center" }); } };
 </script>
-<script type="module">
+<script type="module" nonce="__CSP_NONCE__">
 // ---------- evaluation tab
 const MODE_FA = { hybrid: "ترکیبی", bm25: "کلیدواژه (BM25)", vector: "برداری" };
 const SYS = [["local", "برنامه‌ی کولب (ChromaDB + bm25s)"], ["site", "سایت (Qdrant)"], ["site_ocr", "سایت بعد از OCR و معادله‌ها"]];
@@ -2623,7 +2626,7 @@ let EV = null, evMetric = "MRR";
 const GROUP_FA = { "generated-text": "نوشته‌ی مدل از متن مقاله", "generated-table": "نوشته‌ی مدل از جدول مقاله",
   ri: "refractiveindex.info (سه شکل نام)", dij: "ضرایب غیرخطی d", paper: "فرمول‌های خوانده‌شده از مقاله‌ها", all: "همه" };
 function drawBig(B) {
-  const MRR = B.metrics.indexOf("MRR"), R10 = B.metrics.indexOf("recall@10"), R5 = B.metrics.indexOf("recall@5");
+  const MRR = B.metrics.findIndex((m) => m === "MRR" || m === "chunk MRR"), R10 = B.metrics.indexOf("recall@10"), R5 = B.metrics.indexOf("recall@5");
   const all = B.groups.find((g) => g.group === "all"), nf = B.notfound;
   $("evbig").hidden = false;
   $("evbigtiles").innerHTML = [[fa(all.questions + nf.unanswerable), "سؤال (" + fa(nf.unanswerable) + " تا بی‌جواب)"],
@@ -2641,7 +2644,7 @@ function drawBig(B) {
 }
 window.loadEval = async () => {
   if (!EV) EV = await (await fetch("/eval.json")).json();
-  const r = EV.retrieval, mi = r.metrics.indexOf("MRR");
+  const r = EV.retrieval, mi = r.metrics.findIndex((m) => m === "MRR" || m === "chunk MRR");
   const facets = await api("/api/facets").then((x) => x.json()).catch(() => ({}));
   const tiles = [[fa(r.questions), "سؤال ارزیابی"], ...(facets.points ? [[fa(facets.points), "بخش در پایگاه"]] : []),
     [r.site_ocr.bm25[mi].toFixed(3), "بهترین MRR سایت"], [`+${Math.round((r.site_ocr.hybrid[mi] / r.local.hybrid[mi] - 1) * 100)}%`, "بهبود روش ترکیبی نسبت به کولب"]];
@@ -2682,7 +2685,7 @@ function drawEval() {
 }
 new ResizeObserver(() => { if (EV && !$("tab-eval").hidden) drawEval(); }).observe($("evchart"));
 </script>
-<script type="module">
+<script type="module" nonce="__CSP_NONCE__">
 // ---------- collection browser
 const catName = (c) => (c ? c.replace(/^\d+_/, "").replaceAll("_", " ") : "—");
 let PL = null, plShown = 50;
@@ -2764,9 +2767,9 @@ function drawYears() {
 }
 new ResizeObserver(() => { if (PL && !$("tab-library").hidden) drawYears(); }).observe($("yrchart"));
 </script>
-<script type="module">
+<script type="module" nonce="__CSP_NONCE__">
 // ---------- SPDC tab (web/src/spdc.client.js does the physics)
-import { entryIndex, thermoShift } from "/dispersion.js";
+import { entryIndex, thermoOutside, thermoShift } from "/dispersion.js";
 import { eigenIndices, direction, solveAll, effectiveD, fieldVectors, dTensor, contract, groupIndex } from "/phasematch.js";
 import { jointSpectrum, purity, intensity, fwhm, hom, transformLimitedNm, focusing, fiberCoupling, apodized, bestPumpBandwidth, emissionAngles, pairRate, detectedCounts, powerForCar, C_UM_PS } from "/spdc.js";
 
@@ -2885,7 +2888,8 @@ function spNoCfg() {
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
-  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + tempNote("spT", s.thermo);
+  $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + tempNote("spT", s.thermo)
+    + (s.thermo && spTemp() !== null && spTemp() !== s.thermo.t0_c ? pieceNote(thermoOutside(s, [lp, l1, l2])) : "");
   $("spl2").innerHTML = spBad() ? `<span class="err">${spBad()}</span>` : `λ₂ = ${l2.toFixed(4)} µm`;
   const opts = [];
   try {
@@ -2955,7 +2959,7 @@ function run() {
         + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}</div>`;
     }
     if ($("sppm").value === "apod" && !$("spfoc").checked)
-      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">آپودایز گاوسی با σ = ${esc($("spapod").value)}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</div>`;
+      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">آپودایز گاوسی با σ = ${esc(+$("spapod").value)}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</div>`;
     drawJSI(I.jsi, j.n, lam1, lam2);
     drawHOM(j, l1, l2);
     // the joint spectral intensity as CSV: λ1 (nm), λ2 (nm), |f|² normalized to its peak
@@ -3111,7 +3115,7 @@ function counts() {
       + `heralding (Klyshko) efficiency: photon 1 ${pc(c.h1)}, photon 2 ${pc(c.h2)}; mean pairs per window R·τ = ${c.pairsPerWindow.toPrecision(3)}`
       + (Math.max(c.S1, c.S2) > 2e6 ? `<br><span class="err">singles above 2·10⁶/s: most single-photon detectors saturate (dead time); lower the power</span>` : "")
       + `<br>highest CAR ${f(pw.best.CAR)} at ${pw.best.P > 0 ? mw(pw.best.P) : "the lowest power (no dark counts)"}`
-      + (pw.high ? `; CAR = ${esc($("spCarT").value)} at ${pw.low ? mw(pw.low) + " and " : "up to "}${mw(pw.high)} (between them it is higher)` : `; CAR ${esc($("spCarT").value)} is not reachable with these dark counts`);
+      + (pw.high ? `; CAR = ${esc(+$("spCarT").value)} at ${pw.low ? mw(pw.low) + " and " : "up to "}${mw(pw.high)} (between them it is higher)` : `; CAR ${esc(+$("spCarT").value)} is not reachable with these dark counts`);
   }, 20);
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
@@ -3138,7 +3142,7 @@ function fiber(optimize) {
     $("spfibres").innerHTML = `w<sub>p</sub> = ${f.wp.toFixed(1)} µm, w₁ = ${f.ws.toFixed(1)} µm, w₂ = ${f.wi.toFixed(1)} µm<br>`
       + `<b>all modes:</b> γ₁ = ${pc(f.gammaS)}, γ₂ = ${pc(f.gammaI)}, γc = ${pc(f.gammaC)}, μ₂|₁ = ${pc(f.muIgS)}, μ₁|₂ = ${pc(f.muSgI)}<br>`
       + `l = 0 only (as Ljunggren &amp; Tengner): γ₁ = ${pc(z.gammaS)}, γ₂ = ${pc(z.gammaI)}, γc = ${pc(z.gammaC)}`
-      + (optimize ? `<br>best pair coupling on the grid at ξp = ${esc($("spxp").value)}, ξ fibres = ${esc($("spxs").value)}` : "");
+      + (optimize ? `<br>best pair coupling on the grid at ξp = ${esc(+$("spxp").value)}, ξ fibres = ${esc(+$("spxs").value)}` : "");
   }, 20);
 }
 // viridis-like ramp
@@ -3187,7 +3191,7 @@ function drawHOM(j, l1, l2) {
   $("sphomcap").textContent = `احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر؛ کمینه در ${taus[k0].toFixed(2)} ps، نمایانی ${(V * 100).toFixed(1)}٪.`;
 }
 </script>
-<script type="module">
+<script type="module" nonce="__CSP_NONCE__">
 // ---------- crystal cards: a crystal named in a search question (BBO, LiB3O5, «لیتیم نیوبات») gets a card with the
 // verified data of the site (refractive index, d coefficients, thermo-optic formula), and the other tabs select it.
 import { entryIndex } from "/dispersion.js";
@@ -3306,7 +3310,7 @@ $("xcards").onclick = (e) => {
   showTab(act);
 };
 </script>
-<script type="module">
+<script type="module" nonce="__CSP_NONCE__">
 // The validation table: published numbers recomputed with the site's own data and code (web/src/validation.client.js)
 import { entryIndex, thermoShift, refractiveIndex } from "/dispersion.js";
 import { effectiveD, ncpmTemperatures, solveAll, solveMixing } from "/phasematch.js";
@@ -3330,7 +3334,7 @@ $("valgo").onclick = async () => {
   $("valgo").disabled = false;
 };
 </script>
-<script>
+<script nonce="__CSP_NONCE__">
 // What this account may use (/api/me): tabs not allowed are taken out, PDFs hidden for accounts without them,
 // and the site announcement (set from the admin bot) shown on top.
 api("/api/me").then((r) => r.json()).then((me) => {
@@ -3414,8 +3418,15 @@ document.addEventListener("click", (e) => {
     pop.addEventListener("mousedown", (ev) => { const d = ev.target.closest(".i"); if (d) { ev.preventDefault(); pick(items[+d.dataset.i]); } });
     inp.addEventListener("blur", () => setTimeout(() => { if (!box.contains(document.activeElement)) { pop.hidden = true; show(); } }, 150));
     sel.addEventListener("change", show);
-    // the code sets the select without an event (a row of the advisor, a share link, a card's button)
-    setInterval(() => { if (sel.value !== shown && document.activeElement !== inp) show(); }, 400);
+    // the code sets the select without an event (a row of the advisor, a share link, a card's button): its value and
+    // selectedIndex setters and changes of its options are watched on this element (a 400 ms timer per picker,
+    // forever, did it before)
+    const sync = () => queueMicrotask(() => { if (sel.value !== shown && document.activeElement !== inp) show(); });
+    for (const prop of ["value", "selectedIndex"]) {
+      const d = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, prop);
+      Object.defineProperty(sel, prop, { configurable: true, get() { return d.get.call(this); }, set(v) { d.set.call(this, v); sync(); } });
+    }
+    new MutationObserver(sync).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ["selected"] });
     show();
   }
 })();
@@ -3462,6 +3473,7 @@ async function openShared(query = location.hash.slice(1)) {
       if (!(await until(() => [...el.options].some(match)))) continue;
       el.value = [...el.options].find(match).value;
     }
+    else if (el.hasAttribute("data-num") && !/^[-+]?[0-9.,/]*(e[-+]?[0-9]+)?$/i.test(ASCII_NUM(v).trim())) continue; // a number box takes only a number from a link
     else el.value = v;
     el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true }));
   }
@@ -3494,6 +3506,11 @@ document.addEventListener("click", (e) => {
 }, true);
 </script>
 <button id="fbopen" title="نظر، مشکل یا پیشنهاد">💬 بازخورد</button>
+<dialog id="logoutdlg"><form method="dialog">
+  <h3>خروج</h3>
+  <p>خروج همه‌ی چیزهایی را که این صفحه در این مرورگر نگه داشته پاک می‌کند، از جمله <b id="logoutn"></b> فرمول ضریب شکستی که خودتان وارد کرده‌اید.</p>
+  <div class="actions"><button value="save" class="primary">دانلود فرمول‌ها و خروج</button><button value="go">خروج بدون دانلود</button><button value="cancel">انصراف</button></div>
+</form></dialog>
 <dialog id="fbdlg"><form method="dialog" id="fbform">
   <h3>بازخورد</h3>
   <p class="hint">مشکل، اشتباه در داده‌ها، بلور یا مقاله‌ای که کم است، یا هر پیشنهادی. مستقیم به سازنده‌ی سایت می‌رسد.</p>
@@ -3502,7 +3519,28 @@ document.addEventListener("click", (e) => {
   <p class="err" id="fberr" hidden style="margin:6px 0 0"></p>
   <div class="actions"><button value="send" class="primary">ارسال</button><button value="cancel" formnovalidate>انصراف</button></div>
 </form></dialog>
-<script>
+<script nonce="__CSP_NONCE__">
+// Logging out (POST) clears what the page kept in this browser: the reader's own formulas (ri_user) are offered
+// as a file first, so they are not lost without warning.
+(() => {
+  const f = document.getElementById("logoutf"), dlg = document.getElementById("logoutdlg");
+  const own = () => { try { return JSON.parse(localStorage.getItem("ri_user") || "[]"); } catch { return []; } };
+  f.addEventListener("submit", (e) => {
+    if (f.dataset.ok || !own().length) return;
+    e.preventDefault();
+    document.getElementById("logoutn").textContent = fa(own().length);
+    dlg.returnValue = ""; dlg.showModal();
+  });
+  dlg.addEventListener("close", () => {
+    if (dlg.returnValue === "save") {
+      const url = URL.createObjectURL(new Blob([JSON.stringify(own(), null, 1)], { type: "application/json" }));
+      Object.assign(document.createElement("a"), { href: url, download: "matrag-my-formulas.json" }).click();
+      setTimeout(() => { URL.revokeObjectURL(url); f.dataset.ok = "1"; f.requestSubmit(); }, 300);
+    } else if (dlg.returnValue === "go") { f.dataset.ok = "1"; f.requestSubmit(); }
+  });
+})();
+</script>
+<script nonce="__CSP_NONCE__">
 (() => {
   const dlg = document.getElementById("fbdlg"), who = document.getElementById("fbwho");
   document.getElementById("fbopen").onclick = () => { who.value = store.get("fbwho") || ""; dlg.showModal(); };
@@ -3516,7 +3554,7 @@ document.addEventListener("click", (e) => {
   });
 })();
 </script>
-<script>
+<script nonce="__CSP_NONCE__">
 (() => {
   const btn = document.getElementById("langbtn");
   btn.textContent = LANG === "en" ? "فارسی" : "English";

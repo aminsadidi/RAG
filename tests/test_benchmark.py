@@ -65,3 +65,19 @@ def test_formula_benchmark_resumes(settings, tmp_path, monkeypatch):
     monkeypatch.setattr(ws, "extract_formulas", lambda doc_ids, provider=None, references=None: [])
     rows = ws.formula_benchmark(out)  # continues with p2 only
     assert [r["doc_id"] for r in rows] == ["p1", "p2"] and calls == ["p1", "p2"]
+
+
+def test_all_axes_counts_a_paper_only_when_every_entry_matches():
+    refs = [entry("BaB2O4", "BBO-o.yml"), entry("BaB2O4", "BBO-e.yml")]
+    o_ok = SimpleNamespace(reference_max_dn=2e-4, reference_entry="BBO-o.yml", reference_any_axis=False)
+    e_ok = SimpleNamespace(reference_max_dn=5e-4, reference_entry="BBO-e.yml", reference_any_axis=False)
+    e_by_fallback = SimpleNamespace(reference_max_dn=1e-4, reference_entry="BBO-e.yml", reference_any_axis=True)
+    both, one, fallback = (paper_row("a", "A", refs, [o_ok, e_ok]), paper_row("b", "B", refs, [o_ok]),
+                           paper_row("c", "C", refs, [o_ok, e_by_fallback]))
+    assert both["all_within_0.001"] and not both["all_within_0.0001"] and both["entries_matched"] == 2
+    assert one["within_0.001"] and not one["all_within_0.01"] and one["entries_matched"] == 1
+    assert not fallback["all_within_0.01"]  # an other-axis comparison does not count for the e-ray
+    s = summarize([both, one, fallback])
+    assert s["|Δn| ≤ 0.001"] == 1.0 and s["all axes |Δn| ≤ 0.001"] == 0.333
+    old = {k: v for k, v in one.items() if not k.startswith("all_")}  # a row of a run before this column
+    assert summarize([old])["all axes |Δn| ≤ 0.01"] == 0.0

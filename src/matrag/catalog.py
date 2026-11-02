@@ -20,9 +20,9 @@ import csv
 import hashlib
 import json
 import os
-import logging
 import re
 import shutil
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -44,14 +44,20 @@ _SKIP_DIRS = {INDEX_DIR, PROCESSED_DIR, "03_Paywalled_DOIs", "04_Dispersion_Form
 # Where organize() puts PDFs it cannot place in a category folder.
 NOT_IN_INDEX_DIR, DUPLICATES_DIR = "99_Not_in_master_index", "98_Duplicate_copies"
 
-log = logging.getLogger(__name__)
-
 FULL_TEXT, ABSTRACT, METADATA_ONLY = "full_text_pdf", "abstract", "metadata_only"
 
 
 def doi_key(doi: str) -> str:
     """File-name and id form of a DOI: lower case, '/' and other symbols replaced by '_'."""
     return re.sub(r"[^a-z0-9.]+", "_", doi.strip().lower()).strip("_.")
+
+
+_DOI_PREFIX = re.compile(r"^\s*(?:https?://(?:dx\.)?doi\.org/|doi:\s*)", re.IGNORECASE)
+
+
+def bare_doi(doi: str) -> str:
+    """The DOI without a resolver or scheme prefix: 'https://doi.org/', 'http://dx.doi.org/', 'doi:'."""
+    return _DOI_PREFIX.sub("", doi.strip())
 
 
 class CatalogEntry(BaseModel):
@@ -101,8 +107,7 @@ class CatalogEntry(BaseModel):
     def key(self) -> str:
         """Stable id: the DOI (file-name form), else arXiv or OpenAlex id, else the index's own id."""
         if self.doi:
-            # every way a DOI is written (https://doi.org/, http://dx.doi.org/, doi:) gives the same key
-            return doi_key(re.sub(r"^(https?://(dx\.)?doi\.org/|doi:\s*)", "", self.doi.strip(), flags=re.I))
+            return doi_key(bare_doi(self.doi))
         if self.arxiv_id:
             return "arxiv_" + doi_key(self.arxiv_id)
         if self.openalex_id:
@@ -173,12 +178,20 @@ def load_catalog(root: Path) -> list[CatalogEntry]:
             rows = list(csv.DictReader(f))
     else:
         rows = [json.loads(line) for line in path.read_text("utf-8").splitlines() if line.strip()]
-    entries, seen = [], set()
+    entries, seen = [], {}
     for row in rows:
         entry = CatalogEntry(**_normalise(row))
-        if entry.key not in seen and (entry.title or entry.doi):
-            seen.add(entry.key)
-            entries.append(entry)
+        if not (entry.title or entry.doi):
+            continue
+        doi = bare_doi(entry.doi).lower()
+        if entry.key in seen:
+            # two different DOIs with one file-name form ("10.1002/(SICI)1" and "10.1002/sici_1"): the second is
+            # dropped as a duplicate, which is wrong; say so
+            if doi and seen[entry.key] and doi != seen[entry.key]:
+                warnings.warn(f"DOIs {seen[entry.key]} and {doi} share the id {entry.key}: only the first is kept", stacklevel=2)
+            continue
+        seen[entry.key] = doi
+        entries.append(entry)
     return entries
 
 
@@ -220,11 +233,7 @@ def plan(root: Path) -> Plan:
     """Pair every PDF with its index entry; papers without a PDF are kept as abstract/metadata items."""
     entries = load_catalog(root)
     by_path = {e.pdf_path.replace("\\", "/").lower(): e for e in entries if e.pdf_path}
-    by_key = {}
-    for e in entries:
-        if e.key in by_key and by_key[e.key] is not e:  # two index rows for one paper: the later one wins
-            log.warning("two catalog entries share the key %s (%s / %s)", e.key, by_key[e.key].title[:60], e.title[:60])
-        by_key[e.key] = e
+    by_key = {e.key: e for e in entries}
     matched: dict[str, Item] = {}
     unmatched: dict[str, Item] = {}
     duplicates = []

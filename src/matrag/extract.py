@@ -57,48 +57,54 @@ def normalize(text: str) -> str:
     return re.sub(r"\s+", "", text)
 
 
-_NUMBER = re.compile(
-    r"([+-]?\d+(?:\.\d+)?)(?:\(\d+\))?"  # 0.0712, with its uncertainty in brackets dropped: 0.0712(3)
-    r"(?:(?:x|×|·|\*|\\times|\\cdot)10\^?\{?([+-]?\d+)\}?|e([+-]?\d+))?"  # × 10^-22, ·10⁻²², e-22
-)
+# A number in normalized text (whitespace removed) only counts where it stands alone: no digit, "." or "<digit>,"
+# just before it, and no digit or ".<digit>" / ",<digit>" just after. So "0.07" is not found in "0.0712", "2.3"
+# not in "12.35", "96k" not in "296k".
+_BEFORE = re.compile(r"(?:\d|\.|\d,)$")
+_AFTER = re.compile(r"^(?:\d|[.,]\d)")
+_SUPERSCRIPT = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺", "0123456789-+")
+MIN_EVIDENCE = 20  # characters: a few words or a lone number "verify" against almost any passage
 
 
-def parse_number(value_text: str) -> float | None:
-    """The number a value is written as ("0.0712(3)", "1.23 × 10^-22", "1.23·10⁻²²"), or None."""
-    m = _NUMBER.match(normalize(value_text))
-    if not m:
-        return None
-    exponent = m.group(2) or m.group(3)
-    return float(m.group(1)) * 10 ** int(exponent) if exponent else float(m.group(1))
-
-
-def number_in(value_text: str, source_text: str) -> bool:
-    """Whether the value, as written, stands in the (normalized) source on its own: not part of a longer number
-    ("0.07" is not in "0.0712", "2.3" not in "12.35", "96 K" not in "296 K"). Text without a digit never is."""
+def value_in_text(value_text: str, source_text: str) -> bool:
+    """``value_text`` (as written in the paper) occurs in the normalized ``source_text`` as a whole number, not inside
+    a longer one; a value without a digit never does."""
     needle = normalize(value_text)
     if not re.search(r"\d", needle):
         return False
-    for m in re.finditer(re.escape(needle), source_text):
-        before = source_text[m.start() - 1] if m.start() else ""
-        after = source_text[m.end():m.end() + 2]
-        if before and (before.isdigit() or before == "."):
-            continue
-        if needle[-1].isdigit() and (after[:1].isdigit() or (after[:1] == "." and after[1:2].isdigit())):
-            continue
-        return True
+    start = source_text.find(needle)
+    while start != -1:
+        end = start + len(needle)
+        if not _BEFORE.search(source_text[:start]) and not _AFTER.match(source_text[end:]):
+            return True
+        start = source_text.find(needle, start + 1)
     return False
 
 
-def value_checked(value: float, value_text: str, source_text: str) -> bool:
-    """The value as written is in the source on its own, and the number recorded is that one."""
-    parsed = parse_number(value_text)
-    return number_in(value_text, source_text) and parsed is not None and math.isclose(parsed, value, rel_tol=1e-6, abs_tol=1e-12)
+def parse_value(value_text: str) -> float | None:
+    """The number a value is written as: "0.0712(3)" -> 0.0712, "1.23 × 10^-22" -> 1.23e-22, "2.5·10⁻³" -> 0.0025,
+    "1.5e-4", "−3.2" -> -3.2; None when no number can be read."""
+    t = unicodedata.normalize("NFKC", value_text).translate(_DASHES).replace("−", "-").translate(_SUPERSCRIPT)
+    t = re.sub(r"\s+", "", t).replace("−", "-")
+    m = re.match(r"([-+]?)(\d+(?:\.\d*)?|\.\d+)(?:\(\d+\))?(?:(?:[x×*·]|\\times)10\^?\{?([-+]?\d+)\}?|[eE]([-+]?\d+))?", t)
+    if not m:
+        return None
+    number = float(m.group(1) + m.group(2))
+    exponent = m.group(3) or m.group(4)
+    return number * 10 ** int(exponent) if exponent else number
 
 
-def evidence_checked(evidence: str, source_text: str) -> bool:
-    """A quote long enough to mean something (20 characters) that is in the source."""
-    quote = normalize(evidence)
-    return len(quote) >= 20 and quote in source_text
+def value_checks(record, source_text: str) -> tuple[bool, bool]:
+    """(evidence_verified, value_in_source) of an extracted record against the normalized text of its chunk.
+
+    evidence_verified: the evidence, at least MIN_EVIDENCE characters, is in the text verbatim.
+    value_in_source: value_text stands alone in the text (value_in_text) and says the same number as ``value``.
+    """
+    evidence = (record.evidence or "").strip()
+    evidence_ok = len(evidence) >= MIN_EVIDENCE and normalize(evidence) in source_text
+    parsed = parse_value(record.value_text or "")
+    same = parsed is not None and math.isclose(parsed, record.value, rel_tol=1e-6, abs_tol=1e-300)
+    return evidence_ok, same and value_in_text(record.value_text or "", source_text)
 
 
 def extract_from_node(node: BaseNode, properties: list[str], llm: LLM) -> list[ExtractedRecord]:
@@ -111,17 +117,12 @@ def extract_from_node(node: BaseNode, properties: list[str], llm: LLM) -> list[E
         text=node.get_content(),
     )
     source_text = normalize(node.get_content())
-    return [
-        ExtractedRecord(
-            **record.model_dump(),
-            doc_id=meta.get("doc_id", ""),
-            node_id=node.node_id,
-            pages=meta.get("pages", ""),
-            evidence_verified=evidence_checked(record.evidence, source_text),
-            value_in_source=value_checked(record.value, record.value_text, source_text),
-        )
-        for record in result.records
-    ]
+    out = []
+    for record in result.records:
+        evidence_ok, value_ok = value_checks(record, source_text)
+        out.append(ExtractedRecord(**record.model_dump(), doc_id=meta.get("doc_id", ""), node_id=node.node_id,
+                                   pages=meta.get("pages", ""), evidence_verified=evidence_ok, value_in_source=value_ok))
+    return out
 
 
 def candidate_nodes(

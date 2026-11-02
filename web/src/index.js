@@ -16,33 +16,32 @@ import BASIS from "../../data/rag-optics/paper_basis.json";
 // experimental / theoretical / both / review label of each paper (scripts/quality/basis.py)
 const basisOf = (docId) => (BASIS[docId]?.label !== "unknown" ? BASIS[docId]?.label : undefined);
 const PAPERS = PAPERS0.map((p) => ({ ...p, basis: basisOf(p.doc_id) }));
-import { verifyOidc } from "./oidc.js";
-import { dailySummary, feedback, logEvent, unanswered } from "./feedback.js";
-import { OWNER, giveQuota, getSettings, loginState, makeSession, sessionUser, takeQuota } from "./accounts.js";
+import { CI_REF, ciKeysFor, verifyOidc } from "./oidc.js";
+import { dailySummary, feedback, hourlyGaps, logEvent } from "./feedback.js";
+import { addLoginFailure, getSettings, giveQuota, loginFailures, loginState, makeSession, sameText, sessionUser, takePaper, takeQuota } from "./accounts.js";
+import { Counters } from "./counters.js";
 import { telegramWebhook } from "./admin.js";
 const PAGE_OUT = PAGE.replace("/*CRYSTAL_NAMES*/{}", JSON.stringify(shared.CRYSTAL_NAMES));
 
+const HOURLY = "5 * * * *"; // wrangler.toml [triggers]: the unanswered questions of the last hour
 const FEEDBACK_PER_DAY = 30; // each one is a Telegram message and a KV write
-// whole papers a non-owner account may open a day: enough to read, not to copy the full-text collection
-const PAPERS_PER_DAY = 150;
 const LOGIN_TRIES = 10; // failed logins per address and name per 15 minutes
 const PAYLOAD = [...shared.PAYLOAD_KEYS, "node_id", "text", "drive_id", "ocr", "pdf_mismatch", "basis_p"];  // basis_p: scripts/quality/passage_basis.py
 const MODES = ["hybrid", "vector", "bm25"];
 
 const json = (data, status = 200) =>
-  new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8" } });
-// the pages are never framed (clickjacking of the login or the admin's tools), no plug-ins, no foreign <base>
-const SECURITY = { "x-frame-options": "DENY", "content-security-policy": "frame-ancestors 'none'; object-src 'none'; base-uri 'none'",
-  "x-content-type-options": "nosniff", "referrer-policy": "same-origin" };
-const html = (body, status = 200) =>
-  new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow", ...SECURITY } });
-
-// constant-time comparison of two strings (the owner password): the time does not tell how many characters match
-function sameText(a, b) {
-  const x = new TextEncoder().encode(String(a)), y = new TextEncoder().encode(String(b));
-  let diff = x.length ^ y.length;
-  for (let i = 0; i < Math.max(x.length, y.length); i++) diff |= (x[i] ?? 0) ^ (y[i] ?? 0);
-  return diff === 0;
+  new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "x-content-type-options": "nosniff" } });
+// HTML pages: a Content-Security-Policy with a new nonce on every response (the page's inline scripts carry it as
+// __CSP_NONCE__), so an injected <script> or onerror= does not run; no framing (clickjacking), no referrer to the
+// sites the page links (DOI, Drive), no MIME sniffing.
+const PAGE_HEADERS = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex, nofollow",
+  "x-frame-options": "DENY", "referrer-policy": "same-origin", "x-content-type-options": "nosniff" };
+const csp = (nonce) => [`default-src 'self'`, `script-src 'self' 'nonce-${nonce}'`, `style-src 'self' 'unsafe-inline'`,
+  `img-src 'self' data: blob:`, `font-src 'self' data:`, `connect-src 'self'`, `worker-src 'self' blob:`, `object-src 'none'`,
+  `base-uri 'none'`, `form-action 'self'`, `frame-ancestors 'none'`].join("; ");
+function html(body, status = 200) {
+  const nonce = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(16))));
+  return new Response(body.replaceAll("__CSP_NONCE__", nonce), { status, headers: { ...PAGE_HEADERS, "content-security-policy": csp(nonce) } });
 }
 
 function cookie(request, name) {
@@ -50,17 +49,20 @@ function cookie(request, name) {
   return match ? match[1] : null;
 }
 
-// The signed-in account ({name, role, tabs, search, pdf, quota}; OWNER for the shared password, also in its
-// old cookie form), or null.
+// The signed-in account ({name, role, tabs, search, pdf, quota}; OWNER for the owner), from the signed session
+// cookie only (accounts.js), or null.
 async function signedIn(request, env) {
   if (!env.SITE_PASSWORD) return null;
-  // only signed sessions with an end date (the old cookie made from the password never expired)
   return sessionUser(env, cookie(request, "session"));
 }
 
 const MAINTENANCE = `<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MatRAG</title>
 <body style="font-family:Tahoma,sans-serif;display:grid;place-items:center;min-height:90vh;text-align:center;color:#334">
-<div><h2>سایت موقتاً در دست تعمیر است</h2><p>کمی بعد دوباره سر بزنید.</p><p dir="ltr">MatRAG is down for maintenance; please come back a little later.</p><p><a href="/logout">خروج / Log out</a></p></div></body></html>`;
+<div><h2>سایت موقتاً در دست تعمیر است</h2><p>کمی بعد دوباره سر بزنید.</p><p dir="ltr">MatRAG is down for maintenance; please come back a little later.</p><form method="post" action="/logout"><button>خروج / Log out</button></form></div></body></html>`;
+
+const LOGOUT = `<!doctype html><html lang="fa" dir="rtl"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MatRAG</title>
+<body style="font-family:Tahoma,sans-serif;display:grid;place-items:center;min-height:90vh;text-align:center;color:#334">
+<form method="post" action="/logout"><p>خروج از MatRAG؟ / Log out of MatRAG?</p><button>خروج / Log out</button> <a href="/">بازگشت / Back</a></form></body></html>`;
 
 async function qdrant(env, path, body) {
   const response = await fetch(`${env.QDRANT_URL}${path}`, {
@@ -73,27 +75,28 @@ async function qdrant(env, path, body) {
   return data.result;
 }
 
-// Model outputs are deterministic (temperature 0), so they are kept in KV for 90 days, keyed by
-// model + the full model input (prompt included, so an edited prompt is not served old answers): a repeated
-// question costs no Workers AI Neurons. A failing cache never fails a search.
-// keep(value): whether the value may be kept (an incomplete answer is used once, not cached for 90 days)
-// Model answers are kept in the Cache API (free and without the 1,000 writes a day of KV on the free plan, which
-// the quotas, login counters and logs need); it is per data centre, which is fine for a cache. KV where there is
-// no Cache API (tests).
-async function cached(env, model, input, compute, keep = () => true) {
-  const cache = globalThis.caches?.default;
-  if (!cache && !env.AICACHE) return compute();
+// Model outputs are deterministic (temperature 0), so they are kept for 90 days, keyed by model + the full model
+// input (prompt included, so an edited prompt is not served old answers): a repeated question costs no Workers AI
+// Neurons. A failing cache never fails a search.
+// store "cache" (used by every model call): the Cache API of the data centre, free and without limit, so KV's 1000
+// writes a day on the free plan are kept for what needs them (checked on *.workers.dev: a repeated Persian question
+// translates in 19 ms instead of 1.4 s). store "kv": Workers KV, global, for a caller that needs it.
+const CACHE_TTL = 90 * 86400;
+// keep(value): false leaves a value out of the cache (an incomplete answer, served this once only).
+async function cached(env, model, input, compute, store = "kv", keep = () => true) {
+  const cache = store === "cache" ? globalThis.caches?.default : null;
+  if (store === "kv" ? !env.AICACHE : !cache) return compute();
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${model}\n${input}`));
   const key = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-  const url = `https://matrag-cache.internal/${key}`;
-  const hit = cache ? await cache.match(url).then((r) => (r ? r.json() : null)).catch(() => null)
-    : await env.AICACHE.get(key, "json").catch(() => null);
+  const url = `https://matrag-cache.invalid/${key}`;
+  const hit = store === "kv" ? await env.AICACHE.get(key, "json").catch(() => null)
+    : await cache.match(url).then((r) => (r ? r.json() : null)).catch(() => null);
   if (hit !== null) return hit;
   const value = await compute();
   if (value === null || value === undefined || !keep(value)) return value; // nothing worth keeping (and "null" would read as a miss)
-  if (cache) await cache.put(url, new Response(JSON.stringify(value), { headers: { "content-type": "application/json", "cache-control": `max-age=${90 * 86400}` } }))
+  if (store === "kv") await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: CACHE_TTL }).catch((e) => console.log("AICACHE put", String(e)));
+  else await cache.put(url, new Response(JSON.stringify(value), { headers: { "content-type": "application/json", "cache-control": `max-age=${CACHE_TTL}` } }))
     .catch((e) => console.log("cache put", String(e)));
-  else await env.AICACHE.put(key, JSON.stringify(value), { expirationTtl: 90 * 86400 }).catch((e) => console.log("AICACHE put", String(e)));
   return value;
 }
 
@@ -104,17 +107,20 @@ async function translate(env, question) {
       messages: [{ role: "user", content: prompt }], max_tokens: 120, temperature: 0,
     });
     return cleanTranslation(out.response, question);
-  });
+  }, "cache");
 }
 
 async function scopeOf(env, question) {
-  // the prompt is part of the key: an edited prompt does not serve the old verdicts
-  return cached(env, env.TRANSLATE_MODEL, `scope\n${SCOPE_PROMPT}\n${question}`, async () => {
-    const out = await env.AI.run(env.TRANSLATE_MODEL, {
+  // the prompt is part of the key: an edited SCOPE_PROMPT must not be served the old verdicts for 90 days
+  // the large model: on the test set the 8B one turned away 8 of 200 real questions, the 70B one 2 (SCOPE_MODEL
+  // can still name another)
+  const model = env.SCOPE_MODEL || env.TRANSLATE_MODEL;
+  return cached(env, model, `scope\n${SCOPE_PROMPT}\n${question}`, async () => {
+    const out = await env.AI.run(model, {
       messages: [{ role: "system", content: SCOPE_PROMPT }, { role: "user", content: question }], max_tokens: 4, temperature: 0,
     });
     return scopeWord(out.response);
-  });
+  }, "cache");
 }
 
 async function embed(env, query) {
@@ -123,7 +129,7 @@ async function embed(env, query) {
   return cached(env, env.EMBED_MODEL, `cls\n${text}`, async () => {
     const out = await env.AI.run(env.EMBED_MODEL, { text: [text], pooling: "cls" });
     return out.data[0];
-  });
+  }, "cache");
 }
 
 // Reranking: a cross-encoder reads the question and each candidate passage together, which ranks better
@@ -166,7 +172,7 @@ async function subqBatch(env, q, texts) {
     if (r.status === 401 || r.status === 402) continue; // this key is spent or refused: the next one
     if (!r.ok) throw new Error(`SubQ ${r.status} ${(await r.text()).slice(0, 200)}`);
     const answers = (await r.json()).answers || {};
-    // a passage the model did not answer ranks last (−1), and the batch is not cached (see subqRerank)
+    // a passage SubQ did not answer for scores -1 (NaN would sort anywhere and be cached for 90 days)
     return texts.map((_, i) => { const v = Number(answers[`p${i}`]?.noul); return Number.isFinite(v) ? v : null; });
   }
   throw new Error("no SubQ key left");
@@ -178,7 +184,7 @@ async function subqRerank(env, query, points, topK) {
     const parts = [];
     for (let i = 0; i < texts.length; i += SUBQ_BATCH) parts.push(subqBatch(env, query, texts.slice(i, i + SUBQ_BATCH)));
     return (await Promise.all(parts)).flat();
-  }, (v) => v.every((x) => x !== null));
+  }, "cache", (all) => all.length === texts.length && all.every((v) => v !== null));  // only a complete answer is kept
   return points.map((p, i) => ({ ...p, score: (scores[i] ?? -1) + SUBQ_RANK_WEIGHT / (i + 1) }))
     .sort((a, b) => b.score - a.score).slice(0, topK);
 }
@@ -250,10 +256,14 @@ async function stitchTables(env, hits, neighbours) {
       return i && head && t.startsWith(head) ? t.slice(head.length).trimStart() : t;
     }).join("\n");
     h.stitched = before.length + after.length;
-    // the page view marks the whole joined table, not only the hit's rows
-    const boxes = (p) => { try { return JSON.parse(p.boxes || "[]"); } catch { return []; } };
-    const all = [...before, h, ...after].flatMap(boxes);
-    if (all.length) h.boxes = JSON.stringify(all);
+    // the parts' places on the page too, so "show on page" frames the whole table and not the hit's rows only
+    const boxes = [];
+    for (const p of [...before, h, ...after]) {
+      let b = [];
+      try { b = JSON.parse(p.boxes || "[]"); } catch { /* a part without boxes adds none */ }
+      for (const x of Array.isArray(b) ? b : []) if (!boxes.some((y) => JSON.stringify(y) === JSON.stringify(x))) boxes.push(x);
+    }
+    if (boxes.length) h.boxes = JSON.stringify(boxes);
   }
 }
 
@@ -310,6 +320,7 @@ async function search(env, opts) {
   const together = !opts.perPaper && mode !== "vector" && Boolean(vector);
   let bestCosine = mode === "vector" || !vector || together ? null
     : qdrant(env, `/collections/${env.COLLECTION}/points/query`, cosine).then((r) => r.points[0]?.score ?? 0)
+      // one signal of the relevance check: a failure leaves it out rather than failing the whole search
       .catch((e) => { console.log("cosine", String(e)); degraded.push("cosine"); return null; });
   if (mode === "bm25") {
     body = named.length
@@ -348,7 +359,6 @@ async function search(env, opts) {
   const hits = ranked.map((p, i) => ({ n: i + 1, score: p.score, label: sourceLabel(p.payload), ...p.payload, basis: basisOf(p.payload.doc_id) }));
   if (opts.stitch !== false) await stitchTables(env, hits, neighbours).catch((e) => { console.log("stitch", String(e)); degraded.push("stitch"); });
   lap("stitch");
-  // the separate cosine request failing (Qdrant busy) leaves the check without it, not the whole search failed
   const check = relevance(query, hits, mode === "vector" ? (points[0]?.score ?? 0) : await bestCosine);
   const materialsFound = crystalsIn(searchQuery ? `${question} ${searchQuery}` : question);
   check.scope = await scopeP;
@@ -409,7 +419,7 @@ function relevanceNote(r) {
   const parts = [];
   if (r.verdict === "general") return "too general: a textbook definition or a whole topic, nothing specific to look up";
   if (r.scope === "offtopic") parts.push("the question is not about optics or optical materials");
-  if (r.offTopic) parts.push(typeof r.bestCosine === "number" ? `the question is far from every passage (best cosine ${r.bestCosine.toFixed(2)})` : "the question is far from every passage");
+  if (r.offTopic) parts.push(`the question is far from every passage (best cosine ${r.bestCosine.toFixed(2)})`);
   if (r.missingMaterials.length) parts.push(`not in any source: ${r.missingMaterials.join(", ")}`);
   if (r.missingWords.length) parts.push(`words in no source: ${r.missingWords.join(", ")}`);
   return `${r.verdict === "none" ? "NO RELEVANT SOURCE FOUND" : "partial"}: ${parts.join("; ")}`;
@@ -429,15 +439,14 @@ function packFile(found) {
   return contextPack(found.question, found.hits, about, language, found.searchQuery);
 }
 
-// ---------- keys for the OCR workflow (.github/workflows/ocr.yml) on GitHub's runners
-// A runner proves which workflow it runs with GitHub's signed OIDC token; only this repository's OCR workflow
-// gets the keys, so none has to be stored in the (public) repository.
+// ---------- keys for the CI workflows (.github/workflows) on GitHub's runners
+// A runner proves which workflow and branch it runs with GitHub's signed OIDC token (oidc.js); only this
+// repository's workflows on the default branch get keys, each only the ones it needs, so none has to be stored
+// in the (public) repository. The owner's password is never among them.
 async function ciKeys(request, env) {
-  const claims = await verifyOidc((request.headers.get("authorization") || "").replace(/^Bearer /i, ""));
-  if (!claims) return json({ error: "not this repository's OCR or quality workflow" }, 403);
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`ocr-artifacts:${env.QDRANT_API_KEY}`));
-  return json({ SITE_KEY: env.SITE_PASSWORD, QDRANT_URL: env.QDRANT_URL, QDRANT_API_KEY: env.QDRANT_API_KEY, SUBQ_KEYS: env.SUBQ_KEYS || "",
-    ARTIFACT_KEY: [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("") });
+  const claims = await verifyOidc((request.headers.get("authorization") || "").replace(/^Bearer /i, ""), undefined, undefined, env.CI_REF || CI_REF);
+  if (!claims) return json({ error: "not one of this repository's CI workflows on its default branch" }, 403);
+  return json(await ciKeysFor(claims, env));
 }
 
 // A short hash of a text (FNV-1a), for the ETag of the modules served from the Worker's bundle
@@ -451,47 +460,63 @@ function etagOf(text) {
   return etags.get(text);
 }
 
+// The login form's name and password: a session cookie, or the login page again with the reason.
+async function login(request, env, ctx, name, given) {
+  // per address and name: one person mistyping behind a shared (university) address does not lock out the others.
+  // When the count cannot be read or kept, the login is refused (fail closed): a guesser must not get unlimited tries.
+  const ip = request.headers.get("cf-connecting-ip") || "?", triesKey = `loginfail:${ip}:${name.slice(0, 32) || "owner"}`;
+  const tries = await loginFailures(env, triesKey);
+  if (tries === null) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
+  if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
+  // the site makes passwords without spaces: one copied from Telegram with a trailing space or newline still works
+  given = String(given).trim();
+  const owner = Boolean(env.SITE_PASSWORD) && (!name || name === "owner") && (await sameText(given, env.SITE_PASSWORD));
+  const state = owner ? "ok" : name ? await loginState(env, name, given) : null;
+  const user = owner ? "owner" : state === "ok" ? name : null;
+  ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
+  if (user) {
+    const days = user === "owner" ? 365 : 30;
+    return new Response(null, { status: 303, headers: {
+      location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
+  }
+  // the right password of an account that ended or was stopped: say so (asking the admin), not "wrong password"
+  if (state === "expired" || state === "inactive") return html(LOGIN.replace("<!--error-->", state === "expired"
+    ? '<p class="err">اعتبار حساب شما تمام شده است؛ برای تمدید به مدیر سایت پیام بدهید. / Your account has expired; ask the site admin to extend it.</p>'
+    : '<p class="err">دسترسی این حساب قطع شده است؛ با مدیر سایت تماس بگیرید. / This account has been stopped; contact the site admin.</p>'), 403);
+  const counted = await addLoginFailure(env, triesKey, tries);
+  await new Promise((r) => setTimeout(r, 800));
+  if (!counted) return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
+  return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
+}
+
 async function handle(request, env, ctx) {
   const url = new URL(request.url);
   if (url.pathname === "/ci/keys" && request.method === "POST") return ciKeys(request, env);
   if (url.pathname === "/tg/webhook" && request.method === "POST") return telegramWebhook(request, env);
-  // A user's name and password from the form, or the owner's shared password (form without a name, or the
-  // /?key= link); the browser is then remembered (owner a year, users 30 days).
-  let given = url.searchParams.get("key"), name = "";
-  if (given === null && url.pathname === "/login" && request.method === "POST") {
-    // a body that is not a form is a failed login, not a server error
+  // A user's name and password, or the owner's password (name empty or "owner"), from the login form only (POST:
+  // a password in a URL stays in histories and logs); the browser is then remembered (owner a year, users 30 days).
+  let given = null, name = "";
+  if (url.pathname === "/login" && request.method === "POST") {
+    // a body that is no form (JSON, garbage) is a failed login, not an exception page
     const form = await request.formData().catch(() => null);
-    given = form?.get("password") ?? ""; name = String(form?.get("username") || "").trim().toLowerCase().slice(0, 64);
+    if (!form) return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 400);
+    given = String(form.get("password") ?? ""); name = String(form.get("username") || "").trim().toLowerCase();
   }
   if (given !== null) {
-    // shortcut: KV counts are eventually consistent, so a burst can pass a few more tries; fine for guessing a password
-    // per address and name: one person mistyping behind a shared (university) address does not lock out the others
-    const ip = request.headers.get("cf-connecting-ip") || "?", triesKey = `loginfail:${ip}:${name.slice(0, 32) || "owner"}`;
-    const tries = env.AICACHE ? Number(await env.AICACHE.get(triesKey).catch(() => 0)) || 0 : 0;
-    if (tries >= LOGIN_TRIES) return html(LOGIN.replace("<!--error-->", '<p class="err">تلاش‌های ناموفق زیاد بود؛ ۱۵ دقیقه‌ی دیگر دوباره امتحان کنید. / Too many failed tries; try again in 15 minutes.</p>'), 429);
-    // the site makes passwords without spaces: one copied from Telegram with a trailing space or newline still works
-    given = String(given).trim();
-    const owner = env.SITE_PASSWORD && (!name || name === "owner") && sameText(given, env.SITE_PASSWORD);
-    const state = owner ? "ok" : name ? await loginState(env, name, given) : null;
-    const user = owner ? "owner" : state === "ok" ? name : null;
-    ctx?.waitUntil(logEvent(env, user ? "login" : "failedlogin", {}, user || (name || "?").slice(0, 32).replace(/[^a-z0-9_.-]/g, "_")));
-    if (user) {
-      const days = user === "owner" ? 365 : 30;
-      return new Response(null, { status: 303, headers: {
-        location: "/", "set-cookie": `session=${await makeSession(env, user, days)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${days * 86400}` } });
+    try { return await login(request, env, ctx, name, given); } catch (e) {
+      console.log("login", String(e?.message || e));
+      return html(LOGIN.replace("<!--error-->", '<p class="err">ورود الان ممکن نیست؛ چند دقیقه‌ی دیگر امتحان کنید. / Login is unavailable right now; try again in a few minutes.</p>'), 503);
     }
-    // the right password of an account that ended or was stopped: say so (asking the admin), not "wrong password"
-    if (state === "expired" || state === "inactive") return html(LOGIN.replace("<!--error-->", state === "expired"
-      ? '<p class="err">اعتبار حساب شما تمام شده است؛ برای تمدید به مدیر سایت پیام بدهید. / Your account has expired; ask the site admin to extend it.</p>'
-      : '<p class="err">دسترسی این حساب قطع شده است؛ با مدیر سایت تماس بگیرید. / This account has been stopped; contact the site admin.</p>'), 403);
-    await env.AICACHE?.put(triesKey, String(tries + 1), { expirationTtl: 900 }).catch(() => {});
-    await new Promise((r) => setTimeout(r, 800));
-    return html(LOGIN.replace("<!--error-->", '<p class="err">نام کاربری یا رمز درست نیست. / Wrong username or password.</p>'), 401);
   }
   if (url.pathname === "/logout") {
+    // POST only: a link or an image elsewhere must not sign the reader out and wipe the page's data; a form posted
+    // from another site is refused too. A GET (an old bookmark) gets a button.
+    if (request.method !== "POST") return html(LOGOUT);
+    const origin = request.headers.get("origin");
+    if (origin && origin !== url.origin) return json({ error: "cross-site logout" }, 403);
     // what the page kept in this browser (last question, own formulas, the PDF folder handle) goes too: a shared
-    // lab computer shows the next person nothing of it
-    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; Max-Age=0",
+    // lab computer shows the next person nothing of it (the page offers the own formulas as a file first)
+    return new Response(null, { status: 303, headers: { location: "/", "set-cookie": "session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0",
       "clear-site-data": '"cache", "storage"' } });
   }
   const acc = await signedIn(request, env);
@@ -554,9 +579,12 @@ async function handle(request, env, ctx) {
       const none = !found.hits.length || found.relevance?.verdict === "none";
       // off-topic and too general questions are logged, not sent to Telegram as a gap of the collection
       const gap = none && !["offtopic", "general"].includes(found.relevance?.scope);
-      const log = logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
-        verdict: found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id }, user);
-      ctx?.waitUntil(gap ? Promise.all([log, unanswered(env, found, user)]) : log);
+      // the CI account's searches (the weekly quality run, hundreds of gold questions) are neither logged nor sent
+      const ci = Boolean(env.CI_USER) && user === env.CI_USER;
+      // a gap is logged with verdict "gap"; the hourly cron sends the hour's gaps to Telegram in one message
+      if (!ci) ctx?.waitUntil(logEvent(env, none ? "unanswered" : "search", { question: found.question, searchQuery: found.searchQuery,
+        verdict: gap ? "gap" : found.relevance?.verdict, hits: found.hits.length, top: found.hits[0]?.doc_id,
+        missing: found.relevance?.missingMaterials }, user));
       return json({ ...found, hits: noPdf(found.hits) });
     }
     if (url.pathname === "/api/feedback" && request.method === "POST") {
@@ -570,8 +598,8 @@ async function handle(request, env, ctx) {
         "content-disposition": `attachment; filename="matrag-sources-${Date.now()}.md"` } });
     }
     if (url.pathname === "/api/me") return json({ user, role: acc.role, tabs: acc.tabs, pdf: acc.pdf, search: acc.search, quota: acc.quota, banner: settings.banner || "" });
-    // the collection's lists belong to the search (a tools-only account has neither the library nor the search)
-    if ((url.pathname === "/api/facets" || url.pathname === "/api/papers") && !acc.search) return denied("search is not available on this account");
+    // the collection's lists are part of search: an account without it (tools only) does not get them
+    if (["/api/facets", "/api/papers", "/api/incollection"].includes(url.pathname) && !acc.search) return denied("search is not available on this account");
     if (url.pathname === "/api/facets") return json(await facets(env));
     if (url.pathname === "/api/papers") return json(PAPERS);
     if (url.pathname === "/api/incollection" && request.method === "POST") {
@@ -579,8 +607,7 @@ async function handle(request, env, ctx) {
     }
     if (url.pathname === "/api/paper") {
       if (!acc.search) return denied("search is not available on this account"); // the papers' full text
-      if (!(await takeQuota(env, { ...acc, quota: PAPERS_PER_DAY }, "paper")))
-        return json({ error: `daily limit of ${PAPERS_PER_DAY} papers opened reached / سقف روزانه‌ی ${PAPERS_PER_DAY} مقاله‌ی بازشده پر شد` }, 429);
+      if (!(await takePaper(env, acc))) return json({ error: "too many papers opened, please wait / تعداد مقاله‌های بازشده از سقف گذشت، کمی صبر کنید" }, 429);
       const data = await paper(env, url.searchParams.get("doc_id") || "");
       return json({ ...data, chunks: noPdf(data.chunks || []) });
     }
@@ -592,9 +619,12 @@ async function handle(request, env, ctx) {
   return json({ error: "not found" }, 404);
 }
 
+export { Counters };
+
 export default {
   fetch: handle,
   async scheduled(event, env, ctx) {
+    if (event.cron === HOURLY) return ctx.waitUntil(hourlyGaps(env, event.scheduledTime));
     ctx.waitUntil(qdrant(env, `/collections/${env.COLLECTION}`).then((info) => console.log("qdrant ok", info.points_count)));
     ctx.waitUntil(dailySummary(env));
   },

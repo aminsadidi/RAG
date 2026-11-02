@@ -1,6 +1,4 @@
 {
- "با خروج،": "Logging out deletes your",
- "فرمول یا داده‌ی خودتان در این مرورگر پاک می‌شود. اول در یک فایل ذخیره شوند؟": "own formulas/data in this browser. Save them as a file first?",
  "برای این طول موج‌ها پیکربندی تطبیق فازی نیست": "No phase-matching configuration for these wavelengths",
  "بلورهای کمیاب و پژوهشی را هم بیاور": "Include the rare and research crystals",
  "داده‌ها بار نشد (اتصال).": "The data did not load (connection).",
@@ -124,7 +122,6 @@
  "MRR سایت (ترکیبی)": "Site MRR (hybrid)",
  "MRR سایت، ترکیبی": "Site MRR, hybrid",
  "MRR کولب، ترکیبی": "Colab MRR, hybrid",
- "MRR: میانگین ۱/رتبه‌ی اولین مقاله‌ی درست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.": "MRR: mean of 1/rank of the first correct paper. recall@k: share of questions whose correct paper is in the top k results. The site has the same vectors; the difference comes from normalising chemical formulas and expanding common crystal names in the keyword search.",
  "OPO / OPA / DFG — پمپ و سیگنال (زاویه و d_eff در هر سه یکی است)": "OPO / OPA / DFG — pump and signal (angle and d_eff are the same for all three)",
  "PDF اشتباه در مجموعه": "Wrong PDF in collection",
  "PDF باز نشد:": "PDF did not open:",
@@ -773,5 +770,12 @@
  "(در این سایت:": "(on this site:",
  "این ماده نه در refractiveindex.info هست و نه فرمولی از مقاله‌های مجموعه برایش ثبت شده.": "This material is neither in refractiveindex.info nor has a formula from the collection's papers.",
  "» در این سایت با نام": "» is kept on this site as",
- "» در فهرست این ابزار نیست": "» is not in this tool's list"
+ "» در فهرست این ابزار نیست": "» is not in this tool's list",
+ "خروج همه‌ی چیزهایی را که این صفحه در این مرورگر نگه داشته پاک می‌کند، از جمله": "Logging out clears everything this page kept in this browser, including",
+ "فرمول ضریب شکستی که خودتان وارد کرده‌اید.": "refractive-index formulas you entered yourself.",
+ "دانلود فرمول‌ها و خروج": "Download the formulas and log out",
+ "خروج بدون دانلود": "Log out without downloading",
+ "MRR (در سطح بخش، با بررسی صفحه، بدون برش در ۱۰): میانگین ۱/رتبه‌ی اولین بخشِ درست؛ با MRR@10 مقاله‌ای گزارش‌های کیفیت جست‌وجو قابل مقایسه نیست. recall@k: سهم سؤال‌هایی که مقاله‌ی درست در k نتیجه‌ی اول آمده. سایت همان بردارها را دارد؛ تفاوت از یکسان‌سازی فرمول‌های شیمیایی و گسترش نام‌های رایج بلورها در جست‌وجوی کلیدواژه است.": "MRR (chunk level, page-checked, not cut at 10): mean of 1/rank of the first correct chunk; not comparable with the paper-level MRR@10 of the search-quality reports. recall@k: share of questions whose correct paper is in the top k results. The site has the same vectors; the difference comes from normalising chemical formulas and expanding common crystal names in the keyword search.",
+ "dn/dT برای": "dn/dT at",
+ "اندازه‌گیری نشده؛ از نزدیک‌ترین بازه‌ی اندازه‌گیری برون‌یابی شده است": "was not measured; extrapolated from the nearest measured range"
 }

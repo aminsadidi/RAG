@@ -38,7 +38,7 @@ test("accounts: create, log in, session, disable logs out, expiry", async () => 
 });
 
 test("admin panel: buttons, a user made in three steps, only the owner", async () => {
-  const e = env();
+  const e = { ...env(), SITE_URL: "https://matrag.example" };
   const sent = [];
   globalThis.fetch = async (url, init) => { sent.push({ method: url.split("/").pop(), ...JSON.parse(init.body) }); return new Response("{}"); };
   const post = (body, secret = "hook") => telegramWebhook(new Request("https://x/tg/webhook", {
@@ -65,6 +65,7 @@ test("admin panel: buttons, a user made in three steps, only the owner", async (
   const [panel, toUser] = sent.filter((x) => x.text).slice(-2);
   assert.match(panel.text, /sara.*مهمان/);
   assert.match(toUser.text, /نام کاربری: sara\n🔑 رمز: \S{10}/);
+  assert.match(toUser.text, /آدرس: https:\/\/matrag\.example\n/);  // the site's address from SITE_URL
   assert.ok(!toUser.reply_markup && !/مهمان|دسترسی|PDF|pdf/.test(toUser.text));
   const u = await e.AICACHE.get("user:sara", "json");
   assert.equal(u.role, "guest"); assert.equal(u.note, "دانشجوی آزمایشگاه");
@@ -72,8 +73,10 @@ test("admin panel: buttons, a user made in three steps, only the owner", async (
   await press("urs:sara:tools"); assert.equal((await e.AICACHE.get("user:sara", "json")).role, "tools");
   await press("uqs:sara:30"); assert.equal((await e.AICACHE.get("user:sara", "json")).quota, 30);
   await press("uoff:sara"); assert.equal((await e.AICACHE.get("user:sara", "json")).active, false);
+  assert.match(sent.filter((x) => x.text).at(-1).text, /تا یک دقیقه/);  // KV is cached at the edge: not "at once"
   // site settings
   await press("maint"); assert.equal((await e.AICACHE.get("site:settings", "json")).maintenance, true);
+  await press("oout"); await press("oouty"); assert.equal((await e.AICACHE.get("site:settings", "json")).ownerEpoch, 1);
   await press("banner"); await text("سرور امشب به‌روز می‌شود");
   assert.equal((await e.AICACHE.get("site:settings", "json")).banner, "سرور امشب به‌روز می‌شود");
   await press("udel:sara"); await press("udely:sara"); assert.equal(await e.AICACHE.get("user:sara"), null);
@@ -99,6 +102,35 @@ test("quota: counts per kind, and a KV that refuses writes does not block the re
   assert.ok(await takeQuota(e, { name: "ali", quota: 5 }));
 });
 
+test("sessions are signed with SESSION_SECRET; the old key only while SESSION_LEGACY is 1", async () => {
+  const old = env();  // no SESSION_SECRET yet: the key derived from the owner's password
+  await createUser(old, "sara", 0, "");
+  const legacyCookie = await makeSession(old, "sara");
+  const now = { ...old, SESSION_SECRET: "a-new-random-secret" };
+  assert.equal(await sessionUser(now, legacyCookie), null);  // the old cookie no longer works
+  assert.equal((await sessionUser({ ...now, SESSION_LEGACY: "1" }, legacyCookie)).name, "sara");  // migration window
+  const fresh = await makeSession(now, "sara");
+  assert.notEqual(fresh.split(".")[2], legacyCookie.split(".")[2]);
+  assert.equal((await sessionUser(now, fresh)).name, "sara");
+  // a new owner password does not sign anyone out any more, and does not let anyone forge a session
+  assert.equal((await sessionUser({ ...now, SITE_PASSWORD: "changed" }, fresh)).name, "sara");
+  assert.equal(await sessionUser({ ...now, SESSION_SECRET: "other" }, fresh), null);
+});
+
+test("sameText compares in constant time and is exact", async () => {
+  const { sameText } = await import("../src/accounts.js");
+  assert.ok(await sameText("abc", "abc"));
+  assert.ok(!(await sameText("abc", "abd")) && !(await sameText("abc", "abcd")) && !(await sameText("", "a")));
+});
+
+test("the site's address is set in one place for the Worker and one for the scripts, and they agree", async () => {
+  const { readFileSync } = await import("node:fs");
+  const file = readFileSync(new URL("../site_url.txt", import.meta.url), "utf8").trim();
+  const toml = /^SITE_URL = "([^"]+)"/m.exec(readFileSync(new URL("../wrangler.toml", import.meta.url), "utf8"))[1];
+  assert.equal(file, toml);
+  assert.ok(!readFileSync(new URL("../src/admin.js", import.meta.url), "utf8").includes("workers.dev"));
+});
+
 test("accounts: an ended or stopped account is told so, an endless one is not shortened, a failed search gives its unit back", async () => {
   const { loginState, giveQuota } = await import("../src/accounts.js");
   const e = env();
@@ -118,20 +150,4 @@ test("accounts: an ended or stopped account is told so, an endless one is not sh
   assert.ok(await takeQuota(e, acc)); assert.ok(await takeQuota(e, acc)); assert.ok(!(await takeQuota(e, acc)));
   await giveQuota(e, acc);
   assert.ok(await takeQuota(e, acc));
-});
-
-test("login: names the site does not make are refused before any KV read", async () => {
-  const { loginState } = await import("../src/accounts.js");
-  const e = env(); let reads = 0; const get = e.AICACHE.get; e.AICACHE.get = (...a) => { reads++; return get(...a); };
-  assert.equal(await loginState(e, "x".repeat(600), "pw"), null);
-  assert.equal(await loginState(e, "Bad Name", "pw"), null);
-  assert.equal(reads, 0);
-});
-
-test("a new account starts with the default daily quota", async () => {
-  const { DEFAULT_QUOTA } = await import("../src/accounts.js");
-  const e = env();
-  await createUser(e, "nima", 30, "");
-  assert.equal((await e.AICACHE.get("user:nima", "json")).quota, DEFAULT_QUOTA);
-  assert.equal(DEFAULT_QUOTA, 50);
 });

@@ -8,6 +8,7 @@ Run with ``matrag app`` (local) or from the Colab notebook.
 
 import os
 import re
+import secrets
 from datetime import datetime
 from pathlib import Path
 
@@ -336,7 +337,8 @@ def run_formulas(corpus, provider, doc_ids, progress=gr.Progress()):
              "T (K)": r.formula.temperature_K or ("T-dependent" if r.formula.temperature_dependent else "-"),
              "source": r.source, "pages": r.pages, "coefficients in source": f"{r.numbers_in_source:.0%}",
              "problems": "; ".join(r.problems) or "✓",
-             "max |Δn| vs refractiveindex.info": "-" if r.reference_max_dn is None else f"{r.reference_max_dn:.2e}"}
+             "max |Δn| vs refractiveindex.info": "-" if r.reference_max_dn is None
+             else f"{r.reference_max_dn:.2e}" + (" (other axis)" if r.reference_any_axis else "")}
             for i, r in enumerate(records)]
     path = _results_path(ws, "formulas", "formulas", ".jsonl")
     save_formulas(records, path)
@@ -587,8 +589,21 @@ def _free_port(preferred: int, tries: int = 20) -> int:
     raise OSError(f"No free port in {preferred}-{preferred + tries - 1}")
 
 
-def launch(port: int = 7860, share: bool = False, **kwargs) -> int:
-    """Start the app and return the port it runs on."""
+def share_auth(share: bool, auth=None):
+    """The login for a public link: anyone with a *.gradio.live link could otherwise use the app (and the LLM keys
+    behind it). MATRAG_APP_USER / MATRAG_APP_PASSWORD when set, else user "matrag" with a new random password,
+    printed once. None when the app is not shared (local or Colab-internal use needs no login)."""
+    if auth is not None or not share:
+        return auth
+    user = os.environ.get("MATRAG_APP_USER") or "matrag"
+    password = os.environ.get("MATRAG_APP_PASSWORD") or secrets.token_urlsafe(9)
+    if not os.environ.get("MATRAG_APP_PASSWORD"):
+        print(f"Public link login: user {user}, password {password}  /  ورود به لینک عمومی: نام {user}، رمز {password}")
+    return (user, password)
+
+
+def launch(port: int = 7860, share: bool = False, auth=None, **kwargs) -> int:
+    """Start the app and return the port it runs on. A shared (public) app always asks for a login (share_auth)."""
     # Re-running the launch (e.g. the Colab cell) first stops the previous app;
     # if something else still holds the port, the next free one is used.
     gr.close_all()
@@ -597,12 +612,6 @@ def launch(port: int = 7860, share: bool = False, **kwargs) -> int:
     results.mkdir(parents=True, exist_ok=True)
     # Gradio only serves files from the working and temp folders unless told otherwise;
     # in Colab the results live on Google Drive.
-    # a public share link (share=True) lets anyone in the world use the app and its LLM keys: it needs a login
-    if share and "auth" not in kwargs:
-        user, password = os.environ.get("MATRAG_APP_USER"), os.environ.get("MATRAG_APP_PASSWORD")
-        if not (user and password):
-            raise SystemExit("share=True needs a login: set MATRAG_APP_USER and MATRAG_APP_PASSWORD")
-        kwargs["auth"] = (user, password)
-    build_app().queue().launch(server_port=port, share=share, theme=gr.themes.Soft(), css=CSS,
+    build_app().queue().launch(server_port=port, share=share, auth=share_auth(share, auth), theme=gr.themes.Soft(), css=CSS,
                                allowed_paths=[str(results)], **kwargs)
     return port

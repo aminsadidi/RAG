@@ -16,21 +16,44 @@ directory = "./public"
 binding = "AICACHE"
 id = "3ef1d04b9af6433f90e76bb70c4278b8"
 
+# Counters with a limit (daily quotas, failed logins): one SQLite Durable Object (src/counters.js), as KV's
+# 1000 writes a day on the free plan are too few for them.
+[[durable_objects.bindings]]
+name = "COUNTERS"
+class_name = "Counters"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Counters"]
+
+# The event log (searches, feedback, logins; src/feedback.js) in D1. Until this block is enabled the log stays in
+# KV. To enable: npx wrangler d1 create matrag-logs, put its id below, uncomment, then
+# npx wrangler d1 migrations apply matrag-logs --remote
+# [[d1_databases]]
+# binding = "LOGS"
+# database_name = "matrag-logs"
+# database_id = "<id from wrangler d1 create>"
+# migrations_dir = "migrations"
+
 [[services]]
 binding = "PDFS"
 service = "matrag-pdfs"
 
 [vars]
+# the site's address (messages to users); the scripts read web/site_url.txt. Change both with a custom domain.
+SITE_URL = "https://matrag.ethanjamescarter1995.workers.dev"
 COLLECTION = "rag-optics"
 TRANSLATE_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+# SCOPE_MODEL (optional): another model for the one-word scope check; unset, TRANSLATE_MODEL does it
 EMBED_MODEL = "@cf/baai/bge-base-en-v1.5"
 RERANK_MODEL = "@cf/baai/bge-reranker-base"
 
 # Secrets (npx wrangler secret put NAME): QDRANT_URL, QDRANT_API_KEY, SITE_PASSWORD
 
-# Qdrant Cloud suspends a free cluster after a week without requests: one request a day keeps it up.
+# Daily: Qdrant Cloud suspends a free cluster after a week without requests (one request a day keeps it up), and the
+# day's summary. Hourly (HOURLY in src/index.js): the last hour's unanswered questions in one Telegram message.
 [triggers]
-crons = ["17 6 * * *"]
+crons = ["17 6 * * *", "5 * * * *"]
 
 [[rules]]
 type = "Text"

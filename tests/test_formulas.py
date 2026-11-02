@@ -62,6 +62,10 @@ def test_extraction_checks_and_reference_comparison():
     other_axis = EntryData(entry, "o", (0.188, 5.2), 2, [0, 0.90291, 0.003926, 0.83155, 0.018786, 0.76536, 60.01], [])
     compare_with_reference(record, [other_axis, same])
     assert record.reference_max_dn < 1e-9  # matched the e-ray entry, identical coefficients
+    assert not record.reference_any_axis
+    # only an entry for the other axis: still compared, but flagged
+    compare_with_reference(record, [other_axis])
+    assert record.reference_max_dn > 1e-3 and record.reference_any_axis
 
 
 def test_deduplicate_keeps_best_supported_copy():

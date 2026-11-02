@@ -158,9 +158,9 @@ def build_context_pack(
     file. The prompt is the same one ``answer_with_rag`` sends, so answers
     obtained either way are comparable.
     """
-    # Chat apps turn "[2]" into their own file-citation widget, which hides the
-    # page; asking for plain-text citations keeps them visible.
-    rules = ["Write citations as plain text with the page, e.g. (Source 2, p. 5), not as links or footnotes."]
+    # Chat apps turn citations into their own file-citation widget, which hides
+    # the page; asking for plain-text citations keeps them visible.
+    rules = ["Write citations as plain text, not as links or footnotes."]
     rules += _language_rules(language)
     about_lines = "\n".join(f"- {key}: {value}" for key, value in about.items())
     references = dict.fromkeys(n.metadata.get("reference") or n.metadata.get("doc_id", "?") for n in nodes)

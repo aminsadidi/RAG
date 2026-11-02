@@ -11,7 +11,7 @@ from pathlib import Path
 from docling_core.types.doc import DoclingDocument, Size
 from llama_index.core.schema import MetadataMode
 
-from common import DATA, full_text_points, listed, quality, swap_points
+from common import DATA, full_text_points, listed, quality, replace_points
 from matrag import qdrant_store
 from matrag.config import Settings
 from matrag.index import make_embed_model
@@ -64,12 +64,7 @@ for doc_id, paper in sorted(plan["papers"].items()):
             texts = [n.get_content(metadata_mode=MetadataMode.EMBED) for n in nodes]
             vectors = embed.get_text_embedding_batch(texts, show_progress=False)
             points = list(qdrant_store.iter_points(nodes, {n.node_id: v for n, v in zip(nodes, vectors)}))
-            for p in points:
-                if ref.get("drive_id"):
-                    p.payload["drive_id"] = ref["drive_id"]
-                if paper["mode"] == "ocr":
-                    p.payload["ocr"] = True
-            swap_points(qc, old, points)  # new text first, then the old points not replaced
+            replace_points(qc, doc_id, points, old, ocr=paper["mode"] == "ocr")
             row["replaced"] = True
     report[doc_id] = row
     print(doc_id, row, flush=True)

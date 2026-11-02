@@ -1,5 +1,6 @@
-// Feedback from the site and questions it could not answer: kept in KV (log:<time>, 180 days) and sent to the
-// owner's Telegram (bot TELEGRAM_TOKEN, chat TELEGRAM_CHAT_ID; both optional secrets), with a daily summary.
+// Feedback from the site and questions it could not answer: kept in the D1 database LOGS (migrations/; in KV,
+// log:<time>, while that binding is missing), 180 days, and sent to the owner's Telegram (bot TELEGRAM_TOKEN, chat TELEGRAM_CHAT_ID; both optional secrets): feedback at once,
+// unanswered questions once an hour, and a daily summary.
 const DAY = 86400;
 const clip = (s, n) => String(s ?? "").replace(/\s+/g, " ").trim().slice(0, n);
 
@@ -13,24 +14,38 @@ export async function telegram(env, text) {
   return r.ok;
 }
 
-// log:<time>:<kind>:<user>:<random>, with the question in the metadata, so the admin bot reads a user's
-// activity from one listing (no value reads).
+const KEEP_DAYS = 180;
+
+// One event. In D1 a row (a KV listing of every log: key, which the admin panel and the daily summary read, grew to
+// 180 days of keys and each event was a KV write); in KV log:<time>:<kind>:<user>:<random>, with the question in
+// the metadata, so the admin bot reads a user's activity from one listing (no value reads).
 export async function logEvent(env, kind, data, user = "?") {
+  const time = new Date().toISOString(), q = clip(data.question || data.comment || "", 180), v = clip(data.verdict || "", 20);
+  if (env.LOGS) {
+    await env.LOGS.prepare("INSERT INTO logs (time, kind, user, q, v, data) VALUES (?, ?, ?, ?, ?, ?)")
+      .bind(time, kind, String(user), q, v, JSON.stringify({ kind, user, ...data })).run().catch((e) => console.log("log insert", String(e)));
+    return;
+  }
   if (!env.AICACHE) return;
-  const key = `log:${new Date().toISOString()}:${kind}:${user}:${crypto.randomUUID().slice(0, 8)}`;
-  await env.AICACHE.put(key, JSON.stringify({ kind, user, ...data }), { expirationTtl: 180 * DAY,
-    metadata: { q: clip(data.question || data.comment || "", 180), v: clip(data.verdict || "", 20) } }).catch((e) => console.log("log put", String(e)));
+  const key = `log:${time}:${kind}:${user}:${crypto.randomUUID().slice(0, 8)}`;
+  await env.AICACHE.put(key, JSON.stringify({ kind, user, ...data }), { expirationTtl: KEEP_DAYS * DAY,
+    metadata: { q, v } }).catch((e) => console.log("log put", String(e)));
 }
 
-// Logged events since an ISO time, oldest first: {time, kind, user, q, v}.
-export async function listLogs(env, since = "") {
+// Logged events since an ISO time, oldest first: {time, kind, user, q, v}; `user`: only that user's.
+export async function listLogs(env, since = "", { user } = {}) {
+  if (env.LOGS) {
+    const { results } = await env.LOGS.prepare(`SELECT time, kind, user, q, v FROM logs WHERE time >= ?${user ? " AND user = ?" : ""} ORDER BY time, id`)
+      .bind(...(user ? [since, user] : [since])).all();
+    return results;
+  }
   const out = [];
   let cursor;
   do {
     const page = await env.AICACHE.list({ prefix: "log:", cursor });
     for (const k of page.keys) {
       const m = /^log:(.+Z):([a-z]+):(?:([^:]+):)?[0-9a-f]{8}$/.exec(k.name);
-      if (m && m[1] >= since) out.push({ time: m[1], kind: m[2], user: m[3] || "?", q: k.metadata?.q || "", v: k.metadata?.v || "" });
+      if (m && m[1] >= since && (!user || (m[3] || "?") === user)) out.push({ time: m[1], kind: m[2], user: m[3] || "?", q: k.metadata?.q || "", v: k.metadata?.v || "" });
     }
     cursor = page.list_complete ? undefined : page.cursor;
   } while (cursor);
@@ -51,30 +66,39 @@ export async function feedback(env, body, user = "?") {
   return { ok: true };
 }
 
-// A search the collection could not answer, sent right away.
-export async function unanswered(env, found, user = "?") {
-  await telegram(env, ["❓ سؤال بی‌جواب — MatRAG", `کاربر: ${user}`, `سؤال: ${clip(found.question, 500)}`,
-    found.searchQuery && found.searchQuery !== found.question && `ترجمه: ${clip(found.searchQuery, 300)}`,
-    found.relevance?.missingMaterials?.length && `ماده‌ی پیدا نشده: ${found.relevance.missingMaterials.join(", ")}`].filter(Boolean).join("\n"));
+// The questions the collection could not answer (logged as unanswered with verdict "gap"), one Telegram message an
+// hour (the worker's hourly cron) instead of one per search: those of the previous full hour, so a late or
+// repeated run reports each once. Returns how many there were.
+export const GAPS_LISTED = 30;
+export async function hourlyGaps(env, now = Date.now()) {
+  if (!env.LOGS && !env.AICACHE) return 0;
+  const hour = Math.floor(now / 3600000) * 3600000;
+  const start = new Date(hour - 3600000).toISOString(), end = new Date(hour).toISOString();
+  const gaps = (await listLogs(env, start)).filter((e) => e.kind === "unanswered" && e.v === "gap" && e.time < end);
+  if (gaps.length) {
+    await telegram(env, [`❓ ${gaps.length} سؤال بی‌جواب در ساعت گذشته — MatRAG`, ...gaps.slice(0, GAPS_LISTED).map((e) => `• ${e.user}: ${e.q}`),
+      gaps.length > GAPS_LISTED && `… و ${gaps.length - GAPS_LISTED} سؤال دیگر (پنل: سؤال‌های بی‌جواب)`].filter(Boolean).join("\n"));
+  }
+  return gaps.length;
 }
 
-// The last day's searches and feedback, once a day (the worker's cron).
+// The last day's searches and feedback, once a day (the worker's cron); in D1 the rows past 180 days go too.
 export async function dailySummary(env) {
-  if (!env.AICACHE) return;
+  if (!env.LOGS && !env.AICACHE) return;
   const since = new Date(Date.now() - DAY * 1000).toISOString();
   const counts = { search: 0, none: 0, feedback: 0 };
-  let cursor;
-  do {
-    const page = await env.AICACHE.list({ prefix: "log:", cursor });
-    for (const k of page.keys) {
-      const [, time, kind] = k.name.match(/^log:(.+Z):([a-z]+):/) || [];
-      if (!time || time < since) continue;
-      if (kind === "search") counts.search += 1;
-      if (kind === "unanswered") { counts.search += 1; counts.none += 1; }
-      if (kind === "feedback") counts.feedback += 1;
-    }
-    cursor = page.list_complete ? undefined : page.cursor;
-  } while (cursor);
+  const byKind = {};
+  if (env.LOGS) {
+    await env.LOGS.prepare("DELETE FROM logs WHERE time < ?").bind(new Date(Date.now() - KEEP_DAYS * DAY * 1000).toISOString()).run()
+      .catch((e) => console.log("log cleanup", String(e)));
+    const { results } = await env.LOGS.prepare("SELECT kind, COUNT(*) AS n FROM logs WHERE time >= ? GROUP BY kind").bind(since).all();
+    for (const r of results) byKind[r.kind] = r.n;
+  } else {
+    for (const e of await listLogs(env, since)) byKind[e.kind] = (byKind[e.kind] || 0) + 1;
+  }
+  counts.search = (byKind.search || 0) + (byKind.unanswered || 0);
+  counts.none = byKind.unanswered || 0;
+  counts.feedback = byKind.feedback || 0;
   if (counts.search || counts.feedback) {
     await telegram(env, `📊 MatRAG در ۲۴ ساعت گذشته\nجست‌وجو: ${counts.search}\nبی‌جواب: ${counts.none}\nبازخورد: ${counts.feedback}`);
   }

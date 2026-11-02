@@ -4,7 +4,7 @@ kept, and SubQ judges each paper that is not an accepted answer: does its best p
 data for this crystal? Papers it finds likely (p > 0.8) are listed for a person to check and, when they do
 answer, to add to the question's accepted answers (the score then counts them).
 
-    python scripts/quality/data_eval.py        (SITE_KEY or MATRAG_COOKIES, and SUBQ_KEYS, in the environment)
+    python scripts/quality/data_eval.py        (SITE_USER and SITE_PASS, or MATRAG_COOKIES, and SUBQ_KEYS, in the environment)
 
 Writes reports/data-eval-<date>.md, .json and data-alternatives-<date>.csv (ids and scores only; with PRIVATE_DIR
 set, the judged passages go to PRIVATE_DIR/data-alternatives-<date>.json, outside the public repository).
@@ -22,11 +22,12 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
+import site_login  # noqa: E402
 import subq  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).parent / "reports"
-BASE = os.environ.get("SITE_URL", "https://matrag.ethanjamescarter1995.workers.dev")
+BASE = os.environ.get("SITE_URL") or (ROOT / "web" / "site_url.txt").read_text().strip()
 rows = list(csv.DictReader(open(ROOT / "data/rag-optics/gold/data_questions.csv", encoding="utf-8")))
 # papers that also answer, found by SubQ and read by a person (data_alternatives.csv): accepted as well
 ALT = {}
@@ -36,12 +37,10 @@ for a in csv.DictReader(open(ROOT / "data/rag-optics/gold/data_alternatives.csv"
 if os.environ.get("MATRAG_COOKIES"):
     jar = http.cookiejar.MozillaCookieJar(os.environ["MATRAG_COOKIES"])
     jar.load(ignore_discard=True, ignore_expires=True)
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
+    op.addheaders = [("User-Agent", "matrag-quality/1")]
 else:
-    jar = http.cookiejar.CookieJar()
-op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
-op.addheaders = [("User-Agent", "matrag-quality/1")]
-if not os.environ.get("MATRAG_COOKIES"):
-    op.open(f"{BASE}/?key={os.environ['SITE_KEY']}").read()
+    op = site_login.login(BASE)
 
 WHAT = {"data-sellmeier": "a dispersion (Sellmeier) formula or measured refractive indices",
         "data-dndt": "the temperature dependence of the refractive indices (dn/dT values or a thermo-optic formula)",
