@@ -89,6 +89,40 @@ h2{font-size:18px;margin:0 0 10px}h3{font-size:16px;margin:18px 0 8px}
 #schema{width:min(560px,100%);aspect-ratio:1/1.3;position:relative;background:#fff;border:1px solid var(--line)}
 #schema .box{position:absolute;background:var(--hl);border:2px solid var(--hl-line)}
 #viewer .note{padding:8px 14px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+/* the viewer's loader: an Nd:YAG beam doubled in a nonlinear crystal; the phase mismatch closes as the paper arrives */
+.vwait{width:min(660px,100%);align-self:flex-start;display:flex;flex-direction:column;gap:10px}
+.vload{--ir:#e5484d;--gr:#2fd16d;--xt:#8cc8ff;background:linear-gradient(180deg,#0e1622,#121c2b);color:#cfd8e3;border-radius:14px;padding:14px 16px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);border:1px solid #223047}
+.vload svg{display:block;width:100%;height:auto;direction:ltr}
+.vload .holes circle{fill:#1f2b3d}
+.vload .vl-head rect{fill:#2a3a52;stroke:#3d5273}.vload .vl-head .fin{fill:#33465f}
+.vload .vl-led{fill:var(--ir);animation:vlBlink 1.2s ease-in-out infinite}
+.vload text{font:600 10px ui-monospace,Consolas,monospace;fill:#8fa3bb}
+.vload .lbl-ir{fill:var(--ir)}.vload .lbl-gr{fill:var(--gr)}
+.vload .beam{stroke-linecap:round;fill:none}
+.vload .ir{stroke:var(--ir);stroke-width:2.6;stroke-dasharray:3 9;animation:vlFlow .45s linear infinite}
+.vload .ir-glow{stroke:var(--ir);stroke-width:9;opacity:.22;filter:url(#vlBlur)}
+.vload .gr{stroke:var(--gr);stroke-width:2.6;stroke-dasharray:3 7;animation:vlFlow .32s linear infinite}
+.vload .gr-glow{stroke:var(--gr);stroke-width:10;opacity:.3;filter:url(#vlBlur)}
+.vload .vl-xtal{transform-box:fill-box;transform-origin:center;animation:vlTune 2.6s ease-in-out infinite}
+.vload.matched .vl-xtal{animation:none}
+.vload .vl-xtal polygon{fill:url(#vlXtal);stroke:var(--xt);stroke-width:1.2}
+.vload .vl-xtal .axis{stroke:var(--xt);stroke-width:.8;stroke-dasharray:2 3;opacity:.7}
+.vload .mirror{stroke:#c9d6e6;stroke-width:3;stroke-linecap:round}
+.vload .dump{fill:#1a2433;stroke:#3d5273}
+.vload .vl-page path{fill:#e9eef5;stroke:#9fb2c8}.vload .vl-page .ln{stroke:#b6c3d3;stroke-width:1.4}
+.vload .vl-page .lit{fill:var(--gr);opacity:0;transition:opacity .4s}
+.vload .sinc{fill:none;stroke:#5d7391;stroke-width:1.3}.vload .sinc-axis{stroke:#2c3b52}
+.vload .dot{fill:#ffd166;filter:drop-shadow(0 0 4px #ffd166)}
+.vload .vl-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-top:6px;flex-wrap:wrap}
+.vload .vl-row b{font-weight:600;color:#e8eef6;font-size:14px}
+.vload .vl-row span{font:12px ui-monospace,Consolas,monospace;color:#8fa3bb;direction:ltr}
+.vload .vl-bar{direction:ltr;height:4px;border-radius:3px;background:#1f2b3d;margin-top:8px;overflow:hidden}
+.vload .vl-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ir),#ffb347,var(--gr));border-radius:3px;transition:width .35s ease}
+.vload .vl-hint{font-size:12px;color:#8fa3bb;margin-top:6px}
+@keyframes vlFlow{to{stroke-dashoffset:-12}}
+@keyframes vlBlink{50%{opacity:.25}}
+@keyframes vlTune{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){.vload *{animation:none!important;transition:none!important}}
 .paperchunk{border-top:1px solid var(--line);padding:10px 0}
 .paperchunk.sel .text{outline:2px solid var(--hl-line)}
 .pill{font-size:12px;color:var(--muted)}
@@ -1301,21 +1335,95 @@ $("vprev").onclick = () => { if (V.doc && V.page > 1) { V.page--; drawPage(); } 
 $("vnext").onclick = () => { if (V.doc && V.page < V.doc.numPages) { V.page++; drawPage(); } };
 $("vzoom").onclick = () => { V.zoom = V.zoom > 2 ? 1.1 : V.zoom + 0.5; drawPage(); };
 
+// The loader of the page viewer. A 1064 nm beam is doubled to 532 nm in a χ⁽²⁾ crystal: as the paper arrives, the
+// phase mismatch ΔkL/2 closes (the dot runs down the sinc² curve to its peak), the green grows as sinc², its beam
+// reaches further, and the page lights when it is drawn. A dichroic mirror sends the leftover infrared to a beam dump.
+const VL = { p: 0, target: 0, raf: 0 };
+const sinc2 = (x) => (Math.abs(x) < 1e-6 ? 1 : (Math.sin(x) / x) ** 2);
+function viewerLoader() {
+  const holes = [];
+  for (let x = 20; x < 560; x += 28) for (let y = 16; y < 176; y += 28) holes.push(`<circle cx="${x}" cy="${y}" r="1.6"/>`);
+  // sinc²(ΔkL/2) for ΔkL/2 in [−2π, 2π], under the crystal
+  const curve = []; for (let i = 0; i <= 120; i++) { const u = -2 * Math.PI + (4 * Math.PI * i) / 120; curve.push(`${(232 + i * 0.9).toFixed(1)},${(170 - 34 * sinc2(u)).toFixed(1)}`); }
+  return `<div class="vload" id="vload" role="status" aria-live="polite">
+  <svg viewBox="0 0 560 182" aria-hidden="true">
+    <defs>
+      <linearGradient id="vlXtal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ad9ff" stop-opacity=".55"/><stop offset="1" stop-color="#4f7fe0" stop-opacity=".18"/></linearGradient>
+      <filter id="vlBlur" x="-20%" y="-300%" width="140%" height="700%"><feGaussianBlur stdDeviation="2.4"/></filter>
+      <clipPath id="vlReach"><rect id="vlReachR" x="0" y="0" width="0" height="182"/></clipPath>
+    </defs>
+    <g class="holes">${holes.join("")}</g>
+    <g class="vl-head"><rect x="16" y="56" width="96" height="36" rx="6"/><rect class="fin" x="24" y="50" width="6" height="6"/><rect class="fin" x="36" y="50" width="6" height="6"/><rect class="fin" x="48" y="50" width="6" height="6"/>
+      <circle class="vl-led" cx="28" cy="74" r="3.2"/><text x="40" y="72">Nd:YAG</text><text class="lbl-ir" x="40" y="84">1064 nm</text></g>
+    <line class="beam ir-glow" x1="112" y1="74" x2="258" y2="74"/><line class="beam ir" x1="112" y1="74" x2="258" y2="74"/>
+    <g class="vl-xtal"><polygon points="262,50 316,50 310,98 256,98"/><line class="axis" x1="270" y1="94" x2="302" y2="54"/></g>
+    <text x="268" y="44">χ⁽²⁾</text>
+    <g clip-path="url(#vlReach)">
+      <line class="beam ir-glow" id="vlres" x1="312" y1="71" x2="420" y2="71"/><line class="beam ir" id="vlres2" x1="312" y1="71" x2="420" y2="71"/>
+      <line class="beam ir" x1="420" y1="71" x2="420" y2="26" style="opacity:.55"/>
+      <line class="beam gr-glow" id="vlgr" x1="312" y1="74" x2="498" y2="74"/><line class="beam gr" id="vlgr2" x1="312" y1="74" x2="498" y2="74"/>
+    </g>
+    <line class="mirror" x1="410" y1="84" x2="430" y2="64"/><text x="398" y="104">DM</text>
+    <rect class="dump" x="406" y="8" width="28" height="18" rx="3"/><text x="440" y="21">dump</text>
+    <text class="lbl-gr" x="446" y="64">532 nm</text>
+    <g class="vl-page"><path d="M502 40h30l12 12v52h-42z"/><path class="lit" id="vllit" d="M502 40h30l12 12v52h-42z"/>
+      <line class="ln" x1="508" y1="58" x2="536" y2="58"/><line class="ln" x1="508" y1="66" x2="538" y2="66"/><line class="ln" x1="508" y1="74" x2="532" y2="74"/><line class="ln" x1="508" y1="82" x2="538" y2="82"/><line class="ln" x1="508" y1="90" x2="526" y2="90"/></g>
+    <line class="sinc-axis" x1="228" y1="170.5" x2="344" y2="170.5"/><polyline class="sinc" points="${curve.join(" ")}"/>
+    <circle class="dot" id="vldot" cx="232" cy="170" r="3.4"/>
+    <text x="232" y="128">phase matching</text><text x="354" y="158" id="vldk">ΔkL/2 = 6.28</text><text x="354" y="172" id="vleta">η ∝ sinc² = 0.00</text>
+  </svg>
+  <div class="vl-row"><b id="vlstage">آماده‌سازی نمایشگر PDF…</b><span id="vlnum"></span></div>
+  <div class="vl-bar"><i id="vlbar"></i></div>
+  <div class="vl-hint" id="vlhint"></div>
+</div>`;
+}
+// Moves the loader towards progress p (0..1) with a stage label and a readout; the dot and beams follow smoothly.
+function vLoad(p, stage, num = "") {
+  if (!$("vload")) return;
+  VL.target = Math.max(VL.target, Math.min(1, p));
+  if (stage) $("vlstage").textContent = stage;
+  $("vlnum").textContent = num;
+  if (!VL.raf) VL.raf = requestAnimationFrame(vlStep);
+}
+function vlStep() {
+  VL.raf = 0;
+  if (!$("vload")) return;
+  VL.p += (VL.target - VL.p) * 0.12;
+  if (Math.abs(VL.target - VL.p) < 0.002) VL.p = VL.target;
+  const p = VL.p, u = (1 - p) * 2 * Math.PI, eta = sinc2(u); // the mismatch closes from 2π to 0
+  $("vldot").setAttribute("cx", (232 + ((u + 2 * Math.PI) / (4 * Math.PI)) * 108).toFixed(1));
+  $("vldot").setAttribute("cy", (170 - 34 * eta).toFixed(1));
+  $("vldk").textContent = `ΔkL/2 = ${u.toFixed(2)}`;
+  $("vleta").textContent = `η ∝ sinc² = ${eta.toFixed(2)}`;
+  $("vlReachR").setAttribute("width", (312 + p * 190).toFixed(1)); // the beams reach further as the paper arrives
+  for (const id of ["vlgr", "vlgr2"]) $(id).style.opacity = (0.15 + 0.85 * eta).toFixed(2);
+  for (const id of ["vlres", "vlres2"]) $(id).style.opacity = (1 - 0.6 * eta).toFixed(2);
+  $("vlbar").style.width = (p * 100).toFixed(1) + "%";
+  $("vload").classList.toggle("matched", p > 0.97);
+  $("vllit").style.opacity = p > 0.97 ? 0.35 : 0;
+  if (VL.p !== VL.target) VL.raf = requestAnimationFrame(vlStep);
+}
+
 async function openViewer(hit) {
   V.hit = hit; V.doc = null; V.err = ""; V.page = boxesOf(hit)[0]?.[0] || hit.first_page || 1;
   $("vtitle").textContent = hit.label || hit.citation || hit.doc_id;
   $("viewer").classList.add("on");
-  $("vbody").innerHTML = '<p class="hint" id="vprog">در حال باز کردن صفحه‌ی مقاله…</p>'
-    + (hit.drive_id ? `<p class="hint">یا <a href="https://drive.google.com/file/d/${encodeURIComponent(hit.drive_id)}/view" target="_blank" rel="noopener">باز کردن همین مقاله در Google Drive</a> (صفحه‌ی ${fa(V.page)})</p>` : "")
-    + (hit.text ? `<div class="hint" style="white-space:pre-wrap;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;max-height:50vh;overflow:auto">${esc(hit.text)}</div>` : "");
-  const slow = setTimeout(() => { const el = $("vprog"); if (el && V.hit === hit) el.textContent += " (اتصال کند است؛ متن همین بخش پایین آمده است)"; }, 12000);
+  VL.p = 0; VL.target = 0;
+  $("vbody").innerHTML = '<div class="vwait">' + viewerLoader()
+    + (hit.drive_id ? `<p class="hint" style="margin:0">یا <a href="https://drive.google.com/file/d/${encodeURIComponent(hit.drive_id)}/view" target="_blank" rel="noopener">باز کردن همین مقاله در Google Drive</a> (صفحه‌ی ${fa(V.page)})</p>` : "")
+    + (hit.text ? `<div class="hint" style="white-space:pre-wrap;border:1px solid var(--line);border-radius:10px;padding:10px;max-height:50vh;overflow:auto;background:var(--card)">${esc(hit.text)}</div>` : "")
+    + "</div>";
+  vLoad(0.06, "آماده‌سازی نمایشگر PDF…");
+  const slow = setTimeout(() => { if ($("vlhint") && V.hit === hit) $("vlhint").textContent = "اتصال کند است؛ متن همین بخش پایین آمده است."; }, 12000);
   $("vnote").textContent = "";
   try {
     const doc = await openDoc(hit);
     clearTimeout(slow);
     if (V.hit !== hit) return; // another source was opened meanwhile
     if (doc) {
-      V.doc = doc; await drawPage();
+      V.doc = doc; vLoad(0.9, `رسم صفحه‌ی ${fa(V.page)}…`);
+      await new Promise((r) => setTimeout(r, 120)); // let the loader show the drawing step
+      await drawPage();
       $("vnote").textContent = "بخش پیداشده با رنگ زرد مشخص شده است.";
       return;
     }
@@ -1348,9 +1456,11 @@ async function openDoc(hit) {
   if (!key) return null;
   if (V.cache.has(key)) return V.cache.get(key);
   const lib = await loadPdfjs();
+  vLoad(0.2, "اتصال به مقاله…");
+  // only the ranges the page needs are read, so loaded/total understates it: the beam follows the bytes received
   const progress = ({ loaded, total }) => {
-    const el = $("vprog"); if (!el || !loaded) return;
-    el.textContent = `در حال دریافت مقاله… ${fa(Math.round(loaded / 1024))}${total ? " از " + fa(Math.round(total / 1024)) : ""} کیلوبایت`;
+    if (!loaded) return;
+    vLoad(0.2 + 0.65 * (1 - Math.exp(-loaded / 400e3)), "دریافت صفحه‌های مقاله…", `${Math.round(loaded / 1024)} KB${total ? " / " + Math.round(total / 1024) + " KB" : ""}`);
   };
   let doc = null;
   const task = lib.getDocument({ isEvalSupported: false, url: pdfUrl(hit), rangeChunkSize: 65536, disableAutoFetch: true, disableStream: true });
@@ -1358,9 +1468,10 @@ async function openDoc(hit) {
   doc = await task.promise.catch(() => null);
   if (!doc) { // a long book is on the site in parts (qdrant_store.split_pdf): one part is read, not the whole book
     const m = await fetch(pdfUrl(hit) + ".parts.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
-    if (m?.parts?.length) doc = partsDoc(lib, hit, m);
+    if (m?.parts?.length) { doc = partsDoc(lib, hit, m); vLoad(0.6, "دریافت بخشی از کتاب که این صفحه در آن است…"); }
   }
   if (!doc) {
+    vLoad(0.5, "خواندن PDF از رایانه‌ی شما…");
     const file = await localPdf(hit).catch(() => null);
     if (file) doc = await lib.getDocument({ isEvalSupported: false, data: await file.arrayBuffer() }).promise;
   }
