@@ -300,6 +300,17 @@ th,td{padding:7px 10px}
 .xhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;margin-bottom:6px}
 .xhead b{font-size:1.1em}
 .xrows{border-collapse:collapse;width:100%}
+.spout{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);font-size:14px;color:var(--muted)}
+.spout:empty{display:none}
+.spout .tiles{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.spout .tile{padding:10px 12px}.spout .tile b{font-size:19px;margin-top:2px}
+.spout .xrows{margin-top:10px;font-size:13.5px;color:var(--ink)}
+.spout .xrows th{color:var(--muted);font-weight:500}
+.spout .xrows tr+tr th,.spout .xrows tr+tr td{border-top:1px solid var(--line)}
+.spout .xrows th,.spout .xrows td{padding:6px 0;padding-inline-end:12px}
+.spout p{margin:8px 0 0;font-size:13px}
+@media (max-width:600px){.spout .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.spout .tile b{font-size:16px}
+  .spout .xrows tr{display:block;padding:6px 0}.spout .xrows tr+tr{border-top:1px solid var(--line)}.spout .xrows th,.spout .xrows td{display:block;width:auto;white-space:normal;padding:0;border:0!important}}
 .xrows th{text-align:start;font-weight:600;white-space:nowrap;padding:3px 0;padding-inline-end:12px;vertical-align:top;width:1%}
 .xrows td{padding:3px 0}
 .xcard .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
@@ -699,7 +710,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <button id="spfib">محاسبه</button>
       <button class="alt" id="spfibopt">بهینه‌سازی کانونی</button>
     </div>
-    <div id="spfibres" style="direction:ltr" class="hint"></div>
+    <div id="spfibres" class="spout"></div>
     <h3 style="margin-top:16px">آهنگ مطلق تولید جفت</h3>
     <p class="hint">تعداد جفت‌هایی که هر دو فوتونشان در مُدهای گاوسی بالا (با همان ξها) گسیل می‌شوند، با پمپ پیوسته: R = Γ₀ ∫dν |∫O(z) e<sup>iΔk z</sup> dz|²، با Γ₀ = 8π² d<sub>eff</sub>² P/(n<sub>p</sub>n₁n₂ ε₀ c λ₁λ₂) و O(z) هم‌پوشانی سه مُد گاوسی (با فاز گوی و انحنا). این آهنگ پیش از هر اتلافی است؛ هم‌فرودی آشکارشده = R × بازده کل بازوی ۱ × بازده کل بازوی ۲. با اندازه‌گیری‌ها آزموده شده: Evans و همکاران (2010) ۱۲۳٬۰۰۰ جفت/ثانیه/میلی‌وات گزارش کرده‌اند و این حساب ۱۲۹٬۰۰۰ می‌دهد؛ برای Fedrizzi و همکاران (2007) هم در محدوده‌ی اندازه‌گیری است. فرمول بسته‌ی Bennink (2010، معادله‌ی ۴۰) حدود n<sub>p</sub>n₁n₂ (≈ ۶ در KTP) برابر بیشتر می‌دهد. واگردی فضایی (walk-off) پرتوهای غیرعادی حساب شده است: پوش هر مُد در بلور به اندازه‌ی ρ·z کنار می‌رود (Boyd و Kleinman 1968) و هم‌پوشانی O(z) کم می‌شود؛ آهنگ بدون آن هم کنارش نشان داده می‌شود. واگردی زمانی (اختلاف سرعت گروه) در خود Δk(ν) هست و تأخیر دو فوتون در طول بلور هم گزارش می‌شود.</p>
     <div class="row">
@@ -708,7 +719,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <button id="sprate">محاسبه‌ی آهنگ</button>
       <span class="hint" id="spdeffinfo"></span>
     </div>
-    <div id="spratres" style="direction:ltr" class="hint"></div>
+    <div id="spratres" class="spout"></div>
     <h3 style="margin-top:16px">شمارش آشکارسازها و CAR (برنامه‌ریزی آزمایش)</h3>
     <p class="hint">آنچه دو آشکارساز تک‌فوتون از این چشمه‌ی پیوسته می‌شمارند: آهنگ جفت R (کارت بالا، با همان ξها) و احتمال‌های شرطی جفت‌شدن به فیبر μ (کارت فیبر)، ضرب در عبور هر بازو (اپتیک، فیلتر، فیبر) و بازده آشکارساز، به‌اضافه‌ی شمارش تاریک. هم‌فرودی تصادفی A = S₁·S₂·τ (دو شمارش بی‌ربط در یک پنجره) است و CAR = C/A. بازده اعلام (Klyshko) احتمال آشکار شدن یک فوتون است وقتی جفتش آشکار شده. چون C با توان پمپ خطی و A با مجذور آن بالا می‌رود، CAR بیشینه‌ای دارد که شمارش تاریک تعیین می‌کند؛ توان‌هایی که به CAR هدف می‌رسند هم داده می‌شوند.</p>
     <div class="row">
@@ -727,7 +738,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>CAR هدف <input id="spCarT" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="100" style="width:64px"></label>
       <button id="spcnt">محاسبه‌ی شمارش</button>
     </div>
-    <div id="spcntres" style="direction:ltr" class="hint"></div>
+    <div id="spcntres" class="spout"></div>
   </div>
 </section>
 
@@ -3702,6 +3713,13 @@ function fillDeff() {
     $("spdeffinfo").textContent = o.qpm ? "از ضرایب d سایت، با ضریب 2/π قطبش‌دهی دوره‌ای مرتبه‌ی اول" : "از ضرایب d سایت (بهترین سمت φ)";
   } catch { $("spdeff").value = ""; $("spdeffinfo").textContent = ""; }
 }
+// one result box of the photon-pair cards: the main numbers as tiles, the rest as rows, warnings under them
+function spBox({ tiles = [], rows = [], notes = [] }) {
+  const t = tiles.map(([big, label, small]) => `<div class="tile"><span>${label}</span><b>${big}</b>${small ? `<small>${small}</small>` : ""}</div>`).join("");
+  const r = rows.map(([k, v]) => `<tr><th>${k}</th><td><bdi dir="ltr">${v}</bdi></td></tr>`).join("");
+  return (t ? `<div class="tiles">${t}</div>` : "") + (r ? `<table class="xrows">${r}</table>` : "") + notes.filter(Boolean).join("");
+}
+const spWaists = (wp, w1, w2) => `${wp.toFixed(1)}, ${w1.toFixed(1)}, ${w2.toFixed(1)} µm`;
 // Absolute pair rate into the Gaussian modes of the fibre card's focal parameters (ξ = L/zR as there)
 function pairs() {
   if (spStop("spratres")) return;
@@ -3718,14 +3736,16 @@ function pairs() {
     const r = pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw: P });
     if (!r || !Number.isFinite(r.rate)) { $("spratres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند.</span>`; return; }
     const f = (v) => v >= 1e6 ? (v / 1e6).toPrecision(3) + "·10⁶" : v >= 1e3 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3);
-    $("spratres").innerHTML = `w<sub>p</sub> = ${wp.toFixed(1)} µm, w₁ = ${w1.toFixed(1)} µm, w₂ = ${w2.toFixed(1)} µm, d<sub>eff</sub> = ${dEff} pm/V<br>`
-      + `<b>R = ${f(r.rate)} pairs/s</b> at ${P} mW (${f(r.perMw)} pairs/s/mW) into the two modes, before any loss<br>`
-      + `bandwidth of photon 1 (FWHM) ${r.fwhmNm.toPrecision(3)} nm; peak spectral brightness ${f(r.peakPerNm / P)} pairs/s/mW/nm`
-      + `<br>temporal walk-off of the two photons: |1/v<sub>g1</sub> − 1/v<sub>g2</sub>|·L = ${(Math.abs(groupIndex(nAt, o.plane, o.angle, l1, pols[1]) - groupIndex(nAt, o.plane, o.angle, l2, pols[2])) / 2.99792458e-4 * L_mm).toFixed(0)} fs`
-      + (r.walkoffMrad.some((x) => Math.abs(x) > 1e-3)
-        ? `<br>spatial walk-off ρ (pump, 1, 2) = ${r.walkoffMrad.map((x) => Math.abs(x).toFixed(1)).join(", ")} mrad, included; without it the rate would be ${f(pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw: P, walkoff: false }).rate)} pairs/s`
-        : "")
-      + (r.clipped ? `<br><span class="err">the pair spectrum reaches past this source's formula range (${s.range_um[0]}–${s.range_um[1]} µm): integrated up to its edge, so this rate (and the bandwidth) is a lower bound</span>` : "");
+    const walk = r.walkoffMrad.some((x) => Math.abs(x) > 1e-3);
+    $("spratres").innerHTML = spBox({
+      tiles: [[`${f(r.rate)} /s`, "آهنگ جفت در مُدها (پیش از اتلاف)", `@ ${P} mW`], [`${f(r.perMw)} /s/mW`, "آهنگ به ازای هر میلی‌وات"],
+        [`${r.fwhmNm.toPrecision(3)} nm`, "پهنای طیفی فوتون ۱ (FWHM)"], [`${f(r.peakPerNm / P)} /s/mW/nm`, "درخشندگی طیفی قله"]],
+      rows: [["کمر باریکه‌ها (پمپ، ۱، ۲)", spWaists(wp, w1, w2)], ["d<sub>eff</sub>", `${dEff} pm/V`],
+        ["جدایی زمانی دو فوتون در بلور", `${(Math.abs(groupIndex(nAt, o.plane, o.angle, l1, pols[1]) - groupIndex(nAt, o.plane, o.angle, l2, pols[2])) / 2.99792458e-4 * L_mm).toFixed(0)} fs`],
+        ...(walk ? [["واگردی فضایی ρ (پمپ، ۱، ۲)، حساب‌شده", `${r.walkoffMrad.map((x) => Math.abs(x).toFixed(1)).join(", ")} mrad`],
+          ["آهنگ بدون واگردی فضایی", `${f(pairRate({ nAt, plane: o.plane, angle: o.angle, pols, lp, l1, L_mm, dEff, wp, w1, w2, powerMw: P, walkoff: false }).rate)} /s`]] : [])],
+      notes: [r.clipped && `<p class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (<bdi dir="ltr">${s.range_um[0]}–${s.range_um[1]} µm</bdi>) بیرون می‌زند: تا لبه‌ی آن انتگرال گرفته شد، پس این آهنگ (و پهنا) کران پایین است.</p>`],
+    });
   }, 20);
 }
 // What the two detectors count (detectedCounts): the pair rate of the card above and the conditional couplings of the
@@ -3764,14 +3784,21 @@ function counts() {
     const f = (v) => v >= 1e6 ? (v / 1e6).toPrecision(3) + "·10⁶" : v >= 100 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3);
     const pc = (v) => (v * 100).toFixed(1) + "%";
     const mw = (v) => v >= 1 ? v.toPrecision(3) + " mW" : v >= 1e-3 ? (v * 1e3).toPrecision(3) + " µW" : v >= 1e-6 ? (v * 1e6).toPrecision(3) + " nW" : (v * 1e9).toPrecision(3) + " pW";
-    $("spcntres").innerHTML = (asPct.length ? `<span class="hint">${asPct.join("، ")} به‌صورت درصد خوانده شد.</span><br>` : "") + `at ${P} mW: R = ${f(r.rate)} pairs/s in the modes; μ₂|₁ = ${pc(fc.muIgS)}, μ₁|₂ = ${pc(fc.muSgI)}<br>`
-      + (r.clipped ? `<span class="err">the pair spectrum reaches past this source's formula range (${s.range_um[0]}–${s.range_um[1]} µm): integrated up to its edge, so this rate is a lower bound</span>` : "") + (r.clipped ? "<br>" : "")
-      + (loss[0] ? `uncoated crystal, Fresnel reflection: pump ${pc(loss[0])}, photon 1 ${pc(loss[1])}, photon 2 ${pc(loss[2])} (already in R and in the arm transmissions)<br>` : "")
-      + `<b>singles S₁ = ${f(c.S1)}/s, S₂ = ${f(c.S2)}/s; coincidences C = ${f(c.C)}/s; accidentals A = ${f(c.A)}/s; CAR = ${f(c.CAR)}</b><br>`
-      + `heralding (Klyshko) efficiency: photon 1 ${pc(c.h1)}, photon 2 ${pc(c.h2)}; mean pairs per window R·τ = ${c.pairsPerWindow.toPrecision(3)}`
-      + (Math.max(c.S1, c.S2) > 2e6 ? `<br><span class="err">singles above 2·10⁶/s: most single-photon detectors saturate (dead time); lower the power</span>` : "")
-      + `<br>highest CAR ${f(pw.best.CAR)} at ${pw.best.P > 0 ? mw(pw.best.P) : "the lowest power (no dark counts)"}`
-      + (pw.high ? `; CAR = ${esc(+$("spCarT").value)} at ${pw.low ? mw(pw.low) + " and " : "up to "}${mw(pw.high)} (between them it is higher)` : `; CAR ${esc(+$("spCarT").value)} is not reachable with these dark counts`);
+    const carT = `${esc(+$("spCarT").value)}`;
+    $("spcntres").innerHTML = spBox({
+      tiles: [[`${f(c.S1)} /s`, "شمارش تک آشکارساز ۱"], [`${f(c.S2)} /s`, "شمارش تک آشکارساز ۲"], [`${f(c.C)} /s`, "هم‌فرودی‌ها C"],
+        [`${f(c.A)} /s`, "هم‌فرودی تصادفی A"], [f(c.CAR), "CAR"], [pc(c.h1), "بازده اعلام فوتون ۱ (Klyshko)"], [pc(c.h2), "بازده اعلام فوتون ۲ (Klyshko)"]],
+      rows: [["آهنگ جفت در مُدها R", `${f(r.rate)} /s  (${P} mW)`], ["احتمال شرطی فیبر μ₂|₁ · μ₁|₂", `${pc(fc.muIgS)} · ${pc(fc.muSgI)}`],
+        ...(loss[0] ? [["بازتاب فرنل (پمپ، ۱، ۲)، حساب‌شده در R و عبورها", `${pc(loss[0])}, ${pc(loss[1])}, ${pc(loss[2])}`]] : []),
+        ["میانگین جفت در هر پنجره R·τ", c.pairsPerWindow.toPrecision(3)],
+        ["بیشترین CAR", pw.best.P > 0 ? `${f(pw.best.CAR)}  @ ${mw(pw.best.P)}` : `${f(pw.best.CAR)}`],
+        [`توان برای CAR = ${carT}`, pw.high ? (pw.low ? `${mw(pw.low)} – ${mw(pw.high)}` : `≤ ${mw(pw.high)}`) : "—"]],
+      notes: [asPct.length && `<p class="hint">${asPct.join("، ")} به‌صورت درصد خوانده شد.</p>`,
+        pw.best.P > 0 ? "" : '<p class="hint">بدون شمارش تاریک، CAR در کمترین توان بیشینه است.</p>',
+        pw.high ? '<p class="hint">بین این دو توان، CAR از مقدار هدف بیشتر است.</p>' : '<p class="err">با این شمارش تاریک، CAR هدف به دست نمی‌آید.</p>',
+        r.clipped && `<p class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (<bdi dir="ltr">${s.range_um[0]}–${s.range_um[1]} µm</bdi>) بیرون می‌زند: تا لبه‌ی آن انتگرال گرفته شد، پس این آهنگ کران پایین است.</p>`,
+        Math.max(c.S1, c.S2) > 2e6 && '<p class="err">شمارش تک بالای ۲ میلیون در ثانیه است: بیشتر آشکارسازهای تک‌فوتون اشباع می‌شوند (زمان مرده)؛ توان را کم کنید.</p>'],
+    });
   }, 20);
 }
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
@@ -3795,10 +3822,13 @@ function fiber(optimize) {
     const args = { ...base, xiP: +$("spxp").value, xiS: +$("spxs").value, xiI: +$("spxf2").value };
     const f = fiberCoupling({ ...args, n: 100 }), z = fiberCoupling({ ...args, azimuthal: false, n: 100 });
     const pc = (v) => (v * 100).toFixed(1) + "%";
-    $("spfibres").innerHTML = `w<sub>p</sub> = ${f.wp.toFixed(1)} µm, w₁ = ${f.ws.toFixed(1)} µm, w₂ = ${f.wi.toFixed(1)} µm<br>`
-      + `<b>all modes:</b> γ₁ = ${pc(f.gammaS)}, γ₂ = ${pc(f.gammaI)}, γc = ${pc(f.gammaC)}, μ₂|₁ = ${pc(f.muIgS)}, μ₁|₂ = ${pc(f.muSgI)}<br>`
-      + `l = 0 only (as Ljunggren &amp; Tengner): γ₁ = ${pc(z.gammaS)}, γ₂ = ${pc(z.gammaI)}, γc = ${pc(z.gammaC)}`
-      + (optimize ? `<br>best pair coupling on the grid at ξp = ${esc(+$("spxp").value)}, ξ fibres = ${esc(+$("spxs").value)}` : "");
+    $("spfibres").innerHTML = spBox({
+      tiles: [[pc(f.gammaC), "جفت‌شدن جفت به دو فیبر γc"], [pc(f.gammaS), "سهم بازوی ۱ γ₁"], [pc(f.gammaI), "سهم بازوی ۲ γ₂"],
+        [pc(f.muIgS), "احتمال شرطی μ₂|₁"], [pc(f.muSgI), "احتمال شرطی μ₁|₂"]],
+      rows: [["کمر باریکه‌ها (پمپ، ۱، ۲)", spWaists(f.wp, f.ws, f.wi)],
+        ["فقط مُد l = 0 (مانند Ljunggren و Tengner): γ₁ · γ₂ · γc", `${pc(z.gammaS)} · ${pc(z.gammaI)} · ${pc(z.gammaC)}`]],
+      notes: [optimize && `<p class="hint">بهترین کانونی روی شبکه: ξ پمپ = <bdi dir="ltr">${esc(+$("spxp").value)}</bdi>، ξ فیبرها = <bdi dir="ltr">${esc(+$("spxs").value)}</bdi> (در کادرها گذاشته شد).</p>`],
+    });
   }, 20);
 }
 // viridis-like ramp
