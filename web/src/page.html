@@ -151,6 +151,18 @@ select,input{max-width:100%}
 .chip.coll{color:var(--ok)}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.dtools{display:flex;gap:6px;justify-content:flex-end;margin:6px 0 4px}.dtools[hidden]{display:none}
+.dtools button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--accent);border-radius:12px;padding:2px 10px;cursor:pointer}
+.dtools button:hover{border-color:var(--accent)}
+.term{font:inherit;font-size:12px;line-height:1;border:0;background:transparent;color:var(--accent);cursor:pointer;padding:0 3px;vertical-align:middle;opacity:.75}
+.term:hover{opacity:1}th .term{font-size:11px}
+.termpop{position:absolute;z-index:60;background:var(--card);color:var(--ink);border:1px solid var(--accent);border-radius:10px;padding:9px 12px;font-size:13px;line-height:1.7;box-shadow:0 8px 28px rgba(0,0,0,.18);direction:rtl;text-align:start}
+html[dir="ltr"] .termpop{direction:ltr}
+.jump{position:sticky;top:0;z-index:9;display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;margin:0 0 12px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:12px}
+.jump a{font-size:13px;text-decoration:none;color:var(--accent);background:var(--card);border:1px solid var(--line);border-radius:14px;padding:3px 12px}
+.jump a:hover,.jump a.on{border-color:var(--accent)}.jump a[hidden]{display:none}
+#tab-pm > .card{scroll-margin-top:64px}#pmoff{scroll-margin-top:64px}
+@media (max-width:900px){.jump{top:52px;flex-wrap:nowrap;overflow-x:auto}.jump a{white-space:nowrap}#tab-pm > .card,#pmoff{scroll-margin-top:110px}}
 .verdict{border:1px solid var(--line);border-inline-start:5px solid var(--muted);border-radius:12px;padding:12px 14px;margin-top:12px;background:var(--card)}
 .verdict.ok{border-inline-start-color:var(--ok)}.verdict.thin{border-inline-start-color:var(--warn)}.verdict.over{border-inline-start-color:var(--err)}
 .verdict .big{font-size:18px;font-weight:700}.verdict.ok .big{color:var(--ok)}.verdict.thin .big{color:var(--warn)}.verdict.over .big{color:var(--err)}
@@ -428,7 +440,10 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     🟠 <b>پایگاه داده‌ی بازبینی‌نشده</b>: از پایگاه داده‌ی باز (مثل refractiveindex.info) با ارجاع به مقاله‌ی اصلی؛ صفحه‌ی مقاله را هنوز ندیده‌ایم.<br>
     🔵 <b>محاسبه‌ی نظری</b>: از محاسبه (مثلاً DFT)، نه اندازه‌گیری.
   </div></template>
-  <div class="card">
+  <nav class="jump" id="pmjump" aria-label="بخش‌های این صفحه">
+    <a href="#" data-to="pmincard">ورودی‌ها</a><a href="#" data-to="pmrescard">نتیجه</a><a href="#" data-to="pmoff" id="pmjumpoff" hidden>جهت‌های دیگر</a><a href="#" data-to="solvecard">حل‌کننده</a><a href="#" data-to="pmchartcard">نمودار</a><a href="#" data-to="pmallcard">بلورهای دیگر</a>
+  </nav>
+  <div class="card" id="pmincard">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
     <p class="hint">زاویه‌ی تطبیق فاز، walk-off و پهنای پذیرش زاویه‌ای و طیفی، برای دوبرابرکردن بسامد (SHG)، جمع بسامد (SFG) و نوسان‌گر پارامتری (OPO/DFG)، در صفحه‌های اصلی بلور. ضریب‌های شکست همان فرمول‌های زبانه‌ی «ضریب شکست» است (refractiveindex.info و مقاله‌های همین مجموعه)؛ هر عدد به مقاله‌ی منبعش برمی‌گردد. برای بلورهایی که ضرایب غیرخطی‌شان (d<sub>il</sub>) از مقاله‌ها خوانده شده، d<sub>eff</sub> و ضریب کیفیت d<sub>eff</sub>²/n³ هم حساب می‌شود (از جهت میدان سه موج، با walk-off).</p>
     <div class="row">
@@ -465,7 +480,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <label class="hint"><input type="checkbox" id="pmmore"> مواد دوشکستیِ دیگر را هم نشان بده (فقط زاویه و walk-off؛ ضرایب غیرخطی‌شان در داده‌ها نیست)</label>
     <p id="pmwarn" style="margin:6px 0 0"></p>
   </div>
-  <div class="card" style="margin-top:14px">
+  <div class="card" style="margin-top:14px" id="pmrescard">
     <h2>نتیجه‌ی محاسبه‌ی MatRAG</h2>
     <p class="hint" id="pmhow" style="margin:0 0 8px"></p>
     <div style="overflow-x:auto;direction:ltr"><table id="pmtable" style="direction:ltr;min-width:640px"></table></div>
@@ -508,7 +523,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <p class="hint" id="svinfo"></p>
     <div style="overflow-x:auto;direction:ltr"><table id="svtable" style="direction:ltr;min-width:640px"></table></div>
   </div>
-  <div class="card" style="margin-top:14px">
+  <div class="card" style="margin-top:14px" id="pmchartcard">
     <h2 id="pmcharttitle">منحنی تنظیم</h2>
     <div id="pmchart" style="position:relative;direction:ltr"><svg id="pmsvg" role="img" style="display:block;width:100%"></svg></div>
     <div class="chips" id="pmlegend"></div>
@@ -967,6 +982,16 @@ const TAB_TITLE = {
   eval: ["ارزیابی و اعتبارسنجی", "ماشین‌حساب‌ها در برابر عددهای مقاله‌ها، و کیفیت جست‌وجو"],
   about: ["راهنما", ""],
 };
+// The phase-matching tab's quick jumps: each scrolls to its part (the solver unfolds); "other directions" shows only when
+// that part has something (biaxial crystals)
+$("pmjump").addEventListener("click", (e) => {
+  const a = e.target.closest("a[data-to]"); if (!a) return;
+  e.preventDefault();
+  const el = $(a.dataset.to); if (!el) return;
+  el.classList.remove("closed");
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+new MutationObserver(() => { $("pmjumpoff").hidden = !$("pmoff").textContent.trim(); }).observe($("pmoff"), { childList: true, subtree: true });
 // fromHistory: the back button (or a reload) is showing a tab, so no new history entry is made
 function showTab(name, fromHistory = false) {
   const nav = name === "paper" ? "search" : name;
@@ -4240,6 +4265,125 @@ $("dmfill").addEventListener("click", () => {
 });
 $("dmmat").addEventListener("change", () => { const d = PW.props[$("dmmat").value]?.damage; if (d?.lambda_um && !$("dmlam").dataset.touched) $("dmlam").value = d.lambda_um; });
 $("dmlam").addEventListener("input", () => { $("dmlam").dataset.touched = "1"; });
+</script>
+<script nonce="__CSP_NONCE__">
+// ---------- every result table and chart: copy the table (it pastes as a table in Excel, Word or Google Sheets), save it as
+// CSV, save the chart as a PNG image. The buttons are added by themselves to each table or chart as it is drawn.
+(() => {
+  const cells = (t) => [...t.rows].map((r) => [...r.cells].map((c) => c.innerText.replace(/ⓘ/g, "").replace(/\s+/g, " ").trim()));
+  const csv = (rows) => "﻿" + rows.map((r) => r.map((c) => (/[",\n]/.test(c) ? `"${c.replace(/"/g, '""')}"` : c)).join(",")).join("\r\n");
+  const stamp = () => new Date().toISOString().slice(0, 10);
+  const nameOf = (el) => (el.closest("section")?.id.replace(/^tab-/, "") || "matrag") + (el.id ? "-" + el.id : "");
+  const save = (name, blob) => { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+  const flash = (btn, text) => { const old = btn.textContent; btn.textContent = text; setTimeout(() => { btn.textContent = old; }, 1400); };
+  async function copyTable(t, btn) {
+    const rows = cells(t), tsv = rows.map((r) => r.join("\t")).join("\n");
+    const html = `<table border="1">${rows.map((r, i) => `<tr>${r.map((c) => `<${i ? "td" : "th"}>${esc(c)}</${i ? "td" : "th"}>`).join("")}</tr>`).join("")}</table>`;
+    try {
+      if (window.ClipboardItem) await navigator.clipboard.write([new ClipboardItem({ "text/plain": new Blob([tsv], { type: "text/plain" }), "text/html": new Blob([html], { type: "text/html" }) })]);
+      else await navigator.clipboard.writeText(tsv);
+      flash(btn, "کپی شد ✓");
+    } catch { prompt("", tsv); }
+  }
+  // An SVG drawn with the page's colour variables: each element's computed paint is written onto a copy, so the image
+  // looks the same outside the page; on the card's background, at twice the size.
+  const PAINT = ["fill", "stroke", "stroke-width", "stroke-dasharray", "stroke-opacity", "fill-opacity", "opacity", "font-size", "font-family", "font-weight", "text-anchor", "visibility", "filter"];
+  function savePng(svg) {
+    const copy = svg.cloneNode(true), src = [svg, ...svg.querySelectorAll("*")], dst = [copy, ...copy.querySelectorAll("*")];
+    src.forEach((el, i) => { const cs = getComputedStyle(el); for (const k of PAINT) { const v = cs.getPropertyValue(k); if (v && !(k === "filter" && v === "none")) dst[i].setAttribute(k, v); } dst[i].removeAttribute("class"); });
+    const box = svg.getBoundingClientRect(), vb = (svg.getAttribute("viewBox") || `0 0 ${box.width} ${box.height}`).split(/\s+/).map(Number);
+    copy.setAttribute("xmlns", "http://www.w3.org/2000/svg"); copy.setAttribute("width", vb[2]); copy.setAttribute("height", vb[3]); copy.removeAttribute("style");
+    const bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    bg.setAttribute("x", vb[0]); bg.setAttribute("y", vb[1]); bg.setAttribute("width", vb[2]); bg.setAttribute("height", vb[3]);
+    bg.setAttribute("fill", getComputedStyle(svg.closest(".card") || document.body).backgroundColor); copy.prepend(bg);
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas"); c.width = vb[2] * 2; c.height = vb[3] * 2;
+      const g = c.getContext("2d"); g.scale(2, 2); g.drawImage(img, 0, 0, vb[2], vb[3]);
+      c.toBlob((b) => save(`MatRAG-${nameOf(svg)}-${stamp()}.png`, b), "image/png");
+    };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(new XMLSerializer().serializeToString(copy));
+  }
+  const bar = (html) => { const d = document.createElement("div"); d.className = "dtools"; d.innerHTML = html; return d; };
+  function decorate() {
+    for (const t of document.querySelectorAll("main section table")) {
+      if (t.querySelector("input,select,textarea") || t.closest(".tip")) continue;
+      if (!t.dataset.tools) {
+        t.dataset.tools = "1";
+        const host = t.parentElement?.style.overflowX === "auto" ? t.parentElement : t;
+        const b = bar('<button type="button" data-copy>کپی جدول</button><button type="button" data-csv>CSV</button>');
+        b.querySelector("[data-copy]").onclick = (e) => copyTable(t, e.target);
+        b.querySelector("[data-csv]").onclick = () => save(`MatRAG-${nameOf(t)}-${stamp()}.csv`, new Blob([csv(cells(t))], { type: "text/csv" }));
+        host.before(b); t._bar = b;
+      }
+      t._bar.hidden = t.rows.length < 2;
+    }
+    for (const svg of document.querySelectorAll('main section svg[role="img"]')) {
+      if (svg.dataset.tools) continue;
+      svg.dataset.tools = "1";
+      const b = bar('<button type="button">ذخیره‌ی تصویر نمودار (PNG)</button>');
+      b.querySelector("button").onclick = () => savePng(svg);
+      (svg.parentElement.tagName === "DIV" ? svg.parentElement : svg).after(b);
+    }
+  }
+  let t0 = 0;
+  new MutationObserver(() => { clearTimeout(t0); t0 = setTimeout(decorate, 120); }).observe(document.querySelector("main"), { childList: true, subtree: true });
+  decorate();
+})();
+
+// ---------- what the technical words mean: a small ⓘ beside them in the tools' headings, labels and table headers,
+// with one short explanation
+// (the Persian words of the patterns are written as \u escapes: quality factor, pulse separation, noncritical,
+// acceptance, Boyd–Kleinman, Sellmeier, damage threshold, fluence, purity, Schmidt)
+const TERMS = [
+  [/d_?eff²\s*\/\s*n³|\u0636\u0631\u06cc\u0628 \u06a9\u06cc\u0641\u06cc\u062a|figure of merit/i, "ضریب کیفیت d_eff²/n³: بازده تبدیل با آن متناسب است؛ برای مقایسه‌ی بلورها با هم، بزرگ‌تر بهتر است."],
+  [/walk-?off/i, "walk-off (واگردی): پرتو موج غیرعادی کمی کج نسبت به موج‌های دیگر حرکت می‌کند و در بلور بلند پرتوها از هم جدا می‌شوند و بازده کم می‌شود. کمتر بهتر است."],
+  [/\bGVM\b|\u062c\u062f\u0627\u06cc\u06cc \u067e\u0627\u0644\u0633/i, "GVM (ناهمخوانی سرعت گروه): پالس‌های موج‌های مختلف با سرعت‌های متفاوت حرکت می‌کنند و در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم عقب می‌افتند؛ برای پالس‌های کوتاه مهم است."],
+  [/\bd_?eff\b|deff/i, "d_eff (ضریب غیرخطی مؤثر): سهمی از ضرایب d بلور که در همین جهت و همین قطبش‌ها کار می‌کند؛ توان خروجی با مجذور آن بالا می‌رود."],
+  [/\bNCPM\b|\u063a\u06cc\u0631\u0628\u062d\u0631\u0627\u0646\u06cc/i, "تطبیق فاز غیربحرانی (NCPM): پرتو در امتداد یکی از محورهای بلور می‌رود (۹۰ درجه)؛ walk-off صفر و پذیرش زاویه‌ای زیاد است، ولی معمولاً دمای مشخصی لازم دارد."],
+  [/\bQPM\b|Λ/, "QPM (تطبیق فاز شبه): به‌جای دوشکستی، قطبش بلور با دوره‌ی Λ به‌طور تناوبی وارونه شده است (PPLN، PPKTP)؛ با دوره‌ی مناسب، هر طول موجی و بزرگ‌ترین ضریب d."],
+  [/Δk/, "Δk (ناهمخوانی فاز): Δk = k₃ − k₁ − k₂. در Δk = 0 موج‌ها هم‌فازند و تبدیل بیشینه است؛ با دور شدن از صفر، بازده مثل sinc² کم می‌شود."],
+  [/FWHM|\u067e\u0630\u06cc\u0631\u0634|acceptance|Δθ·L|Δλ·L/i, "پهنای پذیرش: زاویه، طول موج یا دما تا چه حد می‌تواند از نقطه‌ی تطبیق فاز دور شود تا بازده نصف شود (FWHM). با بلندتر شدن بلور کمتر می‌شود."],
+  [/\bξ\b|\u0628\u0648\u06cc\u062f–\u06a9\u0644\u0627\u06cc\u0646\u0645\u0646|Boyd/i, "کانونی‌کردن بوید–کلاینمن: ξ = L/b نسبت طول بلور به طول کانونی باریکه است و h ضریب کانونی‌کردن؛ بیشینه‌ی h = ۱٫۰۶۸ در ξ = ۲٫۸۴ (بدون walk-off)."],
+  [/\u0633\u0644\u0645\u0627\u06cc\u0631|Sellmeier/i, "فرمول سلمایر: رابطه‌ی n(λ) که به ضریب شکست‌های اندازه‌گیری‌شده برازش شده است؛ فقط در بازه‌ی طول موجی که اندازه‌گیری شده معتبر است."],
+  [/group index|n_g|GVD/i, "ضریب شکست گروه n_g = n − λ·dn/dλ سرعت پالس را می‌دهد؛ GVD نشان می‌دهد پالس در بلور چقدر پهن می‌شود."],
+  [/\u0622\u0633\u062a\u0627\u0646\u0647\u200c\u06cc \u0622\u0633\u06cc\u0628|damage threshold/i, "آستانه‌ی آسیب: کمترین شدت یا شار انرژی که سطح یا درون بلور را آسیب می‌زند؛ به پهنای پالس، طول موج، پوشش سطح و کیفیت بلور بستگی دارد."],
+  [/\u0634\u0627\u0631 \u0627\u0646\u0631\u0698\u06cc|fluence/i, "شار انرژی (fluence): انرژی پالس بر واحد سطح، J/cm²."],
+  [/\u062e\u0644\u0648\u0635|purity/i, "خلوص طیفی: چقدر فوتون‌های یک جفت از نظر طیفی مستقل از هم‌اند؛ ۱ یعنی کامل (برای تداخل فوتون‌ها از منبع‌های جدا لازم است)."],
+  [/\u0627\u0634\u0645\u06cc\u062a|Schmidt/i, "عدد اشمیت K = ۱/خلوص: تعداد مُدهای طیفی درهم‌تنیده؛ ۱ یعنی جفت‌های کاملاً جدا."],
+  [/\bCAR\b/, "CAR: نسبت شمارش هم‌زمانی واقعی به تصادفی؛ هرچه بیشتر، منبع تمیزتر."],
+];
+(() => {
+  const pop = document.createElement("div"); pop.className = "termpop"; pop.hidden = true; document.body.append(pop);
+  const close = () => { pop.hidden = true; };
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest(".term");
+    if (!b) { if (!e.target.closest(".termpop")) close(); return; }
+    e.preventDefault(); e.stopPropagation();
+    pop.textContent = TERMS[+b.dataset.term][1]; pop.hidden = false;
+    const r = b.getBoundingClientRect(), w = Math.min(320, window.innerWidth - 24);
+    pop.style.width = w + "px";
+    pop.style.left = Math.max(12, Math.min(window.innerWidth - w - 12, r.left + r.width / 2 - w / 2)) + window.scrollX + "px";
+    pop.style.top = r.bottom + 6 + window.scrollY + "px";
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+  const TOOLS = ["tab-index", "tab-pm", "tab-advisor", "tab-spdc", "tab-power"];
+  function mark() {
+    for (const id of TOOLS) for (const el of document.querySelectorAll(`#${id} th, #${id} .tile > span, #${id} h3, #${id} label`)) {
+      if (el.querySelector(".term") || el.closest(".termless")) continue;
+      // the element's own text, not that of the boxes and menus inside a label
+      const own = [...el.childNodes].filter((n) => n.nodeType === 3 || (n.nodeType === 1 && !/^(SELECT|INPUT|TEXTAREA|BUTTON)$/.test(n.tagName))).map((n) => n.textContent).join("");
+      const k = TERMS.findIndex(([re]) => re.test(own));
+      if (k < 0) continue;
+      const b = document.createElement("button"); b.type = "button"; b.className = "term"; b.dataset.term = k; b.textContent = "ⓘ"; b.title = "یعنی چه؟";
+      const firstBox = el.tagName === "LABEL" ? el.querySelector("input,select,textarea") : null;
+      if (firstBox) firstBox.before(b); else el.append(b);
+    }
+  }
+  let t1 = 0;
+  new MutationObserver(() => { clearTimeout(t1); t1 = setTimeout(mark, 150); }).observe(document.querySelector("main"), { childList: true, subtree: true });
+  mark();
+})();
 </script>
 <script type="module" nonce="__CSP_NONCE__">
 // The validation table: published numbers recomputed with the site's own data and code (web/src/validation.client.js)
