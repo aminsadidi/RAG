@@ -202,6 +202,8 @@ html[dir="ltr"] .termpop{direction:ltr}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;direction:ltr}
 .seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:5px 12px;cursor:pointer}
 .seg button.on{background:var(--accent);color:var(--accent-ink)}
+#side .unitsw{align-self:stretch;justify-content:center;margin-top:6px}#side .unitsw button{flex:1;color:var(--side-ink)}#side .unitsw button.on{color:var(--accent-ink)}
+@media (max-width:900px){#side .unitsw{margin-top:0;align-self:center}#side .unitsw button{padding:4px 8px}}
 @media (max-width:760px){main table{display:block;overflow-x:auto;white-space:nowrap;max-width:100%}.seg{flex-wrap:wrap;direction:ltr}}
 body{overflow-x:hidden}
 #evchart{position:relative;direction:ltr}#evchart svg{display:block;width:100%}
@@ -260,7 +262,8 @@ html[dir="rtl"] .card.fold.closed h2[data-fold]::before{transform:rotate(-90deg)
 .clamp.c1{-webkit-line-clamp:1}
 .clamp.open{display:block;-webkit-line-clamp:unset}
 details.spread summary{cursor:pointer}
-@media (min-width:900px){#pagehead{position:relative;padding-inline-end:230px}#pagehead #sharelink{position:absolute;inset-inline-end:0;top:2px}}
+#pagehead .headbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+@media (min-width:900px){#pagehead{position:relative;padding-inline-end:470px}#pagehead .headbtns{position:absolute;inset-inline-end:0;top:2px;margin:0;flex-wrap:nowrap}}
 details.about summary{cursor:pointer;color:var(--accent);font-size:12.5px;list-style:none;display:inline-block}
 details.about summary::-webkit-details-marker{display:none}
 details.about summary::before{content:"ⓘ ";}
@@ -320,12 +323,13 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <button data-tab="about" class="minor"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm-.75 6.5h1.5V17h-1.5V9.5Zm.75-3.2a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"/></svg><span>راهنما</span></button>
   </nav>
   <button id="langbtn" type="button" title="English / فارسی">English</button>
+  <div class="seg unitsw" id="unitsw" role="group" aria-label="unit" title="واحد طول موج در همه‌ی ابزارها"><button type="button" data-u="um">µm</button><button type="button" data-u="nm">nm</button></div>
   <form method="post" action="/logout" class="logout" id="logoutf"><button type="submit">خروج</button></form>
 </aside>
 
 <main>
   <div id="sitebanner" class="card" hidden style="border:1px solid var(--accent);background:var(--soft)"></div>
-<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p><button class="alt" id="sharelink" hidden>🔗 کپی لینک این محاسبه</button><button class="alt" id="printrep" hidden>🖨 گزارش این محاسبه (چاپ یا PDF)</button></div>
+<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p><span class="headbtns"><button class="alt" id="sharelink" hidden>🔗 کپی لینک این محاسبه</button><button class="alt" id="printrep" hidden>🖨 گزارش این محاسبه (چاپ یا PDF)</button></span></div>
 <section id="tab-search">
   <div class="card">
     <textarea id="q" placeholder="سؤال را به فارسی یا انگلیسی بنویسید، مثلاً: ضرایب سلمایر بلور LBO"></textarea>
@@ -472,8 +476,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
         <option value="spdc">SPDC — تولید جفت فوتون (پمپ → سیگنال + آیدلر)</option>
         <option value="thg">THG — سه‌برابرکردن بسامد (λ + λ/2 → λ/3)</option>
       </select></label>
-      <label><span id="pmla">طول موج اصلی</span> <input id="pma" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.064" style="width:96px"> µm</label>
-      <label id="pmbwrap" hidden><span id="pmlb">طول موج دوم</span> <input id="pmb" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.532" style="width:96px"> µm</label>
+      <label><span id="pmla">طول موج اصلی</span> <input id="pma" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.064" style="width:96px"> <span class="lu">µm</span></label>
+      <label id="pmbwrap" hidden><span id="pmlb">طول موج دوم</span> <input id="pmb" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.532" style="width:96px"> <span class="lu">µm</span></label>
       <span id="pmderived"></span>
     </div>
     <div class="row">
@@ -523,9 +527,9 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     </div>
     <p class="hint" id="svwanthint" style="margin:4px 0 0"></p>
     <div class="row">
-      <label id="svlpw">λ پمپ <input id="svlp" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> µm</label>
-      <label id="svlsw">λ سیگنال <input id="svls" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> µm</label>
-      <label id="svliw">λ آیدلر <input id="svli" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> µm</label>
+      <label id="svlpw">λ پمپ <input id="svlp" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> <span class="lu">µm</span></label>
+      <label id="svlsw">λ سیگنال <input id="svls" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> <span class="lu">µm</span></label>
+      <label id="svliw">λ آیدلر <input id="svli" type="text" inputmode="decimal" dir="ltr" data-num style="width:84px"> <span class="lu">µm</span></label>
       <span id="svderived" class="derived" hidden></span>
     </div>
     <div class="row">
@@ -570,8 +574,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
         <option value="spdc">SPDC — تولید جفت فوتون (پمپ → سیگنال + آیدلر)</option>
         <option value="thg">THG — سه‌برابرکردن بسامد (λ + λ/2 → λ/3)</option>
       </select></label>
-      <label><span id="advla">طول موج اصلی</span> <input id="adva" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.064" style="width:96px"> µm</label>
-      <label id="advbwrap" style="display:none"><span id="advlb">طول موج دوم</span> <input id="advb" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.532" style="width:96px"> µm</label>
+      <label><span id="advla">طول موج اصلی</span> <input id="adva" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.064" style="width:96px"> <span class="lu">µm</span></label>
+      <label id="advbwrap" style="display:none"><span id="advlb">طول موج دوم</span> <input id="advb" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.532" style="width:96px"> <span class="lu">µm</span></label>
     </div>
     <div class="row">
       <label title="کمترین دما = دمای اتاق یا آزمایشگاه؛ بیشترین دما = بالاترین دمایی که آون بلور شما می‌رسد (بی‌آون: همان دمای اتاق)">دمای کار: از <input id="advlo" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="20" style="width:64px"> تا <input id="advhi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="60" style="width:64px"> °C</label>
@@ -620,8 +624,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label title="فرمول ضریب شکست (Sellmeier) و بازه‌ی طول موجی که فرمول در آن معتبر است">منبع ضریب شکست <select id="spsrc" style="max-width:240px"></select></label>
     </div>
     <div class="row">
-      <label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> µm</label>
-      <label>طول موج فوتون ۱ <input id="spl1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.55" style="width:84px"> µm</label>
+      <label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> <span class="lu">µm</span></label>
+      <label>طول موج فوتون ۱ <input id="spl1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.55" style="width:84px"> <span class="lu">µm</span></label>
       <span id="spl2" class="hint" style="direction:ltr"></span>
       <label>طول بلور <input id="spL" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:70px"> mm</label>
     </div>
@@ -722,7 +726,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <button type="button" class="alt tierbtn" title="رنگ‌ها یعنی چه؟">ⓘ</button>
     </div>
     <div class="row">
-      <label>طول موج لیزر <input id="pwlam" type="text" inputmode="decimal" dir="ltr" data-num value="1.064" style="width:84px"> µm</label>
+      <label>طول موج لیزر <input id="pwlam" type="text" inputmode="decimal" dir="ltr" data-num value="1.064" style="width:84px"> <span class="lu">µm</span></label>
       <label>دمای بلور <input id="pwT" type="text" inputmode="decimal" dir="ltr" data-num value="25" style="width:64px"> °C</label>
       <label>طول بلور <input id="pwL" type="text" inputmode="decimal" dir="ltr" data-num value="10" style="width:60px"> mm</label>
       <span class="hint" id="pwharm" style="direction:ltr"></span>
@@ -776,7 +780,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <p class="hint">شدت و شار انرژی قله‌ی باریکه‌ی شما با آستانه‌ی آسیبی که مقاله‌های مجموعه برای همان بلور گزارش کرده‌اند مقایسه می‌شود. آستانه با پهنای پالس شما مقیاس می‌شود (شار آستانه ∝ √τ، برای پالس‌های ۱۰ پیکوثانیه تا حدود یک میکروثانیه)، و بیشترین انرژی پالس، بیشترین توان و کوچک‌ترین قطر باریکه‌ای که هنوز با ضریب اطمینان شما ایمن است گفته می‌شود. آستانه‌ی آسیب به کیفیت بلور، پوشش سطح، طول موج و تعداد پالس‌ها بسیار وابسته است: این عددها برآوردند، نه ضمانت.</p>
     <div class="row">
       <label>بلور <select id="dmmat" class="xsel"></select></label>
-      <label>طول موج <input id="dmlam" type="text" inputmode="decimal" dir="ltr" data-num value="1.064" style="width:80px"> µm</label>
+      <label>طول موج <input id="dmlam" type="text" inputmode="decimal" dir="ltr" data-num value="1.064" style="width:80px"> <span class="lu">µm</span></label>
       <button type="button" class="alt tierbtn" title="رنگ‌ها یعنی چه؟">ⓘ</button>
     </div>
     <div class="row">
@@ -1038,17 +1042,53 @@ function showTab(name, fromHistory = false) {
 const ASCII_NUM = (t) => t.replace(/[۰-۹]/g, (c) => c.charCodeAt(0) - 0x06f0).replace(/[٠-٩]/g, (c) => c.charCodeAt(0) - 0x0660)
   .replace(/[٫]/g, ".").replace(/[٬]/g, "").replace(/[−–]/g, "-");
 // A wavelength in µm boxes typed in nm (1064 for 1.064): a one-click fix beside the box
+// The wavelength unit of the whole site (µm or nm), kept in this browser (under the refractive-index tab's old key, so
+// a choice made there carries over). Every wavelength box shows it; the calculators read the boxes in µm through
+// lamv / lamOr and write them through setLam; links and saved fields keep µm, so they open right in either unit.
+const LAM_BOXES = ["pma", "pmb", "adva", "advb", "splp", "spl1", "svlp", "svls", "svli", "pwlam", "dmlam"];
+let SITE_UNIT = store.get("riunit") === "nm" ? "nm" : "um";
+const lamK = () => (SITE_UNIT === "nm" ? 1000 : 1);
+const lamUnit = () => (SITE_UNIT === "nm" ? "nm" : "µm");
+const lamv = (id) => +$(id).value / lamK();
+const lamOr = (id) => { const v = $(id).value.trim(); return v === "" || !Number.isFinite(+v) ? null : +v / lamK(); };
+const setLam = (id, um) => { $(id).value = um === "" || um == null || !Number.isFinite(+um) ? "" : String(+(+um * lamK()).toPrecision(10)); };
+const lamTxt = (um, d = 4) => `${(um * lamK()).toFixed(SITE_UNIT === "nm" ? Math.max(1, d - 3) : d)} ${lamUnit()}`;
+function setUnit(u) {
+  if (u === SITE_UNIT) return;
+  const vals = LAM_BOXES.map((id) => [id, lamOr(id)]);
+  SITE_UNIT = u; store.set("riunit", u);
+  for (const [id, v] of vals) if (v != null) setLam(id, v);
+  showUnit();
+  document.querySelectorAll(".nmfix").forEach((x) => x.remove());
+  document.dispatchEvent(new CustomEvent("unitchange"));
+}
+function showUnit() {
+  for (const el of document.querySelectorAll(".lu")) el.textContent = lamUnit();
+  for (const b of $("unitsw").children) b.classList.toggle("on", b.dataset.u === SITE_UNIT);
+}
+// the boxes' defaults in the page are in µm
+if (SITE_UNIT === "nm") for (const id of LAM_BOXES) { const v = $(id).value.trim(); if (v !== "" && Number.isFinite(+v)) $(id).value = String(+(+v * 1000).toPrecision(10)); }
+showUnit();
+// the switch in the side bar; the refractive-index tab's own buttons follow it (and it follows them)
+$("unitsw").onclick = (e) => {
+  const u = e.target.closest("[data-u]")?.dataset.u; if (!u) return;
+  setUnit(u);
+  const ri = document.querySelector(`#riunits [data-u="${u}"]`); if (ri && !ri.classList.contains("on")) ri.click();
+};
 const UM_BOXES = new Set(["pma", "pmb", "adva", "advb", "splp", "spl1", "svlp", "svls", "svli", "riprobe", "rilo", "rihi", "pwlam", "dmlam"]);
 document.addEventListener("change", (e) => {
   const el = e.target; if (!(el instanceof HTMLInputElement) || !UM_BOXES.has(el.id)) return;
   const old = el.parentElement.querySelector(".nmfix");
   if (old && old.dataset.v === el.value) return; // the same value (the box loses focus to the fix button itself)
   old?.remove();
-  const v = +el.value, riNm = el.id.startsWith("ri") && document.querySelector('#riunits [data-u="nm"]')?.classList.contains("on");
-  if (!(v > 100) || riNm) return;
+  const v = +el.value, nm = el.id.startsWith("ri") ? document.querySelector('#riunits [data-u="nm"]')?.classList.contains("on") : SITE_UNIT === "nm";
+  // a box in µm with a number over 100 was typed in nm; a box in nm with a number under 20 was typed in µm
+  const to = !nm && v > 100 ? v / 1000 : nm && v > 0 && v < 20 ? v * 1000 : null;
+  if (to === null) return;
   const fix = document.createElement("button"); fix.type = "button"; fix.className = "alt nmfix"; fix.dataset.v = el.value;
-  fix.textContent = LANG === "en" ? `Did you mean ${v} nm = ${+(v / 1000).toPrecision(6)} µm? Fix` : `منظورتان ${v} nm = ${+(v / 1000).toPrecision(6)} µm بود؟ اصلاح`;
-  fix.onclick = () => { el.value = String(+(v / 1000).toPrecision(6)); fix.remove(); el.dispatchEvent(new Event("change", { bubbles: true })); };
+  fix.textContent = nm ? (LANG === "en" ? `Did you mean ${v} µm = ${+to.toPrecision(6)} nm? Fix` : `منظورتان ${v} µm = ${+to.toPrecision(6)} nm بود؟ اصلاح`)
+    : (LANG === "en" ? `Did you mean ${v} nm = ${+to.toPrecision(6)} µm? Fix` : `منظورتان ${v} nm = ${+to.toPrecision(6)} µm بود؟ اصلاح`);
+  fix.onclick = () => { el.value = String(+to.toPrecision(6)); fix.remove(); el.dispatchEvent(new Event("change", { bubbles: true })); };
   el.after(fix);
 }, true);
 document.addEventListener("input", (e) => {
@@ -1833,12 +1873,13 @@ const setProbe = (um) => { $("riprobe").value = fmtL(um); };
 $("riunits").onclick = (e) => {
   const u = e.target.dataset.u; if (!u || u === RI.unit) return;
   const [lo, hi] = getRange(), probe = getProbe();
-  RI.unit = u; store.set("riunit", u);
+  RI.unit = u; store.set("riunit", u); setUnit(u); // the whole site follows
   for (const b of $("riunits").children) b.classList.toggle("on", b.dataset.u === u);
   for (const el of document.querySelectorAll(".riunit")) el.textContent = unitName();
   setRange(lo, hi); setProbe(probe); render();
 };
-if (store.get("riunit") === "nm") $("riunits").querySelector('[data-u="nm"]').click();
+// after the rest of this script has run (its render needs constants defined further down)
+setTimeout(() => { if (store.get("riunit") === "nm" && RI.unit !== "nm") $("riunits").querySelector('[data-u="nm"]').click(); }, 0);
 
 // ---------- n(λ) of any curve
 function nOf(e, lam) {
@@ -2321,7 +2362,7 @@ const usefulLen = (r) => { const g = Math.max(...r.gvm_fs_mm.map(Math.abs)); ret
 const fmtD = (r) => (r.deff == null ? "—" : r.deff < 0.005 ? "≈ 0" : r.deff.toFixed(2));
 const covers = (src, w) => [w.l1, w.l2, w.l3].every((l) => l >= src.range_um[0] - 1e-9 && l <= src.range_um[1] + 1e-9);
 function inputs() {
-  const proc = $("pmproc").value, a = +$("pma").value, b = +$("pmb").value;
+  const proc = $("pmproc").value, a = lamv("pma"), b = lamv("pmb");
   return { proc, a, b, w: waves(proc, a, b) };
 }
 
@@ -2334,14 +2375,14 @@ window.loadPM = async () => {
     fetch("/ri/props.json").then((r) => r.json()).catch(() => ({})), fetch("/ri/procs.json").then((r) => r.json()).catch(() => null)]);
   // partial tensors (not all elements, or not in the dielectric frame) would give a wrong d_eff: card only
   PM.dij = Object.fromEntries(Object.entries(PM.dij).filter(([, v]) => !v.partial));
-  const saved = store.get("pm"); if (saved) { $("pmproc").value = saved.proc; $("pma").value = saved.a; $("pmb").value = saved.b; }
+  const saved = store.get("pm"); if (saved) { $("pmproc").value = saved.proc; setLam("pma", saved.a); setLam("pmb", saved.b); }
   const mat = saved?.mat && PM.list.some((c) => key(c) === saved.mat) ? saved.mat : "BaB2O4";
   $("pmmore").checked = !PM.dij[mat];
   fillMats(); setProc(); pick(mat);
 };
 
 window.pmSelectCrystal = (mat) => {
-  if (!PM.list) { store.set("pm", { proc: $("pmproc").value, a: +$("pma").value, b: +$("pmb").value, ...store.get("pm"), mat }); return; }
+  if (!PM.list) { store.set("pm", { proc: $("pmproc").value, a: lamv("pma"), b: lamv("pmb"), ...store.get("pm"), mat }); return; }
   if (!PM.list.some((c) => key(c) === mat)) return;
   if (!PM.dij[mat] && !$("pmmore").checked) { $("pmmore").checked = true; fillMats(); }
   pick(mat);
@@ -2383,11 +2424,11 @@ function setProc() {
   const [la, lb] = PROC[$("pmproc").value];
   $("pmla").textContent = la; $("pmlb").textContent = lb; $("pmbwrap").hidden = !lb;
   const { proc, w } = inputs();
-  const f = (x) => (Number.isFinite(x) && x > 0 ? x.toFixed(4) : "—"), a = +$("pma").value, b = +$("pmb").value;
+  const f = (x) => (Number.isFinite(x) && x > 0 ? x.toFixed(4) : "—"), a = lamv("pma"), b = lamv("pmb");
   // the derived wave, as a result beside the boxes; a signal not longer than the pump has no idler, and says why
   if (PAIR.has(proc) && a > 0 && b > 0 && !(b > a)) $("pmderived").innerHTML = '<span class="err">سیگنال باید بلندتر از پمپ باشد (λs &gt; λp)؛ آیدلر = 1/(1/λp − 1/λs) منفی می‌شود.</span>';
-  else if (PAIR.has(proc)) $("pmderived").innerHTML = a > 0 && b > 0 ? `<span class="derived" title="از پایستگی انرژی: 1/λi = 1/λp − 1/λs">λ آیدلر = <b>${f(w.l2)} µm</b>${Math.abs(b - 2 * a) < 1e-9 ? " · تبهگن (سیگنال = آیدلر)" : b > 2 * a ? " · آیدلر کوتاه‌تر از سیگنال" : ""}</span>` : "";
-  else $("pmderived").innerHTML = a > 0 && (ONE.has(proc) || b > 0) ? `<span class="derived">λ خروجی = <b>${f(w.l3)} µm</b></span>` : "";
+  else if (PAIR.has(proc)) $("pmderived").innerHTML = a > 0 && b > 0 ? `<span class="derived" title="از پایستگی انرژی: 1/λi = 1/λp − 1/λs">λ آیدلر = <b>${lamTxt(w.l2)}</b>${Math.abs(b - 2 * a) < 1e-9 ? " · تبهگن (سیگنال = آیدلر)" : b > 2 * a ? " · آیدلر کوتاه‌تر از سیگنال" : ""}</span>` : "";
+  else $("pmderived").innerHTML = a > 0 && (ONE.has(proc) || b > 0) ? `<span class="derived">λ خروجی = <b>${lamTxt(w.l3)}</b></span>` : "";
 }
 
 // Common laser lines: when a crystal's sources cannot take the entered wavelengths (e.g. ZGP at 1.064 µm, whose
@@ -2422,7 +2463,7 @@ function pick(mat, label, fit = true) {
   if (c.sources[0].isotropic) { // cubic: no angle phase matching; keep the wavelengths in the formula's range
     if (!covers(c.sources[0], w)) { // the first (preferred) formula, inside the transparency range
       const line = LINES[proc].find(([x, y]) => covers(c.sources[0], waves(proc, x, y)));
-      if (line) { $("pma").value = line[0]; if (!ONE.has(proc)) $("pmb").value = line[1]; ({ w } = inputs()); }
+      if (line) { setLam("pma", line[0]); if (!ONE.has(proc)) setLam("pmb", line[1]); ({ w } = inputs()); }
     }
     PM.moved = "بلور مکعبی است و تطبیق فاز زاویه‌ای ندارد؛ دوره‌ی QPM آن در پایین جدول آمده است.";
     fit = false;
@@ -2432,7 +2473,7 @@ function pick(mat, label, fit = true) {
     if (!fit) PM.moved = `این بلور با فرمول‌های موجود در هیچ طول موجی از بازه‌اش برای ${PNAME[proc]} تطبیق فاز زاویه‌ای (در صفحه‌های اصلی) ندارد؛ دوشکستی آن کم است و در عمل با قطبش تناوبی (QPM) به کار می‌رود.`;
     else if (na !== a || (!ONE.has(proc) && nb !== b)) {
       PM.moved = `طول موج${ONE.has(proc) ? "" : "‌های"} قبلی (${ONE.has(proc) ? a : a + " و " + b} µm) در بازه‌ی منبع‌های این بلور نبود یا تطبیق فاز نداشت؛ طول موج خودکار به ${ONE.has(proc) ? na : na + " و " + nb} µm تغییر کرد. می‌توانید آن را عوض کنید.`;
-      $("pma").value = na; if (!ONE.has(proc)) $("pmb").value = nb;
+      setLam("pma", na); if (!ONE.has(proc)) setLam("pmb", nb);
       ({ w } = inputs());
     }
   }
@@ -2440,7 +2481,7 @@ function pick(mat, label, fit = true) {
   // the source the user chose (or a link or the advisor named) is returned to as soon as it works again
   if (label) PM.want = label; else if (PM.crystal !== c) PM.want = null;
   const wanted = c.sources.find((s) => s.label === PM.want);
-  const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, +$("pma").value, +$("pmb").value).length;
+  const has = (s) => covers(s, w) && solveAll(nAt(s), s.kind, proc, lamv("pma"), lamv("pmb")).length;
   // the source kept, else the most trusted one that phase-matches (read from the measuring paper first); when none
   // covers the wavelengths (a typing slip, nm for µm) the source stays
   const byTier = c.sources.slice().sort((p, q) => (TIER_RANK[p.tier] ?? 9) - (TIER_RANK[q.tier] ?? 9));
@@ -2500,7 +2541,7 @@ function run() {
       + (other < 0 && covers(stretch(src), w) ? ` <button class="alt" id="pmextra">محاسبه با برون‌یابی فرمول (تا ۱۰٪ بیرون از بازه)</button>` : "") + `</td></tr>`;
     if ($("pmextra")) $("pmextra").onclick = () => { PM.extrapolate = true; run(); };
     if (other >= 0) $("pmother").onclick = () => { $("pmsrc").value = String(other); $("pmsrc").onchange(); };
-    else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { $("pma").value = fit[0]; $("pmb").value = fit[1]; } pick(key(c)); };
+    else $("pmfit").onclick = () => { const fit = fitWaves(c, proc); if (fit) { setLam("pma", fit[0]); setLam("pmb", fit[1]); } pick(key(c)); };
   } else {
     const rows = solveAll(nAt(src), src.kind, proc, a, b).map((r) => withD(c, src, r));
     offCard(c, src, proc, a, b, rows);
@@ -2756,13 +2797,14 @@ function compareAll() {
 // the advisor with the same process and wavelengths
 $("pmtoadv").onclick = () => {
   const { proc, a, b } = inputs();
-  $("advproc").value = proc; $("advproc").dispatchEvent(new Event("change")); $("adva").value = a; if (!ONE.has(proc)) $("advb").value = b;
+  $("advproc").value = proc; $("advproc").dispatchEvent(new Event("change")); setLam("adva", a); if (!ONE.has(proc)) setLam("advb", b);
   showTab("advisor"); setTimeout(() => $("advgo").click(), 300);
 };
 
+document.addEventListener("unitchange", () => { if (PM.list) { setProc(); svDerived(); } });
 $("pmproc").onchange = () => {
   const p = $("pmproc").value, [a, b] = START[p];
-  $("pma").value = a; if (b) $("pmb").value = b;
+  setLam("pma", a); if (b) setLam("pmb", b);
   setProc(); fillMats();
   // a crystal whose formulas cannot hold the new process (THG needs a range spanning a factor 3) leaves the menu
   const kept = [...$("pmmat").options].some((o) => o.value === key(PM.crystal));
@@ -2850,12 +2892,12 @@ function svWant(w) {
 }
 // the third wave when two are given (energy conservation), shown as a result; a wrong order is said at once
 function svDerived() {
-  const box = $("svderived"), w = PM.svWant, lp = numOr("svlp"), ls = numOr("svls");
+  const box = $("svderived"), w = PM.svWant, lp = lamOr("svlp"), ls = lamOr("svls");
   box.hidden = true;
   if (w !== "T" && w !== "x") return;
   if (lp > 0 && ls > 0) {
     box.hidden = false;
-    box.innerHTML = ls > lp ? `λ آیدلر = <b>${(1 / (1 / lp - 1 / ls)).toFixed(4)} µm</b>` : '<span class="err">سیگنال باید بلندتر از پمپ باشد</span>';
+    box.innerHTML = ls > lp ? `λ آیدلر = <b>${lamTxt(1 / (1 / lp - 1 / ls))}</b>` : '<span class="err">سیگنال باید بلندتر از پمپ باشد</span>';
   }
 }
 document.querySelector("#svwant").addEventListener("click", (e) => { const b = e.target.closest("button[data-w]"); if (b) { svWant(b.dataset.w); svRun(); } });
@@ -2868,7 +2910,7 @@ function svFill() {
   // the free solver computes what is left empty: there the idler and the angle or period stay empty (it finds the
   // angle or period); the other modes take the angle or period as given, so it starts filled in
   const free = PM.svWant === "free";
-  $("svlp").value = +lp.toFixed(6); $("svls").value = +ls.toFixed(6); $("svli").value = free ? "" : +(1 / (1 / lp - 1 / ls)).toFixed(6);
+  setLam("svlp", +lp.toFixed(6)); setLam("svls", +ls.toFixed(6)); setLam("svli", free ? "" : +(1 / (1 / lp - 1 / ls)).toFixed(6));
   $("svT").value = tempC() ?? src?.thermo?.t0_c ?? 25; $("svx").value = "";
   const x = free ? null : svSolve({ lp, ls, li: null, T: +$("svT").value, x: null, dk: 0 })?.roots?.[0]?.x;
   if (x != null) $("svx").value = +x.toFixed(4);
@@ -2887,7 +2929,7 @@ function svRun() {
   const info = (html) => { $("svinfo").innerHTML = html; $("svtable").innerHTML = ""; };
   if (!cfg) return info("برای این بلور و منبع پیکربندی‌ای برای حل نیست (بلور مکعبی، یا بدون ضرایب غیرخطی و قطبش تناوبی).");
   const src0 = c.sources[+$("pmsrc").value], src = stretch(src0);
-  const g = { lp: numOr("svlp"), ls: numOr("svls"), li: numOr("svli"), T: numOr("svT"), x: numOr("svx"), dk: (numOr("svdk") ?? 0) / 1000 };
+  const g = { lp: lamOr("svlp"), ls: lamOr("svls"), li: lamOr("svli"), T: numOr("svT"), x: numOr("svx"), dk: (numOr("svdk") ?? 0) / 1000 };
   // a chosen unknown: only its needed boxes count, each must be filled, and the wavelengths must be in order
   const need = SV_NEED[PM.svWant];
   if (need) {
@@ -3007,7 +3049,7 @@ function advCrystals(w) {
   });
 }
 function advInputs() {
-  const proc = $("advproc").value, a = +$("adva").value, b = +$("advb").value;
+  const proc = $("advproc").value, a = lamv("adva"), b = lamv("advb");
   return { proc, a, b, w: waves(proc, a, b) };
 }
 window.loadAdvisor = async () => {
@@ -3163,7 +3205,7 @@ $("advtable").onclick = (e) => {
 $("advproc").onchange = () => {
   const p = $("advproc").value, [la, lb] = PROC[p], [a, b] = START[p];
   $("advla").textContent = la; $("advlb").textContent = lb; $("advbwrap").style.display = ONE.has(p) ? "none" : "";
-  $("adva").value = a; if (b) $("advb").value = b;
+  setLam("adva", a); if (b) setLam("advb", b);
 };
 $("pmevery").onchange = compareAll;
 $("pmrare").onchange = compareAll;
@@ -3357,7 +3399,7 @@ window.loadSPDC = async () => {
   $("spmat").onchange = () => { SP.cfgKey = null; fillSrc(); fitWl(); fillCfg(); $("spinfo").textContent = SP.moved || ""; };
   $("spsrc").onchange = () => { SP.extra = false; fillCfg(); };
   for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
-  $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(+$("splp").value, t).toFixed(4); };
+  $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(lamv("splp"), t).toFixed(4); };
   $("spgo").onclick = run;
   $("spopt").onclick = optimize;
   $("spang").onclick = angles;
@@ -3386,7 +3428,7 @@ window.spSelectCrystal = (mat) => {
 // the first pair one of its sources covers is used instead, and the page says so.
 const SP_LINES = [[0.775, 1.55], [0.405, 0.81], [0.532, 1.064], [1.064, 2.128], [1.55, 3.1], [2.0, 4.0], [3.0, 6.0], [5.0, 10.0]];
 function fitWl() {
-  const c = SP.list.find((x) => x.material === $("spmat").value), lp = +$("splp").value, l1 = +$("spl1").value;
+  const c = SP.list.find((x) => x.material === $("spmat").value), lp = lamv("splp"), l1 = lamv("spl1");
   // a source takes a pair when every axis has an index at the pump and both photons (each axis has its own range)
   const ok = (src, p, q) => { const r = 1 / (1 / p - 1 / q); return [p, q, r].every((l) => l > 0 && spNAt(src)(l).every(Number.isFinite)); };
   SP.moved = "";
@@ -3397,7 +3439,7 @@ function fitWl() {
   for (const [p, q] of SP_LINES) {
     const i = c.sources.findIndex((src) => ok(src, p, q));
     if (i < 0) continue;
-    $("splp").value = p; $("spl1").value = q; $("spsrc").value = String(i);
+    setLam("splp", p); setLam("spl1", q); $("spsrc").value = String(i);
     SP.moved = `طول موج‌های قبلی (${lp} → ${l1} µm) بیرون از گستره‌ی فرمول‌های ${c.material} بود؛ به ${p} → ${q} µm تغییر کرد.`;
     return;
   }
@@ -3408,7 +3450,7 @@ function fillSrc() {
 }
 // Inputs every SPDC computation needs, or why they are wrong ("" when fine); stop(out) shows it and says to stop.
 function spBad() {
-  const lp = +$("splp").value, l1 = +$("spl1").value, L = +$("spL").value;
+  const lp = lamv("splp"), l1 = lamv("spl1"), L = +$("spL").value;
   const blankOr = (id) => !$(id).value.trim() || +$(id).value > 0;
   if (!(lp > 0) || !(l1 > 0)) return "طول موج‌ها باید مثبت باشند (عدد را با نقطه بنویسید، مثل 1.064).";
   if (!(l1 > lp)) return "طول موج فوتون ۱ باید بلندتر از طول موج پمپ باشد (1/λp = 1/λ₁ + 1/λ₂).";
@@ -3428,7 +3470,7 @@ const spStop = (out) => { const why = spBad(); if (why) { $(out).innerHTML = `<s
 // no configuration: say why (a wavelength outside the formula's range) and offer the 10 % extrapolation when it reaches
 function spNoCfg() {
   spClear();
-  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), [lo, hi] = s.range_um;
+  const s = spSrc(), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1), [lo, hi] = s.range_um;
   const out = [lp, l1, l2].filter((l) => l < lo - 1e-9 || l > hi + 1e-9);
   const reach = out.every((l) => l >= lo / (1 + SP_EXTRA) && l <= hi * (1 + SP_EXTRA));
   $("spinfo").innerHTML = out.length
@@ -3439,10 +3481,10 @@ function spNoCfg() {
 }
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
-  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1);
   $("spTinfo").innerHTML = (s.thermo ? `وابستگی دمایی: ${esc(s.thermo.cite || s.thermo.source || "✓")} · ${basisName(s.thermo)}` : "این منبع وابستگی دمایی ندارد؛ محاسبه در دمای اندازه‌گیری فرمول است و دمای کار اثری ندارد.") + tempNote("spT", s.thermo)
     + (s.thermo && spTemp() !== null && spTemp() !== s.thermo.t0_c ? pieceNote(thermoOutside(s, [lp, l1, l2])) : "");
-  $("spl2").innerHTML = spBad() ? `<span class="err">${spBad()}</span>` : `λ₂ = ${l2.toFixed(4)} µm`;
+  $("spl2").innerHTML = spBad() ? `<span class="err">${spBad()}</span>` : `λ₂ = ${lamTxt(l2)}`;
   const opts = [];
   try {
     for (const r of solveAll(nAt, s.kind, "opo", lp, l1)) opts.push({ label: `تطبیق فاز زاویه‌ای: صفحه‌ی ${r.plane}، ${r.type}، زاویه ${r.angle.toFixed(2)}°`, plane: r.plane, angle: r.angle * Math.PI / 180, type: r.type, sol: r });
@@ -3474,10 +3516,11 @@ function fillCfg() {
   $("spcfg").onchange = () => { const o = SP.cfg[+$("spcfg").value]; SP.cfgKey = o ? key(o) : null; };
   fillDeff();
 }
+document.addEventListener("unitchange", () => { if (SP.list) fillCfg(); });
 function run() {
   if (spStop("spinfo")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return spNoCfg();
-  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
+  const s = spSrc(), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
   $("spinfo").textContent = "در حال محاسبه…";
   setTimeout(() => { try { compute(); } catch (err) { $("spres").textContent = ""; $("spinfo").textContent = "خطا در محاسبه: " + err.message; } }, 20);
   function compute() {
@@ -3528,7 +3571,7 @@ function run() {
 function optimize() {
   if (spStop("spinfo")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return spNoCfg();
-  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
+  const s = spSrc(), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1), fil = +$("spfil").value;
   $("spinfo").textContent = "در حال جست‌وجوی پهنای پمپ بهینه…";
   setTimeout(() => {
     const r = bestPumpBandwidth({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
@@ -3544,7 +3587,7 @@ function optimize() {
 function angles() {
   if (spStop("spangres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
-  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1);
   const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
   const tilt = o.qpm ? 0 : +$("sptilt").value * Math.PI / 180, span = +$("spaspan").value / 1000;
   const k = (lam, pol, a) => { const [sl, fa] = eigenIndices(nAt(lam), direction(o.plane, a)); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
@@ -3587,7 +3630,7 @@ function drawAngles(pts) {
 function fillDeff() {
   const o = SP.cfg?.[+$("spcfg").value], c = $("spmat").value, d = SP.dij?.[c]?.d;
   if (!o || !d) { $("spdeff").value = ""; $("spdeffinfo").textContent = d ? "" : `ضرایب d برای ${c} در سایت نیست؛ d_eff را وارد کنید.`; return; }
-  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1);
   try {
     let v;
     if (o.qpm) {
@@ -3602,7 +3645,7 @@ function fillDeff() {
 function pairs() {
   if (spStop("spratres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
-  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
+  const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
   const dEff = +$("spdeff").value, P = +$("sppow").value;
   if (!(dEff > 0) || !(P > 0)) { $("spratres").textContent = "d_eff و توان پمپ را وارد کنید."; return; }
   const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
@@ -3629,7 +3672,7 @@ function pairs() {
 function counts() {
   if (spStop("spcntres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
-  const s = spSrc(), nAt = spNAt(s), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
+  const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
   const dEff = +$("spdeff").value, P = +$("sppow").value;
   if (!(dEff > 0) || !(P > 0)) { $("spcntres").textContent = "d_eff و توان پمپ را وارد کنید."; return; }
   // transmissions and efficiencies: a fraction (0.6) or a percentage (60, as data sheets write it)
@@ -3674,7 +3717,7 @@ function counts() {
 function fiber(optimize) {
   if (spStop("spfibres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
-  const s = spSrc(), lp = +$("splp").value, l1 = +$("spl1").value, l2 = 1 / (1 / lp - 1 / l1);
+  const s = spSrc(), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1);
   const dir = direction(o.plane, o.angle), pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
   const k = (lam, pol) => { const [sl, fa] = eigenIndices(spNAt(s)(lam), dir); return 2 * Math.PI * (pol === "s" ? sl : fa) / lam; };
   const base = { kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]), L_mm: +$("spL").value };
@@ -3945,7 +3988,7 @@ window.loadPower = async () => {
 const crystal = () => PW.list?.find((c) => c.material === $("pwmat").value);
 function fillSrc() {
   const c = crystal(); if (!c) return;
-  const lam = num("pwlam"), ls = lam > 0 ? [lam, lam / 2] : [];
+  const lam = lamOr("pwlam"), ls = lam > 0 ? [lam, lam / 2] : [];
   const srcs = bySrc(c), fit = srcs.filter(({ x }) => covers(x, ls));
   $("pwsrc").innerHTML = (fit.length ? fit : srcs).map(({ x, i }) => `<option value="${i}">${tierMark(x)} ${esc(x.label)}${x.thermo ? " · T" : ""}</option>`).join("");
 }
@@ -3962,7 +4005,7 @@ function fwhm(g, limit) {
 // Every way the crystal can double λ: critical angles at T, 90° by temperature (anywhere in −50…300 °C) and QPM at T.
 // Each with what the power needs: n_ω, n_2ω, d_eff, walk-off ρ, GVM, and the acceptances of a 1 cm crystal.
 function configs() {
-  const c = crystal(), src = source(), lam = num("pwlam"), T = tempOf("pwT") ?? 25;
+  const c = crystal(), src = source(), lam = lamOr("pwlam"), T = tempOf("pwT") ?? 25;
   if (!c || !src || !(lam > 0)) return { list: [] };
   const w = waves("shg", lam), d = PW.dij[c.material]?.d;
   if (!covers(src, [w.l1, w.l3])) return { list: [], err: "range" };
@@ -4004,8 +4047,8 @@ function fillCfg() {
   $("pwcfg").innerHTML = r.list.length ? r.list.map((x, i) => `<option value="${i}" data-key="${esc(x.how + x.label.split(" · ")[0])}">${esc(x.label + dtxt(x))}</option>`).join("")
     : `<option value="">${r.err === "range" ? "این منبع λ و λ/2 را پوشش نمی‌دهد" : "در این طول موج و دما تطبیق فاز ندارد"}</option>`;
   const again = [...$("pwcfg").options].find((o) => o.dataset.key === keep); if (again) $("pwcfg").value = again.value;
-  const lam = num("pwlam");
-  $("pwharm").textContent = lam > 0 ? `→ ${(lam / 2).toFixed(4)} µm` : "";
+  const lam = lamOr("pwlam");
+  $("pwharm").textContent = lam > 0 ? `→ ${lamTxt(lam / 2)}` : "";
 }
 function setModes() {
   const pulsed = $("pwmode").value === "pulsed";
@@ -4018,6 +4061,7 @@ for (const id of ["pwmode", "pwfocus", "dmmode"]) $(id).addEventListener("change
 $("pwmat").addEventListener("change", () => { fillSrc(); fillCfg(); });
 for (const id of ["pwsrc", "pwT"]) $(id).addEventListener("change", fillCfg);
 $("pwlam").addEventListener("change", () => { fillSrc(); fillCfg(); });
+document.addEventListener("unitchange", () => { const lam = lamOr("pwlam"); $("pwharm").textContent = lam > 0 ? `→ ${lamTxt(lam / 2)}` : ""; });
 
 // The laser of a calculator ("pw" or "dm"), or the reason it cannot be read.
 function laserOf(p) {
@@ -4039,7 +4083,7 @@ function intensityLimit(dmg, laser, S) {
 }
 
 async function runPower() {
-  const c = crystal(), cfg = PW.cfgs[+$("pwcfg").value], lam = num("pwlam"), L = num("pwL"), laser = laserOf("pw"), S = safety("pwS");
+  const c = crystal(), cfg = PW.cfgs[+$("pwcfg").value], lam = lamOr("pwlam"), L = num("pwL"), laser = laserOf("pw"), S = safety("pwS");
   const fail = (t) => { $("pwinfo").innerHTML = `<span class="err">${t}</span>`; $("pwres").hidden = true; };
   if (!c) return fail("بلور را انتخاب کنید.");
   if (!(lam > 0)) return fail("طول موج لیزر را به میکرومتر بنویسید (مثلاً 1.064).");
@@ -4231,7 +4275,7 @@ function beamRadiusUm() {
 }
 function runDamage() {
   const c = PW.list?.find((x) => x.material === $("dmmat").value), dmg = PW.props[c?.material]?.damage, laser = laserOf("dm"), w = beamRadiusUm();
-  const S = safety("dmS"), top = $("dmprof").value === "top", lam = num("dmlam");
+  const S = safety("dmS"), top = $("dmprof").value === "top", lam = lamOr("dmlam");
   const fail = (t) => { $("dminfo").innerHTML = `<span class="err">${t}</span>`; $("dmverdict").hidden = true; $("dmtiles").innerHTML = ""; $("dmnotes").innerHTML = ""; };
   if (!c || !dmg) return fail("بلور را انتخاب کنید.");
   if (laser.err) return fail(laser.err);
@@ -4270,7 +4314,7 @@ function damageNotes(c, dmg, m, laser, lam) {
 }
 const fmtTau = (t) => (t >= 1e-9 ? `${sig(t * 1e9)} ns` : t >= 1e-12 ? `${sig(t * 1e12)} ps` : `${sig(t * 1e15)} fs`);
 function runAll() {
-  const laser = laserOf("dm"), w = beamRadiusUm(), S = safety("dmS"), top = $("dmprof").value === "top", lam = num("dmlam");
+  const laser = laserOf("dm"), w = beamRadiusUm(), S = safety("dmS"), top = $("dmprof").value === "top", lam = lamOr("dmlam");
   if (laser.err || !w) return;
   const rows = PW.list.filter((c) => PW.props[c.material]?.damage?.value).map((c) => {
     const d = PW.props[c.material].damage; return { c, d, m: damageMargin(laser, w, d, S, top) };
@@ -4291,14 +4335,14 @@ $("dmall").addEventListener("click", () => { runDamage(); runAll(); });
 $("dmfill").addEventListener("click", () => {
   const L = PW.last; if (!L) { $("dminfo").innerHTML = '<span class="err">اول توان SHG را حساب کنید.</span>'; return; }
   if ([...$("dmmat").options].some((o) => o.value === L.c.material)) { $("dmmat").value = L.c.material; $("dmmat").dispatchEvent(new Event("change")); }
-  $("dmlam").value = L.lam; $("dmmode").value = $("pwmode").value;
+  setLam("dmlam", L.lam); $("dmmode").value = $("pwmode").value;
   for (const k of ["P", "E", "tau", "rep"]) $("dm" + k).value = $("pw" + k).value;
   $("dmtauu").value = $("pwtauu").value; $("dmshape").value = $("pwshape").value; $("dmS").value = $("pwS").value;
   $("dmw").value = sig(L.r.w0_um); $("dmwu").value = "1e-6"; $("dmwk").value = "r2"; $("dmprof").value = "gauss";
   setModes(); runDamage();
   $("dmcard").scrollIntoView({ behavior: "smooth", block: "start" });
 });
-$("dmmat").addEventListener("change", () => { const d = PW.props[$("dmmat").value]?.damage; if (d?.lambda_um && !$("dmlam").dataset.touched) $("dmlam").value = d.lambda_um; });
+$("dmmat").addEventListener("change", () => { const d = PW.props[$("dmmat").value]?.damage; if (d?.lambda_um && !$("dmlam").dataset.touched) setLam("dmlam", d.lambda_um); });
 $("dmlam").addEventListener("input", () => { $("dmlam").dataset.touched = "1"; });
 </script>
 <script nonce="__CSP_NONCE__">
@@ -4342,7 +4386,7 @@ $("dmlam").addEventListener("input", () => { $("dmlam").dataset.touched = "1"; }
   const bar = (html) => { const d = document.createElement("div"); d.className = "dtools"; d.innerHTML = html; return d; };
   function decorate() {
     for (const t of document.querySelectorAll("main section table")) {
-      if (t.querySelector("input,select,textarea") || t.closest(".tip")) continue;
+      if (t.querySelector("input,select,textarea") || t.closest(".tip") || t.classList.contains("xrows")) continue; // not the crystal cards' small tables
       if (!t.dataset.tools) {
         t.dataset.tools = "1";
         const host = t.parentElement?.style.overflowX === "auto" ? t.parentElement : t;
@@ -4687,7 +4731,9 @@ function fieldsQuery(tab) {
   const q = new URLSearchParams({ tab });
   if (tab === "index" && RI.mat) q.set("rimat", RI.mat);
   for (const el of shareFields(tab)) {
-    const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : SRC_SEL.has(el.id) ? srcName(el.selectedOptions[0]) : el.value;
+    // a wavelength in µm whatever the unit shown (its default is in µm too), so the link opens right in either unit
+    const lam = LAM_BOXES.includes(el.id), um = lam ? lamOr(el.id) : null;
+    const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : SRC_SEL.has(el.id) ? srcName(el.selectedOptions[0]) : lam ? (um == null ? el.value : String(+um.toPrecision(10))) : el.value;
     if (v !== "" && v !== el.defaultValue && !(el.type === "checkbox" && el.checked === el.defaultChecked)) q.set(el.id, v);
   }
   return q;
@@ -4721,6 +4767,7 @@ async function openShared(query = location.hash.slice(1)) {
       el.value = [...el.options].find(match).value;
     }
     else if (el.hasAttribute("data-num") && !/^[-+]?[0-9.,/]*(e[-+]?[0-9]+)?$/i.test(ASCII_NUM(v).trim())) continue; // a number box takes only a number from a link
+    else if (LAM_BOXES.includes(el.id) && Number.isFinite(+ASCII_NUM(v))) setLam(el.id, +ASCII_NUM(v)); // links carry µm
     else el.value = v;
     el.dispatchEvent(new Event("input", { bubbles: true })); el.dispatchEvent(new Event("change", { bubbles: true }));
   }
