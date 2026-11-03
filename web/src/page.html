@@ -162,7 +162,7 @@ select,input{max-width:100%}
 .entry .meta b{font-size:14px}
 .chip.coll{color:var(--ok)}
 
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px}
 #xcdlg{width:min(780px,94vw);max-height:88vh;border:1px solid var(--line);border-radius:14px;padding:0;background:var(--card);color:var(--ink)}
 #xcdlg::backdrop{background:rgba(8,12,18,.6)}
 #xcdlg .xchead{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--card);z-index:1}
@@ -285,6 +285,15 @@ th,td{padding:7px 10px}
 .examples button{background:var(--card);border-color:var(--line);font-size:12.5px;padding:3px 12px}
 .examples button:hover{border-color:var(--accent);color:var(--accent)}
 .tile{background:var(--card);border:1px solid var(--line)}
+/* every number box: label, number and note centred in the box, the box's content in its middle */
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px}
+.tile b{text-align:center;margin:0}.tile small{margin:0}
+/* the boxes of one row share their lines (label, number, note): every number of a row on one line, whatever the label's length */
+@supports (grid-template-rows:subgrid){
+  .tiles{row-gap:12px}
+  .tile{display:grid;grid-row:span 3;grid-template-rows:subgrid;row-gap:6px;justify-items:center;align-items:center;align-content:center}
+  .tile>small{align-self:start}
+}
 @media (max-width:900px){
  body{display:block}
  #side{position:sticky;top:0;height:auto;flex-direction:row;align-items:center;padding:8px 10px;z-index:10;gap:8px}
@@ -302,10 +311,12 @@ th,td{padding:7px 10px}
 .xrows{border-collapse:collapse;width:100%}
 .spout{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);font-size:14px;color:var(--muted)}
 .spout:empty{display:none}
-.spout .tiles{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.spout .tiles{grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px}
 .spout .tile{padding:10px 12px}.spout .tile b{font-size:19px;margin-top:2px}
 .spout .xrows{margin-top:10px;font-size:13.5px;color:var(--ink)}
-.spout .xrows th{color:var(--muted);font-weight:500}
+.spout .xrows th{color:var(--muted);font-weight:500;width:50%;white-space:normal}
+.spout .xrows th,.spout .xrows td{text-align:center!important;padding-inline:8px!important}
+.spout p{text-align:center}
 .spout .xrows tr+tr th,.spout .xrows tr+tr td{border-top:1px solid var(--line)}
 .spout .xrows th,.spout .xrows td{padding:6px 0;padding-inline-end:12px}
 .spout p{margin:8px 0 0;font-size:13px}
@@ -3738,7 +3749,7 @@ function pairs() {
     const f = (v) => v >= 1e6 ? (v / 1e6).toPrecision(3) + "·10⁶" : v >= 1e3 ? Math.round(v).toLocaleString("en-US") : v.toPrecision(3);
     const walk = r.walkoffMrad.some((x) => Math.abs(x) > 1e-3);
     $("spratres").innerHTML = spBox({
-      tiles: [[`${f(r.rate)} /s`, "آهنگ جفت در مُدها (پیش از اتلاف)", `@ ${P} mW`], [`${f(r.perMw)} /s/mW`, "آهنگ به ازای هر میلی‌وات"],
+      tiles: [[`${f(r.rate)} /s`, "آهنگ جفت در مُدها (پیش از اتلاف)", `<bdi dir="ltr">${P} mW</bdi>`], [`${f(r.perMw)} /s/mW`, "آهنگ به ازای هر میلی‌وات"],
         [`${r.fwhmNm.toPrecision(3)} nm`, "پهنای طیفی فوتون ۱ (FWHM)"], [`${f(r.peakPerNm / P)} /s/mW/nm`, "درخشندگی طیفی قله"]],
       rows: [["کمر باریکه‌ها (پمپ، ۱، ۲)", spWaists(wp, w1, w2)], ["d<sub>eff</sub>", `${dEff} pm/V`],
         ["جدایی زمانی دو فوتون در بلور", `${(Math.abs(groupIndex(nAt, o.plane, o.angle, l1, pols[1]) - groupIndex(nAt, o.plane, o.angle, l2, pols[2])) / 2.99792458e-4 * L_mm).toFixed(0)} fs`],
