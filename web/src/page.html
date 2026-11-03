@@ -151,6 +151,14 @@ select,input{max-width:100%}
 .chip.coll{color:var(--ok)}
 
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+#xcdlg{width:min(780px,94vw);max-height:88vh;border:1px solid var(--line);border-radius:14px;padding:0;background:var(--card);color:var(--ink)}
+#xcdlg::backdrop{background:rgba(8,12,18,.6)}
+#xcdlg .xchead{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--card);z-index:1}
+#xcbody{padding:14px 16px}#xcbody .xhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
+.xcfull{width:100%;border-collapse:collapse}.xcfull th{width:150px;text-align:start;vertical-align:top;background:transparent;color:var(--muted);font-weight:600;padding:8px 6px;border-top:1px solid var(--line)}
+.xcfull td{padding:8px 6px;border-top:1px solid var(--line);line-height:1.8}.xcfull .chip{margin:2px 2px}
+.xcbtn{white-space:nowrap}
+@media (max-width:600px){.xcfull th{width:96px;font-size:12px}}
 .dtools{display:flex;gap:6px;justify-content:flex-end;margin:6px 0 4px}.dtools[hidden]{display:none}
 .dtools button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--accent);border-radius:12px;padding:2px 10px;cursor:pointer}
 .dtools button:hover{border-color:var(--accent)}
@@ -346,7 +354,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>ماده <span class="xcombo" id="ribox"><input id="rimat" placeholder="مثلاً BBO، PPKTP، باریم بورات، N-BK7" style="width:300px" autocomplete="off" spellcheck="false" dir="ltr" role="combobox" aria-expanded="false" aria-controls="ripop"><button type="button" class="alt" id="ripopbtn" title="فهرست همه‌ی مواد">▾</button><div class="xcpop" id="ripop" role="listbox" hidden></div></span></label>
       <span id="riinfo" class="hint"></span>
       <div id="rimatsugg" class="hint" style="width:100%"></div>
-      <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button>
+      <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button> <button class="alt" id="ricard">کارت بلور</button>
     </div>
     <div class="row">
       <label>از λ <input id="rilo" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:90px"> تا <input id="rihi" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:90px"> <span class="riunit">µm</span></label>
@@ -3791,7 +3799,7 @@ function card(mat, D, synced) {
     <div class="xhead"><b dir="ltr">${esc(mat)}</b>${name ? `<span class="hint">${esc(name)}</span>` : ""}${kind ? `<span class="chip">${kind}</span>` : ""}</div>
     ${cardText.includes(mat) ? "" : nameNote(XNAME.used(cardText, mat), mat)}
     <table class="xrows">${rows.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</table>
-    <div class="actions">${ri ? btn("index", "نمودار ضریب شکست") : ""}${c ? btn("pm", "تطبیق فاز") : ""}${c && !src.isotropic ? btn("spdc", "جفت فوتون (SPDC)") : ""}${facet ? `<button class="alt" data-xact="filter" data-facet="${esc(facet.value)}">فقط مقاله‌های این بلور</button>` : ""}</div>
+    <div class="actions"><button class="alt" data-card="${esc(mat)}">کارت کامل بلور</button>${ri ? btn("index", "نمودار ضریب شکست") : ""}${c ? btn("pm", "تطبیق فاز") : ""}${c && !src.isotropic ? btn("spdc", "جفت فوتون (SPDC)") : ""}${facet ? `<button class="alt" data-xact="filter" data-facet="${esc(facet.value)}">فقط مقاله‌های این بلور</button>` : ""}</div>
     ${synced ? '<p class="hint" style="margin:6px 0 0">این بلور در صفحه‌های ضریب شکست، تطبیق فاز و SPDC هم انتخاب شد.</p>' : ""}
   </div>`;
 }
@@ -4386,6 +4394,78 @@ const TERMS = [
 })();
 </script>
 <script type="module" nonce="__CSP_NONCE__">
+// ---------- the crystal card: everything the site knows about one crystal in one place (names, symmetry, transparency,
+// nonlinear coefficients, the processes it can phase-match and where, damage threshold, humidity, thermal data, notes,
+// its refractive-index formulas), each value with its source, and buttons to each tool. Any [data-card] button opens it;
+// the tools' crystal pickers get one.
+const XC = { data: null };
+const CLASS_FA = { basic: "پایه", "main-ir": "اصلی فروسرخ", often: "رایج", poled: "قطبیده / ویفر", new: "جدید", sfd: "خوددوبرابرساز",
+  rare: "کمیاب / آرشیوی", newer: "جدیدتر (پس از ۲۰۰۵)" };
+const HYG = { none: "غیرجاذب", slight: "کمی جاذب", yes: "جاذب", strong: "به‌شدت جاذب: گرم یا دربسته نگه دارید" };
+async function load() {
+  XC.data ||= Promise.all(["aniso", "dij", "props", "procs"].map((f) => fetch(`/ri/${f}.json`).then((r) => (r.ok ? r.json() : f === "aniso" ? [] : {})).catch(() => (f === "aniso" ? [] : {}))))
+    .then(([aniso, dij, props, procs]) => ({ aniso, dij, props, procs }));
+  return XC.data;
+}
+const chip = (s, text) => (s?.doc_id ? `<button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what || "")}" data-open-paper="${esc(s.doc_id)}">${text}${s.tier ? " · " + basisName(s) : ""}</button>`
+  : s?.doi ? `<a class="chip" title="${esc(s.what || "")}" href="https://doi.org/${esc(s.doi)}" target="_blank" rel="noopener">${text} (خارج از مجموعه)</a>` : "");
+const page = (s) => (s?.pdf_page ? `، ص ${fa(s.pdf_page)}` : "");
+const none = '<span class="hint">در مقاله‌ها و کتاب‌های این مجموعه پیدا نشد</span>';
+window.crystalCard = async (mat) => {
+  const dlg = $("xcdlg"); $("xcbody").innerHTML = '<p class="hint">در حال بارگذاری…</p>';
+  if (!dlg.open) dlg.showModal();
+  const { aniso, dij, props, procs } = await load();
+  const c = aniso.find((x) => x.material === mat), d = dij[mat], p = props[mat] || {}, pr = procs[mat];
+  const names = XNAME.names(mat).filter((n) => n.toLowerCase() !== mat.toLowerCase());
+  const src = Array.isArray(c?.sources) ? c.sources : [];
+  const kind = src[0]?.isotropic ? "همسان‌گرد (مکعبی)" : src[0]?.kind === "uniaxial" ? "تک‌محوری" : src[0] ? "دومحوری" : "";
+  const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
+  const rows = [];
+  rows.push(row("ساختار", [kind, d?.point_group ? `گروه نقطه‌ای <bdi dir="ltr">${esc(d.point_group)}</bdi>` : "", p.class ? `${CLASS_FA[p.class.value] || esc(p.class.value)} ${chip(p.class, "منبع" + page(p.class))}` : ""].filter(Boolean).join(" · ") || none));
+  rows.push(row("بازه‌ی شفافیت", p.transparency_um ? `<bdi dir="ltr">${p.transparency_um[0]}–${p.transparency_um[1]} µm</bdi>${p.transparency_level ? ` <span class="hint">(${p.transparency_level === "0" ? "تا مرز عبور صفر" : esc(p.transparency_level)})</span>` : ""} ${(p.sources || []).map((s) => chip(s, esc(s.cite || "منبع") + page(s))).join(" ")}` : none));
+  rows.push(row("ضرایب غیرخطی d", d ? `<bdi dir="ltr">${Object.entries(d.d).map(([k, v]) => `d<sub>${esc(k)}</sub> = ${v}`).join(", ")} pm/V</bdi>${d.partial ? ' <span class="hint">(ناقص: فقط بعضی عنصرها)</span>' : ""}<div>${(d.sources || []).map((s) => chip(s, esc(s.cite || "منبع") + page(s))).join(" ")}</div>` : none));
+  const PROCS = [["shg", "SHG", "طول موج اصلی"], ["thg", "THG", "طول موج اصلی"], ["sfg", "SFG", "طول موج ۱"], ["opo", "OPO / SPDC", "پمپ"]];
+  rows.push(row("فرایندهای ممکن", pr ? PROCS.map(([k, n, w]) => `<span class="chip${pr[k] ? " coll" : ""}"><bdi dir="ltr">${n}</bdi>: ${pr[k] ? `${w} <bdi dir="ltr">${pr[k][0]}–${pr[k][1]} µm</bdi>` : "ندارد"}</span>`).join(" ") : none));
+  rows.push(row("آستانه‌ی آسیب", p.damage ? `<bdi dir="ltr">${esc(p.damage.threshold)}${p.damage.pulse ? ", " + esc(p.damage.pulse) : ""}${p.damage.lambda_um ? ", " + p.damage.lambda_um + " µm" : ""}</bdi> ${chip(p.damage, "منبع" + page(p.damage))}` : none));
+  rows.push(row("جذب رطوبت", p.hygroscopic ? `${HYG[p.hygroscopic] || esc(p.hygroscopic)} ${chip(p.hygroscopic_source, "منبع" + page(p.hygroscopic_source))}` : none));
+  rows.push(row("رسانندگی گرمایی", p.thermal_conductivity ? `<bdi dir="ltr">${esc(p.thermal_conductivity.value)} W/(m·K)</bdi> ${chip(p.thermal_conductivity, "منبع" + page(p.thermal_conductivity))}` : none));
+  rows.push(row("انبساط گرمایی", p.thermal_expansion ? `<bdi dir="ltr">${esc(p.thermal_expansion.value)} ×10⁻⁶ /K</bdi> ${chip(p.thermal_expansion, "منبع" + page(p.thermal_expansion))}` : none));
+  if (p.min_pump_um) rows.push(row("کوتاه‌ترین طول موج", `<bdi dir="ltr">${p.min_pump_um.value} µm</bdi> <span class="hint">(جذب دوفوتونی یا باقی‌مانده)</span> ${chip(p.min_pump_um, "منبع" + page(p.min_pump_um))}`));
+  for (const n of p.notes || []) rows.push(row("نکته", `${esc(LANG === "en" ? n.en : n.fa)} ${chip(n, "منبع" + page(n))}`));
+  rows.push(row("فرمول‌های ضریب شکست", src.length ? src.map((s) => `<div>${tierMark(s)} <bdi dir="ltr">${esc(s.label)}</bdi> <span class="hint">· <bdi dir="ltr">${s.range_um[0]}–${s.range_um[1]} µm</bdi>${s.thermo ? " · با وابستگی دمایی" : ""}</span></div>`).join("") : none));
+  const go = (act, text, ok = true) => (ok ? `<button class="alt" data-xcgo="${act}">${text}</button>` : "");
+  const may = (t) => !window.ME || window.ME.tabs.includes(t);
+  $("xcbody").innerHTML = `<div class="xhead"><b dir="ltr" style="font-size:20px">${esc(mat)}</b>${names.length ? `<span class="hint">${esc(names.slice(0, 6).join(" · "))}</span>` : ""}</div>
+    <table class="xrows xcfull">${rows.join("")}</table>
+    <div class="actions" style="margin-top:12px">${go("index", "نمودار ضریب شکست", may("index"))}${go("pm", "تطبیق فاز", may("pm") && c && d)}${go("spdc", "جفت فوتون (SPDC)", may("spdc") && c && d && !src[0]?.isotropic)}${go("power", "توان و ایمنی لیزر", may("power") && (d || p.damage))}${go("search", "جست‌وجو در مقاله‌ها", may("search"))}</div>`;
+  $("xcbody").dataset.mat = mat;
+};
+// the dialog: buttons to the tools, a paper opened from a source chip (the viewer comes up above), closing
+$("xcbody").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-xcgo]"), mat = $("xcbody").dataset.mat;
+  if (e.target.closest("[data-open-paper]")) { $("xcdlg").close(); return; }
+  if (!b) return;
+  $("xcdlg").close();
+  const act = b.dataset.xcgo;
+  if (act === "search") { $("q").value = mat; showTab("search"); if (typeof runSearch === "function") runSearch(); return; }
+  if (act === "power") { showTab("power"); window.loadPower?.().then(() => { for (const id of ["pwmat", "dmmat"]) if ([...$(id).options].some((o) => o.value === mat)) { $(id).value = mat; $(id).dispatchEvent(new Event("change")); } }); return; }
+  ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
+  showTab(act);
+});
+$("xcclose").onclick = () => $("xcdlg").close();
+$("xcdlg").addEventListener("click", (e) => { if (e.target === $("xcdlg")) $("xcdlg").close(); });
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-card]"); if (b) { e.preventDefault(); window.crystalCard(b.dataset.card || b.closest(".xcombo")?.dataset.mat); } });
+// a "crystal card" button beside each tool's crystal picker, for the crystal chosen in it
+for (const id of ["pmmat", "cutmat", "spmat", "pwmat", "dmmat"]) {
+  const box = $(id)?.closest("label")?.nextElementSibling; if (!box?.classList.contains("xcombo")) continue;
+  const b = document.createElement("button"); b.type = "button"; b.className = "alt xcbtn"; b.textContent = "کارت بلور"; b.title = "همه‌ی داده‌های این بلور با منبع‌ها";
+  b.onclick = () => window.crystalCard($(id).value);
+  box.after(b);
+}
+// the refractive-index tab: the card of the material shown, when it is a crystal of the tools
+$("ricard").onclick = () => window.crystalCard(window.RI?.mat);
+</script>
+<script type="module" nonce="__CSP_NONCE__">
 // The validation table: published numbers recomputed with the site's own data and code (web/src/validation.client.js)
 import { entryIndex, thermoShift, refractiveIndex } from "/dispersion.js";
 import { effectiveD, ncpmTemperatures, solveAll, solveMixing } from "/phasematch.js";
@@ -4583,6 +4663,7 @@ document.addEventListener("click", (e) => {
 }, true);
 </script>
 <button id="fbopen" title="نظر، مشکل یا پیشنهاد">💬 بازخورد</button>
+<dialog id="xcdlg" aria-label="کارت بلور"><div class="xchead"><b>کارت بلور</b><button type="button" class="alt" id="xcclose">بستن</button></div><div id="xcbody"></div></dialog>
 <dialog id="logoutdlg"><form method="dialog">
   <h3>خروج</h3>
   <p>خروج همه‌ی چیزهایی را که این صفحه در این مرورگر نگه داشته پاک می‌کند، از جمله <b id="logoutn"></b> فرمول ضریب شکستی که خودتان وارد کرده‌اید.</p>
