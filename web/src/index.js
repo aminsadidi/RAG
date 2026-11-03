@@ -192,7 +192,10 @@ const within = (ms, promise) => Promise.race([promise, new Promise((_, no) => se
 function filterOf(opts) {
   const must = [], str = (v) => (typeof v === "string" && v ? v.slice(0, 200) : null);
   // the request's own values: a number or an object here made Qdrant refuse the query and the search fail (500)
-  if (str(opts.material)) must.push({ key: "material", match: { value: str(opts.material) } });
+  // one folder of the collection or several (the search's crystal families): any of them
+  const mats = (Array.isArray(opts.material) ? opts.material : [opts.material]).map(str).filter(Boolean).slice(0, 60);
+  if (mats.length === 1) must.push({ key: "material", match: { value: mats[0] } });
+  else if (mats.length) must.push({ key: "material", match: { any: mats } });
   if (str(opts.category)) must.push({ key: "category", match: { value: str(opts.category) } });
   if (opts.fullTextOnly) must.push({ key: "source_type", match: { value: "full_text_pdf" } });
   const docIds = Array.isArray(opts.docIds) ? opts.docIds.filter((x) => typeof x === "string").slice(0, 500) : [];

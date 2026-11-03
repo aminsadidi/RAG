@@ -33,6 +33,18 @@ textarea{width:100%;min-height:74px;resize:vertical}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:10px}
 .row label{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:14px}
 .row label[hidden]{display:none}
+.matpick{position:relative;font-size:14px;color:var(--muted)}
+.matpick summary{cursor:pointer;list-style:none;border:1px solid var(--line);border-radius:8px;padding:5px 10px;background:var(--card)}
+.matpick summary::-webkit-details-marker{display:none}
+.matpick summary::after{content:" ▾"}
+.matpick summary b{color:var(--ink);font-weight:600}
+.matpop{position:absolute;z-index:30;inset-inline-start:0;top:calc(100% + 4px);width:min(440px,calc(100vw - 32px));max-height:60vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.matfam{display:flex;gap:8px;align-items:flex-start;padding:6px 4px;border-bottom:1px solid var(--line);color:var(--ink);cursor:pointer}
+.matfam:last-child{border-bottom:0}
+.matfam input{margin-top:3px}
+.matfam .hint{display:block;font-size:12px}
+.matpop .actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+@media (max-width:600px){.matpop{position:fixed;top:auto;bottom:68px;left:16px;right:16px;width:auto;max-height:68vh}}
 select{max-width:100%} /* a long option never widens the page on a phone */
 .xsel{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
 .xcombo{position:relative;display:inline-flex;align-items:stretch;vertical-align:middle}
@@ -339,7 +351,10 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
         <select id="mode"><option value="hybrid">ترکیبی (برداری + BM25)</option><option value="vector">برداری (معنایی)</option><option value="bm25">BM25 (کلیدواژه)</option></select>
       </label>
       <label>تعداد منبع <input id="topk" type="text" inputmode="decimal" dir="ltr" data-num min="1" max="30" value="8" style="width:72px"></label>
-      <label>ماده <select id="material"><option value="">همه</option></select></label>
+      <details class="matpick" id="matpick"><summary>دسته‌ی بلور: <b id="matsum">همه</b></summary>
+        <div class="matpop"><div class="hint">یک یا چند دسته را انتخاب کنید؛ جست‌وجو فقط در مقاله‌های همین دسته‌ها انجام می‌شود.</div>
+          <div id="matlist"></div>
+          <div class="actions"><button type="button" class="alt" id="matclear">همه (بدون فیلتر)</button><button type="button" class="main" id="matok">جست‌وجو با این فیلتر</button></div></div></details>
       <label><input id="fulltext" type="checkbox"> فقط متن کامل مقاله‌ها</label>
       <label title="بهترین بخش هر مقاله؛ یک مقاله نمی‌تواند همه‌ی نتیجه‌ها را بگیرد"><input id="perpaper" type="checkbox"> هر مقاله یک بار</label>
       <label title="۳۰ نتیجه‌ی اول را یک مدل داور دوباره با خود پرسش می‌خواند و مرتب می‌کند؛ دقیق‌تر، حدود یک ثانیه کندتر"><input id="rerank" type="checkbox" checked> مرتب‌سازی دقیق</label>
@@ -1136,7 +1151,7 @@ $("examples").innerHTML = EXAMPLES.map((e) => `<button>${esc(e)}</button>`).join
 for (const b of $("examples").children) b.onclick = () => { $("q").value = b.textContent; runSearch(); };
 
 function options() {
-  return { q: $("q").value, mode: $("mode").value, topK: $("topk").value, material: $("material").value,
+  return { q: $("q").value, mode: $("mode").value, topK: $("topk").value, material: [...MATSEL],
     fullTextOnly: $("fulltext").checked, perPaper: $("perpaper").checked, rerank: $("rerank").checked };
 }
 // a tab's data did not load: the message and a button that tries again (in each box named)
@@ -1623,6 +1638,54 @@ async function drawPage() {
   wrap.querySelector(".box")?.scrollIntoView({ block: "center" });
 }
 
+// ---------- the search's crystal filter: the collection's folders grouped into crystal families; one or several
+// families (or one folder, from a crystal card) are searched together
+const MAT_FAMILIES = [
+  ["بورات‌ها", "BBO, LBO, CLBO, CBO, BiBO, KBBF, YCOB, LCB", /^(BBO|LBO|CLBO|CBO|KBBF|SBBO|YCOB|LCB|BiBO)_/],
+  ["فسفات‌ها و آرسنات‌ها", "KDP, DKDP, ADP, KTP, RTP, KTA, RTA", /^(KDP|ADP|KTP|RTP|KTA)_/],
+  ["نیوبات‌ها، تانتالات‌ها و فروالکتریک‌ها", "LiNbO3/PPLN, LiTaO3/PPLT, KNbO3, SBN, BaTiO3, LiIO3", /^(LiNbO3|LiTaO3|KNbO3|SBN|LiIO3)_?/],
+  ["کالکوژنیدهای فروسرخ", "AgGaS2, AgGaSe2, ZGP, GaSe, LiInS2, CSP, BGSe, CdSe", /^(AgGaS2|AgGaSe2|ZGP|GaSe|LiInS2|AgGaGeS4|CdSiP2|BaGa4Se7|CdSe)(_|$)/],
+  ["نیم‌رساناها و QPM", "GaAs/OP-GaAs, GaP, ZnSe, ZnTe, GaN, Si, Ge", /^(GaAs|GaP|ZnSe|GaN|Si)_/],
+  ["بلورهای آلی و تراهرتز", "DAST, DSTMS, OH1", /^DAST/],
+  ["بلورهای خطی و میزبان لیزر", "CaF2, MgF2, Al2O3, SiO2, calcite, TeO2, YAG, YVO4", /^(Fluorides|Sapphire|Quartz|Calcite|YAG)_/],
+  ["مرورها، نظریه و روش‌ها", "Sellmeier, phase matching, d, dn/dT", /^(Reviews|Phase_matching|Dispersion_models|Nonlinear_coefficients|Sellmeier_equation|Refractive_index_measurement|Thermo-optic|Seeds)/],
+];
+const MATSEL = new Set();
+let MAT_FOLDERS = [], MAT_GROUPS = [];
+function matFill(list) {
+  list = list.filter((m) => m.value);
+  MAT_FOLDERS = list.map((m) => m.value);
+  const groups = MAT_FAMILIES.map(([name, eg, re]) => ({ name, eg, items: list.filter((m) => re.test(m.value)) }));
+  const rest = list.filter((m) => !groups.some((g) => g.items.includes(m)));
+  if (rest.length) groups.push({ name: "سایر", eg: rest.map((m) => m.value.split("_")[0]).join(", "), items: rest });
+  MAT_GROUPS = groups.filter((g) => g.items.length);
+  $("matlist").innerHTML = MAT_GROUPS.map((g, i) => `<label class="matfam"><input type="checkbox" data-fam="${i}"><span>${esc(g.name)}
+    <span class="hint"><bdi dir="ltr">${esc(g.eg)}</bdi> · ${fa(g.items.reduce((a, m) => a + m.count, 0))} بخش</span></span></label>`).join("");
+  matShow();
+}
+function setMats(vals) { MATSEL.clear(); for (const v of vals) if (!MAT_FOLDERS.length || MAT_FOLDERS.includes(v)) MATSEL.add(v); matShow(); }
+function matShow() {
+  const names = [];
+  MAT_GROUPS.forEach((g, i) => {
+    const box = $("matlist").querySelector(`[data-fam="${i}"]`), n = g.items.filter((m) => MATSEL.has(m.value)).length;
+    if (box) { box.checked = n === g.items.length; box.indeterminate = n > 0 && n < g.items.length; }
+    if (n === g.items.length) names.push(g.name);
+    else for (const m of g.items) if (MATSEL.has(m.value)) names.push(m.value.replaceAll("_", " "));
+  });
+  if (!MAT_GROUPS.length) names.push(...MATSEL);
+  $("matsum").textContent = !names.length ? "همه" : names.length <= 2 ? names.join("، ") : `${fa(names.length)} دسته`;
+  $("matsum").title = names.join("، ");
+}
+$("matlist").addEventListener("change", (e) => {
+  const g = MAT_GROUPS[+e.target.dataset.fam]; if (!g) return;
+  for (const m of g.items) e.target.checked ? MATSEL.add(m.value) : MATSEL.delete(m.value);
+  matShow();
+});
+$("matclear").onclick = () => { setMats([]); };
+$("matok").onclick = () => { $("matpick").open = false; if ($("q").value.trim()) runSearch(); };
+document.addEventListener("click", (e) => { if ($("matpick").open && !e.target.closest("#matpick")) $("matpick").open = false; });
+$("matpick").addEventListener("toggle", () => { if ($("matpick").open) loadFacets(); });
+
 // ---------- library / facets
 let facetsLoaded = null;
 function loadFacets() {
@@ -1631,9 +1694,7 @@ function loadFacets() {
     $("types").innerHTML = f.source_type.map((t) => `<tr><td>${TYPE_FA[t.value] || esc(t.value)}</td><td>${fa(t.count)}</td></tr>`).join("");
     const max = Math.max(1, ...f.material.map((m) => m.count));
     $("materials").innerHTML = f.material.map((m) => `<tr><td class="ltr">${esc(m.value)}</td><td style="width:50%"><div class="barfill" style="width:${(m.count / max) * 100}%"></div></td><td>${fa(m.count)}</td></tr>`).join("");
-    const sel = $("material"), keep = sel.value;
-    sel.innerHTML = '<option value="">همه</option>' + f.material.map((m) => `<option value="${esc(m.value)}">${esc(m.value.replaceAll("_", " "))}</option>`).join("");
-    sel.value = keep;
+    matFill(f.material);
     return f;
   }).catch((err) => { facetsLoaded = null; $("stats").textContent = "خطا: " + err.message; });
   return facetsLoaded;
@@ -1641,7 +1702,7 @@ function loadFacets() {
 
 const saved = store.get("opts");
 if (saved) { $("mode").value = saved.mode || "hybrid"; $("topk").value = saved.topK || 8; $("fulltext").checked = !!saved.fullTextOnly; $("perpaper").checked = !!saved.perPaper; $("rerank").checked = saved.precise !== false; }
-loadFacets().then(() => { if (saved?.material) $("material").value = saved.material; });
+loadFacets().then(() => { const m = saved?.material; setMats(Array.isArray(m) ? m : m ? [m] : []); });
 </script>
 <script type="module" nonce="__CSP_NONCE__">
 import { entryIndex } from "/dispersion.js";
@@ -1710,7 +1771,7 @@ function suggestMaterials(query) {
 }
 document.addEventListener("click", (e) => {
   if (e.target.id !== "rinomat") return;
-  $("q").value = `${$("rimat").value} Sellmeier equation refractive index`; $("material").value = ""; showTab("search"); runSearch();
+  $("q").value = `${$("rimat").value} Sellmeier equation refractive index`; setMats([]); showTab("search"); runSearch();
 });
 
 // ---------- user entries (localStorage; the page works without it)
@@ -1798,7 +1859,7 @@ window.riSelectCrystal = (mat) => {
 };
 $("risearch").onclick = () => {
   const m = RI.byName?.get(RI.mat); if (!m) return;
-  $("q").value = `${m.material} refractive index dispersion Sellmeier`; $("material").value = ""; showTab("search"); runSearch();
+  $("q").value = `${m.material} refractive index dispersion Sellmeier`; setMats([]); showTab("search"); runSearch();
 };
 // The material box: suggestions while typing (formula, common names, how many sources), arrows and Enter or a click to
 // choose. Once chosen the box shows the formula with its common names, so "ppktp" is seen to be KTiOPO4 (KTP).
@@ -3854,7 +3915,7 @@ function card(mat, D, synced) {
   const thermo = c ? [...new Set(c.sources.filter((s) => s.thermo).map((s) => s.label))] : [];
   const kind = src ? (src.isotropic ? "همسان‌گرد (مکعبی)" : KIND_FA[src.kind] || "") : "";
   const name = (c?.name || ri?.name || "").replace(/^\S+\s*/, "").replace(/^\(|\)$/g, "");
-  const facet = [...$("material").options].find((o) => o.value && o.value.split(/[_-]/).includes(mat));
+  const facet = MAT_FOLDERS.find((v) => v.split(/[_-]/).includes(mat));
   const rows = [
     src ? ["ضریب شکست", `${indices(src)}<span class="hint"> · ${esc(src.label)} · بازه‌ی فرمول <bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi>${c.sources.length > 1 ? ` · ${fa(c.sources.length)} منبع` : ""}</span>`]
       : ri ? ["ضریب شکست", `${fa(ri.n)} منبع در پایگاه (${fa(ri.formulas)} فرمول) · بازه‌ی <bdi dir="ltr">${+ri.range_um[0].toPrecision(3)}–${+ri.range_um[1].toPrecision(3)} µm</bdi>`] : null,
@@ -3869,7 +3930,7 @@ function card(mat, D, synced) {
     <div class="xhead"><b dir="ltr">${esc(mat)}</b>${name ? `<span class="hint">${esc(name)}</span>` : ""}${kind ? `<span class="chip">${kind}</span>` : ""}</div>
     ${cardText.includes(mat) ? "" : nameNote(XNAME.used(cardText, mat), mat)}
     <table class="xrows">${rows.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join("")}</table>
-    <div class="actions"><button class="alt" data-card="${esc(mat)}">کارت کامل بلور</button>${ri ? btn("index", "نمودار ضریب شکست") : ""}${c ? btn("pm", "تطبیق فاز") : ""}${c && !src.isotropic ? btn("spdc", "جفت فوتون (SPDC)") : ""}${facet ? `<button class="alt" data-xact="filter" data-facet="${esc(facet.value)}">فقط مقاله‌های این بلور</button>` : ""}</div>
+    <div class="actions"><button class="alt" data-card="${esc(mat)}">کارت کامل بلور</button>${ri ? btn("index", "نمودار ضریب شکست") : ""}${c ? btn("pm", "تطبیق فاز") : ""}${c && !src.isotropic ? btn("spdc", "جفت فوتون (SPDC)") : ""}${facet ? `<button class="alt" data-xact="filter" data-facet="${esc(facet)}">فقط مقاله‌های این بلور</button>` : ""}</div>
     ${synced ? '<p class="hint" style="margin:6px 0 0">این بلور در صفحه‌های ضریب شکست، تطبیق فاز و SPDC هم انتخاب شد.</p>' : ""}
   </div>`;
 }
@@ -3917,7 +3978,7 @@ window.crystalCards = async (materials, text) => {
 $("xcards").onclick = (e) => {
   const b = e.target.closest("[data-xact]"); if (!b) return;
   const act = b.dataset.xact, mat = b.dataset.mat;
-  if (act === "filter") { $("material").value = b.dataset.facet; runSearch(); return; }
+  if (act === "filter") { setMats([b.dataset.facet]); runSearch(); return; }
   ({ index: window.riSelectCrystal, pm: window.pmSelectCrystal, spdc: window.spSelectCrystal })[act]?.(mat);
   showTab(act);
 };
