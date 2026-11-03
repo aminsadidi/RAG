@@ -3753,7 +3753,8 @@ const loadData = () => (data ||= Promise.all([
   fetch("/ri/aniso.json").then((r) => r.json()),
   fetch("/ri/dij.json").then((r) => r.json()).catch(() => ({})),
   fetch("/ri/index.json").then((r) => r.json()),
-]).then(([aniso, dij, index]) => ({ aniso, dij, index })).catch((err) => { data = null; throw err; }));
+  fetch("/ri/props.json").then((r) => r.json()).catch(() => ({})),
+]).then(([aniso, dij, index, props]) => ({ aniso, dij, index, props })).catch((err) => { data = null; throw err; }));
 
 const KIND_FA = { uniaxial: "تک‌محوری", biaxial: "دومحوری" };
 const AXES = { uniaxial: [["o", "n<sub>o</sub>"], ["e", "n<sub>e</sub>"]], biaxial: [["x", "n<sub>x</sub>"], ["y", "n<sub>y</sub>"], ["z", "n<sub>z</sub>"]] };
@@ -3787,6 +3788,21 @@ function dLine(d) {
   return `${parts.join("، ")} <bdi dir="ltr">pm/V</bdi>${d.point_group ? ` · گروه نقطه‌ای <bdi dir="ltr">${esc(d.point_group)}</bdi>` : ""}`;
 }
 
+// Safety and handling, from crystal_properties.yml: the damage threshold, hygroscopy, the shortest wavelength it
+// tolerates, the transparency range, and the notes (photorefractive damage), each with its paper
+const HYGRO_FA = { none: "غیرجاذب رطوبت", slight: "کمی جاذب رطوبت", yes: "جاذب رطوبت", strong: "به‌شدت جاذب رطوبت: گرم یا دربسته نگه دارید" };
+const srcChip = (s, text) => (s?.doc_id ? ` <button class="chip coll" style="border:0;cursor:pointer" title="${esc(s.what || "")}" data-open-paper="${esc(s.doc_id)}">${text}${s.pdf_page ? `، ص ${fa(s.pdf_page)}` : ""}</button>` : "");
+function safetyRow(p) {
+  if (!p) return null;
+  const parts = [];
+  if (p.damage) parts.push(`آستانه‌ی آسیب: <bdi dir="ltr">${esc(p.damage.threshold)}${p.damage.pulse ? ", " + esc(p.damage.pulse) : ""}${p.damage.lambda_um ? ", " + p.damage.lambda_um + " µm" : ""}</bdi>${srcChip(p.damage, tierMark(p.damage) + " منبع")}`);
+  if (p.hygroscopic) parts.push(`${HYGRO_FA[p.hygroscopic] || esc(p.hygroscopic)}${srcChip(p.hygroscopic_source, tierMark(p.hygroscopic_source) + " منبع")}`);
+  if (p.min_pump_um) parts.push(`کوتاه‌ترین طول موج قابل تحمل: <bdi dir="ltr">${p.min_pump_um.value} µm</bdi>${srcChip(p.min_pump_um, tierMark(p.min_pump_um) + " منبع")}`);
+  if (p.transparency_um) parts.push(`بازه‌ی شفافیت: <bdi dir="ltr">${p.transparency_um[0]}–${p.transparency_um[1]} µm</bdi>`);
+  for (const n of p.notes || []) parts.push(`<span style="color:var(--warn)">${esc(LANG === "en" ? n.en : n.fa)}</span>${srcChip(n, tierMark(n) + " منبع")}`);
+  return parts.length ? ["ایمنی و نگهداری", parts.map((x) => `<div>${x}</div>`).join("") + `<div class="hint">برای بررسی لیزر خودتان: تب «توان و ایمنی لیزر».</div>`] : null;
+}
+
 function card(mat, D, synced) {
   const c = D.aniso.find((x) => x.material === mat), d = D.dij[mat];
   const ri = D.index.find((m) => m.material === mat && (m.shelf === "main" || m.shelf === "papers"));
@@ -3802,6 +3818,7 @@ function card(mat, D, synced) {
     ["ضرایب غیرخطی", d ? `${dLine(d)}${d.sources?.[0]?.cite ? `<span class="hint"> · ${esc(d.sources[0].cite)} · ${basisName(d.sources[0])}</span>` : ""}`
       + (d.partial ? `<div class="hint">ناقص: فقط بعضی عنصرها اندازه‌گیری شده‌اند${d.frame ? ` و در دستگاه <bdi dir="ltr">${esc(d.frame)}</bdi>` : ""}؛ در محاسبه‌ی d<sub>eff</sub> تطبیق فاز به کار نمی‌روند.</div>` : "")
       : '<span class="hint">در مقاله‌ها و کتاب‌های این مجموعه پیدا نشد</span>'],
+    safetyRow(D.props?.[mat]),
     ["گرمانوری (dn/dT)", thermo.length ? `فرمول وابسته به دما: ${thermo.map(esc).join("، ")}` : '<span class="hint">در مقاله‌ها و کتاب‌های این مجموعه پیدا نشد</span>'],
   ].filter(Boolean);
   const btn = (act, text) => `<button class="alt" data-xact="${act}" data-mat="${esc(mat)}">${text}</button>`;
