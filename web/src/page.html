@@ -159,6 +159,16 @@ select,input{max-width:100%}
 .xcfull td{padding:8px 6px;border-top:1px solid var(--line);line-height:1.8}.xcfull .chip{margin:2px 2px}
 .xcbtn{white-space:nowrap}
 @media (max-width:600px){.xcfull th{width:96px;font-size:12px}}
+#report{display:none}
+html.printing body > :not(#report){display:none!important}
+html.printing #report{display:block;max-width:1000px;margin:0 auto;padding:10px 16px;color:#111;background:#fff}
+#report .rephead{border-bottom:2px solid #1f6feb;padding-bottom:8px;margin-bottom:12px}#report .rephead b{font-size:18px}
+#report .replink{font-size:11px;word-break:break-all}
+#report .repbody .card{box-shadow:none;border:1px solid #ccd;margin-top:10px}#report tr,#report svg,#report .tile,#report .verdict{break-inside:avoid}#report h2,#report h3{break-after:avoid}
+#report .rv{font-weight:600;padding:0 3px;border-bottom:1px dotted #889}
+#report table{border-collapse:collapse}#report th,#report td{border:1px solid #dde}
+#report .repfoot{margin-top:14px;border-top:1px solid #ccd;padding-top:6px}
+@media print{html.printing #report{padding:0}@page{margin:12mm}}
 .dtools{display:flex;gap:6px;justify-content:flex-end;margin:6px 0 4px}.dtools[hidden]{display:none}
 .dtools button{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--card);color:var(--accent);border-radius:12px;padding:2px 10px;cursor:pointer}
 .dtools button:hover{border-color:var(--accent)}
@@ -315,7 +325,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
 
 <main>
   <div id="sitebanner" class="card" hidden style="border:1px solid var(--accent);background:var(--soft)"></div>
-<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p><button class="alt" id="sharelink" hidden>🔗 کپی لینک این محاسبه</button></div>
+<div id="pagehead"><h1 id="ptitle">جست‌وجو در مقاله‌ها</h1><p id="psub"></p><button class="alt" id="sharelink" hidden>🔗 کپی لینک این محاسبه</button><button class="alt" id="printrep" hidden>🖨 گزارش این محاسبه (چاپ یا PDF)</button></div>
 <section id="tab-search">
   <div class="card">
     <textarea id="q" placeholder="سؤال را به فارسی یا انگلیسی بنویسید، مثلاً: ضرایب سلمایر بلور LBO"></textarea>
@@ -4324,7 +4334,7 @@ $("dmlam").addEventListener("input", () => { $("dmlam").dataset.touched = "1"; }
         b.querySelector("[data-csv]").onclick = () => save(`MatRAG-${nameOf(t)}-${stamp()}.csv`, new Blob([csv(cells(t))], { type: "text/csv" }));
         host.before(b); t._bar = b;
       }
-      t._bar.hidden = t.rows.length < 2;
+      if (t._bar.hidden !== t.rows.length < 2) t._bar.hidden = t.rows.length < 2;
     }
     for (const svg of document.querySelectorAll('main section svg[role="img"]')) {
       if (svg.dataset.tools) continue;
@@ -4464,6 +4474,69 @@ for (const id of ["pmmat", "cutmat", "spmat", "pwmat", "dmmat"]) {
 }
 // the refractive-index tab: the card of the material shown, when it is a crystal of the tools
 $("ricard").onclick = () => window.crystalCard(window.RI?.mat);
+</script>
+<script nonce="__CSP_NONCE__">
+// ---------- the report of a calculation: the tool's page as it is now, made for paper or PDF. Boxes and menus become
+// their values, buttons and folds go (the sources stay as text, every <details> opens), with a title, the date and the
+// link that reopens the same calculation. The browser's print dialog saves it as PDF.
+(() => {
+  const REPORT_TABS = ["index", "pm", "advisor", "spdc", "power"];
+  const valueOf = (el) => (el.tagName === "SELECT" ? el.selectedOptions[0]?.textContent.trim() || "—"
+    : el.type === "checkbox" ? (el.checked ? "✓" : "✗") : el.value.trim() || "—");
+  function build(tab) {
+    const sec = $("tab-" + tab), copy = sec.cloneNode(true);
+    // one pass over the page and its copy while they still match element for element: what is hidden on the page is
+    // dropped (except inside a closed <details>, which the report opens), a box keeps its current value
+    const liveAll = [sec, ...sec.querySelectorAll("*")], deadAll = [copy, ...copy.querySelectorAll("*")];
+    deadAll.forEach((el, i) => {
+      const l = liveAll[i]; if (!l || l === sec) return;
+      if (/^(INPUT|SELECT|TEXTAREA)$/.test(l.tagName)) {
+        if (l.type === "file" || l.type === "hidden" || l.classList.contains("xsel")) el.dataset.drop = "1"; else el.dataset.val = valueOf(l);
+        return;
+      }
+      const hiddenNow = l.offsetParent === null && !l.closest("svg") && getComputedStyle(l).position !== "fixed";
+      const inFold = l.closest("details:not([open])") && !l.closest("summary") && l.tagName !== "DETAILS";
+      if (hiddenNow && !inFold) el.dataset.drop = "1";
+    });
+    copy.querySelectorAll('[data-drop="1"]').forEach((el) => el.remove());
+    copy.querySelectorAll("[data-val]").forEach((el) => { const b = document.createElement("b"); b.className = "rv"; b.dir = "auto"; b.textContent = el.dataset.val; el.replaceWith(b); });
+    copy.querySelectorAll(".dtools,.term,.jump,.xcpop,.tierbtn,.nmfix,#svwant,#pwboth").forEach((el) => el.remove());
+    copy.querySelectorAll(".card.fold.closed").forEach((el) => el.remove());
+    copy.querySelectorAll("details").forEach((el) => el.setAttribute("open", ""));
+    copy.querySelectorAll("button").forEach((b) => {
+      // a source chip keeps its text; a crystal picker shows the crystal; other buttons go
+      if (b.classList.contains("chip") || b.dataset.openPaper) { const s = document.createElement("span"); s.className = b.className; s.innerHTML = b.innerHTML; b.replaceWith(s); }
+      else b.remove();
+    });
+    copy.querySelectorAll(".xcombo").forEach((x) => { const v = x.querySelector(".rv"); x.replaceWith(v || document.createTextNode("")); });
+    copy.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+    copy.removeAttribute("hidden"); copy.removeAttribute("id"); copy.classList.add("repbody"); // its classes stay: the charts' colours are defined on them // no second #tab-…: the page's scripts would decorate the copy too
+    const [title, sub] = TAB_TITLE[tab] || [tab, ""];
+    const link = `${location.origin}/#${fieldsQuery(tab)}`;
+    const rep = document.createElement("div"); rep.id = "report";
+    rep.innerHTML = `<div class="rephead"><div><b>MatRAG</b> · ${esc(title)}</div><div class="hint">${esc(sub)}</div>
+      <div class="hint">گزارش محاسبه · ${new Date().toLocaleString(LANG === "en" ? "en-GB" : "fa-IR")}</div>
+      <div class="hint">لینکی که همین محاسبه را دوباره باز می‌کند: <bdi dir="ltr" class="replink">${esc(link)}</bdi></div></div>`;
+    rep.append(copy);
+    rep.insertAdjacentHTML("beforeend", '<p class="hint repfoot">این گزارش را MatRAG ساخته است. هر عدد منبعش را کنار خود دارد (🟢 از مقاله‌ی اندازه‌گیری، 🟡 کتاب مرجع، 🟠 پایگاه داده‌ی بازبینی‌نشده، 🔵 محاسبه‌ی نظری).</p>');
+    return rep;
+  }
+  $("printrep").onclick = () => {
+    const tab = document.querySelector("main > section:not([hidden])")?.id.slice(4);
+    if (!REPORT_TABS.includes(tab)) return;
+    $("report")?.remove();
+    document.body.append(build(tab));
+    document.documentElement.classList.add("printing");
+    const done = () => { document.documentElement.classList.remove("printing"); $("report")?.remove(); window.removeEventListener("afterprint", done); };
+    window.addEventListener("afterprint", done);
+    setTimeout(() => window.print(), 60);
+  };
+  // shown on the tool tabs only (the tabs' buttons switch it, as the share link)
+  // (an attribute set to the same value is still a mutation: only a real change is written, or this would loop)
+  const sync = () => { const tab = document.querySelector("main > section:not([hidden])")?.id.slice(4), hide = !REPORT_TABS.includes(tab); if ($("printrep").hidden !== hide) $("printrep").hidden = hide; };
+  new MutationObserver(sync).observe(document.querySelector("main"), { attributes: true, subtree: true, attributeFilter: ["hidden"] });
+  sync();
+})();
 </script>
 <script type="module" nonce="__CSP_NONCE__">
 // The validation table: published numbers recomputed with the site's own data and code (web/src/validation.client.js)

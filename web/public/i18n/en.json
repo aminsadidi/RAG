@@ -1,4 +1,8 @@
 {
+ "🖨 گزارش این محاسبه (چاپ یا PDF)": "🖨 Report of this calculation (print or PDF)",
+ "گزارش محاسبه ·": "Calculation report ·",
+ "لینکی که همین محاسبه را دوباره باز می‌کند:": "The link that reopens this calculation:",
+ "این گزارش را MatRAG ساخته است. هر عدد منبعش را کنار خود دارد (🟢 از مقاله‌ی اندازه‌گیری، 🟡 کتاب مرجع، 🟠 پایگاه داده‌ی بازبینی‌نشده، 🔵 محاسبه‌ی نظری).": "This report was made by MatRAG. Every number carries its source (🟢 from the measuring paper, 🟡 reference book, 🟠 unreviewed database, 🔵 theoretical calculation).",
  "تا مرز عبور صفر": "to the zero-transmission edges",
  "کارت بلور": "Crystal card",
  "کارت کامل بلور": "Full crystal card",
