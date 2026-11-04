@@ -311,6 +311,10 @@ th,td{padding:7px 10px}
 .xrows{border-collapse:collapse;width:100%}
 .spout{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);font-size:14px;color:var(--muted)}
 .spout:empty{display:none}
+.qpmtab tr[data-q]{cursor:pointer}.qpmtab tr.on td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.qpmfigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
+.qpmfigs h3{margin:0 0 4px;font-size:14px}
+.qpmtry{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .spout .tiles{grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px}
 .spout .tile{padding:10px 12px}.spout .tile b{font-size:19px;margin-top:2px}
 .spout .xrows{margin-top:10px;font-size:13.5px;color:var(--ink)}
@@ -500,7 +504,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     🔵 <b>محاسبه‌ی نظری</b>: از محاسبه (مثلاً DFT)، نه اندازه‌گیری.
   </div></template>
   <nav class="jump" id="pmjump" aria-label="بخش‌های این صفحه">
-    <a href="#" data-to="pmincard">ورودی‌ها</a><a href="#" data-to="pmrescard">نتیجه</a><a href="#" data-to="pmoff" id="pmjumpoff" hidden>جهت‌های دیگر</a><a href="#" data-to="solvecard">حل‌کننده</a><a href="#" data-to="pmchartcard">نمودار</a><a href="#" data-to="pmallcard">بلورهای دیگر</a>
+    <a href="#" data-to="pmincard">ورودی‌ها</a><a href="#" data-to="pmrescard">نتیجه</a><a href="#" data-to="qpmcard">QPM</a><a href="#" data-to="pmoff" id="pmjumpoff" hidden>جهت‌های دیگر</a><a href="#" data-to="solvecard">حل‌کننده</a><a href="#" data-to="pmchartcard">نمودار</a><a href="#" data-to="pmallcard">بلورهای دیگر</a>
   </nav>
   <div class="card" id="pmincard">
     <h2>تطبیق فاز در بلورهای غیرخطی</h2>
@@ -549,6 +553,16 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <div id="pmncpm" style="margin-top:10px"></div>
     <details style="margin-top:10px"><summary class="hint">داده‌هایی که این محاسبه به کار برد (مقاله‌ی فرمول و ضرایب غیرخطی)</summary><p class="hint" id="pminfo" style="margin:6px 0 0"></p></details>
     <p class="hint">θ از محور z (محور نوری در بلور تک‌محوری)؛ در صفحه‌ی xy، زاویه φ از محور x است. s = موج کند (ضریب بزرگ‌تر)، f = موج تند. walk-off بیشترین زاویه‌ی جدایی پرتو از سه موج است (واگردی فضایی). جدایی پالس (GVM) بیشترین اختلاف وارون سرعت گروه بین سه موج است: پالس‌ها در هر میلی‌متر بلور این‌قدر فمتوثانیه از هم جدا می‌شوند، پس برای پالس τ طول مفید بلور حدود τ/GVM است (ستون بعدی برای پالس ۱۰۰ فمتوثانیه). پهنای پذیرش (FWHM) برای بلور ۱ سانتی‌متری داده شده؛ برای بلور L سانتی‌متری تقریباً بر L تقسیم کنید (در تطبیق فاز غیربحرانی، بر √L).</p>
+  </div>
+  <div class="card" style="margin-top:14px" id="qpmcard">
+    <h2>تطبیق فاز شبه‌فازی (QPM)</h2>
+    <p class="hint">در بلور قطبیده‌ی تناوبی (PPLN، PPKTP، PPLT…) یا الگودار (OP-GaAs، OP-GaP)، جهت قطبش بلور با دوره‌ی Λ وارونه می‌شود تا ناهمخوانی فاز را جبران کند: k₃ − k₁ − k₂ = 2πm/Λ. پرتو در امتداد یک محور اصلی می‌رود، پس walk-off ندارد، و می‌شود بزرگ‌ترین ضریب بلور (معمولاً d₃₃، نوع 0) را به کار برد. d<sub>eff</sub> = (2/mπ)·|sin(mπD)|·|d|، با m مرتبه‌ی QPM و D چرخه‌ی کار. فرایند، طول موج‌ها، دما و منبع ضریب شکست همان ورودی‌های بالای صفحه است.</p>
+    <div class="row">
+      <label title="مرتبه‌ی بالاتر دوره را m برابر بلندتر می‌کند (وقتی دوره‌ی مرتبه‌ی اول برای ساخت خیلی کوتاه است، مثل SHG آبی و فرابنفش) ولی d_eff را m برابر کم می‌کند">مرتبه‌ی QPM <select id="qpmm"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label>
+      <label title="سهم دامنه‌های وارونه در هر دوره؛ ۵۰٪ برای مرتبه‌های فرد بهینه است و مرتبه‌های زوج را صفر می‌کند">چرخه‌ی کار <input id="qpmD" type="text" inputmode="decimal" dir="ltr" data-num value="50" style="width:56px"> %</label>
+      <label>طول بلور <input id="qpmL" type="text" inputmode="decimal" dir="ltr" data-num value="10" style="width:56px"> mm</label>
+    </div>
+    <div id="qpmbody"></div>
   </div>
   <div class="card" style="margin-top:14px" id="solvecard">
     <h2 data-fold="solver" data-closed>حل‌کننده: هر مقداری را که نمی‌دانید خالی بگذارید</h2>
@@ -2596,7 +2610,7 @@ function run() {
   const bad = pmBad();
   // the other crystals for the same conversion follow every calculation (in the background, the last one wins)
   clearTimeout(CMP.t); CMP.t = setTimeout(compareAll, 150);
-  if (bad) { $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">${bad}</td></tr>`; for (const id of ["pmqpm", "pmncpm", "pmwarn", "pmhow"]) $(id).innerHTML = ""; return; }
+  if (bad) { $("pmtable").innerHTML = `<tr><td class="err" style="text-align:start">${bad}</td></tr>`; for (const id of ["pmqpm", "pmncpm", "pmwarn", "pmhow", "qpmbody"]) $(id).innerHTML = ""; return; }
   const src0 = c.sources[+$("pmsrc").value], { proc, a, b, w } = inputs();
   // a formula extrapolated by up to 10 % beyond its range, when asked (a row of the advisor that needed it, or the button)
   const src = PM.extrapolate && !covers(src0, w) && covers(stretch(src0), w) ? stretch(src0) : src0;
@@ -2634,7 +2648,7 @@ function run() {
         <td><b>${r.angle.toFixed(2)}°</b>${r.noncritical ? ' <span class="chip coll">NCPM</span>' : ""}</td><td>${r.pol.join(" + ").replace(/ \+ f$/, " → f")}</td>
         <td>${r.n.map((x) => x.toFixed(4)).join(", ")}</td><td><b>${fmtD(r)}</b>${r.phi !== undefined && r.deff > 0.005 ? ` <span class="hint">(φ = ${r.phi}°)</span>` : ""}</td><td>${Math.max(...r.walkoff_mrad).toFixed(1)}</td>
         <td title="1/v_g: wave 1 − 3, 2 − 3, 1 − 2">${Math.max(...r.gvm_fs_mm.map(Math.abs)).toFixed(0)}</td><td>${usefulLen(r)}</td><td>${r.angular_mrad.toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td></tr>`).join("") ||
-       (POLED.has(c.material) || OP.has(c.material) ? '<tr><td colspan="11" style="text-align:start">این بلور برای این طول موج‌ها تطبیق فاز زاویه‌ای ندارد؛ جواب QPM (بلور قطبیده) پایین‌تر آمده است.</td></tr>'
+       (POLED.has(c.material) || OP.has(c.material) ? '<tr><td colspan="11" style="text-align:start">این بلور برای این طول موج‌ها تطبیق فاز زاویه‌ای ندارد؛ جواب QPM در کارت «تطبیق فاز شبه‌فازی (QPM)» پایین‌تر است.</td></tr>'
         : '<tr><td colspan="11" style="text-align:start">در این بلور برای این طول موج‌ها تطبیق فاز (در صفحه‌های اصلی) ممکن نیست.</td></tr>'));
   }
   qpm(c, src, w);
@@ -2745,36 +2759,160 @@ const POLED = new Set(["LiNbO3", "MgO-LiNbO3", "LiTaO3", "Mg-LiTaO3", "KTiOPO4",
 const OP = new Set(["GaAs", "GaP"]);
 // the crystals QPM is offered for in the other tabs (the SPDC tab runs in another script)
 window.QPM_OK = new Set([...POLED, ...OP]);
-function qpm(c, src, w) {
-  if (src.isotropic) return qpmCubic(c, src, w);
-  const d = PM.dij[c.material]?.d;
-  if (!POLED.has(c.material) || !d || !covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
-  const { proc, a, b } = inputs(), T = tempC() ?? src.thermo?.t0_c ?? 25;
-  const rows = qpmSolutions((t) => nAtT(src, t), src.kind, "poled", d, proc, a, b, T).filter((r) => r.period_um >= MIN_PERIOD)
-    .sort((p, q) => q.deff ** 2 / (q.n[0] * q.n[1] * q.n[2]) - p.deff ** 2 / (p.n[0] * p.n[1] * p.n[2]));
-  if (!rows.length) { $("pmqpm").innerHTML = ""; return; }
-  const lam = [w.l1, w.l2, w.l3].map((x) => x.toFixed(4));
-  // the period at T grows with the crystal: the grating to make (its period at the expansion's reference temperature)
-  const ex = c.sources.find((s) => s.thermo?.expansion)?.thermo.expansion, dT = T - (ex?.t0_c ?? 25);
-  const grow = (p) => (ex && Math.abs(dT) > 0.5 ? ` <span class="hint" title="Λ at ${ex.t0_c} °C">(${(p / (1 + ex.alpha * dT + (ex.beta || 0) * dT * dT)).toFixed(3)} @ ${ex.t0_c} °C)</span>` : "");
-  $("pmqpm").innerHTML = `<b>تطبیق فاز شبه‌فازی (QPM)</b> در بلور قطبیده‌ی تناوبی (مثل PPLN/PPKTP)، مرتبه‌ی اول، در <bdi dir="ltr">${(+T).toFixed(1)} °C</bdi>؛ نوع 0 (هر سه موج در امتداد z) بیشترین ضریب غیرخطی را دارد و نوع II برای جفت فوتون‌های قطبش‌متعامد به کار می‌رود:`
-    + `<div style="overflow-x:auto;direction:ltr"><table style="direction:ltr;min-width:560px;margin-top:6px"><tr><th>k along</th><th>type</th><th>polarizations (λ₁ + λ₂ → λ₃)</th><th>Λ (µm)</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>Δλ·L (nm·cm)</th><th>ΔT·L (°C·cm)</th></tr>`
-    + rows.map((r) => `<tr><td>${r.axis}</td><td>${r.type}</td><td>${lam[0]}<sup>${r.pol[0]}</sup> + ${lam[1]}<sup>${r.pol[1]}</sup> → ${lam[2]}<sup>${r.pol[2]}</sup></td><td><b>${r.period_um.toFixed(3)}</b>${grow(r.period_um)}</td>
-      <td><b>${r.deff.toFixed(2)}</b></td><td>${(r.deff ** 2 / (r.n[0] * r.n[1] * r.n[2])).toFixed(2)}</td><td>${r.spectral_nm.toFixed(2)}</td><td>${src.thermo ? (r.temp_C >= 999 ? "> 500" : r.temp_C.toFixed(1)) : "—"}</td></tr>`).join("")
-    + `</table></div><span>بدون walk-off. Λ دوره‌ی لازم در دمای کار است؛ عدد داخل پرانتز دوره‌ای است که باید ساخته شود، در دمای مرجع انبساط گرمایی (برای بلورهایی که منبعی انبساطشان را داده). ترکیب بلور (مثلاً درصد MgO) دوره را کمی جابه‌جا می‌کند؛ این اعداد از همان فرمول پاشندگی منبع انتخاب‌شده است.</span>`;
+// ---------- the QPM card: every assignment of the polarizations along a principal axis (qpmSolutions of phasematch.js,
+// first order, d_eff = (2/π)|d|), turned into the order m and duty cycle D asked for: Λ_m = m·Λ₁ and
+// d_eff = (2/mπ)·|sin(mπD)|·|d|; the acceptances for the crystal length; the period over the wavelength and the
+// temperature tuning of the grating, drawn from the same indices.
+const QPM_NAME = { LiNbO3: "PPLN", "MgO-LiNbO3": "MgO:PPLN", LiTaO3: "PPLT", "Mg-LiTaO3": "MgO:PPLT", KTiOPO4: "PPKTP", RbTiOPO4: "PPRTP", KTiOAsO4: "PPKTA", RbTiOAsO4: "PPRTA", GaAs: "OP-GaAs", GaP: "OP-GaP" };
+const QP = { sel: "", last: null };
+const qpmOrder = () => Math.max(1, Math.min(5, Math.round(+$("qpmm").value) || 1));
+const qpmDuty = () => { const v = +$("qpmD").value; return v > 0 && v < 100 ? v / 100 : 0.5; };
+const qpmLen = () => (+$("qpmL").value > 0 ? +$("qpmL").value : 10);
+const orderFactor = (m, D) => Math.abs(Math.sin(m * Math.PI * D)) / m; // of the first-order (2/π)|d|
+// the grating vector the waves need (rad/µm) for one assignment of the polarizations (x, y, z; op: the one index)
+const kNeed = (fT, T, w, pol) => {
+  const n = fT(T), ix = pol.length ? pol.map((q) => AXES_I[q]) : [0, 0, 0];
+  return 2 * Math.PI * Math.abs(n(w.l3)[ix[2]] / w.l3 - n(w.l1)[ix[0]] / w.l1 - n(w.l2)[ix[1]] / w.l2);
+};
+const AXES_I = { x: 0, y: 1, z: 2 };
+function qpm(c, src, w) { QP.last = { c, src, w }; qpmRender(); }
+function qpmTry(c) {
+  const opts = Object.keys(QPM_NAME).filter((m) => m !== c.material && PM.list.some((x) => key(x) === m) && PM.dij[m]);
+  return `<p class="hint">${esc(c.material)} به شکل قطبیده‌ی تناوبی یا الگودار ساخته نمی‌شود؛ QPM با این بلورها:</p><div class="qpmtry">`
+    + opts.map((m) => `<button class="alt" data-qpmgo="${esc(m)}"><bdi dir="ltr">${esc(QPM_NAME[m])}</bdi> <span class="hint">(${esc(m)})</span></button>`).join("") + "</div>";
 }
-
-// Orientation-patterned cubic semiconductors (OP-GaAs, OP-GaP): optically isotropic, so only QPM; first order,
-// d_eff = (2/π)·d14 as in the figure of merit of Petrov (2015), Table 3.
-function qpmCubic(c, src, w) {
-  const d14 = PM.dij[c.material]?.d["14"];
-  if (d14 == null || !covers(src, w)) { $("pmqpm").innerHTML = ""; return; }
-  const n = (l) => nAt(src)(l)[0], [n1, n2, n3] = [n(w.l1), n(w.l2), n(w.l3)];
-  const period = 1 / (n3 / w.l3 - n1 / w.l1 - n2 / w.l2), deff = (2 / Math.PI) * Math.abs(d14);
-  $("pmqpm").innerHTML = `<b>بلور مکعبی و همسان‌گرد:</b> تطبیق فاز دوشکستی ندارد و فقط با الگودهی جهت بلور (OP-${esc(c.material)}) و QPM کار می‌کند. مرتبه‌ی اول، دمای اتاق: `
-    + `<bdi dir="ltr">Λ = <b>${period.toFixed(2)} µm</b>, n = ${[n1, n2, n3].map((x) => x.toFixed(4)).join(", ")}, d<sub>eff</sub> = (2/π)·d14 = <b>${deff.toFixed(1)} pm/V</b>, d<sub>eff</sub>²/n³ = ${(deff ** 2 / (n1 * n2 * n3)).toFixed(1)} pm²/V²</bdi>`
-    + ` — d14 برای SHG در 10.6 µm است (Petrov 2015، جدول ۳) و نزدیک گاف انرژی بزرگ‌تر می‌شود؛ جذب دوفوتونی پمپ را در GaAs به بالای ~1.75 µm محدود می‌کند.`;
+function qpmRender() {
+  const box = $("qpmbody"); if (!QP.last) return;
+  const { c, src, w } = QP.last, poled = POLED.has(c.material), op = OP.has(c.material) && src.isotropic, d = PM.dij[c.material]?.d;
+  $("pmqpm").innerHTML = "";
+  if (!poled && !op) { box.innerHTML = qpmTry(c); return; }
+  if (!d || (op && d["14"] == null)) { box.innerHTML = '<p class="hint">ضرایب غیرخطی این بلور هنوز در داده‌ها نیست؛ d_eff حساب نمی‌شود.</p>'; return; }
+  if (!covers(src, w)) {
+    const other = c.sources.findIndex((x) => covers(x, w));
+    box.innerHTML = `<p class="err">طول موج‌های این فرایند باید در بازه‌ی فرمول این منبع باشند (<bdi dir="ltr">${src.range_um[0]}–${src.range_um[1]} µm</bdi>).</p>`
+      + (other >= 0 ? `<button class="alt" data-qpmsrc="${other}">رفتن به ${esc(c.sources[other].label)}</button>` : "");
+    return;
+  }
+  const { proc, a, b } = inputs(), T = tempC(), fT = (t) => nAtT(src, t), m = qpmOrder(), D = qpmDuty(), L = qpmLen(), f = orderFactor(m, D);
+  const ex = c.sources.find((x) => x.thermo?.expansion)?.thermo.expansion;
+  const grow = (t) => (ex ? 1 + ex.alpha * (t - ex.t0_c) + (ex.beta || 0) * (t - ex.t0_c) ** 2 : 1);
+  const rows = qpmSolutions(fT, src.kind, op ? "op" : "poled", d, proc, a, b, T).map((r) => {
+    const per = m * r.period_um, deff = r.deff * f;
+    return { ...r, per, fab: per / grow(T), deffm: deff, fom: deff ** 2 / (r.n[0] * r.n[1] * r.n[2]), dl: r.spectral_nm * 10 / L, dT: r.temp_C >= 999 ? null : r.temp_C * 10 / L,
+      id: `${r.axis}|${r.pol.join("")}`, ok: per >= MIN_PERIOD };
+  }).sort((p, q) => q.ok - p.ok || q.fom - p.fom);
+  if (!rows.length) { box.innerHTML = '<p class="hint">برای این طول موج‌ها جوابی پیدا نشد.</p>'; return; }
+  const r = rows.find((x) => x.id === QP.sel && x.ok) || rows.find((x) => x.ok) || rows[0]; QP.sel = r.id;
+  const lam = [w.l1, w.l2, w.l3].map((x) => lamTxt(x));
+  const name = QPM_NAME[c.material] || c.material, thermo = !!src.thermo;
+  const tile = (big, label, small = "") => `<div class="tile"><span>${label}</span><b>${big}</b>${small ? `<small>${small}</small>` : ""}</div>`;
+  const tiles = [
+    tile(`${r.fab.toFixed(3)} µm`, "دوره‌ی قطبش برای ساخت (Λ)", ex && Math.abs(T - ex.t0_c) > 0.05 ? `<bdi dir="ltr">@ ${ex.t0_c} °C · ${r.per.toFixed(3)} µm @ ${(+T).toFixed(1)} °C</bdi>` : thermo || ex ? `<bdi dir="ltr">@ ${(+T).toFixed(1)} °C</bdi>` : "در دمای فرمول"),
+    tile(`${r.deffm.toFixed(2)} pm/V`, "d<sub>eff</sub>", `<bdi dir="ltr">m = ${m} · D = ${(D * 100).toFixed(0)} %</bdi>`),
+    tile(`${r.fom.toFixed(2)}`, "ضریب کیفیت d<sub>eff</sub>²/n³", "pm²/V²"),
+    tile(`${r.dl < 0.1 ? r.dl.toPrecision(2) : r.dl.toFixed(2)} nm`, "پذیرش طیفی (FWHM)", `<bdi dir="ltr">L = ${L} mm</bdi>`),
+    tile(thermo ? (r.dT == null ? "> 500 °C" : `${r.dT.toFixed(r.dT < 1 ? 2 : 1)} °C`) : "—", "پذیرش دمایی (FWHM)", thermo ? `<bdi dir="ltr">L = ${L} mm</bdi>` : "منبع بدون dn/dT"),
+  ].join("");
+  const typeFa = (t) => (t === "0" ? "نوع 0" : t === "I" ? "نوع I" : "نوع II");
+  const table = `<div style="overflow-x:auto;direction:ltr;margin-top:12px"><table class="qpmtab" style="direction:ltr;min-width:600px"><tr><th>انتشار در امتداد</th><th>نوع</th><th>قطبش‌ها (λ₁ + λ₂ → λ₃)</th><th>Λ (µm)</th><th>d<sub>eff</sub> (pm/V)</th><th>d<sub>eff</sub>²/n³</th><th>Δλ (nm)</th><th>ΔT (°C)</th></tr>`
+    + rows.map((x) => `<tr data-q="${esc(x.id)}" class="${x.id === r.id ? "on" : ""}"><td>${x.axis || "—"}</td><td>${typeFa(x.type)}</td><td>${x.pol.length ? x.pol.join(" + ").replace(/ \+ (\w)$/, " → $1") : "—"}</td>
+      <td><b>${x.fab.toFixed(3)}</b>${x.ok ? "" : ' <span class="err" title="کوتاه‌تر از کمترین دوره‌ی قابل ساخت">✗</span>'}</td><td><b>${x.deffm.toFixed(2)}</b></td><td>${x.fom.toFixed(2)}</td><td>${x.dl.toFixed(2)}</td><td>${thermo ? (x.dT == null ? "> 500" : x.dT.toFixed(1)) : "—"}</td></tr>`).join("")
+    + "</table></div>";
+  const notes = [
+    `<p class="hint"><b>${esc(name)}</b> · <bdi dir="ltr">${lam[0]} + ${lam[1]} → ${lam[2]}</bdi> · ${tierMark(src)} ${esc(src.label)} · برای انتخاب پیکربندی روی ردیف جدول بزنید. Λ برای ساخت، دوره در دمای مرجع انبساط گرمایی است (همان که روی بلور نوشته می‌شود)${ex ? "" : "؛ این بلور منبع انبساط گرمایی ندارد، پس همان دوره در دمای کار آمده است"}.</p>`,
+    !r.ok ? `<p class="err">دوره‌ی این مرتبه از کمترین دوره‌ای که معمولاً ساخته می‌شود (<bdi dir="ltr">${MIN_PERIOD} µm</bdi>) کوتاه‌تر است؛ مرتبه‌ی بالاتر را امتحان کنید.</p>` : "",
+    f < 1e-3 ? '<p class="err">با این چرخه‌ی کار، این مرتبه ضریبی ندارد (مثلاً مرتبه‌ی زوج با ۵۰٪).</p>' : "",
+    op ? '<p class="hint">d14 برای SHG در 10.6 µm است (Petrov 2015، جدول ۳) و نزدیک گاف انرژی بزرگ‌تر می‌شود؛ جذب دوفوتونی پمپ را در GaAs به بالای ~1.75 µm محدود می‌کند.</p>' : "",
+    'ترکیب بلور (مثلاً درصد MgO) دوره را کمی جابه‌جا می‌کند؛ این عددها از همان فرمول پاشندگی منبع انتخاب‌شده است.',
+  ].filter(Boolean).map((x) => (x.startsWith("<p") ? x : `<p class="hint">${x}</p>`)).join("");
+  const hot = thermo ? -1 : c.sources.findIndex((x) => x.thermo && covers(x, w));
+  const toHot = hot >= 0 ? `<p class="hint">این منبع (${esc(src.label)}) وابستگی دمایی ندارد، پس پذیرش و تنظیم دمایی حساب نمی‌شود. <button class="alt" data-qpmsrc="${hot}">رفتن به ${esc(c.sources[hot].label)} (با وابستگی دمایی)</button></p>` : "";
+  const toSolver = poled && r.axis === "x" ? '<div class="actions" style="margin-top:10px"><button class="alt" id="qpmsolve">همین پیکربندی در حل‌کننده (سیگنال، دما یا پمپ برای دوره‌ی ثابت)</button></div>' : "";
+  box.innerHTML = `<div class="spout"><div class="tiles">${tiles}</div>${table}${toHot}${notes}${toSolver}</div>
+    <div class="qpmfigs"><div><h3>دوره‌ی لازم بر حسب طول موج</h3><div><svg id="qpmsvg1" role="img" style="display:block;width:100%"></svg></div></div>
+    <div><h3>${PAIR.has(proc) ? "تنظیم دمایی با این دوره: سیگنال و آیدلر" : "تنظیم دمایی با این دوره: بازده نسبی"}</h3><div><svg id="qpmsvg2" role="img" style="display:block;width:100%"></svg></div></div></div>`;
+  if ($("qpmsolve")) $("qpmsolve").onclick = () => qpmToSolver(r);
+  qpmPlots(c, src, proc, a, b, T, r, m, L, grow);
 }
+// one line chart in the page's colours: series of [x, y] points, a marked point, axis labels
+function qpmPlot(svg, series, { xl, yl, mark, msg }) {
+  const W = Math.round(svg.parentElement.clientWidth) || 400, H = Math.round(Math.min(280, Math.max(200, W * 0.62)));
+  svg.style.height = H + "px"; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const all = series.flatMap((x) => x.pts);
+  if (!all.length) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">${msg || "—"}</text>`; return; }
+  const m = { l: 52, r: 10, t: 10, b: 38 };
+  let [x0, x1] = [Math.min(...all.map((p) => p[0])), Math.max(...all.map((p) => p[0]))], [y0, y1] = [Math.min(...all.map((p) => p[1])), Math.max(...all.map((p) => p[1]))];
+  if (x1 - x0 < 1e-9) { x0 -= 1; x1 += 1; } if (y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
+  const py = (y1 - y0) * 0.06; y0 -= py; y1 += py;
+  const X = (x) => m.l + (x - x0) / (x1 - x0) * (W - m.l - m.r), Y = (y) => H - m.b - (y - y0) / (y1 - y0) * (H - m.t - m.b);
+  const ticks = (a0, a1, n) => { const st = 10 ** Math.floor(Math.log10((a1 - a0) / n)), g = [1, 2, 5, 10].find((q) => (a1 - a0) / (st * q) <= n) * st, out = []; for (let v = Math.ceil(a0 / g) * g; v <= a1 + 1e-9; v += g) out.push(+v.toFixed(10)); return out; };
+  const dec = (a0, a1) => Math.max(0, Math.min(4, 1 - Math.floor(Math.log10((a1 - a0) / 5 || 1))));
+  let out = ticks(y0, y1, 5).map((v) => `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${v.toFixed(dec(y0, y1))}</text>`).join("");
+  out += ticks(x0, x1, W < 420 ? 4 : 6).map((v) => `<text x="${X(v)}" y="${H - m.b + 16}" text-anchor="middle" font-size="11" fill="var(--muted)">${v.toFixed(dec(x0, x1))}</text>`).join("");
+  out += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="var(--line)"/>`;
+  out += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle" font-size="12" fill="var(--muted)">${xl}</text>`;
+  out += `<text transform="translate(13 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="var(--muted)">${yl}</text>`;
+  series.forEach((sr, j) => { if (sr.pts.length > 1) out += `<polyline fill="none" stroke="var(--series-${(j % 8) + 1})" stroke-width="2" points="${sr.pts.map(([x, y]) => `${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(" ")}"/>`; });
+  for (const [x, y] of mark || []) out += `<circle cx="${X(x).toFixed(1)}" cy="${Y(y).toFixed(1)}" r="5.5" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  svg.innerHTML = out;
+}
+function qpmPlots(c, src, proc, a, b, T, r, m, L, grow) {
+  const fT = (t) => nAtT(src, t), K = lamK(), U = lamUnit(), N = 120, [lo, hi] = src.range_um;
+  // 1. the period of order m over the wavelength that is varied (the fundamental, the signal of a pair, or λ₁)
+  const pts = [];
+  if (PAIR.has(proc)) {
+    for (let k = 0; k <= N; k++) { const sg = a * 1.02 + (2 * a - a * 1.02) * k / N, w = waves(proc, a, sg); if (covers(src, w)) pts.push([sg * K, m * 2 * Math.PI / kNeed(fT, T, w, r.pol)]); }
+  } else {
+    const x0 = proc === "shg" ? 2 * lo : proc === "thg" ? 3 * lo : lo;
+    for (let k = 0; k <= N; k++) { const x = x0 + (hi - x0) * k / N, w = waves(proc, x, b); if (covers(src, w)) pts.push([x * K, m * 2 * Math.PI / kNeed(fT, T, w, r.pol)]); }
+  }
+  const pf = pts.map(([x, y]) => [x, y / grow(T)]);
+  qpmPlot($("qpmsvg1"), [{ pts: pf }], { xl: `${PAIR.has(proc) ? "signal" : ONE.has(proc) ? "fundamental" : "λ₁"} wavelength (${U})`, yl: `Λ (µm), order ${m}`,
+    mark: [[(PAIR.has(proc) ? b : a) * K, r.fab]], msg: "—" });
+  // 2. temperature tuning of the grating made for T (its period follows the expansion)
+  if (!src.thermo) { qpmPlot($("qpmsvg2"), [], { msg: "this formula has no temperature dependence" }); return; }
+  const fab1 = r.fab / m, span = Math.max(4, Math.min(150, (r.dT ?? 100) * 3)), t0 = Math.max(-50, T - span), t1 = Math.min(300, T + span);
+  if (PAIR.has(proc)) {
+    // signal and idler at each temperature: the root of k_need(signal) = 2π/Λ₁(T) between the pump and degeneracy, and beyond it
+    const sigs = [], idls = [];
+    for (let k = 0; k <= N; k++) {
+      const t = t0 + (t1 - t0) * k / N, kg = 2 * Math.PI / (fab1 * grow(t)), g = (sg) => { const w = waves(proc, a, sg); return covers(src, w) ? kNeed(fT, t, w, r.pol) - kg : NaN; };
+      const S = 160, s0 = a * 1.0005, s1 = 2 * a; let prev = g(s0), sp = s0;
+      for (let j = 1; j <= S; j++) {
+        const sx = s0 + (s1 - s0) * j / S, cur = g(sx);
+        if (Number.isFinite(prev) && Number.isFinite(cur) && prev * cur <= 0) {
+          let lo2 = sp, hi2 = sx; for (let it = 0; it < 40; it++) { const md = (lo2 + hi2) / 2; (g(lo2) * g(md) <= 0) ? (hi2 = md) : (lo2 = md); }
+          const sg = (lo2 + hi2) / 2; sigs.push([t, sg * K]); idls.push([t, waves(proc, a, sg).l2 * K]); break;
+        }
+        prev = cur; sp = sx;
+      }
+    }
+    qpmPlot($("qpmsvg2"), [{ pts: sigs }, { pts: idls }], { xl: "temperature (°C)", yl: `signal / idler (${U})`, mark: [[T, b * K], [T, waves(proc, a, b).l2 * K]], msg: "no solution near this temperature" });
+  } else {
+    const w = waves(proc, a, b), Lum = L * 1000, eff = [];
+    for (let k = 0; k <= N * 2; k++) {
+      const t = t0 + (t1 - t0) * k / (N * 2), dk = kNeed(fT, t, w, r.pol) - 2 * Math.PI / (fab1 * grow(t)), x = dk * Lum / 2;
+      eff.push([t, Math.abs(x) < 1e-9 ? 1 : (Math.sin(x) / x) ** 2]);
+    }
+    qpmPlot($("qpmsvg2"), [{ pts: eff }], { xl: "temperature (°C)", yl: "η / η_max (sinc²)", mark: [[T, 1]] });
+  }
+}
+// the solver with this configuration (poled crystals along x): what a grating of this period gives
+function qpmToSolver(r) {
+  const want = r.pol.map((q) => AXES_I[q]);
+  const i = (PM.svcfg || []).findIndex((x) => x.kind === "qpm" && ((x.pol[0] === want[0] && x.pol[1] === want[1]) || (x.pol[0] === want[1] && x.pol[1] === want[0])) && x.pol[2] === want[2]);
+  const card = $("solvecard"); card.classList.remove("closed");
+  if (i >= 0) { $("svcfg").value = String(i); svUnits(); }
+  $("svm").value = String(qpmOrder()); svWant("sig"); svFill();
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+for (const id of ["qpmm", "qpmD", "qpmL"]) $(id).addEventListener("change", qpmRender);
+$("qpmbody").addEventListener("click", (e) => {
+  const tr = e.target.closest("tr[data-q]"); if (tr) { QP.sel = tr.dataset.q; qpmRender(); return; }
+  const sw = e.target.closest("[data-qpmsrc]"); if (sw) { $("pmsrc").value = sw.dataset.qpmsrc; $("pmsrc").onchange(); return; }
+  const go = e.target.closest("[data-qpmgo]"); if (go) { PM.extrapolate = false; pick(go.dataset.qpmgo); $("qpmcard").scrollIntoView({ behavior: "smooth", block: "start" }); }
+});
+document.addEventListener("unitchange", () => { if (QP.last) qpmRender(); });
 
 // The curve takes ~100 solutions (30 ms each in a biaxial crystal): computed in slices after the table is shown,
 // and dropped when another crystal or wavelength is chosen meanwhile.

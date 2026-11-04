@@ -994,3 +994,15 @@ test("off the principal planes: the cone search finds the principal-plane optimu
   assert.deepEqual(r.map((x) => x.type), ["I", "IIa"]);
   assert.ok(r.every((x) => x.best.deff >= 0 && x.cone.length > 10));
 });
+
+test("solver: a grating against a negative mismatch (pump of lower index) gives back its signal and temperature", () => {
+  // PPLN type I y + y → z: the extraordinary pump has the lower index, so Δk < 0, and Λ = 2π/|Δk|
+  const ln = source("LiNbO3", "Jundt-1997"), m = { kind: "qpm", nAtT: (T) => nAtTemp(ln, T), pol: [1, 1, 2], expansion: ln.thermo.expansion };
+  const R = { lam: [0.4, 5], T: [-50, 300] };
+  const per = solveMixing(m, { lp: 1.064, ls: 1.55, T: 40 }, R).roots[0];
+  assert.ok(per.reversed && per.x > 10, `period ${per.x}`);
+  const sig = solveMixing(m, { lp: 1.064, x: per.x, T: 40 }, R).roots.map((r) => r.ls);
+  assert.ok(sig.some((l) => Math.abs(l - 1.55) < 1e-5), `signal ${sig}`);
+  const T = solveMixing(m, { lp: 1.064, ls: 1.55, x: per.x }, R).roots.map((r) => r.T);
+  assert.ok(T.some((t) => Math.abs(t - 40) < 1e-3), `T ${T}`);
+});

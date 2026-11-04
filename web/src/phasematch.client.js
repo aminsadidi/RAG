@@ -338,8 +338,13 @@ function kMaterial(model, s) { // 2π(n_p/λp − n_s/λs − n_i/λi), rad/µm
   return deltaK(n, model.plane, s.x * Math.PI / 180, { l1: s.ls, l2: s.li, l3: s.lp }, model.type);
 }
 export function mismatch(model, s) { // Δk − target, rad/µm
-  const grating = model.kind === "qpm" ? TWO_PI * (model.m || 1) / (s.x * stretchOf(model, s.T)) : 0;
-  return kMaterial(model, s) - grating - (s.dk || 0);
+  if (model.kind === "qpm") {
+    // the grating may point either way (Λ = 2πm/|Δk|, as the period is found below): its vector is set against
+    // the waves' own mismatch, whatever its sign (a pump of lower index than signal and idler gives Δk < 0)
+    const grating = TWO_PI * (model.m || 1) / (s.x * stretchOf(model, s.T));
+    return Math.abs(kMaterial(model, s)) - grating - (s.dk || 0);
+  }
+  return kMaterial(model, s) - (s.dk || 0);
 }
 function complete(g) { // the third wavelength from the other two (energy conservation)
   const s = { ...g };
