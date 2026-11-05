@@ -165,6 +165,22 @@ select,input{max-width:100%}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:12px}
 #xcdlg{width:min(780px,94vw);max-height:88vh;border:1px solid var(--line);border-radius:14px;padding:0;background:var(--card);color:var(--ink)}
 #xcdlg::backdrop{background:rgba(8,12,18,.6)}
+#ribrdlg{width:min(860px,94vw);max-height:88vh;border:1px solid var(--line);border-radius:14px;padding:0;background:var(--card);color:var(--ink)}
+#ribrdlg::backdrop{background:rgba(8,12,18,.6)}
+#ribrdlg .xchead{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--card);z-index:1}
+#ribrbody{padding:12px 16px 16px}
+.ribrcats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ribrcats button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink);cursor:pointer;font:inherit;text-align:center}
+.ribrcats button b{font-size:20px;direction:ltr}.ribrcats button span{font-size:12.5px;color:var(--muted)}
+.ribrcats button.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--card))}
+.ribrsubs{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.ribrsubs:empty{display:none}
+.ribrsubs button{border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--card);color:var(--ink);cursor:pointer;font:inherit;font-size:12.5px}
+.ribrsubs button.on{border-color:var(--accent);color:var(--accent)}
+#ribrq{width:100%;margin-top:10px;box-sizing:border-box}
+.ribrlist{margin-top:6px;max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.ribrlist .r{display:flex;gap:10px;align-items:baseline;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--line);cursor:pointer;direction:ltr;text-align:left}
+.ribrlist .r:last-child{border-bottom:0}.ribrlist .r:hover{background:var(--soft)}
+.ribrlist .r small{color:var(--muted);font-size:12px}.ribrlist .r .rg{white-space:nowrap}
 #xcdlg .xchead{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--card);z-index:1}
 #xcbody{padding:14px 16px}#xcbody .xhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}
 .xcfull{width:100%;border-collapse:collapse}.xcfull th{width:150px;text-align:start;vertical-align:top;background:transparent;color:var(--muted);font-weight:600;padding:8px 6px;border-top:1px solid var(--line)}
@@ -409,7 +425,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>ماده <span class="xcombo" id="ribox"><input id="rimat" placeholder="مثلاً BBO، PPKTP، باریم بورات، N-BK7" style="width:300px" autocomplete="off" spellcheck="false" dir="ltr" role="combobox" aria-expanded="false" aria-controls="ripop"><button type="button" class="alt" id="ripopbtn" title="فهرست همه‌ی مواد">▾</button><div class="xcpop" id="ripop" role="listbox" hidden></div></span></label>
       <span id="riinfo" class="hint"></span>
       <div id="rimatsugg" class="hint" style="width:100%"></div>
-      <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button> <button class="alt" id="ricard">کارت بلور</button>
+      <button class="alt" id="riall">مرور همه‌ی مواد <span id="rialln"></span></button> <button class="alt" id="risearch">جست‌وجوی این ماده در مقاله‌ها</button> <button class="alt" id="ricard">کارت بلور</button>
     </div>
     <div class="row">
       <label>از λ <input id="rilo" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:90px"> تا <input id="rihi" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:90px"> <span class="riunit">µm</span></label>
@@ -1755,7 +1771,11 @@ const unitName = () => (RI.unit === "nm" ? "nm" : "µm");
 const fmtL = (um) => +(um * U()).toPrecision(6);
 
 const GROUP_FA = { main: "", "doped crystals": "بلور آلاییده", "mixed crystals": "بلور آمیخته", "semiconductor alloys": "آلیاژ نیم‌رسانا",
-  alloys: "آلیاژ", papers: "از مقاله‌های همین مجموعه (refractiveindex.info داده ندارد)", perovskite: "پروسکایت", "liquid crystals": "بلور مایع", organic: "آلی", "commercial polymers": "پلیمر" };
+  alloys: "آلیاژ", papers: "از مقاله‌های همین مجموعه (refractiveindex.info داده ندارد)", perovskite: "پروسکایت", "liquid crystals": "بلور مایع", organic: "آلی", "commercial polymers": "پلیمر",
+  resists: "رزیست (لایه‌ی حساس به نور)", "mixed organic": "آلی آمیخته", "mixed organic-inorganic": "آلی–معدنی", "optical adhesives": "چسب نوری", silk: "ابریشم",
+  "human body": "بافت‌های بدن", "buffer solutions": "محلول بافر", clays: "رس", soots: "دوده", "microscopy mounting media": "محیط مونت میکروسکوپ",
+  intermetallics: "ترکیب بین‌فلزی", amorphous: "بی‌شکل", exotic: "مواد نامعمول", fuel: "سوخت", "mixed gases": "گاز آمیخته", "quantum dots": "نقطه‌ی کوانتومی",
+  "crystalline minerals": "کانی بلورین", "non-stoichiometric compounds": "ترکیب غیراستوکیومتری" };
 const matName = (m) => (m.shelf === "main" || m.shelf === "papers" ? m.material : `${m.material} — ${m.group}`);
 
 // Finding a material by its formula, name, abbreviation (BBO) or Persian name (باریم بورات).
@@ -1844,6 +1864,7 @@ window.loadFormulas = () => {
       if (RI.byName.has(name)) RI.extra.set(name, [...(RI.extra.get(name) || []), m]); else RI.byName.set(name, m);
     }
     const saved = store.get("rimat2");
+    $("rialln").textContent = `(${fa(RI.byName.size)})`;
     selectMaterial(saved && RI.byName.has(saved) ? saved : "LiB3O5");
   }).catch((err) => { loaded = null; $("rientries").innerHTML = `<p class="err">خطا: ${esc(err.message)}</p>`; });
   return loaded;
@@ -1918,7 +1939,7 @@ function riPopRender(all = false) {
     const via = i === 0 && named && named === m.material && q.toLowerCase() !== m.material.toLowerCase() ? `<span class="via">${esc(q)} →</span> ` : "";
     return `<div class="i${i === RIP.on ? " on" : ""}" data-i="${i}" role="option">${via}<b>${esc(key)}</b>${names.length ? ` <small>· ${esc(names.join(" · "))}</small>` : ""}<small class="cnt">${fa(m.n + (RI.extra.get(key) || []).reduce((t, x) => t + (x.n || 0), 0))} منبع</small></div>`;
   };
-  pop.innerHTML = RIP.items.length ? (all || !q ? '<div class="g">مواد پرکاربرد؛ برای بقیه نام یا فرمول را بنویسید</div>' : "") + RIP.items.map(row).join("")
+  pop.innerHTML = RIP.items.length ? (all || !q ? '<div class="g">مواد پرکاربرد؛ برای بقیه نام یا فرمول را بنویسید، یا «مرور همه‌ی مواد»</div>' : "") + RIP.items.map(row).join("")
     : `<div class="g">«${esc(q)}» پیدا نشد؛ نام انگلیسی یا فرمول شیمیایی را امتحان کنید</div>`;
   pop.hidden = false; $("rimat").setAttribute("aria-expanded", "true");
   pop.querySelector(".i.on")?.scrollIntoView({ block: "nearest" });
@@ -1929,6 +1950,52 @@ function riChoose(m) {
   riPopClose(); $("rimatsugg").innerHTML = "";
   selectMaterial(matName(m));
 }
+// ---------- every material of the tab, by kind: crystals and compounds, the papers' own formulas, the makers' optical
+// glasses (one chip per maker), polymers and organics, and the rest by group; filter by name, a row chooses it
+const VENDOR = { ohara: "OHARA", hikari: "HIKARI", cdgm: "CDGM", hoya: "HOYA", sumita: "SUMITA", schott: "SCHOTT", lzos: "LZOS", isuzu: "ISUZU", ami: "AMI (AMTIR)", crystran: "Crystran", cargille: "Cargille", vitron: "Vitron", barberini: "Barberini" };
+const RIBR = { cat: "crystal", sub: "" };
+const RIBR_CATS = [
+  ["crystal", "بلورها، عنصرها و ترکیب‌ها", (m) => m.shelf === "main" || m.shelf === "papers"],
+  ["glass", "شیشه‌های اپتیکی تجاری", (m) => m.shelf === "specs" || m.shelf === "glass"],
+  ["organic", "پلیمرها و مواد آلی", (m) => m.shelf === "organic" || (m.shelf === "other" && /polymer|organic|resist|silk|adhesive/.test(m.group))],
+  ["other", "آلیاژها، بلور مایع، پروسکایت و دیگر", (m) => m.shelf === "other" && !/polymer|organic|resist|silk|adhesive/.test(m.group)],
+];
+const riAll = () => [...(RI.byName?.values() || [])];
+const ribrSub = (m) => (m.shelf === "main" ? "refractiveindex.info" : m.shelf === "papers" ? "papers" : m.shelf === "specs" ? (VENDOR[m.group] || m.group) : m.shelf === "glass" ? `glass · ${m.group}` : m.group);
+const ribrSubName = (g) => (g === "papers" ? "از مقاله‌های همین مجموعه" : g === "refractiveindex.info" ? "refractiveindex.info" : GROUP_FA[g] || g);
+function ribrRender() {
+  const all = riAll(), cat = RIBR_CATS.find((c) => c[0] === RIBR.cat);
+  $("ribrtitle").innerHTML = `<span>همه‌ی مواد پایگاه ضریب شکست</span>: <bdi>${fa(all.length)}</bdi>`;
+  $("ribrcats").innerHTML = RIBR_CATS.map(([k, name, f]) => `<button type="button" data-cat="${k}" class="${k === RIBR.cat ? "on" : ""}"><b>${fa(all.filter(f).length)}</b><span>${name}</span></button>`).join("");
+  const inCat = all.filter(cat[2]), subs = {};
+  for (const m of inCat) subs[ribrSub(m)] = (subs[ribrSub(m)] || 0) + 1;
+  const subList = Object.entries(subs).sort((p, q) => q[1] - p[1]);
+  if (RIBR.sub && !subs[RIBR.sub]) RIBR.sub = "";
+  $("ribrsubs").innerHTML = subList.length > 1 ? `<button type="button" data-sub="" class="${RIBR.sub ? "" : "on"}"><span>همه</span> (${fa(inCat.length)})</button>`
+    + subList.map(([g, n]) => `<button type="button" data-sub="${esc(g)}" class="${g === RIBR.sub ? "on" : ""}"><bdi>${esc(ribrSubName(g))}</bdi> (${fa(n)})</button>`).join("") : "";
+  const q = $("ribrq").value.trim().toLowerCase();
+  const rows = inCat.filter((m) => (!RIBR.sub || ribrSub(m) === RIBR.sub)
+    && (!q || m.material.toLowerCase().includes(q) || XNAME.names(m.material).some((n) => n.toLowerCase().includes(q)) || (m.name || "").toLowerCase().includes(q)))
+    .sort((p, q2) => p.material.localeCompare(q2.material, "en", { numeric: true }));
+  const SHOW = 400, rng = (um) => { const v = um * lamK(); return v < 0.01 ? v.toExponential(1) : String(+v.toPrecision(3)); };
+  $("ribrinfo").innerHTML = `<span>تعداد مواد</span>: <bdi>${fa(rows.length)}</bdi>` + (rows.length > SHOW ? ` · <span>فهرست کوتاه شده است؛ برای دیدن بقیه فیلتر بنویسید</span>` : "");
+  $("ribrlist").innerHTML = rows.slice(0, SHOW).map((m) => {
+    const key = matName(m), n = m.n + (RI.extra.get(key) || []).reduce((t, x) => t + (x.n || 0), 0);
+    const names = XNAME.names(m.material).filter((x) => x.toLowerCase() !== m.material.toLowerCase()).slice(0, 3);
+    return `<div class="r" data-key="${esc(key)}"><span><b>${esc(m.material)}</b>${names.length ? ` <small>${esc(names.join(" · "))}</small>` : ""}${m.shelf !== "main" && m.shelf !== "papers" ? ` <small>· ${esc(ribrSubName(ribrSub(m)))}</small>` : ""}</span>`
+      + `<small class="rg">${rng(m.range_um[0])}–${rng(m.range_um[1])} ${lamUnit()} · ${n} src</small></div>`;
+  }).join("");
+}
+$("riall").onclick = async () => {
+  await window.loadFormulas(); if (!RI.index) return;
+  $("ribrq").value = ""; ribrRender(); $("ribrdlg").showModal(); $("ribrq").focus();
+};
+$("ribrcats").addEventListener("click", (e) => { const b = e.target.closest("[data-cat]"); if (b) { RIBR.cat = b.dataset.cat; RIBR.sub = ""; ribrRender(); } });
+$("ribrsubs").addEventListener("click", (e) => { const b = e.target.closest("[data-sub]"); if (b) { RIBR.sub = b.dataset.sub; ribrRender(); } });
+$("ribrq").addEventListener("input", ribrRender);
+$("ribrlist").addEventListener("click", (e) => { const r = e.target.closest("[data-key]"); if (!r) return; $("ribrdlg").close(); riChoose(RI.byName.get(r.dataset.key)); });
+$("ribrclose").onclick = () => $("ribrdlg").close();
+$("ribrdlg").addEventListener("click", (e) => { if (e.target === $("ribrdlg")) $("ribrdlg").close(); });
 $("rimat").addEventListener("focus", () => { $("rimat").select(); });
 $("rimat").addEventListener("input", () => {
   RIP.on = 0; riPopRender();
@@ -5042,6 +5109,10 @@ document.addEventListener("click", (e) => {
 }, true);
 </script>
 <button id="fbopen" title="نظر، مشکل یا پیشنهاد">💬 بازخورد</button>
+<dialog id="ribrdlg" aria-label="همه‌ی مواد"><div class="xchead"><b id="ribrtitle">همه‌ی مواد</b><button type="button" class="alt" id="ribrclose">بستن</button></div>
+  <div id="ribrbody"><div class="ribrcats" id="ribrcats"></div><div class="ribrsubs" id="ribrsubs"></div>
+  <input id="ribrq" placeholder="فیلتر در همین دسته: نام یا فرمول" dir="ltr" autocomplete="off" spellcheck="false">
+  <div class="hint" id="ribrinfo"></div><div class="ribrlist" id="ribrlist"></div></div></dialog>
 <dialog id="xcdlg" aria-label="کارت بلور"><div class="xchead"><b>کارت بلور</b><button type="button" class="alt" id="xcclose">بستن</button></div><div id="xcbody"></div></dialog>
 <dialog id="logoutdlg"><form method="dialog">
   <h3>خروج</h3>
