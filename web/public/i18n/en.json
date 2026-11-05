@@ -1,8 +1,4 @@
 {
- "۱. بلور و پیکربندی": "1. Crystal and configuration",
- "۲. طول موج‌ها و طول بلور": "2. Wavelengths and crystal length",
- "۳. پمپ و فیلتر": "3. Pump and filter",
- "۴. مدل و دما": "4. Model and temperature",
  "طیف مشترک |f|²": "Joint spectrum |f|²",
  "افقی: فوتون ۱، عمودی: فوتون ۲. لکه‌ی گرد و هم‌راستا با محورها یعنی دو فوتون از نظر طیفی مستقل‌اند (خلوص بالا)؛ بیضی کج یعنی درهم‌تنیدگی طیفی.": "Horizontal: photon 1, vertical: photon 2. A round spot aligned with the axes means the two photons are spectrally independent (high purity); a tilted ellipse means spectral entanglement.",
  "فرورفتگی هنگ–او–مندل (HOM)": "Hong–Ou–Mandel dip (HOM)",

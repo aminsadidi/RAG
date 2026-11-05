@@ -327,11 +327,6 @@ th,td{padding:7px 10px}
 .xrows{border-collapse:collapse;width:100%}
 .spout{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);font-size:14px;color:var(--muted)}
 .spout:empty{display:none}
-.spgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px;margin-top:12px}
-fieldset.spgrp{border:1px solid var(--line);border-radius:12px;padding:4px 12px 12px;margin:0;min-width:0;background:var(--soft)}
-fieldset.spgrp legend{font-weight:600;font-size:13.5px;padding:0 6px;color:var(--ink)}
-fieldset.spgrp .row{margin-top:8px}
-.spbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 a.btnlink{display:inline-flex;align-items:center;text-decoration:none;cursor:pointer;font-size:14px;border-radius:8px;padding:7px 16px;min-height:36px;box-sizing:border-box;border:1px solid var(--line);color:var(--ink);background:var(--card)}a.btnlink:hover{border-color:var(--accent);color:var(--accent)}a.btnlink[hidden]{display:none}
 .spfigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:14px}
 .spfigs figure{margin:0;min-width:0}.spfigs h3{margin:0 0 6px;font-size:14px}
@@ -695,38 +690,37 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   <div class="card">
     <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
     <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است. قطبش‌دهی آپودایز گاوسی (Brańczyk و همکاران 2011) لوب‌های کناری sinc را حذف می‌کند؛ «بهینه‌سازی خلوص» پهنای پمپی را می‌یابد که خلوص را بیشینه می‌کند؛ با دمای بلور ضریب‌های شکست از فرمول وابستگی دمایی همان منبع حساب می‌شوند (اگر داشته باشد).</p>
-    <div class="spgrid">
-      <fieldset class="spgrp"><legend>۱. بلور و پیکربندی</legend>
-        <div class="row"><label>بلور <select id="spmat" class="xsel"></select></label></div>
-        <div class="row"><label title="فرمول ضریب شکست (Sellmeier) و بازه‌ی طول موجی که فرمول در آن معتبر است">منبع ضریب شکست <select id="spsrc" style="max-width:240px"></select></label></div>
-        <div class="row"><label>پیکربندی <select id="spcfg" style="max-width:min(420px, 100%)"></select></label></div>
-      </fieldset>
-      <fieldset class="spgrp"><legend>۲. طول موج‌ها و طول بلور</legend>
-        <div class="row"><label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> <span class="lu">µm</span></label></div>
-        <div class="row"><label>طول موج فوتون ۱ <input id="spl1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.55" style="width:84px"> <span class="lu">µm</span></label>
-          <span id="spl2" class="hint" style="direction:ltr"></span></div>
-        <div class="row"><label>طول بلور <input id="spL" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:70px"> mm</label></div>
-      </fieldset>
-      <fieldset class="spgrp"><legend>۳. پمپ و فیلتر</legend>
-        <div class="row"><label>پهنای طیف پمپ (FWHM) <input id="spdp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:96px"> nm</label></div>
-        <div class="row"><label>یا پالس محدود به تبدیل <input id="sptau" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="—" style="width:70px"> ps</label></div>
-        <div class="row"><label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="بدون" style="width:70px"> nm</label></div>
-      </fieldset>
-      <fieldset class="spgrp"><legend>۴. مدل و دما</legend>
-        <div class="row"><label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی</option></select></label>
-          <label id="spapodl" hidden>σ/L <input id="spapod" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.25" style="width:76px"></label></div>
-        <div class="row"><label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
-          <input id="spxi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.84" style="width:64px"></div>
-        <div class="row"><label title="دمای بلور در آزمایش (دمای اتاق یا آون)">دمای کار <input id="spT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" value="25"> °C</label>
-          <button type="button" class="alt" id="spsolve" title="برای بلوری که دوره‌ی QPM یا زاویه‌ی برشش ثابت است: دمایی که این طول موج‌ها را می‌دهد، در حل‌کننده‌ی زبانه‌ی تطبیق فاز">دمای لازم برای بلور آماده؟</button></div>
-        <span class="hint" id="spTinfo"></span>
-      </fieldset>
+    <div class="row">
+      <label>بلور <select id="spmat" class="xsel"></select></label>
+      <label title="فرمول ضریب شکست (Sellmeier) و بازه‌ی طول موجی که فرمول در آن معتبر است">منبع ضریب شکست <select id="spsrc" style="max-width:240px"></select></label>
     </div>
-    <div class="spbar">
-      <button id="spgo" class="main">محاسبه</button>
+    <div class="row">
+      <label>پیکربندی <select id="spcfg" style="max-width:min(420px, 100%)"></select></label>
+    </div>
+    <div class="row">
+      <label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> <span class="lu">µm</span></label>
+      <label>طول موج فوتون ۱ <input id="spl1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.55" style="width:84px"> <span class="lu">µm</span></label>
+      <span id="spl2" class="hint" style="direction:ltr"></span>
+      <label>طول بلور <input id="spL" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:70px"> mm</label>
+    </div>
+    <div class="row">
+      <label>پهنای طیف پمپ (FWHM) <input id="spdp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:96px"> nm</label>
+      <label>یا پالس محدود به تبدیل <input id="sptau" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="—" style="width:70px"> ps</label>
+      <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="بدون" style="width:70px"> nm</label>
+    </div>
+    <div class="row">
+      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی</option></select></label>
+      <label id="spapodl" hidden>σ/L <input id="spapod" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.25" style="width:76px"></label>
+      <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ = <input id="spxi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.84" style="width:64px"></label>
+    </div>
+    <div class="row">
+      <label title="دمای بلور در آزمایش (دمای اتاق یا آون)">دمای کار <input id="spT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" value="25"> °C</label>
+      <button type="button" class="alt" id="spsolve" title="برای بلوری که دوره‌ی QPM یا زاویه‌ی برشش ثابت است: دمایی که این طول موج‌ها را می‌دهد، در حل‌کننده‌ی زبانه‌ی تطبیق فاز">دمای لازم برای بلور آماده؟</button>
+      <button id="spgo">محاسبه</button>
       <button class="alt" id="spopt" title="پهنای طیف پمپی که خلوص را بیشینه می‌کند">بهینه‌سازی خلوص</button>
       <a id="spcsv" class="alt btnlink" hidden download="jsi.csv">دریافت داده‌ی طیف (CSV)</a>
     </div>
+    <p class="hint" id="spTinfo" style="margin:4px 0 0"></p>
     <p class="hint" id="spinfo"></p>
   </div>
   <div class="card" style="margin-top:14px">
