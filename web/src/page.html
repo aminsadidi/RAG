@@ -327,6 +327,15 @@ th,td{padding:7px 10px}
 .xrows{border-collapse:collapse;width:100%}
 .spout{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);font-size:14px;color:var(--muted)}
 .spout:empty{display:none}
+.spgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px;margin-top:12px}
+fieldset.spgrp{border:1px solid var(--line);border-radius:12px;padding:4px 12px 12px;margin:0;min-width:0;background:var(--soft)}
+fieldset.spgrp legend{font-weight:600;font-size:13.5px;padding:0 6px;color:var(--ink)}
+fieldset.spgrp .row{margin-top:8px}
+.spbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+a.btnlink{display:inline-flex;align-items:center;text-decoration:none;cursor:pointer;font-size:14px;border-radius:8px;padding:7px 16px;min-height:36px;box-sizing:border-box;border:1px solid var(--line);color:var(--ink);background:var(--card)}a.btnlink:hover{border-color:var(--accent);color:var(--accent)}a.btnlink[hidden]{display:none}
+.spfigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:14px}
+.spfigs figure{margin:0;min-width:0}.spfigs h3{margin:0 0 6px;font-size:14px}
+.spfigs canvas{display:block;width:100%;max-width:420px;height:auto;aspect-ratio:1;border-radius:8px}
 .qpmtab tr[data-q]{cursor:pointer}.qpmtab tr.on td{background:color-mix(in srgb,var(--accent) 12%,transparent)}
 .qpmfigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:14px}
 .qpmfigs h3{margin:0 0 4px;font-size:14px}
@@ -686,47 +695,49 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
   <div class="card">
     <h2>طیف مشترک جفت فوتون‌ها در تبدیل پارامتری خودبه‌خودی (SPDC)</h2>
     <p class="hint">دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است. قطبش‌دهی آپودایز گاوسی (Brańczyk و همکاران 2011) لوب‌های کناری sinc را حذف می‌کند؛ «بهینه‌سازی خلوص» پهنای پمپی را می‌یابد که خلوص را بیشینه می‌کند؛ با دمای بلور ضریب‌های شکست از فرمول وابستگی دمایی همان منبع حساب می‌شوند (اگر داشته باشد).</p>
-    <div class="row">
-      <label>بلور <select id="spmat" class="xsel"></select></label>
-      <label title="فرمول ضریب شکست (Sellmeier) و بازه‌ی طول موجی که فرمول در آن معتبر است">منبع ضریب شکست <select id="spsrc" style="max-width:240px"></select></label>
+    <div class="spgrid">
+      <fieldset class="spgrp"><legend>۱. بلور و پیکربندی</legend>
+        <div class="row"><label>بلور <select id="spmat" class="xsel"></select></label></div>
+        <div class="row"><label title="فرمول ضریب شکست (Sellmeier) و بازه‌ی طول موجی که فرمول در آن معتبر است">منبع ضریب شکست <select id="spsrc" style="max-width:240px"></select></label></div>
+        <div class="row"><label>پیکربندی <select id="spcfg" style="max-width:min(420px, 100%)"></select></label></div>
+      </fieldset>
+      <fieldset class="spgrp"><legend>۲. طول موج‌ها و طول بلور</legend>
+        <div class="row"><label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> <span class="lu">µm</span></label></div>
+        <div class="row"><label>طول موج فوتون ۱ <input id="spl1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.55" style="width:84px"> <span class="lu">µm</span></label>
+          <span id="spl2" class="hint" style="direction:ltr"></span></div>
+        <div class="row"><label>طول بلور <input id="spL" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:70px"> mm</label></div>
+      </fieldset>
+      <fieldset class="spgrp"><legend>۳. پمپ و فیلتر</legend>
+        <div class="row"><label>پهنای طیف پمپ (FWHM) <input id="spdp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:96px"> nm</label></div>
+        <div class="row"><label>یا پالس محدود به تبدیل <input id="sptau" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="—" style="width:70px"> ps</label></div>
+        <div class="row"><label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="بدون" style="width:70px"> nm</label></div>
+      </fieldset>
+      <fieldset class="spgrp"><legend>۴. مدل و دما</legend>
+        <div class="row"><label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی</option></select></label>
+          <label id="spapodl" hidden>σ/L <input id="spapod" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.25" style="width:76px"></label></div>
+        <div class="row"><label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
+          <input id="spxi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.84" style="width:64px"></div>
+        <div class="row"><label title="دمای بلور در آزمایش (دمای اتاق یا آون)">دمای کار <input id="spT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" value="25"> °C</label>
+          <button type="button" class="alt" id="spsolve" title="برای بلوری که دوره‌ی QPM یا زاویه‌ی برشش ثابت است: دمایی که این طول موج‌ها را می‌دهد، در حل‌کننده‌ی زبانه‌ی تطبیق فاز">دمای لازم برای بلور آماده؟</button></div>
+        <span class="hint" id="spTinfo"></span>
+      </fieldset>
     </div>
-    <div class="row">
-      <label>طول موج پمپ <input id="splp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.775" style="width:84px"> <span class="lu">µm</span></label>
-      <label>طول موج فوتون ۱ <input id="spl1" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1.55" style="width:84px"> <span class="lu">µm</span></label>
-      <span id="spl2" class="hint" style="direction:ltr"></span>
-      <label>طول بلور <input id="spL" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="10" style="width:70px"> mm</label>
-    </div>
-    <div class="row">
-      <label>پهنای طیف پمپ (FWHM) <input id="spdp" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="1" style="width:96px"> nm</label>
-      <label>یا پالس محدود به تبدیل <input id="sptau" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="—" style="width:70px"> ps</label>
-      <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="بدون" style="width:70px"> nm</label>
-      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی</option></select></label>
-      <label id="spapodl" hidden>σ/L <input id="spapod" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.25" style="width:76px"></label>
-    </div>
-    <div class="row">
-      <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ =</label>
-      <input id="spxi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.84" style="width:64px">
-      <label title="دمای بلور در آزمایش (دمای اتاق یا آون)">دمای کار <input id="spT" type="text" inputmode="decimal" dir="ltr" data-num step="any" style="width:64px" value="25"> °C</label>
-      <button type="button" class="alt" id="spsolve" title="برای بلوری که دوره‌ی QPM یا زاویه‌ی برشش ثابت است: دمایی که این طول موج‌ها را می‌دهد، در حل‌کننده‌ی زبانه‌ی تطبیق فاز">دمای لازم برای بلور آماده؟</button>
-      <span class="hint" id="spTinfo" style="flex-basis:100%"></span>
-    </div>
-    <div class="row">
-      <label>پیکربندی <select id="spcfg" style="max-width:min(420px, 100%)"></select></label>
-      <button id="spgo">محاسبه</button>
+    <div class="spbar">
+      <button id="spgo" class="main">محاسبه</button>
       <button class="alt" id="spopt" title="پهنای طیف پمپی که خلوص را بیشینه می‌کند">بهینه‌سازی خلوص</button>
-      <a id="spcsv" class="hint" hidden download="jsi.csv">دریافت داده‌ی طیف (CSV)</a>
+      <a id="spcsv" class="alt btnlink" hidden download="jsi.csv">دریافت داده‌ی طیف (CSV)</a>
     </div>
     <p class="hint" id="spinfo"></p>
   </div>
   <div class="card" style="margin-top:14px">
     <h2>نتیجه</h2>
-    <div id="spres" style="direction:ltr"></div>
+    <div id="spres" class="spout"></div>
     <p class="hint" id="spempty">برای دیدن طیف مشترک، خلوص و منحنی HOM، تنظیم‌های بالا را انتخاب و «محاسبه» را بزنید.</p>
-    <div class="row" id="spfigs" hidden style="align-items:flex-start;gap:18px;margin-top:10px">
-      <figure style="margin:0"><canvas id="spjsi" width="360" height="360" style="max-width:100%;border:1px solid var(--line, #ccc)"></canvas>
-        <figcaption class="hint">شدت طیفی مشترک |f|²؛ افقی: فوتون ۱، عمودی: فوتون ۲ (nm).</figcaption></figure>
-      <figure style="margin:0;flex:1;min-width:260px"><svg id="sphom" role="img" style="display:block;width:100%;height:220px;direction:ltr"></svg>
-        <figcaption class="hint" id="sphomcap">احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر (فقط حالت تبهگن).</figcaption></figure>
+    <div class="spfigs" id="spfigs" hidden>
+      <figure><h3>طیف مشترک |f|²</h3><canvas id="spjsi" width="420" height="420"></canvas>
+        <figcaption class="hint">افقی: فوتون ۱، عمودی: فوتون ۲. لکه‌ی گرد و هم‌راستا با محورها یعنی دو فوتون از نظر طیفی مستقل‌اند (خلوص بالا)؛ بیضی کج یعنی درهم‌تنیدگی طیفی.</figcaption></figure>
+      <figure><h3>فرورفتگی هنگ–او–مندل (HOM)</h3><div><svg id="sphom" role="img" style="display:block;width:100%;direction:ltr"></svg></div>
+        <figcaption class="hint" id="sphomcap">احتمال هم‌فرودی دو فوتون یک جفت پس از بیم‌اسپلیتر ۵۰:۵۰ بر حسب تأخیر (فقط حالت تبهگن).</figcaption></figure>
     </div>
   </div>
   <div class="card" style="margin-top:14px">
@@ -737,8 +748,8 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>گستره‌ی λ₁ ± <input id="spaspan" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="40" style="width:64px"> nm</label>
       <button id="spang">محاسبه</button>
     </div>
-    <svg id="spangsvg" role="img" style="display:block;width:100%;height:240px;direction:ltr"></svg>
-    <div id="spangres" class="hint" style="direction:ltr"></div>
+    <div id="spangres" class="spout"></div>
+    <div style="margin-top:12px"><svg id="spangsvg" role="img" style="display:block;width:100%;direction:ltr"></svg></div>
   </div>
   <div class="card" style="margin-top:14px">
     <h2 data-fold="fiber" data-closed>فیبر، آهنگ تولید جفت و شمارش آشکارسازها</h2>
@@ -3707,6 +3718,21 @@ window.loadSPDC = async () => {
   $("spcnt").onclick = counts;
   $("spcfg").addEventListener("change", fillDeff);
   $("spfibopt").onclick = () => fiber(true);
+  // the cards below follow by themselves: after the spectrum, when their card is opened, and when their own boxes
+  // change (only while the card is open; each still has its button)
+  const isOpen = (id) => !$(id).closest(".card").classList.contains("closed");
+  window.spAuto = (which = "all") => {
+    if (isOpen("sptilt") && which === "all") angles();
+    if (!isOpen("spfib")) return;
+    if (which === "all" || which === "fib") fiber(false);
+    if (which !== "cnt") setTimeout(pairs, 30);
+    setTimeout(counts, 60);
+  };
+  for (const id of ["sptilt", "spaspan"]) $(id).addEventListener("change", () => { if (isOpen("sptilt")) angles(); });
+  for (const id of ["spxp", "spxs", "spxf2"]) $(id).addEventListener("change", () => window.spAuto("fib"));
+  for (const id of ["spdeff", "sppow"]) $(id).addEventListener("change", () => window.spAuto("rate"));
+  for (const id of ["spUncoated", "spT1", "spT2", "spE1", "spE2", "spD1", "spD2", "spTau", "spCarT"]) $(id).addEventListener("change", () => window.spAuto("cnt"));
+  for (const id of ["sptilt", "spfib"]) $(id).closest(".card").querySelector("h2[data-fold]").addEventListener("click", () => setTimeout(() => { if (SP.ran) window.spAuto(); }, 0));
   fillSrc(); fitWl(); fillCfg();
 };
 window.spSelectCrystal = (mat) => {
@@ -3833,20 +3859,25 @@ function run() {
     const lam1 = j.nu1.map((v) => C_UM_PS / v * 1000), lam2 = j.nu2.map((v) => C_UM_PS / v * 1000);
     const w1 = fwhm(lam1, I.m1), w2 = fwhm(lam2, I.m2);
     const off = !o.qpm && Math.abs(j.dk0) * +$("spL").value * 1000 / 2 > 0.5;
-    $("spres").innerHTML = `<b>P = ${P.toFixed(4)}</b>${Number.isFinite(P2) ? ` (پنجره‌ی دوبرابر: ${P2.toFixed(4)})` : ""} &nbsp; K = ${K.toFixed(3)} &nbsp; FWHM₁ = ${w1.toFixed(3)} nm &nbsp; FWHM₂ = ${w2.toFixed(3)} nm`
-      + (j.periodUm ? ` &nbsp; Λ = ${j.periodUm.toFixed(3)} µm` : "") + (off ? ` <span style="color:#c33">(در مرکز طیف Δk·L/2 = ${(j.dk0 * +$("spL").value * 500).toFixed(2)}؛ زاویه را بازبینی کنید)</span>` : "");
+    drawJSI(I.jsi, j.n, lam1, lam2);
+    const h = drawHOM(j, l1, l2);
+    const notes = [off && `<p class="err">در مرکز طیف <bdi dir="ltr">Δk·L/2 = ${(j.dk0 * +$("spL").value * 500).toFixed(2)}</bdi>؛ زاویه‌ی پیکربندی را بازبینی کنید.</p>`];
+    $("spres").innerHTML = spBox({
+      tiles: [[P.toFixed(3), "خلوص طیفی P", Number.isFinite(P2) ? `<bdi dir="ltr">${P2.toFixed(3)}</bdi> در پنجره‌ی دوبرابر` : ""], [K.toFixed(2), "عدد اشمیت K", "۱ یعنی تک‌مُد"],
+        [`${w1.toFixed(2)} nm`, "پهنای طیف فوتون ۱", "FWHM"], [`${w2.toFixed(2)} nm`, "پهنای طیف فوتون ۲", "FWHM"],
+        ...(h ? [[`${(h.V * 100).toFixed(1)} %`, "نمایانی HOM", `<bdi dir="ltr">dip @ ${h.t0.toFixed(2)} ps</bdi>`]] : []),
+        [j.periodUm ? `${j.periodUm.toFixed(3)} µm` : `${(o.angle * 180 / Math.PI).toFixed(2)}°`, j.periodUm ? "دوره‌ی QPM (Λ)" : "زاویه‌ی تطبیق فاز"]],
+      notes });
     if ($("spfoc").checked) {
       const xi = +$("spxi").value, dir = direction(o.plane, o.angle), idx = (lam, pol) => { const [sl, fa] = eigenIndices(spNAt(s)(lam), dir); return pol === "s" ? sl : fa; };
       const pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
       const k = (lam, pol) => 2 * Math.PI * idx(lam, pol) / lam;
       const f = focusing({ xi, L_mm: +$("spL").value, kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]) });
-      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">ξ = ${xi}: کمر باریکه (شعاع 1/e² میدان) پمپ ${f.wp.toFixed(1)} µm، فوتون ۱ ${f.ws.toFixed(1)} µm، فوتون ۲ ${f.wi.toFixed(1)} µm؛ `
-        + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}</div>`;
+      $("spres").innerHTML += `<p class="hint">ξ = ${xi}: کمر باریکه (شعاع 1/e² میدان) پمپ ${f.wp.toFixed(1)} µm، فوتون ۱ ${f.ws.toFixed(1)} µm، فوتون ۲ ${f.wi.toFixed(1)} µm؛ `
+        + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}</p>`;
     }
     if ($("sppm").value === "apod" && !$("spfoc").checked)
-      $("spres").innerHTML += `<div dir="rtl" style="text-align:right">آپودایز گاوسی با σ = ${esc(+$("spapod").value)}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</div>`;
-    drawJSI(I.jsi, j.n, lam1, lam2);
-    drawHOM(j, l1, l2);
+      $("spres").innerHTML += `<p class="hint">آپودایز گاوسی با σ = ${esc(+$("spapod").value)}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</p>`;
     // the joint spectral intensity as CSV: λ1 (nm), λ2 (nm), |f|² normalized to its peak
     let mx = 0; for (const v of I.jsi) mx = Math.max(mx, v);
     const rows = ["lambda1_nm,lambda2_nm,jsi"];
@@ -3855,6 +3886,7 @@ function run() {
     link.href = URL.createObjectURL(new Blob([rows.join("\n")], { type: "text/csv" })); link.hidden = false;
     $("spinfo").innerHTML = (s.extrapolated ? `<span class="err">برون‌یابی (تا ۱۰٪ بیرون از بازه)؛ بازه‌ی فرمول این منبع: <bdi dir="ltr">${s.extrapolated[0]}–${s.extrapolated[1]} µm</bdi></span><br>` : "")
       + esc(`شبکه‌ی ${j.n}×${j.n}، گستره‌ی ${(lam1[0] - lam1[j.n - 1]).toFixed(2)} × ${(lam2[0] - lam2[j.n - 1]).toFixed(2)} nm. منبع ضریب شکست: ${s.label}.`);
+    SP.ran = true; window.spAuto?.();
   }
 }
 // The pump bandwidth of the highest purity for the configuration, written into the pump field, then the spectrum
@@ -3870,7 +3902,7 @@ function optimize() {
     if (!Number.isFinite(r.purity)) { $("spinfo").textContent = "بهینه‌سازی ممکن نشد (طیف بیرون از گستره‌ی فرمول)."; return; }
     $("spdp").value = r.pumpFwhmNm.toPrecision(3); $("sptau").value = "";
     run();
-    setTimeout(() => { $("spres").innerHTML += `<div dir="rtl" style="text-align:right">پهنای پمپ بهینه ${r.pumpFwhmNm.toPrecision(3)} nm (پالس محدود به تبدیل ${(2 * Math.LN2 / Math.PI / (r.pumpFwhmNm * 1e-3 / (lp * lp) * C_UM_PS)).toPrecision(3)} ps): بیشترین خلوص این طول و پیکربندی ${r.purity.toFixed(4)}.</div>`; }, 60);
+    setTimeout(() => { $("spres").innerHTML += `<p class="hint">پهنای پمپ بهینه ${r.pumpFwhmNm.toPrecision(3)} nm (پالس محدود به تبدیل ${(2 * Math.LN2 / Math.PI / (r.pumpFwhmNm * 1e-3 / (lp * lp) * C_UM_PS)).toPrecision(3)} ps): بیشترین خلوص این طول و پیکربندی ${r.purity.toFixed(4)}.</p>`; }, 60);
   }, 20);
 }
 // Emission angles of the two photons against λ1, for the configuration tilted from collinear phase matching
@@ -3895,24 +3927,17 @@ function angles() {
     if (r) pts.push([lam * 1000, r.ext1 * 180 / Math.PI, r.ext2 * 180 / Math.PI]);
   }
   const c = emissionAngles({ nAt, plane: o.plane, angle: o.angle + tilt, pols, lp, l1, kg: SP.kg });
-  $("spangres").innerHTML = c ? `at λ₁ = ${(l1 * 1000).toFixed(1)} nm: θ₁ = ${(c.ext1 * 180 / Math.PI).toFixed(3)}° (internal ${(c.theta1 * 180 / Math.PI).toFixed(3)}°), θ₂ = ${(c.ext2 * 180 / Math.PI).toFixed(3)}° (internal ${(c.theta2 * 180 / Math.PI).toFixed(3)}°) outside the crystal`
-    : `no emission at λ₁ = ${(l1 * 1000).toFixed(1)} nm for this tilt (the photons phase-match only at other wavelengths or tilts).`;
+  const dg = (r) => `${(r * 180 / Math.PI).toFixed(3)}°`;
+  $("spangres").innerHTML = c ? spBox({
+    tiles: [[dg(c.ext1), "زاویه‌ی فوتون ۱ بیرون بلور", `<bdi dir="ltr">λ₁ = ${lamTxt(l1, 4)}</bdi>`], [dg(c.ext2), "زاویه‌ی فوتون ۲ بیرون بلور", `<bdi dir="ltr">λ₂ = ${lamTxt(l2, 4)}</bdi>`]],
+    rows: [["زاویه‌ی درون بلور (فوتون ۱ · فوتون ۲)", `${dg(c.theta1)} · ${dg(c.theta2)}`]] })
+    : `<p class="hint">با این چرخش، در <bdi dir="ltr">λ₁ = ${lamTxt(l1, 4)}</bdi> گسیلی نیست؛ فوتون‌ها فقط در طول موج‌ها یا چرخش‌های دیگری تطبیق فاز می‌دهند.</p>`;
   drawAngles(pts);
 }
 function drawAngles(pts) {
-  const svg = $("spangsvg");
-  if (pts.length < 2) { svg.innerHTML = ""; return; }
-  const W = svg.clientWidth || 600, H = 240, x0 = pts[0][0], x1 = pts[pts.length - 1][0];
-  const ymax = Math.max(0.5, ...pts.map((p) => Math.max(p[1], p[2]))) * 1.1;
-  const px = (x) => 46 + (x - x0) / (x1 - x0 || 1) * (W - 60), py = (y) => 12 + (1 - y / ymax) * (H - 44);
-  const line = (k) => pts.map((p, i) => `${i ? "L" : "M"}${px(p[0]).toFixed(1)},${py(p[k]).toFixed(1)}`).join("");
-  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  svg.innerHTML = `<line x1="46" x2="${W - 14}" y1="${py(0)}" y2="${py(0)}" stroke="currentColor" opacity="0.3"/>`
-    + `<path d="${line(1)}" fill="none" stroke="#1f6feb" stroke-width="1.8"/><path d="${line(2)}" fill="none" stroke="#d1242f" stroke-width="1.8" stroke-dasharray="5,3"/>`
-    + `<text x="46" y="${H - 8}" font-size="11" fill="currentColor">${x0.toFixed(1)} nm</text><text x="${W - 14}" y="${H - 8}" font-size="11" text-anchor="end" fill="currentColor">${x1.toFixed(1)} nm</text>`
-    + `<text x="${(W + 32) / 2}" y="${H - 8}" font-size="11" text-anchor="middle" fill="currentColor">λ₁</text>`
-    + `<text x="4" y="${py(ymax / 1.1) + 4}" font-size="11" fill="currentColor">${(ymax / 1.1).toFixed(2)}°</text><text x="4" y="${py(0) + 4}" font-size="11" fill="currentColor">0°</text>`
-    + `<text x="${W - 14}" y="22" font-size="11" text-anchor="end" fill="#1f6feb">θ₁ (photon 1)</text><text x="${W - 14}" y="38" font-size="11" text-anchor="end" fill="#d1242f">θ₂ (photon 2)</text>`;
+  const K = lamK();
+  spPlot($("spangsvg"), [{ pts: pts.map((p) => [p[0] / 1000 * K, p[1]]), name: "θ₁ (photon 1)" }, { pts: pts.map((p) => [p[0] / 1000 * K, p[2]]), dash: true, name: "θ₂ (photon 2)" }],
+    { xl: `photon 1 wavelength λ₁ (${lamUnit()})`, yl: "external angle (°)", y0: 0, legend: true, msg: "no emission in this range" });
 }
 // d_eff of the selected configuration from the crystal's d_il (nonlinear_coefficients.yml): the field vectors of the
 // three waves along the propagation direction; first-order QPM takes 2/π of it; angle phase matching takes the
@@ -3936,6 +3961,32 @@ function spBox({ tiles = [], rows = [], notes = [] }) {
   const t = tiles.map(([big, label, small]) => `<div class="tile"><span>${label}</span><b>${big}</b>${small ? `<small>${small}</small>` : ""}</div>`).join("");
   const r = rows.map(([k, v]) => `<tr><th>${k}</th><td><bdi dir="ltr">${v}</bdi></td></tr>`).join("");
   return (t ? `<div class="tiles">${t}</div>` : "") + (r ? `<table class="xrows">${r}</table>` : "") + notes.filter(Boolean).join("");
+}
+// one line chart of the tab in the page's colours: series {pts: [[x, y]], dash, name}, fixed y range if given, a
+// dashed horizontal line, marked points, axis titles and a legend
+function spPlot(svg, series, { xl, yl, y0: fy0, y1: fy1, hline, mark, legend, msg }) {
+  const W = Math.round(svg.parentElement.clientWidth) || 420, H = Math.round(Math.min(300, Math.max(220, W * 0.6)));
+  svg.style.height = H + "px"; svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const all = series.flatMap((x) => x.pts);
+  if (!all.length) { svg.innerHTML = `<text x="${W / 2}" y="${H / 2}" text-anchor="middle" fill="var(--muted)" font-size="13">${msg || "—"}</text>`; return; }
+  const m = { l: 54, r: 12, t: legend ? 26 : 10, b: 40 };
+  let [x0, x1] = [Math.min(...all.map((p) => p[0])), Math.max(...all.map((p) => p[0]))];
+  let [y0, y1] = [fy0 ?? Math.min(...all.map((p) => p[1])), fy1 ?? Math.max(...all.map((p) => p[1]))];
+  if (x1 - x0 < 1e-12) { x0 -= 1; x1 += 1; } if (y1 - y0 < 1e-12) { y0 -= 1; y1 += 1; }
+  if (fy0 == null || fy1 == null) { const py = (y1 - y0) * 0.06; if (fy0 == null) y0 -= py; if (fy1 == null) y1 += py; }
+  const X = (x) => m.l + (x - x0) / (x1 - x0) * (W - m.l - m.r), Y = (y) => H - m.b - (y - y0) / (y1 - y0) * (H - m.t - m.b);
+  const ticks = (a0, a1, n) => { const st = 10 ** Math.floor(Math.log10((a1 - a0) / n)), g = [1, 2, 5, 10].find((q) => (a1 - a0) / (st * q) <= n) * st, out = []; for (let v = Math.ceil(a0 / g - 1e-9) * g; v <= a1 + 1e-9; v += g) out.push(+v.toFixed(10)); return out; };
+  const dec = (a0, a1) => Math.max(0, Math.min(4, 1 - Math.floor(Math.log10((a1 - a0) / 5 || 1))));
+  let out = ticks(y0, y1, 5).map((v) => `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--grid)"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${v.toFixed(dec(y0, y1))}</text>`).join("");
+  out += ticks(x0, x1, W < 420 ? 4 : 6).map((v) => `<line x1="${X(v)}" x2="${X(v)}" y1="${m.t}" y2="${H - m.b}" stroke="var(--grid)"/><text x="${X(v)}" y="${H - m.b + 16}" text-anchor="middle" font-size="11" fill="var(--muted)">${v.toFixed(dec(x0, x1))}</text>`).join("");
+  out += `<line x1="${m.l}" x2="${W - m.r}" y1="${H - m.b}" y2="${H - m.b}" stroke="var(--line)"/>`;
+  out += `<text x="${(m.l + W - m.r) / 2}" y="${H - 4}" text-anchor="middle" font-size="12" fill="var(--muted)">${xl}</text>`;
+  out += `<text transform="translate(13 ${(m.t + H - m.b) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="var(--muted)">${yl}</text>`;
+  if (hline != null) out += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(hline)}" y2="${Y(hline)}" stroke="var(--muted)" stroke-dasharray="4,4"/>`;
+  series.forEach((sr, j) => { if (sr.pts.length > 1) out += `<polyline fill="none" stroke="var(--series-${(j % 8) + 1})" stroke-width="2"${sr.dash ? ' stroke-dasharray="6,4"' : ""} points="${sr.pts.map(([x, y]) => `${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join(" ")}"/>`; });
+  for (const [x, y] of mark || []) out += `<circle cx="${X(x).toFixed(1)}" cy="${Y(y).toFixed(1)}" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/>`;
+  if (legend) { let lx = m.l; series.forEach((sr, j) => { if (!sr.name) return; out += `<line x1="${lx}" x2="${lx + 18}" y1="12" y2="12" stroke="var(--series-${(j % 8) + 1})" stroke-width="2"${sr.dash ? ' stroke-dasharray="6,4"' : ""}/><text x="${lx + 22}" y="16" font-size="11" fill="var(--ink)">${sr.name}</text>`; lx += 30 + sr.name.length * 6.5; }); }
+  svg.innerHTML = out;
 }
 const spWaists = (wp, w1, w2) => `${wp.toFixed(1)}, ${w1.toFixed(1)}, ${w2.toFixed(1)} µm`;
 // Absolute pair rate into the Gaussian modes of the fibre card's focal parameters (ξ = L/zR as there)
@@ -4054,7 +4105,7 @@ const RAMP = [[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 2
 const color = (v) => { const x = Math.max(0, Math.min(1, v)) * 4, i = Math.min(3, Math.floor(x)), f = x - i; return RAMP[i].map((c, k) => Math.round(c + f * (RAMP[i + 1][k] - c))); };
 function drawJSI(jsi, n, lam1, lam2) {
   $("spfigs").hidden = false; $("spempty").hidden = true;
-  const cv = $("spjsi"), ctx = cv.getContext("2d"), W = cv.width, pad = 46, S = W - pad - 8;
+  const cv = $("spjsi"), ctx = cv.getContext("2d"), W = cv.width, pad = 64, S = W - pad - 8;
   ctx.fillStyle = getComputedStyle(document.body).backgroundColor || "#fff"; ctx.fillRect(0, 0, W, W);
   let max = 0; for (const v of jsi) max = Math.max(max, v);
   // show the part where |f|² exceeds 1 % of its peak, with a margin
@@ -4070,29 +4121,33 @@ function drawJSI(jsi, n, lam1, lam2) {
   }
   const tmp = document.createElement("canvas"); tmp.width = ni; tmp.height = nj; tmp.getContext("2d").putImageData(img, 0, 0);
   ctx.imageSmoothingEnabled = true; ctx.drawImage(tmp, pad, 4, S, S);
-  ctx.fillStyle = getComputedStyle(document.body).color || "#000"; ctx.font = "11px sans-serif";
-  const lo1 = lam1[a1], hi1 = lam1[a0], lo2 = lam2[b1], hi2 = lam2[b0];
-  ctx.textAlign = "center"; ctx.fillText(lo1.toFixed(1), pad + 12, W - 22); ctx.fillText(hi1.toFixed(1), pad + S - 12, W - 22); ctx.fillText("λ₁ (nm)", pad + S / 2, W - 8);
-  ctx.textAlign = "right"; ctx.fillText(hi2.toFixed(1), pad - 3, 14); ctx.fillText(lo2.toFixed(1), pad - 3, S); ctx.save(); ctx.translate(12, S / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.fillText("λ₂ (nm)", 0, 0); ctx.restore();
+  // axes: ticks at round wavelengths on both sides (λ₁ to the right, λ₂ upwards), in the page's colours
+  const css = getComputedStyle(document.documentElement), muted = css.getPropertyValue("--muted").trim() || "#666", line = css.getPropertyValue("--line").trim() || "#ccc";
+  const lo1 = lam1[a1], hi1 = lam1[a0], lo2 = lam2[b1], hi2 = lam2[b0], y0 = 4;
+  const ticks = (p0, p1, n) => { const st = 10 ** Math.floor(Math.log10((p1 - p0) / n)), g = [1, 2, 5, 10].find((q) => (p1 - p0) / (st * q) <= n) * st, out = []; for (let v = Math.ceil(p0 / g) * g; v <= p1 + 1e-9; v += g) out.push(+v.toFixed(8)); return out; };
+  const dec = (p0, p1) => Math.max(0, Math.min(3, 1 - Math.floor(Math.log10((p1 - p0) / 5 || 1))));
+  ctx.strokeStyle = line; ctx.lineWidth = 1; ctx.strokeRect(pad + 0.5, y0 + 0.5, S - 1, S - 1);
+  ctx.fillStyle = muted; ctx.font = "11px sans-serif";
+  ctx.textAlign = "center";
+  for (const v of ticks(lo1, hi1, 4)) { const x = pad + (v - lo1) / (hi1 - lo1) * S; ctx.fillRect(x, y0 + S, 1, 5); ctx.fillText(v.toFixed(dec(lo1, hi1)), x, y0 + S + 18); }
+  ctx.fillText("λ₁, photon 1 (nm)", pad + S / 2, W - 6);
+  ctx.textAlign = "right";
+  for (const v of ticks(lo2, hi2, 4)) { const y = y0 + S - (v - lo2) / (hi2 - lo2) * S; ctx.fillRect(pad - 5, y, 5, 1); ctx.fillText(v.toFixed(dec(lo2, hi2)), pad - 7, y + 4); }
+  ctx.save(); ctx.translate(11, y0 + S / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center"; ctx.fillText("λ₂, photon 2 (nm)", 0, 0); ctx.restore();
 }
 function drawHOM(j, l1, l2) {
   const svg = $("sphom");
-  if (Math.abs(l1 - l2) > 1e-9) { svg.innerHTML = ""; $("sphomcap").textContent = "فرورفتگی هنگ–او–مندل فقط برای جفت تبهگن (λ₁ = λ₂) رسم می‌شود."; return; }
+  if (Math.abs(l1 - l2) > 1e-9) { spPlot(svg, [], { msg: "only for a degenerate pair (λ₁ = λ₂)" }); $("sphomcap").textContent = "فرورفتگی هنگ–او–مندل فقط برای جفت تبهگن (λ₁ = λ₂) رسم می‌شود."; return null; }
   const period = 1 / (j.nu1[1] - j.nu1[0]), taus = Array.from({ length: 241 }, (_, k) => (k / 240 - 0.5) * period * 0.9);
-  const c = hom(j, taus); if (!c) { svg.innerHTML = ""; return; }
+  const c = hom(j, taus); if (!c) { svg.innerHTML = ""; return null; }
   // keep the part around the dip
   let k0 = 0; c.forEach((v, k) => { if (v < c[k0]) k0 = k; });
   let a = k0, b = k0; while (a > 0 && c[a] < 0.499) a--; while (b < c.length - 1 && c[b] < 0.499) b++;
   const w = Math.max(b - a, 10), lo = Math.max(0, a - w), hi = Math.min(c.length - 1, b + w);
-  const W = svg.clientWidth || 360, H = 220, px = (t) => 40 + (t - taus[lo]) / (taus[hi] - taus[lo]) * (W - 50), py = (v) => 10 + (1 - v / 0.55) * (H - 40);
-  const d = c.slice(lo, hi + 1).map((v, k) => `${k ? "L" : "M"}${px(taus[lo + k]).toFixed(1)},${py(v).toFixed(1)}`).join("");
   const V = (0.5 - c[k0]) / 0.5;
-  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  svg.innerHTML = `<path d="${d}" fill="none" stroke="currentColor" stroke-width="1.6"/>`
-    + `<line x1="40" x2="${W - 10}" y1="${py(0.5)}" y2="${py(0.5)}" stroke="currentColor" stroke-dasharray="3,3" opacity="0.4"/>`
-    + `<text x="40" y="${H - 6}" font-size="11" fill="currentColor">${taus[lo].toFixed(2)} ps</text><text x="${W - 10}" y="${H - 6}" font-size="11" text-anchor="end" fill="currentColor">${taus[hi].toFixed(2)} ps</text>`
-    + `<text x="4" y="${py(0.5) + 4}" font-size="11" fill="currentColor">½</text><text x="4" y="${py(0) + 4}" font-size="11" fill="currentColor">0</text>`;
-  $("sphomcap").textContent = `احتمال هم‌فرودی هنگ–او–مندل دو فوتون یک جفت بر حسب تأخیر؛ کمینه در ${taus[k0].toFixed(2)} ps، نمایانی ${(V * 100).toFixed(1)}٪.`;
+  spPlot(svg, [{ pts: c.slice(lo, hi + 1).map((v, k) => [taus[lo + k], v]) }], { xl: "delay τ (ps)", yl: "P(coincidence)", y0: 0, y1: 0.55, hline: 0.5, mark: [[taus[k0], c[k0]]] });
+  $("sphomcap").textContent = `احتمال هم‌فرودی دو فوتون یک جفت پس از بیم‌اسپلیتر ۵۰:۵۰ بر حسب تأخیر؛ کمینه در ${taus[k0].toFixed(2)} ps، نمایانی ${(V * 100).toFixed(1)}٪. خط‌چین: ½، فوتون‌های تمایزپذیر.`;
+  return { V, t0: taus[k0] };
 }
 </script>
 <script type="module" nonce="__CSP_NONCE__">
