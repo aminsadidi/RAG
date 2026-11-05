@@ -3134,7 +3134,9 @@ function svFill() {
   setLam("svlp", +lp.toFixed(6)); setLam("svls", +ls.toFixed(6)); setLam("svli", free ? "" : +(1 / (1 / lp - 1 / ls)).toFixed(6));
   $("svT").value = tempC() ?? src?.thermo?.t0_c ?? 25; $("svx").value = "";
   const x = free ? null : svSolve({ lp, ls, li: null, T: +$("svT").value, x: null, dk: 0 })?.roots?.[0]?.x;
-  if (x != null) $("svx").value = +x.toFixed(4);
+  // the box shows 4 decimals; the solver keeps the exact value while the box still holds that text (at degeneracy
+  // the signal moves with the square root of a period change: 6.84098 rounded to 6.841 would split it by ~30 nm)
+  if (x != null) { $("svx").value = +x.toFixed(4); PM.svExact = { text: $("svx").value, x }; }
   svDerived(); svRun();
 }
 const SV_ERR = {
@@ -3150,7 +3152,7 @@ function svRun() {
   const info = (html) => { $("svinfo").innerHTML = html; $("svtable").innerHTML = ""; };
   if (!cfg) return info("برای این بلور و منبع پیکربندی‌ای برای حل نیست (بلور مکعبی، یا بدون ضرایب غیرخطی و قطبش تناوبی).");
   const src0 = c.sources[+$("pmsrc").value], src = stretch(src0);
-  const g = { lp: lamOr("svlp"), ls: lamOr("svls"), li: lamOr("svli"), T: numOr("svT"), x: numOr("svx"), dk: (numOr("svdk") ?? 0) / 1000 };
+  const g = { lp: lamOr("svlp"), ls: lamOr("svls"), li: lamOr("svli"), T: numOr("svT"), x: PM.svExact && $("svx").value === PM.svExact.text ? PM.svExact.x : numOr("svx"), dk: (numOr("svdk") ?? 0) / 1000 };
   // a chosen unknown: only its needed boxes count, each must be filled, and the wavelengths must be in order
   const need = SV_NEED[PM.svWant];
   if (need) {

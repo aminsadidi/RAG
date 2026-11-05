@@ -353,17 +353,37 @@ function complete(g) { // the third wavelength from the other two (energy conser
   else if (s.ls && s.li && !s.lp) s.lp = 1 / (1 / s.ls + 1 / s.li);
   return s;
 }
+// A root where the curve only touches zero, without crossing it: the degenerate point of type-0 and type-I SPDC
+// (signal = idler, the same polarization) is a minimum of |Δk| there, and the grating made for it meets it only at
+// that point. Accepted when |Δk| at the minimum is below TOUCH rad/µm (Δk·L/2 < 0.01 for a 1 cm crystal).
+const TOUCH = 2e-6;
+function touchRoot(f, a, b) { // golden-section minimum of |f| in [a, b]
+  const g = (Math.sqrt(5) - 1) / 2;
+  let c = b - g * (b - a), d = a + g * (b - a), fc = Math.abs(f(c)), fd = Math.abs(f(d));
+  for (let k = 0; k < 80; k++) {
+    if (fc < fd) { b = d; d = c; fd = fc; c = b - g * (b - a); fc = Math.abs(f(c)); }
+    else { a = c; c = d; fc = fd; d = a + g * (b - a); fd = Math.abs(f(d)); }
+  }
+  const x = (a + b) / 2;
+  return Math.abs(f(x)) < TOUCH ? x : null;
+}
 function scanRoots(f, lo, hi, steps) {
   const out = [];
-  let x0 = lo, f0 = f(lo);
+  let xp = NaN, fp = NaN, x0 = lo, f0 = f(lo);
   for (let k = 1; k <= steps; k++) {
     const x1 = lo + (hi - lo) * k / steps, f1 = f(x1);
     if (Number.isFinite(f0) && Number.isFinite(f1)) {
       if (f0 === 0 && k === 1) out.push(x0);
       else if (f0 !== 0 && Math.sign(f0) !== Math.sign(f1)) out.push(f1 === 0 ? x1 : bisect(f, x0, x1, f0));
+      // |f| smallest at x0 with the same sign on both sides: a touching root may lie between xp and x1
+      else if (Number.isFinite(fp) && Math.sign(fp) === Math.sign(f0) && Math.sign(f0) === Math.sign(f1)
+        && Math.abs(f0) <= Math.abs(fp) && Math.abs(f0) <= Math.abs(f1)) {
+        const t = touchRoot(f, xp, x1); if (t !== null) out.push(t);
+      }
     }
-    x0 = x1; f0 = f1;
+    xp = x0; fp = f0; x0 = x1; f0 = f1;
   }
+  out.sort((p, q) => p - q);
   return out.filter((x, i) => i === 0 || Math.abs(x - out[i - 1]) > 1e-9 * Math.max(1, Math.abs(x)));
 }
 export function solveMixing(model, given, range) {

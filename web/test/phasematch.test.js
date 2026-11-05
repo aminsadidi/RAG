@@ -1006,3 +1006,17 @@ test("solver: a grating against a negative mismatch (pump of lower index) gives 
   const T = solveMixing(m, { lp: 1.064, ls: 1.55, x: per.x }, R).roots.map((r) => r.T);
   assert.ok(T.some((t) => Math.abs(t - 40) < 1e-3), `T ${T}`);
 });
+
+test("solver: degenerate type-0 and type-I SPDC, where Δk only touches zero, gives its signal back", () => {
+  // PPKTP 775 → 1550 + 1550: with signal and idler of the same polarization, Δk(λs) has its minimum at degeneracy
+  // and the grating made for it meets it there only; type II (distinct polarizations) crosses as before
+  const { s } = ppktp(), R = { lam: s.range_um, T: [-50, 300] };
+  for (const pol of [[2, 2, 2], [1, 1, 2], [1, 2, 1]]) {
+    const m = { kind: "qpm", nAtT: (T) => nAtTemp(s, T), pol, expansion: s.thermo.expansion };
+    const per = solveMixing(m, { lp: 0.775, ls: 1.55, T: 25 }, R).roots[0].x;
+    const sig = solveMixing(m, { lp: 0.775, x: per, T: 25 }, R).roots.map((r) => r.ls);
+    assert.ok(sig.some((l) => Math.abs(l - 1.55) < 1e-4), `${pol}: signal ${sig}`);
+    // and no false roots: every one it returns is phase-matched
+    for (const r of solveMixing(m, { lp: 0.775, x: per, T: 25 }, R).roots) assert.ok(Math.abs(mismatch(m, r)) < 1e-5, `${pol}: ${r.ls}`);
+  }
+});
