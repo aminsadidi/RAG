@@ -92,15 +92,25 @@ export function apodized(x, s, m = 48) {
 // Searched on a coarse grid (n = 70), the best point is evaluated again at opts.n.
 export function bestPumpBandwidth(opts, [lo, hi] = [0.01, 60]) {
   const P = (bw, n = 70) => purity(jointSpectrum({ ...opts, pumpFwhmNm: bw, n })).purity;
+  // A wider pump widens the pair spectrum: past some width it leaves the range of the index formula (NaN). The
+  // search stays below the widest pump that still fits (found by bisection), and says when the best purity it
+  // finds is at that edge (a wider range, from another source or extrapolation, may give a higher one).
+  let edge = null;
+  if (!Number.isFinite(P(hi))) {
+    if (!Number.isFinite(P(lo))) return { pumpFwhmNm: NaN, purity: NaN, edge: null };
+    let a = lo, b = hi;
+    for (let k = 0; k < 30; k++) { const m = Math.sqrt(a * b); if (Number.isFinite(P(m))) a = m; else b = m; }
+    hi = edge = a * 0.995;
+  }
   let a = Math.log(lo), b = Math.log(hi);
-  const g = (Math.sqrt(5) - 1) / 2;
-  let c = b - g * (b - a), d = a + g * (b - a), fc = P(Math.exp(c)), fd = P(Math.exp(d));
+  const g = (Math.sqrt(5) - 1) / 2, Pf = (bw) => { const v = P(bw); return Number.isFinite(v) ? v : -1; };
+  let c = b - g * (b - a), d = a + g * (b - a), fc = Pf(Math.exp(c)), fd = Pf(Math.exp(d));
   for (let it = 0; it < 26; it++) {
-    if (fc > fd) { b = d; d = c; fd = fc; c = b - g * (b - a); fc = P(Math.exp(c)); }
-    else { a = c; c = d; fc = fd; d = a + g * (b - a); fd = P(Math.exp(d)); }
+    if (fc > fd) { b = d; d = c; fd = fc; c = b - g * (b - a); fc = Pf(Math.exp(c)); }
+    else { a = c; c = d; fc = fd; d = a + g * (b - a); fd = Pf(Math.exp(d)); }
   }
   const bw = Math.exp((a + b) / 2);
-  return { pumpFwhmNm: bw, purity: P(bw, opts.n || 120) };
+  return { pumpFwhmNm: bw, purity: P(bw, opts.n || 120), edge: edge && bw > edge * 0.98 ? edge : null };
 }
 
 // Non-collinear emission in the plane of the pump direction (plane, angle) for a fixed pump wavelength: for photon 1

@@ -273,3 +273,16 @@ test("pair rate: a spectrum reaching past the formula's range is integrated up t
   assert.ok(r && Number.isFinite(r.rate) && r.rate > 0);
   assert.equal(typeof r.clipped, "boolean");
 });
+
+test("purity optimizer: a formula whose range ends near the photons keeps the search inside it", () => {
+  // KTP type II (xz, 775 -> 1550 + 1550) with Fradkin-König, valid only up to 1.63 µm: a pump wider than ~4 nm
+  // carries the pair spectrum past it. The optimum (~4 nm, P ~ 0.9, as with Kato's formula valid to 3.5 µm) is
+  // found, not lost to the NaN of the wider pumps.
+  const A = JSON.parse(readFileSync(new URL("../public/ri/aniso.json", import.meta.url)));
+  const ktp = A.find((c) => c.material === "KTiOPO4"), src = (l) => ktp.sources.find((s) => s.label === l);
+  const base = (s) => ({ nAt: nAtOf(s), plane: "xz", angle: 52.95 * Math.PI / 180, type: "IIb", lp: 0.775, l1: 1.55, l2: 1.55, L_mm: 10, pm: "sinc" });
+  const fk = bestPumpBandwidth(base(src("Fradkin-König"))), kato = bestPumpBandwidth(base(src("Kato")));
+  assert.ok(Number.isFinite(fk.purity) && fk.purity > 0.85, `FK ${fk.purity}`);
+  assert.ok(Math.abs(fk.pumpFwhmNm - kato.pumpFwhmNm) < 0.3, `${fk.pumpFwhmNm} vs ${kato.pumpFwhmNm}`);
+  assert.ok(Math.abs(fk.purity - kato.purity) < 0.02, `${fk.purity} vs ${kato.purity}`);
+});

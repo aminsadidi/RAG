@@ -327,6 +327,8 @@ th,td{padding:7px 10px}
 .xrows{border-collapse:collapse;width:100%}
 .spout{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soft);font-size:14px;color:var(--muted)}
 .spout:empty{display:none}
+.sphelp{border:1px solid var(--warn,#b45309);border-radius:12px;padding:10px 14px;background:color-mix(in srgb,var(--warn,#b45309) 8%,var(--card));color:var(--ink);font-size:14px}
+.sphelp ol{margin:6px 0 0;padding-inline-start:20px}.sphelp li{margin:2px 0}.sphelp .actions{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
 a.btnlink{display:inline-flex;align-items:center;text-decoration:none;cursor:pointer;font-size:14px;border-radius:8px;padding:7px 16px;min-height:36px;box-sizing:border-box;border:1px solid var(--line);color:var(--ink);background:var(--card)}a.btnlink:hover{border-color:var(--accent);color:var(--accent)}a.btnlink[hidden]{display:none}
 .spfigs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-top:14px}
 .spfigs figure{margin:0;min-width:0}.spfigs h3{margin:0 0 6px;font-size:14px}
@@ -3696,6 +3698,10 @@ window.loadSPDC = async () => {
   for (const id of ["splp", "spl1"]) $(id).onchange = fillCfg;
   $("sptau").oninput = () => { const t = +$("sptau").value; if (t > 0) $("spdp").value = transformLimitedNm(lamv("splp"), t).toFixed(4); };
   $("spgo").onclick = run;
+  $("tab-spdc").addEventListener("click", (e) => {
+    const src = e.target.closest("[data-spsrc]"); if (src) { $("spsrc").value = src.dataset.spsrc; $("spsrc").onchange(); run(); return; }
+    if (e.target.closest("[data-spextra]")) { SP.extra = true; fillCfg(); run(); }
+  });
   $("spopt").onclick = optimize;
   $("spang").onclick = angles;
   $("sppm").onchange = () => { $("spapodl").hidden = $("sppm").value !== "apod"; };
@@ -3777,6 +3783,21 @@ function spClear() {
   $("spres").innerHTML = ""; $("spfigs").hidden = true; $("spempty").hidden = false; $("spcsv").hidden = true;
 }
 const spStop = (out) => { const why = spBad(); if (why) { $(out).innerHTML = `<span class="err">${why}</span>`; if (out === "spinfo") spClear(); } return Boolean(why); };
+// The pair spectrum runs past the range of the index formula: what to do, with buttons for the two that the tab can do
+// itself (a source of the same crystal with a wider range; the formula extrapolated by up to 10 %) and the inputs that
+// narrow the spectrum.
+function spRangeHelp() {
+  const c = SP.list.find((x) => x.material === $("spmat").value), cur = +$("spsrc").value, [lo, hi] = c.sources[cur].range_um;
+  const wider = c.sources.map((x, i) => ({ x, i })).filter(({ x, i }) => i !== cur && (x.range_um[0] < lo || x.range_um[1] > hi))
+    .sort((p, q) => (q.x.range_um[1] - q.x.range_um[0]) - (p.x.range_um[1] - p.x.range_um[0]));
+  const btns = wider.slice(0, 2).map(({ x, i }) => `<button type="button" class="alt" data-spsrc="${i}">منبع ${esc(x.label)} <bdi dir="ltr">(${x.range_um[0]}–${x.range_um[1]} µm)</bdi></button>`)
+    + (SP.extra ? "" : '<button type="button" class="alt" data-spextra>برون‌یابی فرمول تا ۱۰٪ بیرون از بازه</button>');
+  return `<div class="sphelp"><b>چه کار کنیم؟</b> طیف جفت‌ها از بازه‌ی فرمول این منبع (<bdi dir="ltr">${lo}–${hi} µm</bdi>) بیرون می‌زند. یکی از این‌ها:
+    <ol><li>منبع ضریب شکست دیگری با بازه‌ی بزرگ‌تر${wider.length ? "" : " (این بلور منبع دیگری با بازه‌ی بزرگ‌تر ندارد)"}، یا برون‌یابی فرمول.</li>
+    <li>پهنای طیف پمپ را کمتر کنید (پمپ پهن‌تر طیف فوتون‌ها را پهن‌تر می‌کند).</li>
+    <li>فیلتر روی بازوها بگذارید، یا بلور را بلندتر کنید؛ هر دو طیف را باریک‌تر نگه می‌دارند.</li>
+    <li>طول موج فوتون‌ها را از لبه‌ی بازه دورتر کنید.</li></ol>${btns ? `<div class="actions">${btns}</div>` : ""}</div>`;
+}
 // no configuration: say why (a wavelength outside the formula's range) and offer the 10 % extrapolation when it reaches
 function spNoCfg() {
   spClear();
@@ -3839,7 +3860,7 @@ function run() {
       filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 90 : 120 });
     const { purity: P, schmidt: K } = purity(j), I = intensity(j);
     if (!Number.isFinite(P) || !I.jsi.every(Number.isFinite)) {
-      $("spres").innerHTML = `<span class="err">طیف جفت از گستره‌ی فرمول ضریب شکست این منبع (${s.range_um[0]}–${s.range_um[1]} µm) بیرون می‌زند؛ طول موج‌ها، طول بلور یا منبع دیگری را امتحان کنید.</span>`;
+      $("spres").innerHTML = spRangeHelp(); $("spfigs").hidden = true;
       $("spinfo").textContent = ""; return;
     }
     // the unfiltered sinc has long tails: also give P on a window twice as wide (same resolution)
@@ -3893,10 +3914,11 @@ function optimize() {
     const r = bestPumpBandwidth({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
       L_mm: +$("spL").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value, apodSigma: +$("spapod").value,
       filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 80 : 110 });
-    if (!Number.isFinite(r.purity)) { $("spinfo").textContent = "بهینه‌سازی ممکن نشد (طیف بیرون از گستره‌ی فرمول)."; return; }
+    if (!Number.isFinite(r.purity)) { $("spinfo").textContent = ""; $("spres").innerHTML = spRangeHelp(); return; }
     $("spdp").value = r.pumpFwhmNm.toPrecision(3); $("sptau").value = "";
     run();
-    setTimeout(() => { $("spres").innerHTML += `<p class="hint">پهنای پمپ بهینه ${r.pumpFwhmNm.toPrecision(3)} nm (پالس محدود به تبدیل ${(2 * Math.LN2 / Math.PI / (r.pumpFwhmNm * 1e-3 / (lp * lp) * C_UM_PS)).toPrecision(3)} ps): بیشترین خلوص این طول و پیکربندی ${r.purity.toFixed(4)}.</p>`; }, 60);
+    setTimeout(() => { $("spres").innerHTML += `<p class="hint">پهنای پمپ بهینه ${r.pumpFwhmNm.toPrecision(3)} nm (پالس محدود به تبدیل ${(2 * Math.LN2 / Math.PI / (r.pumpFwhmNm * 1e-3 / (lp * lp) * C_UM_PS)).toPrecision(3)} ps): بیشترین خلوص این طول و پیکربندی ${r.purity.toFixed(4)}.</p>`
+      + (r.edge ? `<p class="hint">این بهترین خلوص در محدوده‌ی فرمول است: پمپ پهن‌تر از <bdi dir="ltr">${r.edge.toPrecision(3)} nm</bdi> طیف را از بازه‌ی فرمول بیرون می‌برد و شاید خلوص بیشتری بدهد. برای امتحانش:</p>${spRangeHelp().replace(/^<div class="sphelp">[\s\S]*?<\/ol>/, '<div class="sphelp">')}` : ""); }, 60);
   }, 20);
 }
 // Emission angles of the two photons against λ1, for the configuration tilted from collinear phase matching
