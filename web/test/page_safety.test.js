@@ -71,3 +71,7 @@ test("every inline script of every HTML page carries the CSP nonce, and no eleme
     assert.doesNotMatch(html, /<[a-z][^>]*\son[a-z]+="/i, f);
   }
 });
+
+test("a share link always carries the wavelengths, even at their defaults (the process changes first when it opens)", () => {
+  assert.match(html, /\(lam \|\| v !== el\.defaultValue\)/);
+});

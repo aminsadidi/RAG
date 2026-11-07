@@ -4975,6 +4975,8 @@ $("ricard").onclick = () => window.crystalCard(window.RI?.mat);
     const liveAll = [sec, ...sec.querySelectorAll("*")], deadAll = [copy, ...copy.querySelectorAll("*")];
     deadAll.forEach((el, i) => {
       const l = liveAll[i]; if (!l || l === sec) return;
+      // a copied <canvas> is blank: the chart drawn on the page goes in as an image
+      if (l.tagName === "CANVAS" && l.offsetParent !== null) { try { el.dataset.img = l.toDataURL("image/png"); } catch { /* tainted */ } return; }
       if (/^(INPUT|SELECT|TEXTAREA)$/.test(l.tagName)) {
         if (l.type === "file" || l.type === "hidden" || l.classList.contains("xsel")) el.dataset.drop = "1"; else el.dataset.val = valueOf(l);
         return;
@@ -4984,6 +4986,7 @@ $("ricard").onclick = () => window.crystalCard(window.RI?.mat);
       if (hiddenNow && !inFold) el.dataset.drop = "1";
     });
     copy.querySelectorAll('[data-drop="1"]').forEach((el) => el.remove());
+    copy.querySelectorAll("canvas[data-img]").forEach((el) => { const im = document.createElement("img"); im.src = el.dataset.img; im.alt = ""; im.style.cssText = "display:block;max-width:100%;width:" + (el.getBoundingClientRect().width || el.width) + "px"; el.replaceWith(im); });
     copy.querySelectorAll("[data-val]").forEach((el) => { const b = document.createElement("b"); b.className = "rv"; b.dir = "auto"; b.textContent = el.dataset.val; el.replaceWith(b); });
     copy.querySelectorAll(".dtools,.term,.jump,.xcpop,.tierbtn,.nmfix,#svwant,#pwboth").forEach((el) => el.remove());
     copy.querySelectorAll(".card.fold.closed").forEach((el) => el.remove());
@@ -5158,7 +5161,9 @@ function fieldsQuery(tab) {
     // a wavelength in µm whatever the unit shown (its default is in µm too), so the link opens right in either unit
     const lam = LAM_BOXES.includes(el.id), um = lam ? lamOr(el.id) : null;
     const v = el.type === "checkbox" ? (el.checked ? "1" : "0") : SRC_SEL.has(el.id) ? srcName(el.selectedOptions[0]) : lam ? (um == null ? el.value : String(+um.toPrecision(10))) : el.value;
-    if (v !== "" && v !== el.defaultValue && !(el.type === "checkbox" && el.checked === el.defaultChecked)) q.set(el.id, v);
+    // a wavelength always goes in, even at its default: opening the link changes the process or crystal first, and
+    // that may move a box left out (the OPO pump left at the default 1.064 µm opened as 0.532 µm)
+    if (v !== "" && (lam || v !== el.defaultValue) && !(el.type === "checkbox" && el.checked === el.defaultChecked)) q.set(el.id, v);
   }
   return q;
 }
