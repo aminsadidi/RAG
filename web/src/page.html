@@ -711,7 +711,7 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
       <label>فیلتر هر دو بازو (FWHM) <input id="spfil" type="text" inputmode="decimal" dir="ltr" data-num step="any" placeholder="بدون" style="width:70px"> nm</label>
     </div>
     <div class="row">
-      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی</option></select></label>
+      <label>تابع تطبیق فاز <select id="sppm"><option value="sinc">sinc (دقیق)</option><option value="gauss">گاوسی هم‌پهنا (تقریب)</option><option value="apod">قطبش‌دهی آپودایز گاوسی (فقط QPM)</option></select></label>
       <label id="spapodl" hidden>σ/L <input id="spapod" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.25" style="width:76px"></label>
       <label><input type="checkbox" id="spfoc"> کانونی‌کردن گاوسی (Bennink 2010)، ξ = <input id="spxi" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="2.84" style="width:64px"></label>
     </div>
@@ -740,10 +740,11 @@ html.nosearch [data-xact="filter"],html.nosearch #go,html.nosearch #pack,html.no
     <h2 data-fold="emission" data-closed>زاویه‌ی گسیل (غیرهم‌خط)</h2>
     <p class="hint">زاویه‌ی خروج هر فوتون نسبت به پمپ بر حسب طول موج فوتون ۱، در صفحه‌ی پیکربندی (همان صفحه‌ای که زاویه‌ی تطبیق فاز در آن است): k₁ sin θ₁ = k₂ sin θ₂ و k₁ cos θ₁ + k₂ cos θ₂ = k<sub>p</sub> − k<sub>g</sub>، با ضریب شکست هر فوتون در امتداد خودش. زاویه‌ی بیرونی برای وجه عمود بر پمپ است (sin θ<sub>ext</sub> = n sin θ). با چرخاندن بلور از زاویه‌ی هم‌خط (یا تغییر دما در QPM) مخروط گسیل باز می‌شود. پهنای پمپ و طول بلور در این حساب نیست (پمپ تک‌فام، تطبیق فاز دقیق).</p>
     <div class="row">
-      <label>چرخش بلور از زاویه‌ی هم‌خط <input id="sptilt" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.4" style="width:64px"> درجه (درون بلور)</label>
+      <label id="sptiltl">چرخش بلور از زاویه‌ی هم‌خط <input id="sptilt" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="0.4" style="width:64px"> درجه (درون بلور)</label>
       <label>گستره‌ی λ₁ ± <input id="spaspan" type="text" inputmode="decimal" dir="ltr" data-num step="any" value="40" style="width:64px"> nm</label>
       <button id="spang">محاسبه</button>
     </div>
+    <p class="hint" id="sptiltnote" hidden>در بلور QPM جهت تطبیق فاز را دوره‌ی قطبش تعیین می‌کند، نه زاویه‌ی برش؛ پس چرخاندن بلور مخروط را باز نمی‌کند. مخروط گسیل با دمای کار (کارت بالا) باز می‌شود: دما را از دمای هم‌خط بالاتر یا پایین‌تر ببرید.</p>
     <div id="spangres" class="spout"></div>
     <div style="margin-top:12px"><svg id="spangsvg" role="img" style="display:block;width:100%;direction:ltr"></svg></div>
   </div>
@@ -3704,7 +3705,7 @@ window.loadSPDC = async () => {
   });
   $("spopt").onclick = optimize;
   $("spang").onclick = angles;
-  $("sppm").onchange = () => { $("spapodl").hidden = $("sppm").value !== "apod"; };
+  $("sppm").onchange = () => { $("spapodl").hidden = $("sppm").value !== "apod"; spPhysical(); };
   $("spT").onchange = () => { if (!$("spT").value.trim()) $("spT").value = "25"; fillCfg(); };
   // a crystal already made (fixed period or cut): the temperature that gives these wavelengths, in the solver
   $("spsolve").onclick = async () => {
@@ -3810,6 +3811,18 @@ function spNoCfg() {
     : `<span class="err">برای این طول موج‌ها در این بلور هیچ پیکربندی تطبیق فازی پیدا نشد.</span>`;
   if ($("spextra")) $("spextra").onclick = () => { SP.extra = true; fillCfg(); run(); };
 }
+// Only the settings that exist for the configuration chosen: an apodized (shaped) poling is a QPM crystal's, so a
+// birefringent configuration cannot take it (back to sinc, with a word why); the tilt of the emission card turns a
+// birefringent crystal off its angle, while in QPM the temperature opens the cone (the box is then off).
+function spPhysical() {
+  const o = SP.cfg?.[+$("spcfg").value], qpm = Boolean(o?.qpm), apod = $("sppm").querySelector('option[value="apod"]');
+  apod.disabled = !qpm; apod.title = qpm ? "" : "قطبش‌دهی آپودایز فقط در بلور قطبیده‌ی تناوبی (QPM) ساخته می‌شود";
+  if (!qpm && $("sppm").value === "apod") {
+    $("sppm").value = "sinc"; $("spapodl").hidden = true;
+    $("spinfo").innerHTML = '<span class="hint">قطبش‌دهی آپودایز فقط در بلور QPM ساخته می‌شود؛ برای این پیکربندی زاویه‌ای تابع تطبیق فاز به sinc برگشت.</span>';
+  }
+  $("sptilt").disabled = qpm; $("sptiltl").style.opacity = qpm ? 0.5 : ""; $("sptiltnote").hidden = !qpm;
+}
 // Configurations: the birefringent phase-matching solutions, then QPM along each principal axis
 function fillCfg() {
   const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1);
@@ -3844,7 +3857,8 @@ function fillCfg() {
   const kept = SP.cfgKey ? opts.findIndex((o) => key(o) === SP.cfgKey) : -1;
   const pick = kept >= 0 ? kept : opts.findIndex((o) => o.qpm && o.plane === "xy" && o.angle === 0 && o.pols[1] !== o.pols[2]);
   if (pick >= 0) $("spcfg").value = String(pick);
-  $("spcfg").onchange = () => { const o = SP.cfg[+$("spcfg").value]; SP.cfgKey = o ? key(o) : null; };
+  $("spcfg").onchange = () => { const o = SP.cfg[+$("spcfg").value]; SP.cfgKey = o ? key(o) : null; spPhysical(); };
+  spPhysical();
   fillDeff();
 }
 document.addEventListener("unitchange", () => { if (SP.list) fillCfg(); });
@@ -3856,7 +3870,7 @@ function run() {
   setTimeout(() => { try { compute(); } catch (err) { $("spres").textContent = ""; $("spinfo").textContent = "خطا در محاسبه: " + err.message; } }, 20);
   function compute() {
     const j = jointSpectrum({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
-      L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value, apodSigma: +$("spapod").value,
+      L_mm: +$("spL").value, pumpFwhmNm: +$("spdp").value, periodUm: o.qpm ? "auto" : null, pm: o.qpm || $("sppm").value !== "apod" ? $("sppm").value : "sinc", apodSigma: +$("spapod").value,
       filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 90 : 120 });
     const { purity: P, schmidt: K } = purity(j), I = intensity(j);
     if (!Number.isFinite(P) || !I.jsi.every(Number.isFinite)) {
@@ -3891,7 +3905,7 @@ function run() {
       $("spres").innerHTML += `<p class="hint">ξ = ${xi}: کمر باریکه (شعاع 1/e² میدان) پمپ ${f.wp.toFixed(1)} µm، فوتون ۱ ${f.ws.toFixed(1)} µm، فوتون ۲ ${f.wi.toFixed(1)} µm؛ `
         + `احتمال جمع‌آوری جفت ${(f.brightness * 100).toFixed(0)}٪ حد بالا؛ نسبت اعلام η₁ = ${f.etaS.toFixed(3)}، η₂ = ${f.etaI.toFixed(3)}</p>`;
     }
-    if ($("sppm").value === "apod" && !$("spfoc").checked)
+    if ($("sppm").value === "apod" && o.qpm && !$("spfoc").checked)
       $("spres").innerHTML += `<p class="hint">آپودایز گاوسی با σ = ${esc(+$("spapod").value)}·L: آهنگ تولید جفت ${(apodized(0, +$("spapod").value) ** 2 * 100).toFixed(0)}٪ قطبش‌دهی یکنواخت هم‌طول (در مرکز طیف).</p>`;
     // the joint spectral intensity as CSV: λ1 (nm), λ2 (nm), |f|² normalized to its peak
     let mx = 0; for (const v of I.jsi) mx = Math.max(mx, v);
@@ -3912,7 +3926,7 @@ function optimize() {
   $("spinfo").textContent = "در حال جست‌وجوی پهنای پمپ بهینه…";
   setTimeout(() => {
     const r = bestPumpBandwidth({ nAt: spNAt(s), plane: o.plane, angle: o.angle, type: o.type, pols: o.pols, lp, l1, l2,
-      L_mm: +$("spL").value, periodUm: o.qpm ? "auto" : null, pm: $("sppm").value, apodSigma: +$("spapod").value,
+      L_mm: +$("spL").value, periodUm: o.qpm ? "auto" : null, pm: o.qpm || $("sppm").value !== "apod" ? $("sppm").value : "sinc", apodSigma: +$("spapod").value,
       filterNm: fil > 0 ? [fil, fil] : null, xi: $("spfoc").checked ? +$("spxi").value : 0, n: $("spfoc").checked ? 80 : 110 });
     if (!Number.isFinite(r.purity)) { $("spinfo").textContent = ""; $("spres").innerHTML = spRangeHelp(); return; }
     $("spdp").value = r.pumpFwhmNm.toPrecision(3); $("sptau").value = "";

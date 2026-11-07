@@ -1,4 +1,8 @@
 {
+ "قطبش‌دهی آپودایز گاوسی (فقط QPM)": "Gaussian apodized poling (QPM only)",
+ "در بلور QPM جهت تطبیق فاز را دوره‌ی قطبش تعیین می‌کند، نه زاویه‌ی برش؛ پس چرخاندن بلور مخروط را باز نمی‌کند. مخروط گسیل با دمای کار (کارت بالا) باز می‌شود: دما را از دمای هم‌خط بالاتر یا پایین‌تر ببرید.": "In a QPM crystal the poling period sets the phase matching, not the cut angle, so tilting the crystal does not open the cone. The emission cone opens with the working temperature (card above): take it above or below the collinear temperature.",
+ "قطبش‌دهی آپودایز فقط در بلور قطبیده‌ی تناوبی (QPM) ساخته می‌شود": "Apodized poling exists only in periodically poled (QPM) crystals",
+ "قطبش‌دهی آپودایز فقط در بلور QPM ساخته می‌شود؛ برای این پیکربندی زاویه‌ای تابع تطبیق فاز به sinc برگشت.": "Apodized poling exists only in QPM crystals; for this angle configuration the phase-matching function is back to sinc.",
  "برون‌یابی فرمول تا ۱۰٪ بیرون از بازه": "Extrapolate the formula up to 10% beyond its range",
  "چه کار کنیم؟": "What to do?",
  "طیف جفت‌ها از بازه‌ی فرمول این منبع (": "The pair spectrum runs past the range of this source’s formula (",
@@ -996,7 +1000,6 @@
  "۳۰ نتیجه‌ی اول را یک مدل داور دوباره با خود پرسش می‌خواند و مرتب می‌کند؛ دقیق‌تر، حدود یک ثانیه کندتر": "A judge model rereads the first 30 results with the question and reorders them: more accurate, about one second slower",
  "مرتب‌سازی دقیق": "Precise ranking",
  "دامنه‌ی طیفی مشترک f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): طیف گاوسی پمپ ضرب در تابع تطبیق فاز بلور به طول L (هم‌خط؛ پمپ موج تخت، یا با گزینه‌ی کانونی‌کردن، باریکه‌های گاوسی هم‌محور با پارامتر کانونی ξ = L/(k w²) و تابع F(ξ, Φ) مقاله‌ی Bennink 2010). از آن خلوص فوتون اعلام‌شده (P = Σλₙ²)، عدد اشمیت K = 1/P، پهنای طیف هر فوتون و فرورفتگی هنگ–او–مندل حساب می‌شود. ضریب‌های شکست همان فرمول‌های زبانه‌ی تطبیق فاز است. با شکل‌های ۱ مقاله‌ی Mosley و همکاران (2008) و عدد اشمیت Evans و همکاران (2010) آزموده شده است. قطبش‌دهی آپودایز گاوسی (Brańczyk و همکاران 2011) لوب‌های کناری sinc را حذف می‌کند؛ «بهینه‌سازی خلوص» پهنای پمپی را می‌یابد که خلوص را بیشینه می‌کند؛ با دمای بلور ضریب‌های شکست از فرمول وابستگی دمایی همان منبع حساب می‌شوند (اگر داشته باشد).": "Joint spectral amplitude f(ν₁, ν₂) = α(ν₁+ν₂)·φ(ν₁, ν₂): the Gaussian pump spectrum times the phase-matching function of a crystal of length L (collinear; a plane-wave pump or, with the focusing option, coaxial Gaussian beams with focal parameter ξ = L/(k w²) and the function F(ξ, Φ) of Bennink 2010). From it come the heralded-photon purity (P = Σλₙ²), the Schmidt number K = 1/P, the spectral width of each photon and the Hong–Ou–Mandel dip. The refractive indices are the formulas of the phase-matching tab. Tested against Fig. 1 of Mosley et al. (2008) and the Schmidt number of Evans et al. (2010). Gaussian apodized poling (Brańczyk et al. 2011) removes the sinc side lobes; “Optimize purity” finds the pump bandwidth of the highest purity; with a crystal temperature the indices come from the source's temperature-dependent formula (if it has one).",
- "قطبش‌دهی آپودایز گاوسی": "Gaussian apodized poling",
  "پهنای طیف پمپی که خلوص را بیشینه می‌کند": "The pump bandwidth that maximizes the purity",
  "بهینه‌سازی خلوص": "Optimize purity",
  "دریافت داده‌ی طیف (CSV)": "Download the spectrum data (CSV)",
