@@ -2841,8 +2841,8 @@ window.QPM_OK = new Set([...POLED, ...OP]);
 const QPM_NAME = { LiNbO3: "PPLN", "MgO-LiNbO3": "MgO:PPLN", LiTaO3: "PPLT", "Mg-LiTaO3": "MgO:PPLT", KTiOPO4: "PPKTP", RbTiOPO4: "PPRTP", KTiOAsO4: "PPKTA", RbTiOAsO4: "PPRTA", GaAs: "OP-GaAs", GaP: "OP-GaP" };
 const QP = { sel: "", last: null };
 const qpmOrder = () => Math.max(1, Math.min(5, Math.round(+$("qpmm").value) || 1));
-const qpmDuty = () => { const v = +$("qpmD").value; return v > 0 && v < 100 ? v / 100 : 0.5; };
-const qpmLen = () => (+$("qpmL").value > 0 ? +$("qpmL").value : 10);
+const qpmDuty = () => +$("qpmD").value / 100;
+const qpmLen = () => +$("qpmL").value;
 const orderFactor = (m, D) => Math.abs(Math.sin(m * Math.PI * D)) / m; // of the first-order (2/π)|d|
 // the grating vector the waves need (rad/µm) for one assignment of the polarizations (x, y, z; op: the one index)
 const kNeed = (fT, T, w, pol) => {
@@ -2868,6 +2868,9 @@ function qpmRender() {
       + (other >= 0 ? `<button class="alt" data-qpmsrc="${other}">رفتن به ${esc(c.sources[other].label)}</button>` : "");
     return;
   }
+  // a duty cycle of 0 or 100 % is a crystal with no reversed domains (no QPM at all); the length must be positive
+  if (!(qpmDuty() > 0 && qpmDuty() < 1)) { box.innerHTML = '<p class="err">چرخه‌ی کار باید بین ۰ و ۱۰۰٪ باشد؛ ۰ یا ۱۰۰٪ یعنی هیچ حوزه‌ای وارونه نشده و QPM وجود ندارد (۵۰٪ معمول است).</p>'; return; }
+  if (!(qpmLen() > 0)) { box.innerHTML = '<p class="err">طول بلور باید بیشتر از صفر باشد (mm).</p>'; return; }
   const { proc, a, b } = inputs(), T = tempC(), fT = (t) => nAtT(src, t), m = qpmOrder(), D = qpmDuty(), L = qpmLen(), f = orderFactor(m, D);
   const ex = c.sources.find((x) => x.thermo?.expansion)?.thermo.expansion;
   const grow = (t) => (ex ? 1 + ex.alpha * (t - ex.t0_c) + (ex.beta || 0) * (t - ex.t0_c) ** 2 : 1);
@@ -3271,7 +3274,7 @@ function svRun() {
   }
   const d = PM.dij[c.material]?.d, out = (l) => l < src0.range_um[0] - 1e-9 || l > src0.range_um[1] + 1e-9;
   const deffOf = (r) => {
-    if (cfg.kind === "qpm") return cfg.deff / m;
+    if (cfg.kind === "qpm") return cfg.deff * Math.abs(Math.sin(m * Math.PI / 2)) / m; // 50 % duty cycle: even orders vanish
     if (!d) return null;
     const sol = describe(nAtT(src, r.T), cfg.plane, r.x * Math.PI / 180, "opo", r.lp, r.ls, cfg.type);
     return effectiveD(nAtT(src, r.T), src.kind, sol, d).deff;
@@ -3292,6 +3295,7 @@ function svRun() {
   $("svinfo").innerHTML = `<bdi dir="ltr">${esc(src0.label)}</bdi> · `
     + (src.thermo ? "" : "بدون وابستگی دمایی: محاسبه در دمای فرمول. ")
     + (cfg.kind === "qpm" && exp ? "Λ دوره‌ی توری در دمای مرجع انبساط (۲۵ °C) است، همان که روی بلور نوشته می‌شود؛ انبساط گرمایی آن در دمای کار حساب شده است. " : "")
+    + (cfg.kind === "qpm" && m % 2 === 0 ? '<span class="err">مرتبه‌ی زوج با چرخه‌ی کار معمول ۵۰٪ ضریب غیرخطی ندارد (d<sub>eff</sub> = 0): جهت تطبیق فاز درست است ولی جفتی تولید نمی‌شود. مرتبه‌ی فرد (۱، ۳، ۵) بنویسید.</span> ' : "")
     + (res.roots.some((r) => [r.lp, r.ls, r.li].some(out)) ? `<span class="err">* برون‌یابی: طول موجی بیرون از بازه‌ی فرمول این منبع، تا ۱۰٪.</span> <bdi dir="ltr">(${src0.range_um[0]}–${src0.range_um[1]} µm)</bdi> ` : "")
     + "پهناها FWHM برای طول بلور واردشده‌اند؛ Δλs با پمپ ثابت و Δλp با سیگنال ثابت.";
 }
@@ -3774,6 +3778,9 @@ function spBad() {
   if (!(L > 0)) return "طول بلور باید بیشتر از صفر باشد.";
   if (!(+$("spdp").value > 0)) return "پهنای طیف پمپ باید عددی بیشتر از صفر باشد (nm).";
   if (!blankOr("sptau")) return "طول پالس باید عددی بیشتر از صفر باشد، یا خالی.";
+  // a pulse of the length typed has at least its transform-limited bandwidth: the pump box cannot be narrower
+  if (+$("sptau").value > 0 && +$("spdp").value < transformLimitedNm(lp, +$("sptau").value) * 0.99)
+    return `پهنای طیف پمپ (${+$("spdp").value} nm) از حد تبدیل فوریه‌ی پالس ${+$("sptau").value} ps (${transformLimitedNm(lp, +$("sptau").value).toPrecision(3)} nm) کمتر است؛ پالسی به این کوتاهی دست‌کم این‌قدر پهنای طیف دارد. پهنای پمپ را بزرگ‌تر کنید یا طول پالس را پاک کنید.`;
   if (!blankOr("spfil")) return "پهنای فیلتر باید عددی بیشتر از صفر باشد، یا خالی (بدون فیلتر).";
   if ($("spfoc").checked && !(+$("spxi").value > 0)) return "ξ کانونی‌کردن باید بیشتر از صفر باشد.";
   if ($("sppm").value === "apod" && !(+$("spapod").value > 0)) return "σ/L آپودایز باید بیشتر از صفر باشد.";
@@ -4020,8 +4027,15 @@ function spPlot(svg, series, { xl, yl, y0: fy0, y1: fy1, hline, mark, legend, ms
 }
 const spWaists = (wp, w1, w2) => `${wp.toFixed(1)}, ${w1.toFixed(1)}, ${w2.toFixed(1)} µm`;
 // Absolute pair rate into the Gaussian modes of the fibre card's focal parameters (ξ = L/zR as there)
+// the focal parameters ξ = L/z_R of the pump and the two fibre modes: positive (a beam focused to a point, or a
+// negative length, is not a beam)
+const spXiBad = (out) => {
+  if (["spxp", "spxs", "spxf2"].every((id) => +$(id).value > 0)) return false;
+  $(out).innerHTML = '<p class="err">ξ پمپ و ξ هر دو فیبر باید بیشتر از صفر باشند (ξ = L/z<sub>R</sub>؛ معمولاً بین ۰٫۵ و ۵).</p>'; return true;
+};
 function pairs() {
   if (spStop("spratres")) return;
+  if (spXiBad("spratres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
   const dEff = +$("spdeff").value, P = +$("sppow").value;
@@ -4051,6 +4065,7 @@ function pairs() {
 // fibre card, with the arms' losses, detector efficiencies, dark counts and coincidence window
 function counts() {
   if (spStop("spcntres")) return;
+  if (spXiBad("spcntres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), nAt = spNAt(s), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1), L_mm = +$("spL").value;
   const dEff = +$("spdeff").value, P = +$("sppow").value;
@@ -4103,6 +4118,7 @@ function counts() {
 // Fibre coupling (Ljunggren & Tengner 2005) for the selected configuration
 function fiber(optimize) {
   if (spStop("spfibres")) return;
+  if (spXiBad("spfibres")) return;
   const o = SP.cfg[+$("spcfg").value]; if (!o) return;
   const s = spSrc(), lp = lamv("splp"), l1 = lamv("spl1"), l2 = 1 / (1 / lp - 1 / l1);
   const dir = direction(o.plane, o.angle), pols = o.pols || ["f", ...({ I: ["s", "s"], IIa: ["s", "f"], IIb: ["f", "s"] })[o.type]];
@@ -4110,6 +4126,7 @@ function fiber(optimize) {
   const base = { kp: k(lp, pols[0]), ks: k(l1, pols[1]), ki: k(l2, pols[2]), L_mm: +$("spL").value };
   $("spfibres").textContent = "در حال محاسبه…";
   setTimeout(() => {
+    if (spXiBad("spfibres")) return; // the boxes may have changed since the call
     if (optimize) { // pump and the two fibre foci on a grid, for the largest pair coupling (all modes)
       let best = null;
       for (const xp of [0.5, 0.8, 1.1, 1.4, 1.7, 2.1, 2.6, 3.2, 4, 5]) for (const xf of [1.4, 1.8, 2.3, 2.8, 3.4, 4.2]) {
@@ -4464,7 +4481,12 @@ function laserOf(p) {
   if (!(E > 0)) return { err: "انرژی پالس را بنویسید (بیشتر از صفر)." };
   if (!(t > 0)) return { err: "پهنای پالس را بنویسید (بیشتر از صفر)." };
   if (rep != null && rep < 0) return { err: "نرخ تکرار نمی‌تواند منفی باشد." };
-  return { E: E * 1e-3, tau: t * +$(p + "tauu").value, rep: (rep || 0) * 1e3, shape: $(p + "shape").value };
+  const tau = t * +$(p + "tauu").value, f = (rep || 0) * 1e3;
+  // a pulse cannot last longer than the time between two pulses
+  const tt = (x) => `<bdi dir="ltr">${x >= 1e-3 ? sig(x * 1e3) + " ms" : x >= 1e-6 ? sig(x * 1e6) + " µs" : fmtTau(x)}</bdi>`;
+  if (f > 0 && tau * f >= 1) return { err: `پالس‌ها روی هم می‌افتند: پهنای پالس (${tt(tau)}) از فاصله‌ی دو پالس (${tt(1 / f)}) بیشتر است. پهنای پالس یا نرخ تکرار را کمتر کنید، یا لیزر را پیوسته بگیرید.` };
+  if (num(p + "S") != null && num(p + "S") < 1) return { err: "ضریب اطمینان باید ۱ یا بیشتر باشد (۱ یعنی درست روی آستانه‌ی آسیب)." };
+  return { E: E * 1e-3, tau, rep: f, shape: $(p + "shape").value };
 }
 const safety = (id) => { const s = num(id); return s >= 1 ? s : 2; };
 // the peak intensity (W/cm²) that keeps the margin S for this laser, or null (CW, no threshold, too short a pulse)
@@ -4488,6 +4510,14 @@ async function runPower() {
   if (!(deff > 0)) return fail("ضرایب d این بلور در داده‌ها نیست: d<sub>eff</sub> را خودتان بنویسید.");
   const focusMode = $("pwfocus").value, w0 = num("pww0");
   if (focusMode === "waist" && !(w0 > 0)) return fail("شعاع کمر باریکه را به میکرومتر بنویسید.");
+  // a Gaussian beam is not focused to less than about its wavelength (and the paraxial formulas fail before that)
+  if (focusMode === "waist" && w0 < lam) return fail(`باریکه‌ی گاوسی را نمی‌شود از حدود طول موجش (${bd(`${sig(lam)} µm`)}) باریک‌تر کانونی کرد؛ شعاع کمر بزرگ‌تری بنویسید.`);
+  // a pulse has at least the bandwidth of its Fourier transform: a narrower one typed in is not a laser that exists
+  if (!laser.cw && num("pwbw") != null) {
+    const tl = pulseBandwidthNm(lam, laser.tau, laser.shape);
+    if (!(num("pwbw") > 0)) return fail("پهنای طیف لیزر باید بیشتر از صفر باشد، یا خالی (حد تبدیل فوریه).");
+    if (num("pwbw") < tl * 0.99) return fail(`پهنای طیف لیزر (${bd(`${sig(num("pwbw"))} nm`)}) از حد تبدیل فوریه‌ی این پالس (${bd(`${sig(tl)} nm`)}) کمتر است؛ پالسی به این کوتاهی دست‌کم این‌قدر پهنای طیف دارد. خالی بگذارید یا عدد بزرگ‌تری بنویسید.`);
+  }
   const props = PW.props[c.material] || {}, dmg = props.damage;
   let focus = { mode: focusMode === "waist" ? "waist" : "optimal", w0_um: w0 }, safeNote = "";
   if (focusMode === "safe") {
